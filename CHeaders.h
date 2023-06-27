@@ -12,6 +12,10 @@
 
 #include "asmstrucs.h"
 
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
 BOOL CheckExcludeList(UCHAR * Call);
 
 Dll int ConvFromAX25(unsigned char * incall,unsigned char * outcall);

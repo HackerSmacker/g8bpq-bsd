@@ -65,6 +65,8 @@ VOID SaveMH();
 BOOL RestartTNC(struct TNCINFO * TNC);
 void GetPortCTEXT(TRANSPORTENTRY * Session, char * Bufferptr, char * CmdTail, CMDX * CMD);
 VOID WriteMiniDump();
+static int  KissEncode(UCHAR * inbuff, UCHAR * outbuff, int len);
+BOOL OpenConnection(int);
 
 char COMMANDBUFFER[81] = "";		// Command Hander input buffer
 char OrigCmdBuffer[81] = "";		// Command Hander input buffer before toupper

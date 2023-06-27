@@ -16,9 +16,9 @@ OBJS = pngwtran.o pngrtran.o pngset.o pngrio.o pngwio.o pngtrans.o pngrutil.o pn
 # Configuration:
 
 CC = gcc
-CFLAGS = -Wno-everything -DLINBPQ -MMD -g -fcommon
-LDFLAGS = -Xlinker -Map=output.map
-LDLIBS = -lrt -lm -lz -lpthread -lconfig -liconv -lpcap
+CFLAGS = -Wno-everything -DLINBPQ -MMD -g -fcommon -I/opt/homebrew/opt/libpcap/include
+LDFLAGS = -L/opt/homebrew/opt/libpcap/lib
+LDLIBS = -lm -lz -lpthread -lconfig -liconv -lpcap
 
 all: bsdbpq
 

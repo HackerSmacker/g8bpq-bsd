@@ -17,17 +17,11 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-//
-//	C replacement for Main.asm
-//
 #define Kernel
 
 #define _CRT_SECURE_NO_DEPRECATE 
 
 #pragma data_seg("_BPQDATA")
-
-//#include "windows.h"
-//#include "winerror.h"
 
 #include "time.h"
 #include "stdio.h"
@@ -46,6 +40,7 @@ int upnpInit();
 void AISTimer();
 void ADSBTimer();
 VOID SendSmartID(struct PORTCONTROL * PORT);
+static int  KissEncode(UCHAR * inbuff, UCHAR * outbuff, int len);
 
 #include "configstructs.h"
 

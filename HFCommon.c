@@ -35,9 +35,11 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 #ifndef LINBPQ
 #include <commctrl.h>
 #endif
-//#include <stdlib.h>
 #include "bpq32.h"
 #include "adif.h"
+
+#include <stdio.h>
+#include <stdlib.h>
 
 
 HANDLE hInstance;
