@@ -1,0 +1,7 @@
+bsdbpq
+*.o
+output.map
+bpq32.cfg
+*.core
+BPQNODES.DAT
+logs/*

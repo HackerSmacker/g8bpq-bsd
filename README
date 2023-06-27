@@ -1,0 +1,23 @@
+BSDBPQ (G8BPQ-BSD)
+
+This is a FreeBSD-native port of G8BPQ's AX.25 packet switching system for
+Linux and Windows. 
+
+Yes, the code basically already supports FreeBSD, but, most of the conditional
+macros were broken and there was a lot of leftover stuff that wouldn't have
+worked anyways. 
+
+I take absolutely no credit for this software! This was all made possible by
+John Wiseman and a few other amazing people. 
+
+Installation:
+1. Install libconfig. This requires GNU Bison and Flex, it will not work with
+   POSIX or BSD yacc or lex.
+2. Type make in the source directory here. Parallel make is supported.
+3. Copy bsdbpq to a suitable location.
+4. Place your bpq32.cfg file in the same location as the bsdbpq executable.
+5. Run it in some form. If you don't want to write a rc.d script for it, you
+   can get away with running it from a GNU Screen or tmux session.
+
+Have fun!
+
