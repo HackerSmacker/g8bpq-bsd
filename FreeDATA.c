@@ -1,4 +1,4 @@
-﻿/*
+/*
 Copyright 2001-2022 John Wiseman G8BPQ
 
 This file is part of LinBPQ/BPQ32.
