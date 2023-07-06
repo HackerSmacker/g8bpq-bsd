@@ -17,10 +17,10 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-//
-//	Implements the DOS register based API. 
+/* */
+/*	Implements the DOS register based API.  */
 
-//	Called via an assmbler glue that puts registers into C variables.
+/*	Called via an assmbler glue that puts registers into C variables. */
 
 #define _CRT_SECURE_NO_DEPRECATE 
 
@@ -38,7 +38,7 @@ extern QCOUNT;
 extern BPQVECSTRUC BPQHOSTVECTOR[];
 extern int MAJORVERSION;
 extern int MINORVERSION;
-extern char pgm[256];						// Uninitialised so per process
+extern char pgm[256];						/* Uninitialised so per process */
 
 VOID PostDataAvailable(TRANSPORTENTRY * Session);
 DllExport int APIENTRY SendMsg(int stream, char * msg, int len);
@@ -173,7 +173,7 @@ VOID CHOSTAPI(ULONG * pEAX, ULONG * pEBX, ULONG * pECX, ULONG * pEDX, VOID ** pE
 	Command = (EAX & 0xFFFF) >> 8;
 
 	Stream = (EAX & 0xFF);
-	n = Stream - 1;				// API Numbers Streams 1-64 
+	n = Stream - 1;				/* API Numbers Streams 1-64  */
 
 	if (n < 0 || n > 63)
 		n = 64;
@@ -183,7 +183,7 @@ VOID CHOSTAPI(ULONG * pEAX, ULONG * pEBX, ULONG * pECX, ULONG * pEDX, VOID ** pE
 
 	switch (Command)
 	{
-	case 0:					// Check Loaded/Get Version
+	case 0:					/* Check Loaded/Get Version */
 	
 		EAX = ('P' << 8) | 'B';
 		EBX =  ('Q' << 8) | ' ';
@@ -191,53 +191,53 @@ VOID CHOSTAPI(ULONG * pEAX, ULONG * pEBX, ULONG * pECX, ULONG * pEDX, VOID ** pE
 		EDX = (MAJORVERSION << 8) | MINORVERSION; 
 		break;
 
-	case 1:					// Set Appl mAsk
+	case 1:					/* Set Appl mAsk */
 	
-		HostVec->HOSTAPPLMASK = EDX;	// APPL MASK
-		HostVec->HOSTAPPLFLAGS = (UCHAR)ECX;	// APPL FLAGS
+		HostVec->HOSTAPPLMASK = EDX;	/* APPL MASK */
+		HostVec->HOSTAPPLFLAGS = (UCHAR)ECX;	/* APPL FLAGS */
 	
-		// If either is non-zero, set allocated and Process. This gets round problem with
-		// stations that don't call allocate stream
+		/* If either is non-zero, set allocated and Process. This gets round problem with */
+		/* stations that don't call allocate stream */
 	
 		if (ECX || EBX)
 		{
-			HostVec->HOSTFLAGS |= 0x80;		// SET ALLOCATED BIT	
+			HostVec->HOSTFLAGS |= 0x80;		/* SET ALLOCATED BIT	 */
 			HostVec->STREAMOWNER = GetCurrentProcessId();
 	
-			//	Set Program Name
+			/*	Set Program Name */
 
 			memcpy(&HostVec->PgmName, pgm, 31);
 		}
 		break;
 
-	case 2:							// Send Frame
+	case 2:							/* Send Frame */
 
-		//	ES:ESI = MESSAGE, CX = LENGTH, BX = VECTOR
+		/*	ES:ESI = MESSAGE, CX = LENGTH, BX = VECTOR */
 
 		EAX = SendMsg(Stream, ESI, ECX);
 		break;
 	
 	case 3:
 
-	//	AH = 3	Receive frame into buffer at ES:EDI, length of frame returned
-	//		in CX.  BX returns the number of outstanding frames still to
-	//		be received (ie. after this one) or zero if no more frames
-	//		(ie. this is last one).
+	/*	AH = 3	Receive frame into buffer at ES:EDI, length of frame returned */
+	/*		in CX.  BX returns the number of outstanding frames still to */
+	/*		be received (ie. after this one) or zero if no more frames */
+	/*		(ie. this is last one). */
 
 		EAX = GetMsg(Stream, EDI, &ECX, &EBX);
 		break;
 
 	case 4:
 
-	//	AH = 4	Get stream status.  Returns:
-	//	CX = 0 if stream disconnected or CX = 1 if stream connected
-	//	DX = 0 if no change of state since last read, or DX = 1 if
-	//	       the connected/disconnected state has changed since
-	//	       last read (ie. delta-stream status).
+	/*	AH = 4	Get stream status.  Returns: */
+	/*	CX = 0 if stream disconnected or CX = 1 if stream connected */
+	/*	DX = 0 if no change of state since last read, or DX = 1 if */
+	/*	       the connected/disconnected state has changed since */
+	/*	       last read (ie. delta-stream status). */
 
 		ECX = EDX = 0;
 
-		if (HostVec->HOSTFLAGS & 3)		//STATE CHANGE BITS
+		if (HostVec->HOSTFLAGS & 3)		/*STATE CHANGE BITS */
 			EDX = 1;
 
 		if (Session)
@@ -247,59 +247,59 @@ VOID CHOSTAPI(ULONG * pEAX, ULONG * pEBX, ULONG * pECX, ULONG * pEDX, VOID ** pE
 		
 	case 5:
 
-	//	AH = 5	Ack stream status change
+	/*	AH = 5	Ack stream status change */
 
-		HostVec->HOSTFLAGS &= 0xFC;		// Clear Chnage Bits
+		HostVec->HOSTFLAGS &= 0xFC;		/* Clear Chnage Bits */
 		break;
 
 	case 6:
 
-	//	AH = 6	Session control.
+	/*	AH = 6	Session control. */
 
-	//	CX = 0 Conneect - APPLMASK in DL
-	//	CX = 1 connect
-	//	CX = 2 disconnect
-	//	CX = 3 return user to node
+	/*	CX = 0 Conneect - APPLMASK in DL */
+	/*	CX = 1 connect */
+	/*	CX = 2 disconnect */
+	/*	CX = 3 return user to node */
 
 		SessionControl(Stream, ECX, EDX);
 		break;
 
 	case 7:
 
-	//	AH = 7	Get buffer counts for stream.  Returns:
+	/*	AH = 7	Get buffer counts for stream.  Returns: */
 
-	//	AX = number of status change messages to be received
-	//	BX = number of frames queued for receive
-	//	CX = number of un-acked frames to be sent
-	//	DX = number of buffers left in node
-	//	SI = number of trace frames queued for receive
+	/*	AX = number of status change messages to be received */
+	/*	BX = number of frames queued for receive */
+	/*	CX = number of un-acked frames to be sent */
+	/*	DX = number of buffers left in node */
+	/*	SI = number of trace frames queued for receive */
 
 
-	ECX = 0;				// unacked frames
+	ECX = 0;				/* unacked frames */
 	EDX = QCOUNT;
 
 	ESI = (void *)MONCount(Stream);
 	EBX = RXCount(Stream);
 	ECX = TXCount(Stream);
 
-	EAX = 0;				// Is this right ???
+	EAX = 0;				/* Is this right ??? */
 
 	break;
 
 	case 8:
 
-	//	AH = 8		Port control/information.  Called with a stream number
-	//		in AL returns:
-	//
-	//	AL = Radio port on which channel is connected (or zero)
-	//	AH = SESSION TYPE BITS
-	//	BX = L2 paclen for the radio port
-	//	CX = L2 maxframe for the radio port
-	//	DX = L4 window size (if L4 circuit, or zero)
-	//	ES:EDI = CALLSIGN
+	/*	AH = 8		Port control/information.  Called with a stream number */
+	/*		in AL returns: */
+	/* */
+	/*	AL = Radio port on which channel is connected (or zero) */
+	/*	AH = SESSION TYPE BITS */
+	/*	BX = L2 paclen for the radio port */
+	/*	CX = L2 maxframe for the radio port */
+	/*	DX = L4 window size (if L4 circuit, or zero) */
+	/*	ES:EDI = CALLSIGN */
 
 
-		GetConnectionInfo(Stream, EDI, &EAX, &Temp, &EBX, &ECX, &EDX); // Return the Secure Session Flag rather than not connected
+		GetConnectionInfo(Stream, EDI, &EAX, &Temp, &EBX, &ECX, &EDX); /* Return the Secure Session Flag rather than not connected */
 		EAX |= Temp <<8;
 
 		break;
@@ -307,30 +307,30 @@ VOID CHOSTAPI(ULONG * pEAX, ULONG * pEBX, ULONG * pECX, ULONG * pEDX, VOID ** pE
 
 	case 9:
 
-		// Not Implemented
+		/* Not Implemented */
 
 		break;
 
 	case 10:
 
-	//	AH = 10	Unproto transmit frame.  Data pointed to by ES:ESI, of
-	//	length CX, is transmitted as a HDLC frame on the radio
-	//	port (not stream) in AL.
+	/*	AH = 10	Unproto transmit frame.  Data pointed to by ES:ESI, of */
+	/*	length CX, is transmitted as a HDLC frame on the radio */
+	/*	port (not stream) in AL. */
 
 		EAX = SendRaw(EAX, ESI, ECX);
 		return;
 
 	case 11:
 
-	//	AH = 11 Get Trace (RAW Data) Frame into ES:EDI,
-	//	 Length to CX, Timestamp to AX
+	/*	AH = 11 Get Trace (RAW Data) Frame into ES:EDI, */
+	/*	 Length to CX, Timestamp to AX */
 
 		EAX =  GetRaw(Stream, EDI, &ECX, &EBX);
 		break;
 
 	case 12:
 
-	// Update Switch
+	/* Update Switch */
 
 		if (EDX == 2)
 		{
@@ -339,7 +339,7 @@ VOID CHOSTAPI(ULONG * pEAX, ULONG * pEBX, ULONG * pECX, ULONG * pEDX, VOID ** pE
 		}
 		if (EDX == 2)
 		{
-			//	UPDATE BT
+			/*	UPDATE BT */
 
 			BTLENGTH = ECX;
 			memcpy(BTEXTFLD, ESI, ECX + 7);
@@ -349,10 +349,10 @@ VOID CHOSTAPI(ULONG * pEAX, ULONG * pEBX, ULONG * pECX, ULONG * pEDX, VOID ** pE
 
 	case 13:
 
-		// BPQALLOC
+		/* BPQALLOC */
 
-		//	AL = 0 = Find Free
-		//	AL != 0 Alloc or Release
+		/*	AL = 0 = Find Free */
+		/*	AL != 0 Alloc or Release */
 
 		if (EAX == 0)
 		{
@@ -360,7 +360,7 @@ VOID CHOSTAPI(ULONG * pEAX, ULONG * pEBX, ULONG * pECX, ULONG * pEDX, VOID ** pE
 			break;
 		}
 
-		if (ECX == 1)			// Allocate
+		if (ECX == 1)			/* Allocate */
 		{
 			 EAX = AllocateStream(Stream);
 			 break;
@@ -371,16 +371,16 @@ VOID CHOSTAPI(ULONG * pEAX, ULONG * pEBX, ULONG * pECX, ULONG * pEDX, VOID ** pE
 
 	case 14:
 
-	//	AH = 14 Internal Interface for IP Router
+	/*	AH = 14 Internal Interface for IP Router */
 
-	//	Send frame - to NETROM L3 if DL=0
-	//	             to L2 Session if DL<>0
+	/*	Send frame - to NETROM L3 if DL=0 */
+	/*	             to L2 Session if DL<>0 */
 
-		break;			// Shouldn't be needed
+		break;			/* Shouldn't be needed */
 
 	case 15:
 
-		// GETTIME
+		/* GETTIME */
 
 		EAX = REALTIMETICKS;
 		EBX = 0;

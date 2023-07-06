@@ -1,9 +1,9 @@
-// Header file for BPQ32 IP over ax.25 support
+/* Header file for BPQ32 IP over ax.25 support */
 
 #define BPQREREAD						403
 #define BPQADDARP						404
 
-//extern struct PORTCONTROL * PORTTABLE;
+/*extern struct PORTCONTROL * PORTTABLE; */
 
 #define IDI_ICON2                       123
 
@@ -21,7 +21,7 @@ typedef struct _ETHMSG
 
 typedef struct _BUFFHEADER
 {
-//	BASIC LINK LEVEL HEADER BUFFER LAYOUT
+/*	BASIC LINK LEVEL HEADER BUFFER LAYOUT */
 
 	struct _MESSAGE * CHAIN;
 
@@ -31,7 +31,7 @@ typedef struct _BUFFHEADER
 	UCHAR	DEST[7];
 	UCHAR	ORIGIN[7];
 
-//	 MAY BE UP TO 56 BYTES OF DIGIS
+/*	 MAY BE UP TO 56 BYTES OF DIGIS */
 
 	UCHAR	CTL;
 	UCHAR	PID; 
@@ -43,13 +43,13 @@ typedef struct _AXARP
 {
 	struct _BUFFHEADER MSGHDDR;
 	
-	USHORT	HWTYPE;      //    DB      0,3             ; AX.25
-	USHORT	PID;			//	DB      0,0CCH          ; PID
+	USHORT	HWTYPE;      /*    DB      0,3             ; AX.25 */
+	USHORT	PID;			/*	DB      0,0CCH          ; PID */
 
-	UCHAR	HWADDRLEN;       //      7
-	UCHAR	IPADDRLEN;      //      4
+	UCHAR	HWADDRLEN;       /*      7 */
+	UCHAR	IPADDRLEN;      /*      4 */
 
-	USHORT	ARPOPCODE;       //      200H            ; REQUEST/REPLY
+	USHORT	ARPOPCODE;       /*      200H            ; REQUEST/REPLY */
 
 	UCHAR	SENDHWADDR[7];
 	uint32_t	SENDIPADDR;
@@ -64,13 +64,13 @@ typedef struct _ETHARP
 {
 	struct _ETHMSG MSGHDDR;
 
-	USHORT	HWTYPE;      //    DB      0,1             ; Eth
-	USHORT	PID;			//	DB      8,0          ; PID
+	USHORT	HWTYPE;      /*    DB      0,1             ; Eth */
+	USHORT	PID;			/*	DB      8,0          ; PID */
 
-	UCHAR	HWADDRLEN;       //      6
-	UCHAR	IPADDRLEN;      //      4
+	UCHAR	HWADDRLEN;       /*      6 */
+	UCHAR	IPADDRLEN;      /*      4 */
 
-	USHORT	ARPOPCODE;       //      200H            ; REQUEST/REPLY
+	USHORT	ARPOPCODE;       /*      200H            ; REQUEST/REPLY */
 
 	UCHAR	SENDHWADDR[6];
 	uint32_t	SENDIPADDR;
@@ -94,7 +94,7 @@ typedef struct _RIP2ENTRY
 	uint32_t IPAddress;
 	uint32_t Mask;
 	uint32_t NextHop;
-	// Metric Defined as 32 bits, but sent in network order and limited to 16, so just use last byte
+	/* Metric Defined as 32 bits, but sent in network order and limited to 16, so just use last byte */
 	UCHAR	Pad1;
 	UCHAR	Pad2;
 	UCHAR	Pad3;
@@ -103,42 +103,42 @@ typedef struct _RIP2ENTRY
 
 #pragma pack()
 
-//       ARP DATA
+/*       ARP DATA */
 
-//       USED TO TRANSLATE IP ADDRESSES TO MAC (Ether or ax.25) ADDDRESSES
+/*       USED TO TRANSLATE IP ADDRESSES TO MAC (Ether or ax.25) ADDDRESSES */
 
 typedef struct _ARPDATA
 {
-//       KEEP IP ADDR AT FRONT
+/*       KEEP IP ADDR AT FRONT */
 
 	uint32_t IPADDR;
-	UCHAR	HWADDR[64];				// ETHERNET/ax.25 ADDR, maybe with digis
-	BOOL	ARPVALID;				// NONZERO IF ADDRESS HAS BEEN RESOLVED
+	UCHAR	HWADDR[64];				/* ETHERNET/ax.25 ADDR, maybe with digis */
+	BOOL	ARPVALID;				/* NONZERO IF ADDRESS HAS BEEN RESOLVED */
 	uint32_t ARPTIMER;
-	UCHAR	ARPINTERFACE;			// Port to use. 0= NETROM, 0xff Ethernet
-	UCHAR	ARPTYPE;				// NETROM/VC/DG/ETH
-	BOOL	LOCKED;					// Locked entry from config file
-	struct _MESSAGE * ARP_Q;		// CHAIN OF DATAGRAMS WAITING FOR RESOLUTION
-	struct _ROUTEENTRY * ARPROUTE;	// Route Entry for this ARP entry
+	UCHAR	ARPINTERFACE;			/* Port to use. 0= NETROM, 0xff Ethernet */
+	UCHAR	ARPTYPE;				/* NETROM/VC/DG/ETH */
+	BOOL	LOCKED;					/* Locked entry from config file */
+	struct _MESSAGE * ARP_Q;		/* CHAIN OF DATAGRAMS WAITING FOR RESOLUTION */
+	struct _ROUTEENTRY * ARPROUTE;	/* Route Entry for this ARP entry */
  
 } ARPDATA, *PARPDATA;
 
 typedef struct _ROUTEENTRY
 {
-	uint32_t NETWORK;	// NETWORK 
-	uint32_t SUBNET;		// SUBNET MASK
-	uint32_t GATEWAY;	// GATEWAY IP ADDRESS
-	uint32_t Encap;		// Encap if a Tunnelled 44 address
-	int		FRAMECOUNT; // FRAMES SENT TO THIS NETWORK
-	UCHAR	TYPE;		// TYPE (NETROM/VC/DG/ETH)
-	UCHAR	METRIC;		// FOR RIP 
-	UCHAR	ROUTEINFO;  // TYPE (RIP44, LEARNED, SYSOP Config, ETC)
-	UCHAR	ROUTECHANGED;// CHANGED RECENTLY FLAG
-	int		RIPTIMOUT;  // FOR REMOVING ACTIVE ENTRIES
-	UCHAR	GARTIMOUT;  // FOR REMOVING DEAD ENTRIES
-	PARPDATA ARP;		// Pointer to ARP entry if resolved
+	uint32_t NETWORK;	/* NETWORK  */
+	uint32_t SUBNET;		/* SUBNET MASK */
+	uint32_t GATEWAY;	/* GATEWAY IP ADDRESS */
+	uint32_t Encap;		/* Encap if a Tunnelled 44 address */
+	int		FRAMECOUNT; /* FRAMES SENT TO THIS NETWORK */
+	UCHAR	TYPE;		/* TYPE (NETROM/VC/DG/ETH) */
+	UCHAR	METRIC;		/* FOR RIP  */
+	UCHAR	ROUTEINFO;  /* TYPE (RIP44, LEARNED, SYSOP Config, ETC) */
+	UCHAR	ROUTECHANGED;/* CHANGED RECENTLY FLAG */
+	int		RIPTIMOUT;  /* FOR REMOVING ACTIVE ENTRIES */
+	UCHAR	GARTIMOUT;  /* FOR REMOVING DEAD ENTRIES */
+	PARPDATA ARP;		/* Pointer to ARP entry if resolved */
 	BOOL	LOCKED;
-	struct sockaddr_in UDPADDR;	// Send Tunnelled packets over UDP
+	struct sockaddr_in UDPADDR;	/* Send Tunnelled packets over UDP */
 
 } ROUTEENTRY, *PROUTEENTRY;
 
@@ -163,7 +163,7 @@ struct map_table_entry
 	unsigned short mappedport;
 	unsigned char hostname[64];
 	unsigned int error;
-	BOOL ResolveFlag;			// True if need to resolve name
+	BOOL ResolveFlag;			/* True if need to resolve name */
 };
 
 struct nat_table_entry
@@ -172,7 +172,7 @@ struct nat_table_entry
 	unsigned short origport;
 	unsigned int mappedipaddr;
 	unsigned short mappedport;
-	BOOL ThisHost;				//	Needed by LinBPQ to direct host mesgs to TAP
+	BOOL ThisHost;				/*	Needed by LinBPQ to direct host mesgs to TAP */
 };
 
 struct ipv6_header
@@ -190,7 +190,7 @@ struct ipv6_header
 
 static HANDLE hInstance;
 
-//unsigned long _beginthread( void( *start_address )( void *), unsigned stack_size, char * arglist);
+/*unsigned long _beginthread( void( *start_address )( void *), unsigned stack_size, char * arglist); */
 
 Dll BOOL APIENTRY Init_IP();
 Dll BOOL APIENTRY Poll_IP();  

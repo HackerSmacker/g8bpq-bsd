@@ -17,11 +17,11 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-//	Version 409p March 2005 Allow Multidigit COM Ports
+/*	Version 409p March 2005 Allow Multidigit COM Ports */
 
-//  Version 410h Jan 2009 Changes for Win98 Virtual COM
-//		Open \\.\com instead of //./COM
-//		Extra Dignostics
+/*  Version 410h Jan 2009 Changes for Win98 Virtual COM */
+/*		Open \\.\com instead of //./COM */
+/*		Extra Dignostics */
 
 #define _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_DEPRECATE
@@ -45,8 +45,8 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 
 
 
-//#include <netax25/ttyutils.h>
-//#include <netax25/daemon.h>
+/*#include <netax25/ttyutils.h> */
+/*#include <netax25/daemon.h> */
 
 #ifdef MACBPQ
 #define NOI2C
@@ -70,12 +70,6 @@ int i2c_smbus_read_byte()
 #include "i2c-dev.h"
 #endif
 
-//#define I2C_TIMEOUT	0x0702	/* set timeout - call with int 		*/
-
-/* this is for i2c-dev.c	*/
-//#define I2C_SLAVE	0x0703	/* Change slave address			*/
-				/* Attn.: Slave address is 7 or 10 bits */
-
 #endif
 
 
@@ -89,21 +83,21 @@ int i2cPoll(struct PORTCONTROL * PORT, NPASYINFO npKISSINFO);
 #define TFEND 0xDC
 #define TFESC 0xDD
 
-#define STX	2			// NETROM CONTROL CODES
+#define STX	2			/* NETROM CONTROL CODES */
 #define ETX	3
 #define DLE	0x10
 
 #define CHECKSUM 1
-#define POLLINGKISS	2			// KISSFLAGS BITS
-#define ACKMODE	4				// CAN USE ACK REQURED FRAMES
-#define POLLEDKISS	8			// OTHER END IS POLLING US
-#define D700 16					// D700 Mode (Escape "C" chars
-#define TNCX 32					// TNC-X Mode (Checksum of ACKMODE frames includes ACK bytes
-#define PITNC 64				// PITNC Mode - can reset TNC with FEND 15 2
-#define NOPARAMS 128			// Don't send SETPARAMS frame
-#define FLDIGI 256				// Support FLDIGI COmmand Frames
-#define TRACKER 512				// SCS Tracker. Need to set KISS Mode 
-#define FASTI2C 1024			// Use BLocked I2C Reads (like ARDOP)
+#define POLLINGKISS	2			/* KISSFLAGS BITS */
+#define ACKMODE	4				/* CAN USE ACK REQURED FRAMES */
+#define POLLEDKISS	8			/* OTHER END IS POLLING US */
+#define D700 16					/* D700 Mode (Escape "C" chars */
+#define TNCX 32					/* TNC-X Mode (Checksum of ACKMODE frames includes ACK bytes */
+#define PITNC 64				/* PITNC Mode - can reset TNC with FEND 15 2 */
+#define NOPARAMS 128			/* Don't send SETPARAMS frame */
+#define FLDIGI 256				/* Support FLDIGI COmmand Frames */
+#define TRACKER 512				/* SCS Tracker. Need to set KISS Mode  */
+#define FASTI2C 1024			/* Use BLocked I2C Reads (like ARDOP) */
 #define DRATS 2048
 
 
@@ -122,9 +116,9 @@ extern struct PORTCONTROL * PORTTABLE;
 extern int	NUMBEROFPORTS;
 extern void * TRACE_Q;
 
-#define TICKS 10	// Ticks per sec
+#define TICKS 10	/* Ticks per sec */
 
-// temp for testing
+/* temp for testing */
 
 char lastblock[500];
 int lastcount;
@@ -138,7 +132,7 @@ int ASYSEND(struct PORTCONTROL * PortVector, char * buffer, int count)
 	if (Port == NULL)
 		return 0;
 
-	if (PortVector->PORTTYPE == 22)			// i2c
+	if (PortVector->PORTTYPE == 22)			/* i2c */
 	{
 #ifndef WIN32
 		int i = count;
@@ -149,7 +143,7 @@ int ASYSEND(struct PORTCONTROL * PortVector, char * buffer, int count)
 		memcpy(lastblock, buffer, count);
 		lastcount = count;
 
-//		Debugprintf ("i2c Send %d\r", count);
+/*		Debugprintf ("i2c Send %d\r", count); */
 
 
 		KISS->TXACTIVE = TRUE;
@@ -166,12 +160,12 @@ int ASYSEND(struct PORTCONTROL * PortVector, char * buffer, int count)
 			ptr++;
 		}
 
-//		Debugprintf ("i2c Send Complete\r");
+/*		Debugprintf ("i2c Send Complete\r"); */
 
 #endif
 		return 0;
 	}
-	else if (PortVector->PORTIPADDR.s_addr || PortVector->KISSSLAVE)		// KISS over UDP/TCP
+	else if (PortVector->PORTIPADDR.s_addr || PortVector->KISSSLAVE)		/* KISS over UDP/TCP */
 	{
 		if (PortVector->KISSTCP)
 		{
@@ -196,7 +190,7 @@ VOID EnableFLDIGIReports(struct PORTCONTROL * PORT)
 	*(ptr++) = FEND;
 	*(ptr++) = KISS->OURCTRL | 6;
 	ptr += sprintf(ptr, "%s", "TNC: MODEM: RSIDBCAST:ON TRXSBCAST:ON TXBEBCAST:ON");
-//	ptr += sprintf(ptr, "%s", "TNC");
+/*	ptr += sprintf(ptr, "%s", "TNC"); */
 	*(ptr++) = FEND;
 	
 	ASYSEND(PORT, Buffer, (int)(ptr - &Buffer[0]));
@@ -209,7 +203,7 @@ VOID ASYDISP(struct PORTCONTROL * PortVector)
 
 	if (PortVector->PORTIPADDR.s_addr  || PortVector->KISSTCP)
 
-		// KISS over UDP
+		/* KISS over UDP */
 
 		if (PortVector->KISSTCP)
 			sprintf(Msg,"TCPKISS IP %s Port %d Chan %c \n",
@@ -235,7 +229,7 @@ int	ASYINIT(int comport, int speed, struct PORTCONTROL * PortVector, char Channe
 	NPASYINFO npKISSINFO;
 	int BPQPort = PortVector->PORTNUMBER;
 
-	if (PortVector->PORTTYPE == 22)			// i2c
+	if (PortVector->PORTTYPE == 22)			/* i2c */
 	{
 #ifdef WIN32
 
@@ -255,7 +249,7 @@ int	ASYINIT(int comport, int speed, struct PORTCONTROL * PortVector, char Channe
 		int fd;
 		int retval;
 
-		PortVector->KISSFLAGS |= CHECKSUM | TNCX;		// i2c TNCs need checksum and TNCX Mode
+		PortVector->KISSFLAGS |= CHECKSUM | TNCX;		/* i2c TNCs need checksum and TNCX Mode */
 
 		sprintf(Msg,"I2C Bus %d Addr %d Chan %c ", PortVector->INTLEVEL, comport, Channel);
 		WritetoConsoleLocal(Msg);
@@ -270,7 +264,7 @@ int	ASYINIT(int comport, int speed, struct PORTCONTROL * PortVector, char Channe
 		npKISSINFO->RXBPTR=&npKISSINFO->RXBUFFER[0]; 
 		npKISSINFO->RXMPTR=&npKISSINFO->RXMSG[0];
 
-		// Open and configure the i2c interface
+		/* Open and configure the i2c interface */
 		
 		sprintf(i2cname, "/dev/i2c-%d", PortVector->INTLEVEL);
                          
@@ -284,7 +278,7 @@ int	ASYINIT(int comport, int speed, struct PORTCONTROL * PortVector, char Channe
 			if(retval == -1)
 				printf("Cannot open i2c device %x\n", comport);
  
- 			ioctl(fd,  I2C_TIMEOUT, 10);	// 100 mS
+ 			ioctl(fd,  I2C_TIMEOUT, 10);	/* 100 mS */
 		}
 
 		npKISSINFO->idComDev = fd;
@@ -292,7 +286,7 @@ int	ASYINIT(int comport, int speed, struct PORTCONTROL * PortVector, char Channe
 		if (PortVector->KISSFLAGS & PITNC)
 		{
 
-			// Reset the TNC and wait for completion
+			/* Reset the TNC and wait for completion */
 	
 			retval = i2c_smbus_write_byte(fd, FEND);		
 			retval = i2c_smbus_write_byte(fd, 15);
@@ -318,7 +312,7 @@ int	ASYINIT(int comport, int speed, struct PORTCONTROL * PortVector, char Channe
 		struct sockaddr_in sinx;
 
 
-		// KISS over UDP or TCP
+		/* KISS over UDP or TCP */
 
 		if (PortVector->ListenPort == 0)
 			PortVector->ListenPort = PortVector->IOBASE;
@@ -352,7 +346,7 @@ int	ASYINIT(int comport, int speed, struct PORTCONTROL * PortVector, char Channe
 		{
 			if (PortVector->KISSSLAVE)
 			{
-				// Bind and Listen
+				/* Bind and Listen */
 
 				npKISSINFO->sock = sock = socket(AF_INET,SOCK_STREAM,0);
 				ioctl(sock, FIONBIO, &param);
@@ -363,7 +357,7 @@ int	ASYINIT(int comport, int speed, struct PORTCONTROL * PortVector, char Channe
 
 				if (bind(sock, (struct sockaddr *) &sinx, sizeof(sinx)) != 0 )
 				{
-					//	Bind Failed
+					/*	Bind Failed */
 
 					int err = WSAGetLastError();
 					Consoleprintf("Bind Failed for KISS TCP port %d - error code = %d", PortVector->ListenPort, err);
@@ -397,7 +391,7 @@ int	ASYINIT(int comport, int speed, struct PORTCONTROL * PortVector, char Channe
 
 			if (bind(sock, (struct sockaddr *) &sinx, sizeof(sinx)) != 0 )
 			{
-				//	Bind Failed
+				/*	Bind Failed */
 
 				int err = WSAGetLastError();
 				Consoleprintf("Bind Failed for UDP port %d - error code = %d", PortVector->ListenPort, err);
@@ -408,12 +402,12 @@ int	ASYINIT(int comport, int speed, struct PORTCONTROL * PortVector, char Channe
 	else
 	{
 		if (PortVector->SerialPortName)
-			if (PortVector->PROTOCOL == 2)		// NETROM
+			if (PortVector->PROTOCOL == 2)		/* NETROM */
 				sprintf(Msg,"ASYNC(NETROM) %s Chan %c ", PortVector->SerialPortName, Channel);
 			else
 				sprintf(Msg,"ASYNC %s Chan %c ", PortVector->SerialPortName, Channel);
 		else
-			if (PortVector->PROTOCOL == 2)		// NETROM
+			if (PortVector->PROTOCOL == 2)		/* NETROM */
 				sprintf(Msg,"ASYNC(NETROM) COM%d Chan %c ", comport, Channel);
 			else
 				sprintf(Msg,"ASYNC COM%d Chan %c ", comport, Channel);
@@ -448,7 +442,7 @@ NPASYINFO CreateKISSINFO( int port,int speed )
    if (NULL == (npKISSINFO = (NPASYINFO) zalloc(sizeof(ASYINFO))))
       return (NPASYINFO)0;
 
-   // initialize TTY info structure
+   /* initialize TTY info structure */
 
 	npKISSINFO->idComDev = 0 ;
 	npKISSINFO->bPort = port;
@@ -480,20 +474,20 @@ HANDLE OpenConnection(struct PORTCONTROL * PortVector)
 
 	if (PortVector->KISSFLAGS & PITNC)
 	{
-		// RFM22/23 module  or TNC-PI- send a reset
+		/* RFM22/23 module  or TNC-PI- send a reset */
 
 		ENCBUFF[0] = FEND;
-		ENCBUFF[1] = KISS->OURCTRL | 15;	// Action command
-		ENCBUFF[2] = 2;						// Reset command
+		ENCBUFF[1] = KISS->OURCTRL | 15;	/* Action command */
+		ENCBUFF[2] = 2;						/* Reset command */
 
 		ASYSEND(PortVector, ENCBUFF, 3);
 	}
 
 	if (PortVector->KISSFLAGS & TRACKER)
 	{
-		// SCS Tracker - Send Enter KISS (CAN)(ESC)@K(CR)
+		/* SCS Tracker - Send Enter KISS (CAN)(ESC)@K(CR) */
 
-		memcpy(ENCBUFF, "\x18\x1b@K\r", 5);	// Enter KISS
+		memcpy(ENCBUFF, "\x18\x1b@K\r", 5);	/* Enter KISS */
 
 		ASYSEND(PortVector, ENCBUFF, 5);
 	}
@@ -511,11 +505,11 @@ int ReadCommBlock(NPASYINFO npKISSINFO, char * lpszBlock, int nMaxLength )
 	
 	if (npKISSINFO->idComDev == 0 && npKISSINFO->Portvector->PortStopped == FALSE)
 	{
-		// Try to reopen port every 30 secs
+		/* Try to reopen port every 30 secs */
 
 		npKISSINFO->ReopenTimer++;
 
-		if (npKISSINFO->ReopenTimer > 300)	// about 30 secs
+		if (npKISSINFO->ReopenTimer > 300)	/* about 30 secs */
 		{
 			npKISSINFO->idComDev = OpenConnection(npKISSINFO->Portvector);
 			npKISSINFO->ReopenTimer = 0;
@@ -531,7 +525,7 @@ int ReadCommBlock(NPASYINFO npKISSINFO, char * lpszBlock, int nMaxLength )
 	{
 		CloseKISSPort(npKISSINFO->Portvector);
 		Debugprintf("Port %d Kiss Read Error", npKISSINFO->bPort);	
-		npKISSINFO->ReopenTimer = 250;  // first try in 5 secs
+		npKISSINFO->ReopenTimer = 250;  /* first try in 5 secs */
 		return 0;
 	}
 
@@ -559,7 +553,7 @@ VOID KISSCLOSE(struct PORTCONTROL * PortVector)
 	{
 		if (PortVector->KISSFLAGS & TRACKER)
 		{
-			// SCS Tracker - Send Enter KISS (CAN)(ESC)@K(CR)
+			/* SCS Tracker - Send Enter KISS (CAN)(ESC)@K(CR) */
 
 			struct KISSINFO * KISS = (struct KISSINFO *) PortVector;
 
@@ -579,7 +573,7 @@ VOID KISSCLOSE(struct PORTCONTROL * PortVector)
 }
 VOID CloseKISSPort(struct PORTCONTROL * PortVector)
 {
-	// Just close the device - leave rest of info intact
+	/* Just close the device - leave rest of info intact */
 
 	NPASYINFO Port = KISSInfo[PortVector->PORTNUMBER];
 
@@ -600,9 +594,9 @@ static void CheckReceivedData(struct PORTCONTROL * PORT, NPASYINFO npKISSINFO)
 
 	if (npKISSINFO->RXBCOUNT == 0)
 	{	
-		//	Check com buffer
+		/*	Check com buffer */
 
-		if (PORT->PORTTYPE == 22)			// i2c
+		if (PORT->PORTTYPE == 22)			/* i2c */
 		{
 #ifndef WIN32
 			nLength = i2cPoll(PORT, npKISSINFO);
@@ -610,7 +604,7 @@ static void CheckReceivedData(struct PORTCONTROL * PORT, NPASYINFO npKISSINFO)
 			nLength = 0;
 #endif
 		}
-		else if (PORT->PORTIPADDR.s_addr || PORT->KISSSLAVE)		// KISS over UDP
+		else if (PORT->PORTIPADDR.s_addr || PORT->KISSSLAVE)		/* KISS over UDP */
 		{
 			if (PORT->KISSTCP)
 			{
@@ -626,8 +620,8 @@ static void CheckReceivedData(struct PORTCONTROL * PORT, NPASYINFO npKISSINFO)
 				if (nLength < 0)
 				{
 					int err = WSAGetLastError();
-		//			if (err != 11)
-		//				printf("KISS Error %d %d\n", nLength, err);
+		/*			if (err != 11) */
+		/*				printf("KISS Error %d %d\n", nLength, err); */
 					nLength = 0;
 				}
 			}
@@ -648,20 +642,20 @@ static void CheckReceivedData(struct PORTCONTROL * PORT, NPASYINFO npKISSINFO)
 
 		c = *(npKISSINFO->RXBPTR++);
 
-		if (PORT->PROTOCOL == 2)			// NETROM
+		if (PORT->PROTOCOL == 2)			/* NETROM */
 		{
-			if (npKISSINFO->NEEDCRC)		//Looking for CRC following ETX
+			if (npKISSINFO->NEEDCRC)		/*Looking for CRC following ETX */
 			{
 				npKISSINFO->MSGREADY = TRUE;
 				npKISSINFO->NEEDCRC = FALSE;
-				*(npKISSINFO->RXMPTR++) = c;	// Save CRC
+				*(npKISSINFO->RXMPTR++) = c;	/* Save CRC */
 				break;
 			}
 
 			if (npKISSINFO->ESCFLAG)
 			{
-				//
-				//	DLE received - next should be DLE, STXor ETX, but we just pass on
+				/* */
+				/*	DLE received - next should be DLE, STXor ETX, but we just pass on */
 
 				npKISSINFO->ESCFLAG = FALSE;
 				*(npKISSINFO->RXMPTR++) = c;
@@ -669,7 +663,7 @@ static void CheckReceivedData(struct PORTCONTROL * PORT, NPASYINFO npKISSINFO)
 			}
 			else
 			{
-				// see if DLE, if so set ESCFLAG and ignore
+				/* see if DLE, if so set ESCFLAG and ignore */
 		
 				if (c == DLE)
 				{
@@ -682,7 +676,7 @@ static void CheckReceivedData(struct PORTCONTROL * PORT, NPASYINFO npKISSINFO)
 			{
 			case STX:
 			
-				npKISSINFO->RXMPTR = (UCHAR *)&npKISSINFO->RXMSG; // Reset buffer
+				npKISSINFO->RXMPTR = (UCHAR *)&npKISSINFO->RXMSG; /* Reset buffer */
 				break;
 
 			case ETX:
@@ -697,8 +691,8 @@ static void CheckReceivedData(struct PORTCONTROL * PORT, NPASYINFO npKISSINFO)
 
 		if (npKISSINFO->ESCFLAG)
 		{
-			//
-			//	FESC received - next should be TFESC or TFEND
+			/* */
+			/*	FESC received - next should be TFESC or TFEND */
 
 			npKISSINFO->ESCFLAG = FALSE;
 
@@ -715,18 +709,18 @@ static void CheckReceivedData(struct PORTCONTROL * PORT, NPASYINFO npKISSINFO)
 			{
 			case FEND:		
 	
-				//
-				//	Either start of message or message complete
-				//
+				/* */
+				/*	Either start of message or message complete */
+				/* */
 				
 				if (npKISSINFO->RXMPTR == (UCHAR *)&npKISSINFO->RXMSG)
 				{
 					struct KISSINFO * KISS = (struct KISSINFO *)PORT;
 
-					// Start of Message. If polling, extend timeout
+					/* Start of Message. If polling, extend timeout */
 
 					if (PORT->KISSFLAGS & POLLINGKISS)
-						KISS->POLLFLAG = 5*TICKS;		// 5 SECS - SHOULD BE PLENTY
+						KISS->POLLFLAG = 5*TICKS;		/* 5 SECS - SHOULD BE PLENTY */
 
 					continue;
 				}
@@ -742,13 +736,13 @@ static void CheckReceivedData(struct PORTCONTROL * PORT, NPASYINFO npKISSINFO)
 			}
 		}
 		
-		//
-		//	Ok, a normal char
-		//
+		/* */
+		/*	Ok, a normal char */
+		/* */
 
 		*(npKISSINFO->RXMPTR++) = c;
 
-		// if control byte, and equal to 0x0e, must set ready - poll responses dont have a trailing fend
+		/* if control byte, and equal to 0x0e, must set ready - poll responses dont have a trailing fend */
 
 		if (((c & 0x0f) == 0x0e) && npKISSINFO->RXMPTR - (UCHAR *)&npKISSINFO->RXMSG == 1)
 		{
@@ -763,7 +757,7 @@ static void CheckReceivedData(struct PORTCONTROL * PORT, NPASYINFO npKISSINFO)
  	return;
 }
 
-// Code moved from KISSASM
+/* Code moved from KISSASM */
 	
 unsigned short CRCTAB[256] = {
 	0x0000, 0x1189, 0x2312, 0x329b, 0x4624, 0x57ad, 0x6536, 0x74bf, 
@@ -807,38 +801,38 @@ VOID KISSINIT(struct KISSINFO * KISS)
 	PORTCONTROLX * PORT = (struct PORTCONTROL *)KISS;
 	struct KISSINFO * FIRSTCHAN = NULL;
 
-	PORT->PORTINTERLOCK = 0;	// CANT USE INTERLOCK ON KISS
+	PORT->PORTINTERLOCK = 0;	/* CANT USE INTERLOCK ON KISS */
 
 	if (PORT->CHANNELNUM == 0)
 		PORT->CHANNELNUM = 'A';
 
-	FIRSTCHAN = (struct KISSINFO *)CHECKIOADDR(PORT);	// IF ANOTHER ENTRY FOR THIS ADDR
-								// MAY BE CHANGED IN ANOTHER CHANNEL USED
+	FIRSTCHAN = (struct KISSINFO *)CHECKIOADDR(PORT);	/* IF ANOTHER ENTRY FOR THIS ADDR */
+								/* MAY BE CHANGED IN ANOTHER CHANNEL USED */
 
-	KISS->OURCTRL = (PORT->CHANNELNUM - 'A') << 4;	// KISS CONTROL
+	KISS->OURCTRL = (PORT->CHANNELNUM - 'A') << 4;	/* KISS CONTROL */
 
 	if (FIRSTCHAN)
 	{
-		//	THIS IS NOT THE FIRST PORT ON THIS I/O ADDR - WE MUST BE USING
-		//	AN ADDRESSABLE PROTOCOL - IE KISS AS DEFINED FOR KPC4 ETC
+		/*	THIS IS NOT THE FIRST PORT ON THIS I/O ADDR - WE MUST BE USING */
+		/*	AN ADDRESSABLE PROTOCOL - IE KISS AS DEFINED FOR KPC4 ETC */
 
- 		KISS->FIRSTPORT = FIRSTCHAN;		// QUEUE TX FRAMES ON FIRST
+ 		KISS->FIRSTPORT = FIRSTCHAN;		/* QUEUE TX FRAMES ON FIRST */
 	
-		//	SET UP SUBCHANNEL CHAIN - ALL PORTS FOR THIS IO ADDR ARE CHAINED
+		/*	SET UP SUBCHANNEL CHAIN - ALL PORTS FOR THIS IO ADDR ARE CHAINED */
 
 		while (FIRSTCHAN->SUBCHAIN)
 		{
 			FIRSTCHAN = FIRSTCHAN->SUBCHAIN;
 		}
 
-		FIRSTCHAN->SUBCHAIN = KISS;		// PUT OURS ON END
+		FIRSTCHAN->SUBCHAIN = KISS;		/* PUT OURS ON END */
 		INITCOMMON(KISS);
 		ASYDISP(PORT);
 	}
 	else
 		INITCOM(KISS);
 			
-	//	Display to Console
+	/*	Display to Console */
 		
 }
 
@@ -846,14 +840,14 @@ VOID INITCOM(struct KISSINFO * KISS)
 {
 	struct PORTCONTROL * PORT = (struct PORTCONTROL *)KISS;
 
-	//	FIRST PORT USING THIS IO ADDRESS
+	/*	FIRST PORT USING THIS IO ADDRESS */
 
 	KISS->FIRSTPORT = KISS;
-	KISS->POLLPOINTER = KISS;	// SET FIRST PORT TO POLL
+	KISS->POLLPOINTER = KISS;	/* SET FIRST PORT TO POLL */
 
-	INITCOMMON(KISS);			// SET UP THE PORT
+	INITCOMMON(KISS);			/* SET UP THE PORT */
 
-	//	ATTACH WIN32 ASYNC DRIVER
+	/*	ATTACH WIN32 ASYNC DRIVER */
 
 	ASYINIT(PORT->IOBASE, PORT->BAUDRATE, PORT, PORT->CHANNELNUM);
 
@@ -864,38 +858,38 @@ VOID INITCOM(struct KISSINFO * KISS)
 }
 
 
-//struct PORTCONTROL * CHECKIOADDR(struct PORTCONTROL * OURPORT)
+/*struct PORTCONTROL * CHECKIOADDR(struct PORTCONTROL * OURPORT) */
 struct PORTCONTROL * CHECKIOADDR(struct PORTCONTROL * OURPORT)
 {
-	//	SEE IF ANOTHER PORT IS ALREADY DEFINED ON THIS CARD
+	/*	SEE IF ANOTHER PORT IS ALREADY DEFINED ON THIS CARD */
 
 	struct PORTCONTROL * PORT = PORTTABLE;
 	int n = NUMBEROFPORTS;
 
 	while (n--)
 	{
-		if (PORT == OURPORT)		// NONE BEFORE OURS
-			return NULL;		// None before us
+		if (PORT == OURPORT)		/* NONE BEFORE OURS */
+			return NULL;		/* None before us */
 	
-		if (PORT->PORTTYPE > 12)		// INTERNAL or EXTERNAL?
+		if (PORT->PORTTYPE > 12)		/* INTERNAL or EXTERNAL? */
 		{
-			PORT = PORT->PORTPOINTER;	// YES, SO IGNORE
+			PORT = PORT->PORTPOINTER;	/* YES, SO IGNORE */
 			continue;
 		}
 
 		if (OURPORT->SerialPortName && strcmp(OURPORT->SerialPortName, "NOPORT") != 0)
 		{
-			// We are using a name
+			/* We are using a name */
 			
 			if (PORT->SerialPortName && strcmp(PORT->SerialPortName, OURPORT->SerialPortName) == 0)
 				return PORT;
 		}
 		else
 		{
-			// Using numbers not names
+			/* Using numbers not names */
 
 			if (PORT->IOBASE == OURPORT->IOBASE && memcmp (&PORT->PORTIPADDR, &OURPORT->PORTIPADDR, sizeof(PORT->PORTIPADDR)) == 0)
-				return PORT;			// ANOTHER FOR SAME ADDRESS
+				return PORT;			/* ANOTHER FOR SAME ADDRESS */
 		}
 
 		PORT = PORT->PORTPOINTER;	
@@ -908,21 +902,21 @@ VOID INITCOMMON(struct KISSINFO * KISS)
 {
 	struct PORTCONTROL * PORT = (struct PORTCONTROL *)KISS;
 
-	if (PORT->PROTOCOL == 2)	// NETROM?
+	if (PORT->PROTOCOL == 2)	/* NETROM? */
 	{
-		PORT->KISSFLAGS = 0;	//	CLEAR KISS OPTIONS, JUST IN CASE!
+		PORT->KISSFLAGS = 0;	/*	CLEAR KISS OPTIONS, JUST IN CASE! */
 
-//	CMP	FULLDUPLEX[EBX],1	; NETROM DROPS RTS TO INHIBIT!	
-//	JE SHORT NEEDRTS
-//
-//	MOV	AL,9			; OUT2 DTR
+/*	CMP	FULLDUPLEX[EBX],1	; NETROM DROPS RTS TO INHIBIT!	 */
+/*	JE SHORT NEEDRTS */
+/* */
+/*	MOV	AL,9			; OUT2 DTR */
 	}
 
-//	IF KISS, SET TIMER TO SEND KISS PARAMS
+/*	IF KISS, SET TIMER TO SEND KISS PARAMS */
 
-	if (PORT->PROTOCOL != 2)	// NETROM?
+	if (PORT->PROTOCOL != 2)	/* NETROM? */
 		if ((PORT->KISSFLAGS & NOPARAMS) == 0)
-			PORT->PARAMTIMER = TICKS*30	; //30 SECS FOR TESTING
+			PORT->PARAMTIMER = TICKS*30	; /*30 SECS FOR TESTING */
 
 }
 
@@ -930,14 +924,14 @@ VOID KISSTX(struct KISSINFO * KISS, PMESSAGE Buffer)
 {
 	struct PORTCONTROL * PORT = (struct PORTCONTROL *)KISS;
 
-	//	START TRANSMISSION
+	/*	START TRANSMISSION */
 
 
-	KISS = KISS->FIRSTPORT;		// ALL FRAMES GO ON SAME Q
+	KISS = KISS->FIRSTPORT;		/* ALL FRAMES GO ON SAME Q */
 
 	if ((PORT->KISSFLAGS & POLLEDKISS) || KISS->KISSTX_Q || KISS->FIRSTPORT->POLLFLAG || KISS->TXACTIVE)
 	{
-		// POLLED or ALREADY SOMETHING QUEUED or POLL OUTSTANDING - MUST QUEUE
+		/* POLLED or ALREADY SOMETHING QUEUED or POLL OUTSTANDING - MUST QUEUE */
 
 		C_Q_ADD(&KISS->KISSTX_Q, Buffer);
 		return;
@@ -1005,9 +999,9 @@ VOID SENDFRAME(struct KISSINFO * KISS, PMESSAGE Buffer)
 	char * ptr1, * ptr2;
 	int Len;
 
-	//	GET REAL PORT TABLE ENTRY - IF MULTIPORT, FRAME IS QUEUED ON FIRST
+	/*	GET REAL PORT TABLE ENTRY - IF MULTIPORT, FRAME IS QUEUED ON FIRST */
 
-	if (PORT->PROTOCOL == 2)			// NETROM
+	if (PORT->PROTOCOL == 2)			/* NETROM */
 	{
 		UCHAR TXCCC = 0;
 
@@ -1043,11 +1037,11 @@ VOID SENDFRAME(struct KISSINFO * KISS, PMESSAGE Buffer)
 			}
 		}
 
-		(*ptr2++) = ETX;		// NETROM has CRC after ETX
+		(*ptr2++) = ETX;		/* NETROM has CRC after ETX */
 		(*ptr2++) = TXCCC;
 
 		ASYSEND(PORT, ENCBUFF, (int)(ptr2 - (char *)ENCBUFF));
-//		Debugprintf("NETROM TX Len %d CRC %d", ptr2 - (char *)ENCBUFF, TXCCC); 
+/*		Debugprintf("NETROM TX Len %d CRC %d", ptr2 - (char *)ENCBUFF, TXCCC);  */
 
 		C_Q_ADD(&TRACE_Q, Buffer);
 		return;
@@ -1066,7 +1060,7 @@ VOID SENDFRAME(struct KISSINFO * KISS, PMESSAGE Buffer)
 		}
 	}
 
-	//	Encode frame
+	/*	Encode frame */
 
 	ptr1 = &Message->DEST[0];
 	Len = Message->LENGTH - (3 + sizeof(void *));
@@ -1076,26 +1070,26 @@ VOID SENDFRAME(struct KISSINFO * KISS, PMESSAGE Buffer)
 
 	KISS->TXCCC = 0;
 
-	//	See if ACKMODE needed
+	/*	See if ACKMODE needed */
 	
-	// Make sure we look on correct port if a subport
+	/* Make sure we look on correct port if a subport */
 
 	if (KISS->PORT.KISSFLAGS & ACKMODE)
 	{
-		if (Buffer->Linkptr)					// Frame Needs ACK
+		if (Buffer->Linkptr)					/* Frame Needs ACK */
 		{
 			UINT ACKWORD = (UINT)(Buffer->Linkptr - LINKS);
-			ENCBUFF[1] |= 0x0c;			// ACK OPCODE 
+			ENCBUFF[1] |= 0x0c;			/* ACK OPCODE  */
 			ENCBUFF[2] = ACKWORD & 0xff;
 			ENCBUFF[3] = (ACKWORD >> 8) &0xff;
 
-			// have to reset flag so trace doesnt clear it
+			/* have to reset flag so trace doesnt clear it */
 
 			Buffer->Linkptr = 0;
 
 			if (KISS->PORT.KISSFLAGS & TNCX)
 			{
-				// Include ACK bytes in Checksum
+				/* Include ACK bytes in Checksum */
 
 				KISS->TXCCC ^= ENCBUFF[2];
 				KISS->TXCCC ^= ENCBUFF[3];
@@ -1133,7 +1127,7 @@ VOID SENDFRAME(struct KISSINFO * KISS, PMESSAGE Buffer)
 				break;
 			}
 
-			// Drop through
+			/* Drop through */
 
 		default:
 
@@ -1141,15 +1135,15 @@ VOID SENDFRAME(struct KISSINFO * KISS, PMESSAGE Buffer)
 		}
 	}
 
-	// If using checksum, send it
+	/* If using checksum, send it */
 
 	if (KISS->PORT.KISSFLAGS & CHECKSUM)
 	{
 		c = (UCHAR)KISS->TXCCC;
 
-		// On TNC-X based boards, it is difficult to cope with an encoded CRC, so if
-		// CRC is FEND, send it as 0xc1. This means we have to accept 00 or 01 as valid.
-		// which is a slight loss in robustness
+		/* On TNC-X based boards, it is difficult to cope with an encoded CRC, so if */
+		/* CRC is FEND, send it as 0xc1. This means we have to accept 00 or 01 as valid. */
+		/* which is a slight loss in robustness */
 
 		if (c == FEND && (PORT->KISSFLAGS & TNCX))
 		{	
@@ -1179,7 +1173,7 @@ VOID SENDFRAME(struct KISSINFO * KISS, PMESSAGE Buffer)
 
 	ASYSEND(PORT, ENCBUFF, (int)(ptr2 - (char *)ENCBUFF));
 
-	// Pass buffer to trace routines
+	/* Pass buffer to trace routines */
 
 	C_Q_ADD(&TRACE_Q, Buffer);
 }
@@ -1190,7 +1184,7 @@ VOID KISSTIMER(struct KISSINFO * KISS)
 	struct PORTCONTROL * PORT = (struct PORTCONTROL *)KISS;
 	PMESSAGE Buffer;
 
-	//	SEE IF TIME TO REFRESH KISS PARAMS
+	/*	SEE IF TIME TO REFRESH KISS PARAMS */
 
 	if (((PORT->KISSFLAGS & (POLLEDKISS | NOPARAMS)) == 0) && PORT->PROTOCOL != 2)
 	{
@@ -1198,7 +1192,7 @@ VOID KISSTIMER(struct KISSINFO * KISS)
 		
 		if (PORT->PARAMTIMER == 0)
 		{
-			//	QUEUE A 'SET PARAMS' FRAME
+			/*	QUEUE A 'SET PARAMS' FRAME */
 	
 			if (PORT->PORTDISABLED == 0)
 			{
@@ -1229,31 +1223,31 @@ VOID KISSTIMER(struct KISSINFO * KISS)
 				*(ptr++) = PORT->FULLDUPLEX;
 				*(ptr++) = FEND;
 	
-				PORT = (struct PORTCONTROL *)KISS->FIRSTPORT;			// ALL FRAMES GO ON SAME Q
+				PORT = (struct PORTCONTROL *)KISS->FIRSTPORT;			/* ALL FRAMES GO ON SAME Q */
 
 				ASYSEND(PORT, ENCBUFF, (int)(ptr - &ENCBUFF[0]));
 			}
-			KISS->PORT.PARAMTIMER = TICKS*60*5;		// 5 MINS
+			KISS->PORT.PARAMTIMER = TICKS*60*5;		/* 5 MINS */
 		}
 	}
 
-	//	IF FRAMES QUEUED, AND NOT SENDING, START
+	/*	IF FRAMES QUEUED, AND NOT SENDING, START */
 
-	if (KISS == KISS->FIRSTPORT)					// ALL FRAMES GO ON SAME Q
+	if (KISS == KISS->FIRSTPORT)					/* ALL FRAMES GO ON SAME Q */
 	{
-		//	SEE IF POLL HAS TIMED OUT
+		/*	SEE IF POLL HAS TIMED OUT */
 
 		if (PORT->KISSFLAGS & POLLINGKISS)
 		{
-			if (KISS->POLLFLAG)			// TIMING OUT OR RECEIVING
+			if (KISS->POLLFLAG)			/* TIMING OUT OR RECEIVING */
 			{
 				KISS->POLLFLAG--;
 
 				if (KISS->POLLFLAG == 0)
 				{
-					//	POLL HAS TIMED OUT - MAY NEED TO DO SOMETHING
+					/*	POLL HAS TIMED OUT - MAY NEED TO DO SOMETHING */
 
-					KISS->POLLPOINTER->PORT.L2URUNC++;	// PUT IN UNDERRUNS FIELD
+					KISS->POLLPOINTER->PORT.L2URUNC++;	/* PUT IN UNDERRUNS FIELD */
 				}
 			}
 		}
@@ -1270,52 +1264,52 @@ VOID KISSTIMER(struct KISSINFO * KISS)
 */
 
 
-//	SEE IF ANYTHING TO SEND
+/*	SEE IF ANYTHING TO SEND */
 
 	if ((PORT->KISSFLAGS & POLLEDKISS) == 0 || KISS->POLLED)
 	{
-		// OK to Send
+		/* OK to Send */
 
 		if (KISS->KISSTX_Q)
 		{
-			//	IF NETROM MODE AND NOT FULL DUP, CHECK DCD
+			/*	IF NETROM MODE AND NOT FULL DUP, CHECK DCD */
 
 			KISS->POLLED = 0;
 			
-			//CMP	PROTOCOL[EBX],2		; NETROM?
-			//JNE SHORT DONTCHECKDCD_1
+			/*CMP	PROTOCOL[EBX],2		; NETROM? */
+			/*JNE SHORT DONTCHECKDCD_1 */
 
-			//CMP	FULLDUPLEX[EBX],1
-			//JE SHORT DONTCHECKDCD_1
-			//TEST	AL,CTSBIT		; DCD HIGH?
-			//	JZ SHORT NOTHINGTOSEND		; NO, SO WAIT
+			/*CMP	FULLDUPLEX[EBX],1 */
+			/*JE SHORT DONTCHECKDCD_1 */
+			/*TEST	AL,CTSBIT		; DCD HIGH? */
+			/*	JZ SHORT NOTHINGTOSEND		; NO, SO WAIT */
 
-			//	DROP RTS TO LOCK OUT OTHERS
+			/*	DROP RTS TO LOCK OUT OTHERS */
 
-			//	MOV	DX,MCR[EBX]
-			//	MOV	AL,09H			; DTR OUT2
+			/*	MOV	DX,MCR[EBX] */
+			/*	MOV	AL,09H			; DTR OUT2 */
 
-			//	OUT	DX,AL
+			/*	OUT	DX,AL */
 
 
-			//	MAKE SURE CTS IS STILL ACTIVE - IF NOT, WE HAVE A COLLISION,
-			//	SO RELEASE RTS AND WAIT
+			/*	MAKE SURE CTS IS STILL ACTIVE - IF NOT, WE HAVE A COLLISION, */
+			/*	SO RELEASE RTS AND WAIT */
 
-			//	DELAY
+			/*	DELAY */
 
-			//	MOV	DX,MSR[EBX]
-			//	IN	AL,DX
-			//	TEST	AL,CTSBIT
-			//	JNZ SHORT TIMERSEND		; STILL HIGH, SO CAN SEND
+			/*	MOV	DX,MSR[EBX] */
+			/*	IN	AL,DX */
+			/*	TEST	AL,CTSBIT */
+			/*	JNZ SHORT TIMERSEND		; STILL HIGH, SO CAN SEND */
 
-			//	RAISE RTS AGAIN, AND WAIT A BIT MORE
+			/*	RAISE RTS AGAIN, AND WAIT A BIT MORE */
 
-			//	DELAY
+			/*	DELAY */
 	
-			//MOV	DX,MCR[EBX]
-			//	MOV	AL,0BH			; RTS DTR OUT2
+			/*MOV	DX,MCR[EBX] */
+			/*	MOV	AL,0BH			; RTS DTR OUT2 */
 
-			//	OUT	DX,AL
+			/*	OUT	DX,AL */
 
 	
 			Buffer = Q_REM(&KISS->KISSTX_Q);
@@ -1324,27 +1318,27 @@ VOID KISSTIMER(struct KISSINFO * KISS)
 		}
 	}
 
-	// Nothing to send. IF POLLED MODE, SEND A POLL TO NEXT PORT
+	/* Nothing to send. IF POLLED MODE, SEND A POLL TO NEXT PORT */
 
 	if ((PORT->KISSFLAGS & POLLINGKISS) && KISS->FIRSTPORT->POLLFLAG == 0)
 	{
 		struct KISSINFO * POLLTHISONE;
 
-		KISS = KISS->FIRSTPORT;	// POLLPOINTER is in first port
+		KISS = KISS->FIRSTPORT;	/* POLLPOINTER is in first port */
 
-		//	FIND WHICH CHANNEL TO POLL NEXT
+		/*	FIND WHICH CHANNEL TO POLL NEXT */
 
-		POLLTHISONE = KISS->POLLPOINTER->SUBCHAIN;	// Next to poll
+		POLLTHISONE = KISS->POLLPOINTER->SUBCHAIN;	/* Next to poll */
 		
 		if (POLLTHISONE == NULL)
-			POLLTHISONE = KISS;			// Back to start
+			POLLTHISONE = KISS;			/* Back to start */
 	
-		KISS->POLLPOINTER = POLLTHISONE;	// FOR NEXT TIME
+		KISS->POLLPOINTER = POLLTHISONE;	/* FOR NEXT TIME */
 
-		KISS->POLLFLAG = TICKS / 2;			// ALLOW 1/3 SEC 
+		KISS->POLLFLAG = TICKS / 2;			/* ALLOW 1/3 SEC  */
 
 		ENCBUFF[0] = FEND;
-		ENCBUFF[1] = POLLTHISONE->OURCTRL | 0x0e;	// Poll
+		ENCBUFF[1] = POLLTHISONE->OURCTRL | 0x0e;	/* Poll */
 		ENCBUFF[2] = FEND;
 
 		ASYSEND((struct PORTCONTROL *)KISS, ENCBUFF, 3);
@@ -1359,7 +1353,7 @@ int KISSRX(struct KISSINFO * KISS)
 	PMESSAGE Buffer;
 	int len;
 	NPASYINFO Port = KISSInfo[PORT->PORTNUMBER];
-	struct KISSINFO * SAVEKISS = KISS;		// Save so we can restore at SeeifMode
+	struct KISSINFO * SAVEKISS = KISS;		/* Save so we can restore at SeeifMode */
 
 	if (Port == NULL)
 		return 0;
@@ -1369,24 +1363,24 @@ SeeifMore:
 	KISS = SAVEKISS;
 
 	if (KISS == 0)
-		return 0;								// Just in case
+		return 0;								/* Just in case */
 
 	if (!Port->MSGREADY)
-		CheckReceivedData(PORT, Port);		// Look for data in RXBUFFER and COM port
+		CheckReceivedData(PORT, Port);		/* Look for data in RXBUFFER and COM port */
 
 	if (!Port->MSGREADY)
 		return 0;
 
-	// Have a KISS frame
+	/* Have a KISS frame */
 	
 	len = (int)(Port->RXMPTR - &Port->RXMSG[0]);
 
-	// reset pointers
+	/* reset pointers */
 
 	Port->MSGREADY = FALSE;
 	Port->RXMPTR = (UCHAR *)&Port->RXMSG;
 
-	if (len > 329)			// Max ax.25 frame + KISS Ctrl
+	if (len > 329)			/* Max ax.25 frame + KISS Ctrl */
 	{
 		if (Port->Portvector)
 			Debugprintf("BPQ32 overlong KISS frame - len = %d Port %d", len, Port->Portvector->PORTNUMBER);
@@ -1394,25 +1388,25 @@ SeeifMore:
 	}
 
 
-//	IF NETROM, CAN PASS ON NOW
+/*	IF NETROM, CAN PASS ON NOW */
 
 	if (PORT->PROTOCOL == 2)
 	{
-		// But need to checksum.
+		/* But need to checksum. */
 
 		UCHAR c = 0;
 		int i;
 		UCHAR * ptr = &Port->RXMSG[0];
 
-		len--;			// Included CRC
+		len--;			/* Included CRC */
 
 		for (i = 0; i < len; i++)
 			c += *(ptr++);
 
-//		Debugprintf("NETROM RX Len %d CRC %d", len, *ptr);
+/*		Debugprintf("NETROM RX Len %d CRC %d", len, *ptr); */
 
 
-		if (c != *ptr)		// CRC OK?
+		if (c != *ptr)		/* CRC OK? */
 		{
 			PORT->RXERRORS++;
 			Debugprintf("NETROM Checksum Error %d %d", c, *ptr);
@@ -1434,41 +1428,41 @@ SeeifMore:
 		return 0;
 	}
 
-	//	Any response should clear POLL OUTSTANDING
+	/*	Any response should clear POLL OUTSTANDING */
 
-	KISS->POLLFLAG = 0;			// CLEAR POLL OUTSTANDING
+	KISS->POLLFLAG = 0;			/* CLEAR POLL OUTSTANDING */
 
-	// See if message is a poll (or poll response)
+	/* See if message is a poll (or poll response) */
 
-	if ((Port->RXMSG[0] & 0x0f) == 0x0e)		// POLL Frame
+	if ((Port->RXMSG[0] & 0x0f) == 0x0e)		/* POLL Frame */
 	{
 		int PolledPort;
 		
 		if (PORT->KISSFLAGS & POLLINGKISS)
 		{
-			// Make Sure response is from the device I polled
+			/* Make Sure response is from the device I polled */
 
 			if ((Port->RXMSG[0] & 0xf0) == KISS->POLLPOINTER->OURCTRL)
 			{
-				// if Nothing queued for tx, poll again (to speed up response)
+				/* if Nothing queued for tx, poll again (to speed up response) */
 
 				if (KISS->KISSTX_Q == 0)
 				{
 					struct KISSINFO * POLLTHISONE;
 
-					//	FIND WHICH CHANNEL TO POLL NEXT
+					/*	FIND WHICH CHANNEL TO POLL NEXT */
 
-					POLLTHISONE = KISS->POLLPOINTER->SUBCHAIN;	// Next to poll
+					POLLTHISONE = KISS->POLLPOINTER->SUBCHAIN;	/* Next to poll */
 		
 					if (POLLTHISONE == NULL)
-						POLLTHISONE = KISS;			// Back to start
+						POLLTHISONE = KISS;			/* Back to start */
 	
-					KISS->POLLPOINTER = POLLTHISONE;	// FOR NEXT TIME
+					KISS->POLLPOINTER = POLLTHISONE;	/* FOR NEXT TIME */
 
-					KISS->POLLFLAG = TICKS / 2;			// ALLOW 1/3 SEC 
+					KISS->POLLFLAG = TICKS / 2;			/* ALLOW 1/3 SEC  */
 
 					ENCBUFF[0] = FEND;
-					ENCBUFF[1] = POLLTHISONE->OURCTRL | 0x0e;	// Poll
+					ENCBUFF[1] = POLLTHISONE->OURCTRL | 0x0e;	/* Poll */
 					ENCBUFF[2] = FEND;
 
 					ASYSEND((struct PORTCONTROL *)KISS, ENCBUFF, 3);
@@ -1478,10 +1472,10 @@ SeeifMore:
 				Debugprintf("Polled KISS - response from wrong address - Polled %d Reponse %d",  
 					KISS->POLLPOINTER->OURCTRL, (Port->RXMSG[0] & 0xf0));
 
-			goto SeeifMore;				// SEE IF ANYTHING ELSE
+			goto SeeifMore;				/* SEE IF ANYTHING ELSE */
 		}
 
-		//	WE ARE A SLAVE, AND THIS IS A POLL. SEE IF FOR US, AND IF SO, REPLY
+		/*	WE ARE A SLAVE, AND THIS IS A POLL. SEE IF FOR US, AND IF SO, REPLY */
 
 		PolledPort = Port->RXMSG[0] & 0xf0;
 
@@ -1489,31 +1483,31 @@ SeeifMore:
 		{
 			KISS = KISS->SUBCHAIN;
 			if (KISS == NULL)
-				goto SeeifMore;				// SEE IF ANYTHING ELSE
+				goto SeeifMore;				/* SEE IF ANYTHING ELSE */
 		}
 
-		//	SEE IF ANYTHING QUEUED
+		/*	SEE IF ANYTHING QUEUED */
 
 		if (KISS->KISSTX_Q)
 		{
-			KISS->POLLED = 1;			// LET TIMER DO THE SEND
-			goto SeeifMore;				// SEE IF ANYTHING ELSE
+			KISS->POLLED = 1;			/* LET TIMER DO THE SEND */
+			goto SeeifMore;				/* SEE IF ANYTHING ELSE */
 		}
 
 		ENCBUFF[0] = FEND;
-		ENCBUFF[1] = KISS->OURCTRL | 0x0e;	// Poll/Poll Resp
+		ENCBUFF[1] = KISS->OURCTRL | 0x0e;	/* Poll/Poll Resp */
 		ENCBUFF[2] = FEND;
 
 		ASYSEND(PORT, ENCBUFF, 3);
-		goto SeeifMore;				// SEE IF ANYTHING ELSE
+		goto SeeifMore;				/* SEE IF ANYTHING ELSE */
 	}
 
-	//	MESSAGE MAY BE DATA OR DATA ACK. IT HAS NOT YET BEEN CHECKSUMMED
+	/*	MESSAGE MAY BE DATA OR DATA ACK. IT HAS NOT YET BEEN CHECKSUMMED */
 
 
-	if ((Port->RXMSG[0] & 0x0f) == 0x0c)		// ACK Frame
+	if ((Port->RXMSG[0] & 0x0f) == 0x0c)		/* ACK Frame */
 	{
-		//	ACK FRAME. WE DONT SUPPORT ACK REQUIRED FRAMES AS A SLAVE - THEY ARE ONLY ACCEPTED BY TNCS
+		/*	ACK FRAME. WE DONT SUPPORT ACK REQUIRED FRAMES AS A SLAVE - THEY ARE ONLY ACCEPTED BY TNCS */
 
 		struct _LINKTABLE * LINK;
 		UINT ACKWORD = Port->RXMSG[1] | Port->RXMSG[2] << 8;
@@ -1528,10 +1522,10 @@ SeeifMore:
 		return 0;
 	}
 
-	if (Port->RXMSG[0] & 0x0f)		// Not Data
+	if (Port->RXMSG[0] & 0x0f)		/* Not Data */
 	{
-		// If a reply to a manual KISS command(Session set and time not too long ago)
-		// send reponse to terminal
+		/* If a reply to a manual KISS command(Session set and time not too long ago) */
+		/* send reponse to terminal */
 
 		if (PORT->Session && (time(NULL) - PORT->LastKISSCmdTime < 10))
 		{
@@ -1549,7 +1543,7 @@ SeeifMore:
 				unsigned char c;
 				int hex = 0;
 
-				// Could be text or hex response
+				/* Could be text or hex response */
 		
 				for (i = 0; i < len; i++)
 				{
@@ -1563,14 +1557,14 @@ SeeifMore:
 				}
 
 				Buffer->PID = 0xf0;
-				Buffer->LENGTH = MSGHDDRLEN + 1; // Includes PID
+				Buffer->LENGTH = MSGHDDRLEN + 1; /* Includes PID */
 
 				if (hex == 0)
 					Buffer->LENGTH += sprintf(Buffer->L2DATA, "%s\r", Msg);
 				else
 				{
 					if (len == 80)
-						len = 80;			// Protect buffer
+						len = 80;			/* Protect buffer */
 
 					for (i = 0; i < len; i++)
 					{
@@ -1591,11 +1585,11 @@ SeeifMore:
 
 		Port->RXMSG[len] = 0;
 
-//		Debugprintf(Port->RXMSG);
+/*		Debugprintf(Port->RXMSG); */
 		return 0;
 	}
 
-	//	checksum if necessary
+	/*	checksum if necessary */
 #ifndef RP2040
 	if (KISS->PORT.KISSFLAGS & DRATS)
 	{
@@ -1604,11 +1598,11 @@ SeeifMore:
 	}
 #endif
 	if (len < 15)
-		return 0;					// too short for AX25
+		return 0;					/* too short for AX25 */
 
 	if (PORT->KISSFLAGS & CHECKSUM)
 	{
-		//	SUM MESSAGE, AND IF DUFF DISCARD. IF OK DECREMENT COUNT TO REMOVE SUM
+		/*	SUM MESSAGE, AND IF DUFF DISCARD. IF OK DECREMENT COUNT TO REMOVE SUM */
 
 		int sumlen = len;
 		char * ptr = &Port->RXMSG[0];
@@ -1624,26 +1618,26 @@ SeeifMore:
 			PORT->RXERRORS++;
 			Debugprintf("KISS Checksum Error");
 
-			goto SeeifMore;				// SEE IF ANYTHING ELSE
+			goto SeeifMore;				/* SEE IF ANYTHING ELSE */
 		}
-		len--;							// Remove Checksum
+		len--;							/* Remove Checksum */
 	}
 
-	//	FIND CORRECT SUBPORT RECORD
+	/*	FIND CORRECT SUBPORT RECORD */
 	
 	while (KISS->OURCTRL != Port->RXMSG[0])
 	{
 		KISS = KISS->SUBCHAIN;
 
 		if (KISS == NULL)
-			goto SeeifMore;				// SEE IF ANYTHING ELSE
+			goto SeeifMore;				/* SEE IF ANYTHING ELSE */
 	}
 	
-	//	ok, KISS now points to our port
+	/*	ok, KISS now points to our port */
 
 	Buffer = GetBuff();
 		
-	// we dont need the control byte
+	/* we dont need the control byte */
 	
 	len --;
 	
@@ -1652,7 +1646,7 @@ SeeifMore:
 		memcpy(&Buffer->DEST, &Port->RXMSG[1], len);
 		len += (3 + sizeof(void *));
 
-		PutLengthinBuffer((PDATAMESSAGE)Buffer, len);		// Needed for arm5 portability
+		PutLengthinBuffer((PDATAMESSAGE)Buffer, len);		/* Needed for arm5 portability */
 
 /*
 		// Randomly drop packets
@@ -1667,7 +1661,7 @@ SeeifMore:
 		C_Q_ADD(&KISS->PORT.PORTRX_Q, (UINT *)Buffer);
 	}
 
-	goto SeeifMore;				// SEE IF ANYTHING ELSE
+	goto SeeifMore;				/* SEE IF ANYTHING ELSE */
 }
 
 #ifndef WIN32
@@ -1732,11 +1726,11 @@ int i2cPoll(struct PORTCONTROL * PORT, NPASYINFO npKISSINFO)
 
 	retval = i2c_smbus_read_byte(fd);
 	
-	//	Returns POLL (0x0e) if nothing to receive, otherwise the control byte of a frame
+	/*	Returns POLL (0x0e) if nothing to receive, otherwise the control byte of a frame */
 	
-	if (retval == -1)	 		// Read failed		
+	if (retval == -1)	 		/* Read failed		 */
   	{
-		if (npKISSINFO->ReopenTimer <= 0)		// dont report too often
+		if (npKISSINFO->ReopenTimer <= 0)		/* dont report too often */
 		{
 			char msg[80];
 			sprintf(msg, "i2c poll failed Port %d", PORT->PORTNUMBER);
@@ -1749,11 +1743,11 @@ int i2cPoll(struct PORTCONTROL * PORT, NPASYINFO npKISSINFO)
 		return 0;
 	}
 
-	npKISSINFO->ReopenTimer = 0;		// Report next error
+	npKISSINFO->ReopenTimer = 0;		/* Report next error */
 		
-//	NACK means last message send to TNC was duff
+/*	NACK means last message send to TNC was duff */
 
-	if (retval == 0x15)			// NACK
+	if (retval == 0x15)			/* NACK */
 	{
 		int i = lastcount;
 		UCHAR * ptr = lastblock;
@@ -1781,13 +1775,13 @@ int i2cPoll(struct PORTCONTROL * PORT, NPASYINFO npKISSINFO)
 		return 0;
 	}
 
-	// 	Read message up to a FEND into &npKISSINFO->RXBUFFER[0]
+	/* 	Read message up to a FEND into &npKISSINFO->RXBUFFER[0] */
 
 	ptr = &npKISSINFO->RXBUFFER[0];
 
-	// First is FEND, which we don't really need
+	/* First is FEND, which we don't really need */
 
-	*(ptr++) = retval;				// Put first char in buffer
+	*(ptr++) = retval;				/* Put first char in buffer */
 	len = 1;
 
 	while (retval != FEND || len < 2)
@@ -1796,7 +1790,7 @@ int i2cPoll(struct PORTCONTROL * PORT, NPASYINFO npKISSINFO)
 		
 		retval = i2c_smbus_read_byte(fd);
 			
-		if (retval == -1)	 		// Read failed		
+		if (retval == -1)	 		/* Read failed		 */
 	  	{
 			perror("poll failed in packet loop");	
 			return 0;
@@ -1816,7 +1810,7 @@ int i2cPoll(struct PORTCONTROL * PORT, NPASYINFO npKISSINFO)
 }
 #endif
 
-// KISS Over TCP Routines
+/* KISS Over TCP Routines */
 
 VOID ConnecttoTCPThread(NPASYINFO ASY);
 
@@ -1835,7 +1829,7 @@ VOID ConnecttoTCPThread(NPASYINFO ASY)
 	u_long param=1;
 	BOOL bcopt=TRUE;
 	SOCKET sock;
-//	struct hostent * HostEnt;
+/*	struct hostent * HostEnt; */
 	SOCKADDR_IN sinx; 
 	int addrlen=sizeof(sinx);
 	struct KISSINFO * KISS = (struct KISSINFO *) ASY->Portvector;
@@ -1844,25 +1838,25 @@ VOID ConnecttoTCPThread(NPASYINFO ASY)
 	sinx.sin_addr.s_addr = INADDR_ANY;
 	sinx.sin_port = 0;
 
-	//	Only called for the first BPQ port for a particular host/port combination
+	/*	Only called for the first BPQ port for a particular host/port combination */
 
-	Sleep(10000);		// Delay a bit
+	Sleep(10000);		/* Delay a bit */
 
 	while(1)
 	{
 		if (ASY->Connected == FALSE && ASY->Connecting == FALSE)
 		{
-//			if (ASY->destaddr.s_addr == INADDR_NONE)
-//			{
-				//	Resolve name to address
+/*			if (ASY->destaddr.s_addr == INADDR_NONE) */
+/*			{ */
+				/*	Resolve name to address */
 
-//				 HostEnt = gethostbyname (AGWHostName[port]);
+/*				 HostEnt = gethostbyname (AGWHostName[port]); */
 		 
-//				 if (!HostEnt) return;			// Resolve failed
+/*				 if (!HostEnt) return;			// Resolve failed */
 
-//				 memcpy(&destaddr[port].sin_addr.s_addr,HostEnt->h_addr,4);
+/*				 memcpy(&destaddr[port].sin_addr.s_addr,HostEnt->h_addr,4); */
 
-//			}
+/*			} */
 
 			sock = ASY->sock = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -1877,7 +1871,7 @@ VOID ConnecttoTCPThread(NPASYINFO ASY)
 
 			if (bind(sock, (LPSOCKADDR) &sinx, addrlen) != 0 )
 			{
-				//	Bind Failed
+				/*	Bind Failed */
 	
 				i=sprintf(Msg, "Bind Failed for KISSTCP socket - error code = %d\r\n", WSAGetLastError());
 				WritetoConsoleLocal(Msg);
@@ -1890,14 +1884,14 @@ VOID ConnecttoTCPThread(NPASYINFO ASY)
 
 			if (connect(sock,(LPSOCKADDR) &ASY->destaddr, sizeof(ASY->destaddr)) == 0)
 			{
-				//	Connected successful
+				/*	Connected successful */
 
 				ASY->Connected = TRUE;
 				ASY->Connecting = FALSE;
 
 				ioctlsocket (sock, FIONBIO, &param);
 
-				// If configured send TNC command
+				/* If configured send TNC command */
 				if(!KISS) {
 					WritetoConsoleLocal("Error with the KISS socket! Shutting down...\n");
 					exit(1);
@@ -1912,7 +1906,7 @@ VOID ConnecttoTCPThread(NPASYINFO ASY)
 			{
 				err=WSAGetLastError();
 
-				//	Connect failed
+				/*	Connect failed */
 
 				if (ASY->Alerted == FALSE)
 				{
@@ -1924,11 +1918,11 @@ VOID ConnecttoTCPThread(NPASYINFO ASY)
 
 				closesocket(sock);
 				ASY->Connecting = FALSE;
-				Sleep (57000/2);				// 1/2 Mins
+				Sleep (57000/2);				/* 1/2 Mins */
 				continue;
 			}
 		}
-		Sleep (57000/2);						// 1/2 Mins
+		Sleep (57000/2);						/* 1/2 Mins */
 	}
 #endif
 }
@@ -1942,7 +1936,7 @@ int KISSGetTCPMessage(NPASYINFO ASY)
 
 	if (ASY->Listening)
 	{
-		//	TCP Slave waiting for a connection
+		/*	TCP Slave waiting for a connection */
 
 		SOCKET sock;
 		int addrlen = sizeof(struct sockaddr_in);
@@ -1954,12 +1948,12 @@ int KISSGetTCPMessage(NPASYINFO ASY)
 		{
 			int err = GetLastError();
 
-			if (err == 10035 || err == 11)		// Would Block
+			if (err == 10035 || err == 11)		/* Would Block */
 				return 0;
 
 		}
 		
-		//	Have a connection. Close Listening Socket and use new one
+		/*	Have a connection. Close Listening Socket and use new one */
 
 		closesocket(ASY->sock);
 
@@ -1973,9 +1967,9 @@ int KISSGetTCPMessage(NPASYINFO ASY)
 	{
 		int InputLen;
 
-		//	Poll TCP Connection for data
+		/*	Poll TCP Connection for data */
 
-		// May have several messages per packet, or message split over packets
+		/* May have several messages per packet, or message split over packets */
 
 		InputLen = recv(ASY->sock, ASY->RXBUFFER, MAXBLOCK - 1, 0);
 
@@ -2010,7 +2004,7 @@ int KISSGetTCPMessage(NPASYINFO ASY)
 
 	if (ASY->Portvector->KISSSLAVE && !ASY->Connected && !ASY->Listening)
 	{
-		// Reopen Listening Socket
+		/* Reopen Listening Socket */
 
 
 
@@ -2028,7 +2022,7 @@ int KISSGetTCPMessage(NPASYINFO ASY)
 
 		if (bind(sock, (struct sockaddr *) &sinx, sizeof(sinx)) != 0 )
 		{
-			//	Bind Failed
+			/*	Bind Failed */
 
 			int err = WSAGetLastError();
 			Consoleprintf("Bind Failed for KISS TCP port %d - error code = %d", ASY->Portvector->ListenPort, err);

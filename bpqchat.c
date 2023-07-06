@@ -1,74 +1,74 @@
-// Chat Server for BPQ32 Packet Switch
-//
-//
-// Based on MailChat Version 1.4.48.1
+/* Chat Server for BPQ32 Packet Switch */
+/* */
+/* */
+/* Based on MailChat Version 1.4.48.1 */
 
-// Add Configurable SYSOP Call
+/* Add Configurable SYSOP Call */
 
-// Sept 2013
+/* Sept 2013 */
 
-// If user tries to reconnect to same node, disconnect old session
+/* If user tries to reconnect to same node, disconnect old session */
 
-// Changed to match changed user rec format in kernel
+/* Changed to match changed user rec format in kernel */
 
-// Fix initialisation of Signoff Message
+/* Fix initialisation of Signoff Message */
 
-// Jan 2014 
+/* Jan 2014  */
 
-// Add UTF-8 support
+/* Add UTF-8 support */
 
-// ????
+/* ???? */
 
-// Get command from node, and allow topic to be selected on command line
-// Validate HTML Pages
+/* Get command from node, and allow topic to be selected on command line */
+/* Validate HTML Pages */
 
 
-//	Oct 2014 1.0.5.1
-//	Fix occasional crash in terminal part line processing
+/*	Oct 2014 1.0.5.1 */
+/*	Fix occasional crash in terminal part line processing */
 
-// October 2015 1.0.6.1
-//	Recompiled for compatibility with WebMail
+/* October 2015 1.0.6.1 */
+/*	Recompiled for compatibility with WebMail */
 
-// Feb 2016 1.0.7.1
-//	Send Chat Map INFO on Startup 
-//	Add Welcome Message to Web Config
+/* Feb 2016 1.0.7.1 */
+/*	Send Chat Map INFO on Startup  */
+/*	Add Welcome Message to Web Config */
 
-// July 2017 1.0.8.1
-//	Fix Keepalives in Linux version
+/* July 2017 1.0.8.1 */
+/*	Fix Keepalives in Linux version */
 
-// November 2018 1.0.9.1
-//	Recompiled for Web Interface changes in Node
+/* November 2018 1.0.9.1 */
+/*	Recompiled for Web Interface changes in Node */
 
-// January 2019 1.0.10.1
-//	Move Config from Registry to File BPQChatServer 1.cfg
+/* January 2019 1.0.10.1 */
+/*	Move Config from Registry to File BPQChatServer 1.cfg */
 
-// January 2019 1.0.10.2
-//	Fix errors in chat config file names and locations
+/* January 2019 1.0.10.2 */
+/*	Fix errors in chat config file names and locations */
 
-// December 2020 1.0.11.1
+/* December 2020 1.0.11.1 */
 
-//	Send INFO to Map every hour
-//	Remove CMD_TO_APPL flag from Applflags
+/*	Send INFO to Map every hour */
+/*	Remove CMD_TO_APPL flag from Applflags */
 
-// October 2021 1.0.11.2
-//	Recompiled for Web Interface changes in Node
+/* October 2021 1.0.11.2 */
+/*	Recompiled for Web Interface changes in Node */
 
-// February 2022 1.0.12.3 Renumbered to 6.0.23.1 to match Node
-//	Add option for user defined help file
-//  Add Connect Scripts
-//	Improve connect timeouts and add link validation polls
+/* February 2022 1.0.12.3 Renumbered to 6.0.23.1 to match Node */
+/*	Add option for user defined help file */
+/*  Add Connect Scripts */
+/*	Improve connect timeouts and add link validation polls */
 
-//  Version 6.0.24.1 ??
+/*  Version 6.0.24.1 ?? */
 
-//	Restore CMD_TO_APPL flag to Applflags (13)
-//	Check for and remove names set to *RTL 
-//	Add option to run user program when chat user connects (27)
-//	Add History (28)
-//	Add connect scripts to config page text (31)
-//	Fix History (31)
-//	Stop buffer overflow in History 
-//	Allow /History to be shortened to /Hi (45)
-//	Fix extra r charater in Chat Config Web Page
+/*	Restore CMD_TO_APPL flag to Applflags (13) */
+/*	Check for and remove names set to *RTL  */
+/*	Add option to run user program when chat user connects (27) */
+/*	Add History (28) */
+/*	Add connect scripts to config page text (31) */
+/*	Fix History (31) */
+/*	Stop buffer overflow in History  */
+/*	Allow /History to be shortened to /Hi (45) */
+/*	Fix extra r charater in Chat Config Web Page */
 
 #include "BPQChat.h"
 #include "Dbghelp.h"
@@ -86,25 +86,25 @@
 BOOL WINE = FALSE;
 UINT BPQMsg;
 
-HKEY REGTREE = HKEY_LOCAL_MACHINE;		// Default
+HKEY REGTREE = HKEY_LOCAL_MACHINE;		/* Default */
 char * REGTREETEXT = "HKEY_LOCAL_MACHINE";
 
-// Global Variables:
-HINSTANCE hInst;								// current instance
-TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
-TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
+/* Global Variables: */
+HINSTANCE hInst;								/* current instance */
+TCHAR szTitle[MAX_LOADSTRING];					/* The title bar text */
+TCHAR szWindowClass[MAX_LOADSTRING];			/* the main window class name */
 
-int LastVer[4] = {0, 0, 0, 0};					// In case we need to do somthing the first time a version is run
+int LastVer[4] = {0, 0, 0, 0};					/* In case we need to do somthing the first time a version is run */
 
 HWND MainWnd;
 HWND hWndSess;
 RECT MainRect;
 HMENU hActionMenu;
 static HMENU hMenu;
-HMENU hDisMenu;									// Disconnect Menu Handle
-HMENU hFWDMenu;									// Forward Menu Handle
+HMENU hDisMenu;									/* Disconnect Menu Handle */
+HMENU hFWDMenu;									/* Forward Menu Handle */
 
-int SessX, SessY, SessWidth;					// Params for Session Window
+int SessX, SessY, SessWidth;					/* Params for Session Window */
 
 char szBuff[80];
 
@@ -123,12 +123,12 @@ struct SEM OutputSEM = {0, 0};
 struct UserInfo ** UserRecPtr=NULL;
 int NumberofUsers=0;
 
-struct UserInfo * BBSChain = NULL;					// Chain of users that are BBSes
+struct UserInfo * BBSChain = NULL;					/* Chain of users that are BBSes */
 
 struct MsgInfo ** MsgHddrPtr=NULL;
 int NumberofMessages=0;
 
-int FirstMessageIndextoForward=0;					// Lowest Message wirh a forward bit set - limits search
+int FirstMessageIndextoForward=0;					/* Lowest Message wirh a forward bit set - limits search */
 
 BOOL cfgMinToTray;
 
@@ -159,7 +159,7 @@ int ChatApplNum=0;
 
 extern int NumberofChatStreams;
 
-//int	StartStream=0;
+/*int	StartStream=0; */
 
 extern int MaxChatStreams;
 
@@ -204,7 +204,7 @@ int RTFHddrLen;
 
 int ProgramErrors = 0;
 
-// Forward declarations of functions included in this code module:
+/* Forward declarations of functions included in this code module: */
 ATOM				MyRegisterClass(HINSTANCE hInstance);
 ATOM				RegisterMainWindowClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int);
@@ -300,16 +300,16 @@ char Session[20] = "Server 1";
 
 BOOL UsingingRegConfig = FALSE;
 
-// If program gets too many program errors, it will restart itself  and shut down
+/* If program gets too many program errors, it will restart itself  and shut down */
 
 VOID CheckProgramErrors()
 {
-	STARTUPINFO  SInfo;			// pointer to STARTUPINFO 
-    PROCESS_INFORMATION PInfo; 	// pointer to PROCESS_INFORMATION 
+	STARTUPINFO  SInfo;			/* pointer to STARTUPINFO  */
+    PROCESS_INFORMATION PInfo; 	/* pointer to PROCESS_INFORMATION  */
 	char ProgName[256];
 
 	if (Restarting)
-		exit(0);				// Make sure can't loop in restarting
+		exit(0);				/* Make sure can't loop in restarting */
 
 	ProgramErrors++;
 
@@ -369,7 +369,7 @@ VOID WriteMiniDump()
 
 	if((hFile != NULL) && (hFile != INVALID_HANDLE_VALUE))
 	{
-		// Create the minidump
+		/* Create the minidump */
 
 		ret = MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(),
 			hFile, MiniDumpNormal, 0, 0, 0 );
@@ -440,7 +440,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	int nCodePage = GetACP(); 
 
-	if (strstr(lpCmdLine, "WAIT"))				// If AutoRestart then Delay 60 Secs
+	if (strstr(lpCmdLine, "WAIT"))				/* If AutoRestart then Delay 60 Secs */
 	{	
 		hWnd = CreateWindow("STATIC", "Chat Restarting after Failure - Please Wait", 0,
 		CW_USEDEFAULT, 100, 550, 70,
@@ -470,17 +470,17 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	__try {
 
-	// Trap CRT Errors
+	/* Trap CRT Errors */
 
 	newHandler = myInvalidParameterHandler;
 	oldHandler = _set_invalid_parameter_handler(newHandler);
 
-	// Initialize global strings
+	/* Initialize global strings */
 	LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 	LoadString(hInstance, IDC_BPQMailChat, szWindowClass, MAX_LOADSTRING);
 	MyRegisterClass(hInstance);
 
-	// Perform application initialization:
+	/* Perform application initialization: */
 
 	if (!InitInstance (hInstance, nCmdShow))
 	{
@@ -489,7 +489,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_BPQMailChat));
 
-	// Main message loop:
+	/* Main message loop: */
 
 	Logprintf(LOG_CHAT, NULL, '!', "Program Starting");
 
@@ -536,9 +536,9 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	ShowWindow(hWnd, nCmdShow);
 
-	Sleep(1000);				// A bit of time for links to close
+	Sleep(1000);				/* A bit of time for links to close */
 
-	SendChatLinkStatus();		// Send again to reduce chance of being missed
+	SendChatLinkStatus();		/* Send again to reduce chance of being missed */
 
 	Sleep(2000);
 
@@ -578,7 +578,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	SaveWindowConfig();
 
-	CloseBPQ32();				// Close Ext Drivers if last bpq32 process
+	CloseBPQ32();				/* Close Ext Drivers if last bpq32 process */
 
 	SaveChatConfigFile(ChatConfigName);
 
@@ -587,22 +587,22 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 
 
-//
-//  FUNCTION: MyRegisterClass()
-//
-//  PURPOSE: Registers the window class.
-//
-//  COMMENTS:
-//
-//    This function and its usage are only necessary if you want this code
-//    to be compatible with Win32 systems prior to the 'RegisterClassEx'
-//    function that was added to Windows 95. It is important to call this function
-//    so that the application will get 'well formed' small icons associated
-//    with it.
-//
-//
+/* */
+/*  FUNCTION: MyRegisterClass() */
+/* */
+/*  PURPOSE: Registers the window class. */
+/* */
+/*  COMMENTS: */
+/* */
+/*    This function and its usage are only necessary if you want this code */
+/*    to be compatible with Win32 systems prior to the 'RegisterClassEx' */
+/*    function that was added to Windows 95. It is important to call this function */
+/*    so that the application will get 'well formed' small icons associated */
+/*    with it. */
+/* */
+/* */
 #define BGCOLOUR RGB(236,233,216)
-//#define BGCOLOUR RGB(245,245,245)
+/*#define BGCOLOUR RGB(245,245,245) */
 
 HBRUSH bgBrush;
 
@@ -630,16 +630,16 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 }
 
 
-//
-//   FUNCTION: InitInstance(HINSTANCE, int)
-//
-//   PURPOSE: Saves instance handle and creates main window
-//
-//   COMMENTS:
-//
-//        In this function, we save the instance handle in a global variable and
-//        create and display the main program window.
-//
+/* */
+/*   FUNCTION: InitInstance(HINSTANCE, int) */
+/* */
+/*   PURPOSE: Saves instance handle and creates main window */
+/* */
+/*   COMMENTS: */
+/* */
+/*        In this function, we save the instance handle in a global variable and */
+/*        create and display the main program window. */
+/* */
 
 HWND hWnd;
 
@@ -647,7 +647,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
 	char Title[80];
 	WSADATA WsaData;
-	HMENU hTopMenu;		// handle of menu 
+	HMENU hTopMenu;		/* handle of menu  */
 	HKEY hKey=0;
 	int retCode;
 	RECT InitRect;
@@ -658,7 +658,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	REGTREE = GetRegistryKey();
 	REGTREETEXT = GetRegistryKeyText();
 
-	// See if running under WINE
+	/* See if running under WINE */
 
 	retCode = RegOpenKeyEx (HKEY_LOCAL_MACHINE, "SOFTWARE\\Wine",  0, KEY_QUERY_VALUE, &hKey);
 
@@ -674,7 +674,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	else
 		sprintf(ChatConfigName, "%s/chatconfig%s.cfg", GetBPQDirectory(), Session);
 
-	// Set up file and directory names
+	/* Set up file and directory names */
 
 	strcpy(BaseDir, GetBPQDirectory());
 		
@@ -687,11 +687,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	strcpy(RtKnown, BaseDir);
 	strcat(RtKnown, "/RTKnown.txt");
 
-//	Debugprintf("Users %s", RtUsr);
+/*	Debugprintf("Users %s", RtUsr); */
 
 	UsingingRegConfig = FALSE;
 
-	//	if config file exists use it else try to get from Registry
+	/*	if config file exists use it else try to get from Registry */
 
 	if (stat(ChatConfigName, &STAT) == -1)
 	{
@@ -719,7 +719,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	GetChatConfig(ChatConfigName);
 
-	// Get Window Sizes 
+	/* Get Window Sizes  */
 	
 	sscanf(WindowSize,"%d,%d,%d,%d",&MainRect.left,&MainRect.right,&MainRect.top,&MainRect.bottom);
 	sscanf(DebugSize, "%d,%d,%d,%d", &DebugRect.left, &DebugRect.right, &DebugRect.top, &DebugRect.bottom);
@@ -759,12 +759,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	SessY = SessRect.top -InitRect.top;
 	SessWidth = SessRect.right - SessRect.left;
 
-   	// Get handles fou updating menu items
+   	/* Get handles fou updating menu items */
 
 	hTopMenu=GetMenu(MainWnd);
 	hActionMenu=GetSubMenu(hTopMenu,0);
 
-//	hFWDMenu=GetSubMenu(hActionMenu,0);
+/*	hFWDMenu=GetSubMenu(hActionMenu,0); */
 	hMenu=GetSubMenu(hActionMenu,0);
 	hDisMenu=GetSubMenu(hActionMenu,1);
 
@@ -797,12 +797,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return FALSE;
 }
 
-//
-//  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
-//
-//  PURPOSE:  Processes messages for the main window.
-//
-//
+/* */
+/*  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM) */
+/* */
+/*  PURPOSE:  Processes messages for the main window. */
+/* */
+/* */
 
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -819,18 +819,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		if (lParam & BPQDataAvail)
 		{
-			//	Dont trap error at this level - let Node error handler pick it up
-//			__try
-//			{
+			/*	Dont trap error at this level - let Node error handler pick it up */
+/*			__try */
+/*			{ */
 				DoReceivedData(wParam);
-//			}
-//			My__except_Routine("DoReceivedData")
+/*			} */
+/*			My__except_Routine("DoReceivedData") */
 			return 0;
 		}
 		if (lParam & BPQStateChange)
 		{
-			//	Get current Session State. Any state changed is ACK'ed
-			//	automatically. See BPQHOST functions 4 and 5.
+			/*	Get current Session State. Any state changed is ACK'ed */
+			/*	automatically. See BPQHOST functions 4 and 5. */
 	
 			__try
 			{
@@ -838,7 +838,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		
 				if (change == 1)
 				{
-					if (state == 1) // Connected	
+					if (state == 1) /* Connected	 */
 					{
 						GetSemaphore(&ConSemaphore, 0);
 						__try {Connected(wParam);}
@@ -893,7 +893,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
  			
 	case WM_TIMER:
 
-		if (wParam == 1)		// Slow = 10 secs
+		if (wParam == 1)		/* Slow = 10 secs */
 		{
 			__try
 			{
@@ -938,7 +938,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		if (wParam == (WPARAM)hDisMenu)
 		{
-			// Set up Disconnect Menu
+			/* Set up Disconnect Menu */
 
 			ChatCIRCUIT * conn;
 			char MenuLine[30];
@@ -964,7 +964,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_COMMAND:
 		wmId    = LOWORD(wParam);
 		wmEvent = HIWORD(wParam);
-		// Parse the menu selections:
+		/* Parse the menu selections: */
 
 		if (wmEvent == LBN_DBLCLK)
 
@@ -972,7 +972,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		if (wmId >= IDM_DISCONNECT && wmId < IDM_DISCONNECT+MaxSockets+1)
 		{
-			// disconnect user
+			/* disconnect user */
 
 			conn=&ChatConnections[wmId-IDM_DISCONNECT];
 		
@@ -1064,19 +1064,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
-		// TODO: Add any drawing code here...
+		/* TODO: Add any drawing code here... */
 		EndPaint(hWnd, &ps);
 		break;
 
 	case WM_DESTROY:
 
-		GetWindowRect(MainWnd,	&MainRect);	// For save soutine
+		GetWindowRect(MainWnd,	&MainRect);	/* For save soutine */
 		if (ConsHeader[1]->hConsole)
-			GetWindowRect(ConsHeader[1]->hConsole, &ConsoleRect);	// For save soutine
+			GetWindowRect(ConsHeader[1]->hConsole, &ConsoleRect);	/* For save soutine */
 		if (hMonitor)
-			GetWindowRect(hMonitor,	&MonitorRect);	// For save soutine
+			GetWindowRect(hMonitor,	&MonitorRect);	/* For save soutine */
 		if (hDebug)
-			GetWindowRect(hDebug,	&DebugRect);	// For save soutine
+			GetWindowRect(hDebug,	&DebugRect);	/* For save soutine */
 
 		KillTimer(hWnd,1);
 		KillTimer(hWnd,2);
@@ -1117,7 +1117,7 @@ INT_PTR CALLBACK ChatMapDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 		
 			PopupMode = SendDlgItemMessage(hDlg, IDC_CLICK, BM_GETCHECK, 0 ,0);
 		
-//			if (AXIPPort)
+/*			if (AXIPPort) */
 			{
 				len = wsprintf(Msg, "INFO %s|%s|%d|\r", Position, PopupText, PopupMode);
 
@@ -1152,7 +1152,7 @@ INT_PTR CALLBACK ChatMapDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 }
 
 
-// Message handler for about box.
+/* Message handler for about box. */
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
@@ -1287,7 +1287,7 @@ BOOL GetConfigFromRegistry()
 	FlashOnConnect = regGetIntValue("FlashOnConnect", 0);
 	CloseWindowOnBye = regGetIntValue("CloseWindowOnBye", 0);
 
-	return regGetStringValue("OtherChatNodes", OtherNodesList, 999);		// Return false if not there
+	return regGetStringValue("OtherChatNodes", OtherNodesList, 999);		/* Return false if not there */
 }
 
 
@@ -1297,9 +1297,9 @@ BOOL Initialise()
 	ChatCIRCUIT * conn;
 	HMODULE ExtDriver = LoadLibrary("bpq32.dll");
 
-	//	Register message for posting by BPQDLL
+	/*	Register message for posting by BPQDLL */
 
-	CheckTimer();				// Make sure init is complete
+	CheckTimer();				/* Make sure init is complete */
 
 	BPQMsg = RegisterWindowMessage(BPQWinMsg);
 
@@ -1325,12 +1325,12 @@ Retry:
 
 			ChatApplMask = 1<<(ChatApplNum-1);
 		
-			// Set up other nodes list. rtlink messes with the string so pass copy
+			/* Set up other nodes list. rtlink messes with the string so pass copy */
 
-			// New format can have connect scrips and separates lines with crlf, not space
+			/* New format can have connect scrips and separates lines with crlf, not space */
 
 
-			if (strchr(OtherNodesList, '\r'))	// Has connect script entries
+			if (strchr(OtherNodesList, '\r'))	/* Has connect script entries */
 			{
 				Save = ptr1 = strtok_s(_strdup(OtherNodesList), "\r\n", &Context);
 
@@ -1360,7 +1360,7 @@ Retry:
 		goto Retry;
 	}
 
-	// Allocate Streams
+	/* Allocate Streams */
 
 	for (i=0; i < MaxChatStreams; i++)
 	{
@@ -1385,8 +1385,8 @@ Retry:
 		AddTrayMenuItem(MainWnd, Text);
 	}
 	
-	SetTimer(hWnd,1,10000,NULL);	// Slow Timer (10 Secs)
-	SetTimer(hWnd,2,100,NULL);		// Send to Node (100 ms)
+	SetTimer(hWnd,1,10000,NULL);	/* Slow Timer (10 Secs) */
+	SetTimer(hWnd,2,100,NULL);		/* Send to Node (100 ms) */
 
 	CheckMenuItem(hMenu,IDM_LOGCHAT, (LogCHAT) ? MF_CHECKED : MF_UNCHECKED);
 
@@ -1414,7 +1414,7 @@ int	CriticalErrorHandler(char * error)
 {
 	Debugprintf("Critical Error %s", error);
 	ProgramErrors = 25;
-	CheckProgramErrors();				// Force close
+	CheckProgramErrors();				/* Force close */
 	return 0;
 }
 
@@ -1476,9 +1476,9 @@ int GetMultiLineDialog(HWND hDialog, int DLGItem)
 	
 	GetDlgItemText(hDialog, DLGItem, Text, 10000);
 
-	// We can now have connect scripts for each node, so leave cr/lf
+	/* We can now have connect scripts for each node, so leave cr/lf */
 
-	if (Text[strlen(Text)-1] != '\n')			// no terminating crlf?
+	if (Text[strlen(Text)-1] != '\n')			/* no terminating crlf? */
 		strcat(Text, "\r\n");
 
 	strcpy(OtherNodesList, Text);
@@ -1496,7 +1496,7 @@ INT_PTR CALLBACK ConfigWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 
 	case WM_INITDIALOG:
 
-		if (strchr(OtherNodesList, 13))		// New format with connect scripts?
+		if (strchr(OtherNodesList, 13))		/* New format with connect scripts? */
 		{
 			strcpy(Text, OtherNodesList);
 		/*
@@ -1529,7 +1529,7 @@ INT_PTR CALLBACK ConfigWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 		SetDlgItemInt(hDlg, ID_STREAMS, MaxChatStreams, FALSE);
 		SetDlgItemText(hDlg, ID_CHATNODES, Text);
 
-		// Replace $W in  Welcome Message with cr lf
+		/* Replace $W in  Welcome Message with cr lf */
 
 		ptr2 = ptr1 = _strdup(ChatWelcomeMsg);
 
@@ -1539,8 +1539,8 @@ INT_PTR CALLBACK ConfigWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
     
 		if (ptr1)
 		{    
-			*(ptr1++)=13;			// put in cr
-			*(ptr1++)=10;			// put in lf
+			*(ptr1++)=13;			/* put in cr */
+			*(ptr1++)=10;			/* put in lf */
 
 			goto scan;
 		} 
@@ -1584,7 +1584,7 @@ INT_PTR CALLBACK ConfigWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 
 			GetDlgItemText(hDlg, IDM_CHATUSERMSG, ChatWelcomeMsg, 999);
 
-			// Replace cr lf in string with $W
+			/* Replace cr lf in string with $W */
 
 			ptr1 = ChatWelcomeMsg;
 
@@ -1594,8 +1594,8 @@ INT_PTR CALLBACK ConfigWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
     
 			if (ptr1)
 			{    
-				*(ptr1++)='$';			// put in cr
-				*(ptr1++)='W';			// put in lf
+				*(ptr1++)='$';			/* put in cr */
+				*(ptr1++)='W';			/* put in lf */
 
 				goto scan2;
 			} 

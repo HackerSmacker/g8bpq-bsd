@@ -17,42 +17,42 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-//
-//	DLL to provide interface to allow G8BPQ switch to use AGWPE as a Port Driver 
-//	32bit environment,
-//
-//	Uses BPQ EXTERNAL interface
-//
+/* */
+/*	DLL to provide interface to allow G8BPQ switch to use AGWPE as a Port Driver  */
+/*	32bit environment, */
+/* */
+/*	Uses BPQ EXTERNAL interface */
+/* */
 
 
-//  Version 1.0 January 2005 - Initial Version
-//
+/*  Version 1.0 January 2005 - Initial Version */
+/* */
 
-//  Version 1.1	August 2005
-//
-//		Treat NULL string in Registry as use current directory
+/*  Version 1.1	August 2005 */
+/* */
+/*		Treat NULL string in Registry as use current directory */
 
-//	Version 1.2 January 2006
+/*	Version 1.2 January 2006 */
 
-//		Support multiple commections (not quire yet!)
-//		Fix memory leak when AGEPE not running
+/*		Support multiple commections (not quire yet!) */
+/*		Fix memory leak when AGEPE not running */
 
 
-//	Version 1.3 March 2006
+/*	Version 1.3 March 2006 */
 
-//		Support multiple connections
+/*		Support multiple connections */
 
-//	Version 1.4 October 1006
+/*	Version 1.4 October 1006 */
 
-//		Write diagmnostics to BPQ console window instead of STDOUT
+/*		Write diagmnostics to BPQ console window instead of STDOUT */
 
-//	Version 1.5 February 2008
+/*	Version 1.5 February 2008 */
 
-//		Changes for dynamic unload of bpq32.dll
+/*		Changes for dynamic unload of bpq32.dll */
 
-//	Version 1.5.1 September 2010
+/*	Version 1.5.1 September 2010 */
 
-//		Add option to get config from BPQ32.cfg
+/*		Add option to get config from BPQ32.cfg */
 
 #define _CRT_SECURE_NO_DEPRECATE
 
@@ -75,9 +75,9 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 #define VERSION_MAJOR         2
 #define VERSION_MINOR         0
 
-//uintptr_t _beginthread(void( *start_address )( int ), unsigned stack_size, int arglist);
+/*uintptr_t _beginthread(void( *start_address )( int ), unsigned stack_size, int arglist); */
 
-//int ResetExtDriver(int num);
+/*int ResetExtDriver(int num); */
 
 void ConnecttoAGWThread(void * portptr);
 
@@ -118,26 +118,26 @@ static struct AGWHEADER RXHeader;
 
 #define MAXAGWPORTS 16
 
-//LOGFONT LFTTYFONT ;
+/*LOGFONT LFTTYFONT ; */
 
-//HFONT hFont ;
+/*HFONT hFont ; */
 
-static int AGWChannel[MAXBPQPORTS+1];			// BPQ Port to AGW Port
-static int BPQPort[MAXAGWPORTS][MAXBPQPORTS+1];	// AGW Port and Connection to BPQ Port
-static void * AGWtoBPQ_Q[MAXBPQPORTS+1];			// Frames for BPQ, indexed by BPQ Port
-static void * BPQtoAGW_Q[MAXBPQPORTS+1];			// Frames for AGW. indexed by AGW port. Only used it TCP session is blocked
+static int AGWChannel[MAXBPQPORTS+1];			/* BPQ Port to AGW Port */
+static int BPQPort[MAXAGWPORTS][MAXBPQPORTS+1];	/* AGW Port and Connection to BPQ Port */
+static void * AGWtoBPQ_Q[MAXBPQPORTS+1];			/* Frames for BPQ, indexed by BPQ Port */
+static void * BPQtoAGW_Q[MAXBPQPORTS+1];			/* Frames for AGW. indexed by AGW port. Only used it TCP session is blocked */
 
-//	Each port may be on a different machine. We only open one connection to each AGW instance
+/*	Each port may be on a different machine. We only open one connection to each AGW instance */
 
-static SOCKET AGWSock[MAXBPQPORTS+1];			// Socket, indexed by BPQ Port
+static SOCKET AGWSock[MAXBPQPORTS+1];			/* Socket, indexed by BPQ Port */
 
-BOOL Alerted[MAXBPQPORTS+1];					// Error msg sent
+BOOL Alerted[MAXBPQPORTS+1];					/* Error msg sent */
 
-static int MasterPort[MAXBPQPORTS+1];			// Pointer to first BPQ port for a specific AGW host
+static int MasterPort[MAXBPQPORTS+1];			/* Pointer to first BPQ port for a specific AGW host */
 
-static char * AGWSignon[MAXBPQPORTS+1];			// Pointer to message for secure signin
+static char * AGWSignon[MAXBPQPORTS+1];			/* Pointer to message for secure signin */
 
-static char * AGWHostName[MAXBPQPORTS+1];		// AGW Host - may be dotted decimal or DNS Name
+static char * AGWHostName[MAXBPQPORTS+1];		/* AGW Host - may be dotted decimal or DNS Name */
 
 
 static unsigned int AGWInst = 0;
@@ -148,7 +148,7 @@ static BOOL GotMsg;
 
 static HANDLE STDOUT=0;
 
-//SOCKET sock;
+/*SOCKET sock; */
 
 static SOCKADDR_IN sinx; 
 static SOCKADDR_IN rxaddr;
@@ -156,14 +156,14 @@ static SOCKADDR_IN destaddr[MAXBPQPORTS+1];
 
 static int addrlen=sizeof(sinx);
 
-//static short AGWPort=0;
+/*static short AGWPort=0; */
 
 static time_t ltime,lasttime[MAXBPQPORTS+1];
 
 static BOOL CONNECTED[MAXBPQPORTS+1];
 static BOOL CONNECTING[MAXBPQPORTS+1];
 
-//HANDLE hInstance;
+/*HANDLE hInstance; */
 
 
 static fd_set readfs;
@@ -183,17 +183,17 @@ static size_t ExtProc(int fn, int port, PMESSAGE buff)
 
 	switch (fn)
 	{
-	case 1:				// poll
+	case 1:				/* poll */
 
 		if (MasterPort[port] == port)
 		{
 			SOCKET sock = AGWSock[port];
 
-			// Only on first port using a host
+			/* Only on first port using a host */
 
 			if (CONNECTED[port] == FALSE && CONNECTING[port] == FALSE)
 			{
-				//	See if time to reconnect
+				/*	See if time to reconnect */
 		
 				time( &ltime );
 				if (ltime-lasttime[port] > 9 )
@@ -209,7 +209,7 @@ static size_t ExtProc(int fn, int port, PMESSAGE buff)
 	
 			FD_ZERO(&writefs);
 
-			if (BPQtoAGW_Q[port]) FD_SET(sock,&writefs);	// Need notification of busy clearing
+			if (BPQtoAGW_Q[port]) FD_SET(sock,&writefs);	/* Need notification of busy clearing */
 
 			FD_ZERO(&errorfs);
 		
@@ -217,12 +217,12 @@ static size_t ExtProc(int fn, int port, PMESSAGE buff)
 
 			if (select((int)sock+1, &readfs, &writefs, &errorfs, &timeout) > 0)
 			{
-				//	See what happened
+				/*	See what happened */
 
 				if (FD_ISSET(sock, &readfs))
 				{
 			
-					// data available
+					/* data available */
 			
 					ProcessReceivedData(port);
 				
@@ -235,7 +235,7 @@ static size_t ExtProc(int fn, int port, PMESSAGE buff)
 					}
 					else
 					{
-						// Write block has cleared. Send rest of packet
+						/* Write block has cleared. Send rest of packet */
 
 						buffptr = Q_REM(&BPQtoAGW_Q[port]);
 
@@ -260,7 +260,7 @@ static size_t ExtProc(int fn, int port, PMESSAGE buff)
 			}
 		}
 
-		// See if any frames for this port
+		/* See if any frames for this port */
 
 		if (AGWtoBPQ_Q[port] !=0)
 		{
@@ -268,7 +268,7 @@ static size_t ExtProc(int fn, int port, PMESSAGE buff)
 
 			datalen = buffptr->Len - 1;
 
-			memcpy(buff->DEST, &buffptr->Data[1] , datalen);		// Data goes to +7, but we have an extra byte
+			memcpy(buff->DEST, &buffptr->Data[1] , datalen);		/* Data goes to +7, but we have an extra byte */
 			datalen += MSGHDDRLEN;
 			buff->LENGTH = datalen;
 
@@ -282,21 +282,21 @@ static size_t ExtProc(int fn, int port, PMESSAGE buff)
 
 
 
-	case 2:				// send
+	case 2:				/* send */
 
 		
-		if (!CONNECTED[MasterPort[port]]) return 0;		// Don't try if not connected
+		if (!CONNECTED[MasterPort[port]]) return 0;		/* Don't try if not connected */
 
-		if (BPQtoAGW_Q[MasterPort[port]]) return 0;		// Socket is blocked - just drop packets
-														// till it clears
+		if (BPQtoAGW_Q[MasterPort[port]]) return 0;		/* Socket is blocked - just drop packets */
+														/* till it clears */
 
-		// AGW has a control byte on front, so only subtract 6 from BPQ length
+		/* AGW has a control byte on front, so only subtract 6 from BPQ length */
 
 		txlen = GetLengthfromBuffer((PDATAMESSAGE)buff);
 		txlen -= (MSGHDDRLEN - 1);
 		
 		AGWHeader.Port=AGWChannel[port];
-		AGWHeader.DataKind='K';				// raw send
+		AGWHeader.DataKind='K';				/* raw send */
 
 #ifdef __BIG_ENDIAN__
 		AGWHeader.DataLength = reverse(txlen);
@@ -314,7 +314,7 @@ static size_t ExtProc(int fn, int port, PMESSAGE buff)
 		if (bytes != txlen)
 		{
 
-			// AGW doesn't seem to recover from a blocked write. For now just reset
+			/* AGW doesn't seem to recover from a blocked write. For now just reset */
 			
 			winerr = WSAGetLastError();
 				
@@ -328,15 +328,15 @@ static size_t ExtProc(int fn, int port, PMESSAGE buff)
 		return (0);
 
 	
-	case 3:				// CHECK IF OK TO SEND
+	case 3:				/* CHECK IF OK TO SEND */
 
-		return (0);		// OK
+		return (0);		/* OK */
 			
 		break;
 
-	case 4:				// reinit
+	case 4:				/* reinit */
 
-//		return(ReadConfigFile("BPQAXIP.CFG"));
+/*		return(ReadConfigFile("BPQAXIP.CFG")); */
 
 		return (0);
 	}
@@ -349,12 +349,12 @@ void * AGWExtInit(struct PORTCONTROL *  PortEntry)
 	int i, port;
 	char Msg[255];
 	
-	//
-	//	Will be called once for each AGW port to be mapped to a BPQ Port
-	//	The AGW port number is in CHANNEL - A=0, B=1 etc
-	//
-	//	The Socket to connect to is in IOBASE
-	//
+	/* */
+	/*	Will be called once for each AGW port to be mapped to a BPQ Port */
+	/*	The AGW port number is in CHANNEL - A=0, B=1 etc */
+	/* */
+	/*	The Socket to connect to is in IOBASE */
+	/* */
 
 	port=PortEntry->PORTNUMBER;
 
@@ -364,7 +364,7 @@ void * AGWExtInit(struct PORTCONTROL *  PortEntry)
 
 	if (destaddr[port].sin_family == 0)
 	{
-		// not defined in config file
+		/* not defined in config file */
 
 		destaddr[port].sin_family = AF_INET;
 		destaddr[port].sin_port = htons(PortEntry->IOBASE);
@@ -379,7 +379,7 @@ void * AGWExtInit(struct PORTCONTROL *  PortEntry)
 	i=sprintf(Msg,"AGW Port %d Host %s %d\n",AGWChannel[port]+1,AGWHostName[port],htons(destaddr[port].sin_port));
 	WritetoConsole(Msg);
 
-	// See if we already have a port for this host
+	/* See if we already have a port for this host */
 	
 
 	MasterPort[port]=port;
@@ -404,7 +404,7 @@ void * AGWExtInit(struct PORTCONTROL *  PortEntry)
 	if (MasterPort[port] == port)
 		ConnecttoAGW(port);
 
-	time(&lasttime[port]);			// Get initial time value
+	time(&lasttime[port]);			/* Get initial time value */
 
 	
 	return ExtProc;
@@ -437,7 +437,7 @@ BOOL ReadConfigFile(int Port)
 
 	if (Config)
 	{
-		// Using config from bpq32.cfg
+		/* Using config from bpq32.cfg */
 
 		char * ptr1 = Config, * ptr2;
 
@@ -449,7 +449,7 @@ BOOL ReadConfigFile(int Port)
 			ptr1 = ptr2 + 2;
 			ptr2 = strchr(ptr1, 13);
 
-			strcpy(errbuf,buf);			// save in case of error
+			strcpy(errbuf,buf);			/* save in case of error */
 	
 			if (!ProcessLine(buf, Port, FALSE))
 			{
@@ -476,9 +476,9 @@ static int ProcessLine(char * buf, int Port, BOOL CheckPort)
 
 	if(ptr == NULL) return (TRUE);
 
-	if(*ptr =='#') return (TRUE);			// comment
+	if(*ptr =='#') return (TRUE);			/* comment */
 
-	if(*ptr ==';') return (TRUE);			// comment
+	if(*ptr ==';') return (TRUE);			/* comment */
 
 	if (CheckPort)
 	{
@@ -488,7 +488,7 @@ static int ProcessLine(char * buf, int Port, BOOL CheckPort)
 
 		BPQport = atoi(ptr);
 
-		if (Port != BPQport) return TRUE;		// Not for us
+		if (Port != BPQport) return TRUE;		/* Not for us */
 	}
 	else
 	{
@@ -520,7 +520,7 @@ static int ProcessLine(char * buf, int Port, BOOL CheckPort)
 			
 		if (p_password == NULL) return (TRUE);
 
-		// Allocate buffer for signon message
+		/* Allocate buffer for signon message */
 
 		AGWSignon[BPQport]=malloc(546);
 
@@ -539,9 +539,9 @@ static int ProcessLine(char * buf, int Port, BOOL CheckPort)
 		return (TRUE);
 	}
 
-	//
-	//	Bad line
-	//
+	/* */
+	/*	Bad line */
+	/* */
 	return (FALSE);
 	
 }
@@ -562,17 +562,17 @@ VOID ConnecttoAGWThread(void * portptr)
 	BOOL bcopt=TRUE;
 	struct hostent * HostEnt;
 
-	//	Only called for the first BPQ port for a particular host/port combination
+	/*	Only called for the first BPQ port for a particular host/port combination */
 
 	destaddr[port].sin_addr.s_addr = inet_addr(AGWHostName[port]);
 
 	if (destaddr[port].sin_addr.s_addr == INADDR_NONE)
 	{
-		//	Resolve name to address
+		/*	Resolve name to address */
 
 		 HostEnt = gethostbyname (AGWHostName[port]);
 		 
-		 if (!HostEnt) return;			// Resolve failed
+		 if (!HostEnt) return;			/* Resolve failed */
 
 		 memcpy(&destaddr[port].sin_addr.s_addr,HostEnt->h_addr,4);
 
@@ -596,9 +596,9 @@ VOID ConnecttoAGWThread(void * portptr)
 
 	if (bind(AGWSock[port], (LPSOCKADDR) &sinx, addrlen) != 0 )
 	{
-		//
-		//	Bind Failed
-		//
+		/* */
+		/*	Bind Failed */
+		/* */
 	
 		i=sprintf(Msg, "Bind Failed for AGW socket - error code = %d\r\n", WSAGetLastError());
 		WritetoConsole(Msg);
@@ -611,21 +611,21 @@ VOID ConnecttoAGWThread(void * portptr)
 
 	if (connect(AGWSock[port],(LPSOCKADDR) &destaddr[port],sizeof(destaddr[port])) == 0)
 	{
-		//
-		//	Connected successful
-		//
+		/* */
+		/*	Connected successful */
+		/* */
 
 		CONNECTED[port] = TRUE;
 		CONNECTING[port] = FALSE;
 
 		ioctlsocket (AGWSock[port],FIONBIO,&param);
 
-		// If required, send signon
+		/* If required, send signon */
 
 		if (AGWSignon[port])
 			send(AGWSock[port],AGWSignon[port],546,0);
 
-		// Request Raw Frames
+		/* Request Raw Frames */
 
 		AGWHeader.Port=0;
 		AGWHeader.DataKind='k';
@@ -639,9 +639,9 @@ VOID ConnecttoAGWThread(void * portptr)
 	{
 		err=WSAGetLastError();
 
-		//
-		//	Connect failed
-		//
+		/* */
+		/*	Connect failed */
+		/* */
 
 		if (Alerted[port] == FALSE)
 		{
@@ -665,9 +665,9 @@ int ProcessReceivedData(int port)
 	char Message[500];
 	PMSGWITHLEN buffptr;
 
-	//	Need to extract messages from byte stream
+	/*	Need to extract messages from byte stream */
 
-	//	Use MSG_PEEK to ensure whole message is available
+	/*	Use MSG_PEEK to ensure whole message is available */
 
 	bytes = recv(AGWSock[port],(char *)&RXHeader,sizeof(RXHeader),MSG_PEEK);
 
@@ -685,7 +685,7 @@ int ProcessReceivedData(int port)
 
 	if (bytes == 0)
 	{
-		//	zero bytes means connection closed
+		/*	zero bytes means connection closed */
 
 		i=sprintf(ErrMsg, "AGW Connection closed for BPQ Port %d\r\n", port);
 		WritetoConsole(ErrMsg);
@@ -695,11 +695,11 @@ int ProcessReceivedData(int port)
 		return (0);
 	}
 
-	//	Have some data
+	/*	Have some data */
 	
 	if (bytes == sizeof(RXHeader))
 	{
-		//	Have a header - see if we have any associated data
+		/*	Have a header - see if we have any associated data */
 		
 		datalen=RXHeader.DataLength;
 
@@ -709,7 +709,7 @@ int ProcessReceivedData(int port)
 
 		if (datalen > 0)
 		{
-			// Need data - See if enough there
+			/* Need data - See if enough there */
 			
 			bytes = recv(AGWSock[port],(char *)&Message,sizeof(RXHeader)+datalen,MSG_PEEK);
 		}
@@ -723,22 +723,22 @@ int ProcessReceivedData(int port)
 				bytes = recv(AGWSock[port],(char *)&Message,datalen,0);
 			}
 
-			// Have header, and data if needed
+			/* Have header, and data if needed */
 
-			// Only use frame type K
+			/* Only use frame type K */
 
-			if (RXHeader.DataKind == 'K')				// raw data
+			if (RXHeader.DataKind == 'K')				/* raw data */
 			{
-				//	Make sure it is for a port we want - we may not be using all AGW ports
+				/*	Make sure it is for a port we want - we may not be using all AGW ports */
 
 				if (BPQPort[RXHeader.Port][MasterPort[port]] == 0)
 					return (0);
 
-				// Get a buffer
+				/* Get a buffer */
 
 				buffptr = GetBuff();
 
-				if (buffptr == 0) return (0);			// No buffers, so ignore
+				if (buffptr == 0) return (0);			/* No buffers, so ignore */
 
 				buffptr->Len = datalen;
 				memcpy(buffptr->Data, &Message, datalen);
@@ -749,12 +749,12 @@ int ProcessReceivedData(int port)
 			return (0);
 		}
 
-		// Have header, but not sufficient data
+		/* Have header, but not sufficient data */
 
 		return (0);
 	}
 
-	// Dont have at least header bytes
+	/* Dont have at least header bytes */
 	
 	return (0);
 }

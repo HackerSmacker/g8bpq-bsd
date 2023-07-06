@@ -1,6 +1,6 @@
-//
-//	Standard __except handler to dump stack and code around eip
-//
+/* */
+/*	Standard __except handler to dump stack and code around eip */
+/* */
 
 __except(memcpy(&exinfo, GetExceptionInformation(), sizeof(struct _EXCEPTION_POINTERS)), EXCEPTION_EXECUTE_HANDLER)
 {
@@ -72,7 +72,7 @@ __except(memcpy(&exinfo, GetExceptionInformation(), sizeof(struct _EXCEPTION_POI
 
 	WriteMiniDump();
 
-	// Note - no closing } so additional code may be run in the __except block
+	/* Note - no closing } so additional code may be run in the __except block */
 
 #ifdef MDIKERNEL
 	if (CloseOnError == 1)

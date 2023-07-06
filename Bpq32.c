@@ -16,1163 +16,1163 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
-//
-//	409l	Oct 2001 Fix l3timeout for KISS
-//
-//	409m	Oct 2001 Fix Crossband Digi
-//
-//	409n	May 2002 Change error handling on load ext DLL
-
-//	409p	March 2005 Allow Multidigit COM Ports (kiss.c)
-
-//	409r	August 2005 Treat NULL string in Registry as use current directory
-//						Allow shutdown to close BPQ Applications
-
-//	409s	October 2005 Add DLL:Export entries to API for BPQTNC2
-
-//	409t	January 2006
-//
-//			Add API for Perl "GetPerlMsg"
-//			Add	API for BPQ1632	"GETBPQAPI"	- returns address of Assembler API routine
-//			Add Registry Entry "BPQ Directory". If present, overrides "Config File Location"
-//			Add New API "GetBPQDirectory" - Returns location of config file
-//			Add New API "ChangeSessionCallsign" - equivalent to "*** linked to" command
-//			Rename BPQNODES to BPQNODES.dat
-//			New API "GetAttachedProcesses" - returns number of processes connected.
-//			Warn if user trys to close Console Window.
-//			Add Debug entries to record Process Attach/Detach
-//			Fix recovery following closure of first process
-
-//	409t Beta 2	February 2006
-//
-//			Add API Entry "GetPortNumber"
-//
-//	409u	February 2006
-//
-//			Fix crash if allocate/deallocate called with stream=0
-//			Add API to ch
-//			Display config file path
-//			Fix saving of Locked Node flag
-//			Added SAVENODES SYSOP command
-//
-//	409u 2	March 2006
-//
-//			Fix SetupBPQDirectory
-//			Add CopyBPQDirectory (for Basic Programs)
-//
-//	409u 3	March 2006
-//
-//			Release streams on DLL unload
-
-//	409v	October 2006
-//
-//			Support Minimize to Tray for all BPQ progams
-//			Implement L4 application callsigns
-
-//	410		November 2006
-//
-//			Modified to compile with C++ 2005 Express Edition
-//			Make MCOM MTX MMASK local variables
-//
-// 410a		January 2007
-//
-//			Add program name to Attach-Detach messages
-//			Attempt to detect processes which have died 
-//			Fix bug in NETROM and IFrame decode which would cause crash if frame was corrupt
-//			Add BCALL - origin call for Beacons
-//			Fix KISS ACKMODE ACK processing
-//
-
-//	410b	November 2007
-//
-//			Allow CTEXT of up to 510, and enforce PACLEN, fragmenting if necessary
-
-// 410c		December 2007
-
-//			Fix problem with NT introduced in V410a
-//			Display location of DLL on Console
-
-// 410d		January 2008
-
-//				Fix crash in DLL Init caused by long path to program
-//				Invoke Appl2 alias on C command (if enabled)
-//				Allow C command to be disabled
-//				Remove debug trap in GETRAWFRAME
-//				Validate Alias of directly connected node, mainly for KPC3 DISABL Problem
-//				Move Port statup code out of DLLInit (mainly for perl)
-//				Changes to allow Load/Unload of bpq32.dll by appl
-//				CloseBPQ32 API added
-//				Ext Driver Close routes called
-//				Changes to release Mutex
-
-// 410e		May 2008
-
-//				Fix missing SSID on last call of UNPROTO string (CONVTOAX25 in main.asm)
-//				Fix VCOM Driver (RX Len was 1 byte too long)
-//				Fix possible crash on L4CODE if L4DACK received out of sequence
-//				Add basic IP decoding
-
-// 410f		October 2008
-
-//				Add IP Gateway
-//				Add Multiport DIGI capability
-//				Add GetPortDescription API
-//				Fix potential hangs if RNR lost
-//				Fix problem if External driver failes to load
-//				Put pushad/popad round _INITIALISEPORTS (main.asm)
-//				Add APIs GetApplCallVB and GetPortDescription (mainly for RMS)
-//				Ensure Route Qual is updated if Port Qual changed
-//				Add Reload Option, plus menu items for DUMP and SAVENODES
+/* */
+/*	409l	Oct 2001 Fix l3timeout for KISS */
+/* */
+/*	409m	Oct 2001 Fix Crossband Digi */
+/* */
+/*	409n	May 2002 Change error handling on load ext DLL */
+
+/*	409p	March 2005 Allow Multidigit COM Ports (kiss.c) */
+
+/*	409r	August 2005 Treat NULL string in Registry as use current directory */
+/*						Allow shutdown to close BPQ Applications */
+
+/*	409s	October 2005 Add DLL:Export entries to API for BPQTNC2 */
+
+/*	409t	January 2006 */
+/* */
+/*			Add API for Perl "GetPerlMsg" */
+/*			Add	API for BPQ1632	"GETBPQAPI"	- returns address of Assembler API routine */
+/*			Add Registry Entry "BPQ Directory". If present, overrides "Config File Location" */
+/*			Add New API "GetBPQDirectory" - Returns location of config file */
+/*			Add New API "ChangeSessionCallsign" - equivalent to "*** linked to" command */
+/*			Rename BPQNODES to BPQNODES.dat */
+/*			New API "GetAttachedProcesses" - returns number of processes connected. */
+/*			Warn if user trys to close Console Window. */
+/*			Add Debug entries to record Process Attach/Detach */
+/*			Fix recovery following closure of first process */
+
+/*	409t Beta 2	February 2006 */
+/* */
+/*			Add API Entry "GetPortNumber" */
+/* */
+/*	409u	February 2006 */
+/* */
+/*			Fix crash if allocate/deallocate called with stream=0 */
+/*			Add API to ch */
+/*			Display config file path */
+/*			Fix saving of Locked Node flag */
+/*			Added SAVENODES SYSOP command */
+/* */
+/*	409u 2	March 2006 */
+/* */
+/*			Fix SetupBPQDirectory */
+/*			Add CopyBPQDirectory (for Basic Programs) */
+/* */
+/*	409u 3	March 2006 */
+/* */
+/*			Release streams on DLL unload */
+
+/*	409v	October 2006 */
+/* */
+/*			Support Minimize to Tray for all BPQ progams */
+/*			Implement L4 application callsigns */
+
+/*	410		November 2006 */
+/* */
+/*			Modified to compile with C++ 2005 Express Edition */
+/*			Make MCOM MTX MMASK local variables */
+/* */
+/* 410a		January 2007 */
+/* */
+/*			Add program name to Attach-Detach messages */
+/*			Attempt to detect processes which have died  */
+/*			Fix bug in NETROM and IFrame decode which would cause crash if frame was corrupt */
+/*			Add BCALL - origin call for Beacons */
+/*			Fix KISS ACKMODE ACK processing */
+/* */
+
+/*	410b	November 2007 */
+/* */
+/*			Allow CTEXT of up to 510, and enforce PACLEN, fragmenting if necessary */
+
+/* 410c		December 2007 */
+
+/*			Fix problem with NT introduced in V410a */
+/*			Display location of DLL on Console */
+
+/* 410d		January 2008 */
+
+/*				Fix crash in DLL Init caused by long path to program */
+/*				Invoke Appl2 alias on C command (if enabled) */
+/*				Allow C command to be disabled */
+/*				Remove debug trap in GETRAWFRAME */
+/*				Validate Alias of directly connected node, mainly for KPC3 DISABL Problem */
+/*				Move Port statup code out of DLLInit (mainly for perl) */
+/*				Changes to allow Load/Unload of bpq32.dll by appl */
+/*				CloseBPQ32 API added */
+/*				Ext Driver Close routes called */
+/*				Changes to release Mutex */
+
+/* 410e		May 2008 */
+
+/*				Fix missing SSID on last call of UNPROTO string (CONVTOAX25 in main.asm) */
+/*				Fix VCOM Driver (RX Len was 1 byte too long) */
+/*				Fix possible crash on L4CODE if L4DACK received out of sequence */
+/*				Add basic IP decoding */
+
+/* 410f		October 2008 */
+
+/*				Add IP Gateway */
+/*				Add Multiport DIGI capability */
+/*				Add GetPortDescription API */
+/*				Fix potential hangs if RNR lost */
+/*				Fix problem if External driver failes to load */
+/*				Put pushad/popad round _INITIALISEPORTS (main.asm) */
+/*				Add APIs GetApplCallVB and GetPortDescription (mainly for RMS) */
+/*				Ensure Route Qual is updated if Port Qual changed */
+/*				Add Reload Option, plus menu items for DUMP and SAVENODES */
 
-// 410g		December 2008
+/* 410g		December 2008 */
 
-//				Restore API Exports BPQHOSTAPIPTR and MONDECODEPTR (accidentally deleted)
-//				Fix changed init of BPQDirectory (accidentally changed)
-//				Fix Checks for lost processes (accidentally deleted)
-//				Support HDLC Cards on W2K and above
-//				Delete Tray List entries for crashed processes
-//				Add Option to NODES command to sort by Callsign
-//				Add options to save or clear BPQNODES before Reconfig.
-//				Fix Reconfig in Win98
-//				Monitor buffering tweaks
-//				Fix Init for large (>64k) tables
-//				Fix Nodes count in Stats
+/*				Restore API Exports BPQHOSTAPIPTR and MONDECODEPTR (accidentally deleted) */
+/*				Fix changed init of BPQDirectory (accidentally changed) */
+/*				Fix Checks for lost processes (accidentally deleted) */
+/*				Support HDLC Cards on W2K and above */
+/*				Delete Tray List entries for crashed processes */
+/*				Add Option to NODES command to sort by Callsign */
+/*				Add options to save or clear BPQNODES before Reconfig. */
+/*				Fix Reconfig in Win98 */
+/*				Monitor buffering tweaks */
+/*				Fix Init for large (>64k) tables */
+/*				Fix Nodes count in Stats */
 
-// 410h		January 2009
+/* 410h		January 2009 */
 
-//				Add Start Minimized Option
-//				Changes to KISS for WIn98 Virtual COM
-//					Open \\.\com instead of //./COM
-//					Extra Dignostics
+/*				Add Start Minimized Option */
+/*				Changes to KISS for WIn98 Virtual COM */
+/*					Open \\.\com instead of //./COM */
+/*					Extra Dignostics */
 
-// 410i		Febuary 2009
+/* 410i		Febuary 2009 */
 
-//				Revert KISS Changes
-//				Save Window positions
+/*				Revert KISS Changes */
+/*				Save Window positions */
 
-// 410j		June 2009
+/* 410j		June 2009 */
 
-//				Fix tidying of window List when program crashed
-//				Add Max Nodes to Stats
-//				Don't update APPLnALIAS with received NODES info
-//				Fix MH display in other timezones
-//				Fix Possible crash when processing NETROM type Zero frames (eg NRR)
-//				Basic INP3 Stuff
-//				Add extra diagnostics to Lost Process detection
-//				Process Netrom Record Route frames.
+/*				Fix tidying of window List when program crashed */
+/*				Add Max Nodes to Stats */
+/*				Don't update APPLnALIAS with received NODES info */
+/*				Fix MH display in other timezones */
+/*				Fix Possible crash when processing NETROM type Zero frames (eg NRR) */
+/*				Basic INP3 Stuff */
+/*				Add extra diagnostics to Lost Process detection */
+/*				Process Netrom Record Route frames. */
 
-// 410k		June 2009
+/* 410k		June 2009 */
 
-//				Fix calculation of %retries in extended ROUTES display
-//				Fix corruption of ROUTES table
+/*				Fix calculation of %retries in extended ROUTES display */
+/*				Fix corruption of ROUTES table */
 
-// 410l		October 2009
+/* 410l		October 2009 */
 
-//				Add GetVersionString API call.
-//				Add GetPortTableEntry API call
-//				Keep links to neighbouring nodes open
+/*				Add GetVersionString API call. */
+/*				Add GetPortTableEntry API call */
+/*				Keep links to neighbouring nodes open */
 
-// Build 2
+/* Build 2 */
 
-//				Fix PE in NOROUTETODEST (missing POP EBX)
+/*				Fix PE in NOROUTETODEST (missing POP EBX) */
 
-// 410m		November 2009
+/* 410m		November 2009 */
 
-//				Changes for PACTOR and WINMOR to support the ATTACH command
-//				Enable INP3 if configured on a route.
-//				Fix count of nodes in Stats Display
-//				Overwrite the worst quality unused route if a call is received from a node not in your
-//				table when the table is full
+/*				Changes for PACTOR and WINMOR to support the ATTACH command */
+/*				Enable INP3 if configured on a route. */
+/*				Fix count of nodes in Stats Display */
+/*				Overwrite the worst quality unused route if a call is received from a node not in your */
+/*				table when the table is full */
 
-//	Build 5
+/*	Build 5 */
 
-//	Rig Control Interface
-//	Limit KAM VHF attach and RADIO commands to authorised programs (MailChat and BPQTerminal)
+/*	Rig Control Interface */
+/*	Limit KAM VHF attach and RADIO commands to authorised programs (MailChat and BPQTerminal) */
 
-// Build 6
+/* Build 6 */
 
-// Fix reading INP3 Flag from BPQNODES
+/* Fix reading INP3 Flag from BPQNODES */
 
-// Build 7
+/* Build 7 */
 
-//	Add MAXHOPS and MAXRTT config options
+/*	Add MAXHOPS and MAXRTT config options */
 
-// Build 8
+/* Build 8 */
 
-// Fix INP3 deletion of Application Nodes.
-// Fix GETCALLSIGN for Pactor Sessions
-// Add N Call* to display all SSID's of a call
-// Fix flow control on Pactor sessions.
+/* Fix INP3 deletion of Application Nodes. */
+/* Fix GETCALLSIGN for Pactor Sessions */
+/* Add N Call* to display all SSID's of a call */
+/* Fix flow control on Pactor sessions. */
 
-// Build 9
+/* Build 9 */
 
-// HDLC Support for XP
-// Add AUTH routines
+/* HDLC Support for XP */
+/* Add AUTH routines */
 
-// Build 10
+/* Build 10 */
 
-// Fix handling commands split over more that one packet.
+/* Fix handling commands split over more that one packet. */
 
-// Build 11
+/* Build 11 */
 
-// Attach cmd changes for winmor disconnecting state
-// Option Interlock Winmor/Pactor ports
+/* Attach cmd changes for winmor disconnecting state */
+/* Option Interlock Winmor/Pactor ports */
 
-// Build 12
+/* Build 12 */
 
-// Add APPLS export for winmor
-// Handle commands ending CR LF
+/* Add APPLS export for winmor */
+/* Handle commands ending CR LF */
 
-// Build 13
+/* Build 13 */
 
-// Incorporate Rig Control in Kernel
+/* Incorporate Rig Control in Kernel */
 
-// Build 14
+/* Build 14 */
 
-// Fix config reload for Rig COntrol 
+/* Fix config reload for Rig COntrol  */
 
-// 410n		March 2010
+/* 410n		March 2010 */
 
-// Implement C P via PACTOR/WINMOR (for Airmail)
+/* Implement C P via PACTOR/WINMOR (for Airmail) */
 
-// Build 2
+/* Build 2 */
 
-// Don't flip SSID bits on Downlink Connect if uplink is Pactor/WINMOR
-// Fix resetting IDLE Timer on Pactor/WINMOR sessions
-// Send L4 KEEPLI messages based on IDLETIME
+/* Don't flip SSID bits on Downlink Connect if uplink is Pactor/WINMOR */
+/* Fix resetting IDLE Timer on Pactor/WINMOR sessions */
+/* Send L4 KEEPLI messages based on IDLETIME */
 
-// 410o		July 2010
+/* 410o		July 2010 */
 
-// Read bpqcfg.txt instead of .bin
-// Support 32 bit MMASK (Allowing 32 Ports)
-// Support 32 bit _APPLMASK (Allowing 32 Applications)
-// Allow more commands
-// Allow longer command aliases
-// Fix logic error in RIGControl Port Initialisation (wasn't always raising RTS and DTR
-// Clear RIGControl RTS and DTR on close
+/* Read bpqcfg.txt instead of .bin */
+/* Support 32 bit MMASK (Allowing 32 Ports) */
+/* Support 32 bit _APPLMASK (Allowing 32 Applications) */
+/* Allow more commands */
+/* Allow longer command aliases */
+/* Fix logic error in RIGControl Port Initialisation (wasn't always raising RTS and DTR */
+/* Clear RIGControl RTS and DTR on close */
 
-// 410o		Build 2 August 2010
+/* 410o		Build 2 August 2010 */
 
-// Fix couple of errors in config (needed APPLICATIONS and BBSCALL/ALIAS/QUAL)
-// Fix Kenwood Rig Control when more than one message received at once.
-// Save minimzed state of Rigcontrol Window
+/* Fix couple of errors in config (needed APPLICATIONS and BBSCALL/ALIAS/QUAL) */
+/* Fix Kenwood Rig Control when more than one message received at once. */
+/* Save minimzed state of Rigcontrol Window */
 
-// 410o		Build 3 August 2010
+/* 410o		Build 3 August 2010 */
 
-// Fix reporting of set errors in scan to a random session
+/* Fix reporting of set errors in scan to a random session */
 
-// 410o		Build 4 August 2010
+/* 410o		Build 4 August 2010 */
 
-// Change All xxx Ports are in use to no xxxx Ports are available if there are no sessions with _APPLMASK
-// Fix validation of TRANSDELAY
+/* Change All xxx Ports are in use to no xxxx Ports are available if there are no sessions with _APPLMASK */
+/* Fix validation of TRANSDELAY */
 
-// 410o		Build 5 August 2010
+/* 410o		Build 5 August 2010 */
 
-//	Add Repeater Shift and Set Data Mode options to Rigcontrol (for ICOM only)
-//	Add WINMOR and SCS Pactor mode control option to RigControl
-//  Extend INFOMSG to 2000 bytes
-//  Improve Scan freq change lock (check both SCS and WINMOR Ports)
+/*	Add Repeater Shift and Set Data Mode options to Rigcontrol (for ICOM only) */
+/*	Add WINMOR and SCS Pactor mode control option to RigControl */
+/*  Extend INFOMSG to 2000 bytes */
+/*  Improve Scan freq change lock (check both SCS and WINMOR Ports) */
 
-// 410o		Build 6 September 2010
+/* 410o		Build 6 September 2010 */
 
-// Incorporate IPGateway in main code.
-// Fix GetSessionInfo for Pactor/Winmor Ports
-// Add Antenna Selection to RigControl
-// Allow Bandwidth options on RADIO command line (as well as in Scan definitions)
+/* Incorporate IPGateway in main code. */
+/* Fix GetSessionInfo for Pactor/Winmor Ports */
+/* Add Antenna Selection to RigControl */
+/* Allow Bandwidth options on RADIO command line (as well as in Scan definitions) */
 
-// 410o		Build 7 September 2010
+/* 410o		Build 7 September 2010 */
 
-// Move rigconrtol display to driver windows
-// Move rigcontrol config to driver config.
-// Allow driver and IPGateway config info in bpq32.cfg
-// Move IPGateway, AXIP, VKISS, AGW and WINMOR drivers into bpq32.dll
-// Add option to reread IP Gateway config.
-// Fix Reinit after process with timer closes (error in TellSessions).
+/* Move rigconrtol display to driver windows */
+/* Move rigcontrol config to driver config. */
+/* Allow driver and IPGateway config info in bpq32.cfg */
+/* Move IPGateway, AXIP, VKISS, AGW and WINMOR drivers into bpq32.dll */
+/* Add option to reread IP Gateway config. */
+/* Fix Reinit after process with timer closes (error in TellSessions). */
 
-// 410p		Build 2 October 2010
+/* 410p		Build 2 October 2010 */
 
-// Move KAM and SCS drivers to bpq32.dll
+/* Move KAM and SCS drivers to bpq32.dll */
 
-// 410p		Build 3 October 2010
+/* 410p		Build 3 October 2010 */
 
-// Support more than one axip port.
+/* Support more than one axip port. */
 
-// 410p		Build 4 October 2010
+/* 410p		Build 4 October 2010 */
 
-// Dynamically load psapi.dll (for 98/ME)
+/* Dynamically load psapi.dll (for 98/ME) */
 
-// 410p		Build 5 October 2010
+/* 410p		Build 5 October 2010 */
 
-// Incorporate TelnetServer
-// Fix AXIP ReRead Config
-// Report AXIP accept() fails to syslog, not a popup.
+/* Incorporate TelnetServer */
+/* Fix AXIP ReRead Config */
+/* Report AXIP accept() fails to syslog, not a popup. */
 
-// 410p		Build 6 October 2010
+/* 410p		Build 6 October 2010 */
 
-// Includes HAL support
-// Changes to Pactor Drivers disconnect code
-// AXIP now sends with source port = dest port, unless overridden by SOURCEPORT param
-// Config now checks for duplicate port definitions
-// Add Node Map reporting
-// Fix WINMOR deferred disconnect.
-// Report Pactor PORTCALL to WL2K instead of RMS Applcall
+/* Includes HAL support */
+/* Changes to Pactor Drivers disconnect code */
+/* AXIP now sends with source port = dest port, unless overridden by SOURCEPORT param */
+/* Config now checks for duplicate port definitions */
+/* Add Node Map reporting */
+/* Fix WINMOR deferred disconnect. */
+/* Report Pactor PORTCALL to WL2K instead of RMS Applcall */
 
-// 410p		Build 7 October 2010
+/* 410p		Build 7 October 2010 */
 
-// Add In/Out flag to Map reporting, and report centre, not dial
-// Write Telnet log to BPQ Directory
-// Add Port to AXIP resolver display
-// Send Reports to update.g8bpq.net:81
-// Add support for FT100 to Rigcontrol
-// Add timeout to Rigcontrol PTT
-// Add Save Registry Command
+/* Add In/Out flag to Map reporting, and report centre, not dial */
+/* Write Telnet log to BPQ Directory */
+/* Add Port to AXIP resolver display */
+/* Send Reports to update.g8bpq.net:81 */
+/* Add support for FT100 to Rigcontrol */
+/* Add timeout to Rigcontrol PTT */
+/* Add Save Registry Command */
 
-// 410p		Build 8 November 2010
+/* 410p		Build 8 November 2010 */
 
-// Add NOKEEPALIVES Port Param
-// Renumbered for release
+/* Add NOKEEPALIVES Port Param */
+/* Renumbered for release */
 
-// 410p		Build 9 November 2010
+/* 410p		Build 9 November 2010 */
 
-// Get Bandwith for map report from WL2K Report Command
-// Fix freq display for FT100 (was KHz, not MHz)
-// Don't try to change SCS mode whilst initialising
-// Allow reporting of Lat/Lon as well as Locator
-// Fix Telnet Log Name
-// Fix starting with Minimized windows when Minimizetotray isn't set
-// Extra Program Error trapping in SessionControl
-// Fix reporting same freq with different bandwidths at different times.
-// Code changes to support SCS Robust Packet Mode.
-// Add FT2000 to Rigcontrol
-// Only Send CTEXT to connects to Node (not to connects to an Application Call)
+/* Get Bandwith for map report from WL2K Report Command */
+/* Fix freq display for FT100 (was KHz, not MHz) */
+/* Don't try to change SCS mode whilst initialising */
+/* Allow reporting of Lat/Lon as well as Locator */
+/* Fix Telnet Log Name */
+/* Fix starting with Minimized windows when Minimizetotray isn't set */
+/* Extra Program Error trapping in SessionControl */
+/* Fix reporting same freq with different bandwidths at different times. */
+/* Code changes to support SCS Robust Packet Mode. */
+/* Add FT2000 to Rigcontrol */
+/* Only Send CTEXT to connects to Node (not to connects to an Application Call) */
 
-// Released as Build 10
+/* Released as Build 10 */
 
-// 410p		Build 11 January 2011
+/* 410p		Build 11 January 2011 */
 
-// Fix MH Update for SCS Outgoing Calls
-// Add Direct CMS Access to TelnetServer
-// Restructure DISCONNECT processing to run in Timer owning process
+/* Fix MH Update for SCS Outgoing Calls */
+/* Add Direct CMS Access to TelnetServer */
+/* Restructure DISCONNECT processing to run in Timer owning process */
 
-// 410p		Build 12 January 2011
+/* 410p		Build 12 January 2011 */
 
-// Add option for Hardware PTT to use a different com port from the scan port 
-// Add CAT PTT for Yaesu 897 (and maybe others)
-// Fix RMS Packet ports busy after restart
-// Fix CMS Telnet with MAXSESSIONS > 10
+/* Add option for Hardware PTT to use a different com port from the scan port  */
+/* Add CAT PTT for Yaesu 897 (and maybe others) */
+/* Fix RMS Packet ports busy after restart */
+/* Fix CMS Telnet with MAXSESSIONS > 10 */
 
-// 410p		Build 13 January 2011
+/* 410p		Build 13 January 2011 */
 
-// Fix loss of buffers in TelnetServer
-// Add CMS logging.
-// Add non - Promiscuous mode option for BPQETHER 
+/* Fix loss of buffers in TelnetServer */
+/* Add CMS logging. */
+/* Add non - Promiscuous mode option for BPQETHER  */
 
-// 410p		Build 14 January 2011
+/* 410p		Build 14 January 2011 */
 
-// Add support for BPQTermTCP
-// Allow more that one FBBPORT
-// Allow Telnet FBB mode sessions to send CRLF as well as CR on user and pass msgs
-// Add session length to CMS Telnet logging.
-// Return Secure Session Flag from GetConnectionInfo
-// Show Uptime as dd/hh/mm
+/* Add support for BPQTermTCP */
+/* Allow more that one FBBPORT */
+/* Allow Telnet FBB mode sessions to send CRLF as well as CR on user and pass msgs */
+/* Add session length to CMS Telnet logging. */
+/* Return Secure Session Flag from GetConnectionInfo */
+/* Show Uptime as dd/hh/mm */
 
-// 4.10.16.17	March 2011
+/* 4.10.16.17	March 2011 */
 
-// Add "Close all programs" command
-// Add BPQ Program Directory registry key
-// Use HKEY_CURRENT_USER on Vista and above (and move registry if necessary)
-// Time out IP Gateway ARP entries, and only reload ax.25 ARP entries
-// Add support for SCS Tracker HF Modes
-// Fix WL2K Reporting
-// Report Version to WL2K
-// Add Driver to support Tracker with multiple sessions (but no scanning, wl2k report, etc)
+/* Add "Close all programs" command */
+/* Add BPQ Program Directory registry key */
+/* Use HKEY_CURRENT_USER on Vista and above (and move registry if necessary) */
+/* Time out IP Gateway ARP entries, and only reload ax.25 ARP entries */
+/* Add support for SCS Tracker HF Modes */
+/* Fix WL2K Reporting */
+/* Report Version to WL2K */
+/* Add Driver to support Tracker with multiple sessions (but no scanning, wl2k report, etc) */
 
 
-// Above released as 5.0.0.1
+/* Above released as 5.0.0.1 */
 
-// 5.2.0.1
+/* 5.2.0.1 */
 
-// Add caching of CMS Server IP addresses
-// Initialise TNC State on Pactor Dialogs
-// Add Shortened (6 digit) AUTH mode.
-// Update MH with all frames (not just I/UI)
-// Add IPV6 Support for TelnetServer and AXIP
-// Fix TNC OK Test for Tracker
-// Fix crash in CMS mode if terminal disconnects while tcp commect in progress
-// Add WL2K reporting for Robust Packet
-// Add option to suppress WL2K reporting for specific frequencies
-// Fix Timeband processing for Rig Control
-// New Driver for SCS Tracker allowing multiple connects, so Tracker can be used for user access 
-// New Driver for V4 TNC
+/* Add caching of CMS Server IP addresses */
+/* Initialise TNC State on Pactor Dialogs */
+/* Add Shortened (6 digit) AUTH mode. */
+/* Update MH with all frames (not just I/UI) */
+/* Add IPV6 Support for TelnetServer and AXIP */
+/* Fix TNC OK Test for Tracker */
+/* Fix crash in CMS mode if terminal disconnects while tcp commect in progress */
+/* Add WL2K reporting for Robust Packet */
+/* Add option to suppress WL2K reporting for specific frequencies */
+/* Fix Timeband processing for Rig Control */
+/* New Driver for SCS Tracker allowing multiple connects, so Tracker can be used for user access  */
+/* New Driver for V4 TNC */
 
-// 5.2.1.3 October 2011
+/* 5.2.1.3 October 2011 */
 
-// Combine busy detector on Interlocked Ports (SCS PTC, WINMOR or KAM)
-// Improved program error logging
-// WL2K reporting changed to new format agreed with Lee Inman
+/* Combine busy detector on Interlocked Ports (SCS PTC, WINMOR or KAM) */
+/* Improved program error logging */
+/* WL2K reporting changed to new format agreed with Lee Inman */
 
-// 5.2.3.1 January 2012
+/* 5.2.3.1 January 2012 */
 
-// Connects from the console to an APPLCALL or APPLALIAS now invoke any Command Alias that has been defined.
-// Fix reporting of Tracker freqs to WL2K.
-// Fix Tracker monitoring setup (sending M UISC)
-// Fix possible call/application routing error on RP
-// Changes for P4Dragon
-// Include APRS Digi/IGate
-// Tracker monitoring now includes DIGIS
-// Support sending UI frames using SCSTRACKER, SCTRKMULTI and UZ7HO drivers
-// Include driver for UZ7HO soundcard modem.
-// Accept DRIVER as well as DLLNAME, and COMPORT as well as IOADDR in bpq32.cfg. COMPORT is decimal
-// No longer supports separate config files, or BPQTELNETSERVER.exe
-// Improved flow control for Telnet CMS Sessions
-// Fix handling Config file without a newline after last line
-// Add non - Promiscuous mode option for BPQETHER 
-// Change Console Window to a Dialog Box.
-// Fix possible corruption and loss of buffers in Tracker drivers
-// Add Beacon After Session option to Tracker and UZ7HO Drivers
-// Rewrite RigControl and add "Reread Config Command"
-// Support User Mode VCOM Driver for VKISS ports
+/* Connects from the console to an APPLCALL or APPLALIAS now invoke any Command Alias that has been defined. */
+/* Fix reporting of Tracker freqs to WL2K. */
+/* Fix Tracker monitoring setup (sending M UISC) */
+/* Fix possible call/application routing error on RP */
+/* Changes for P4Dragon */
+/* Include APRS Digi/IGate */
+/* Tracker monitoring now includes DIGIS */
+/* Support sending UI frames using SCSTRACKER, SCTRKMULTI and UZ7HO drivers */
+/* Include driver for UZ7HO soundcard modem. */
+/* Accept DRIVER as well as DLLNAME, and COMPORT as well as IOADDR in bpq32.cfg. COMPORT is decimal */
+/* No longer supports separate config files, or BPQTELNETSERVER.exe */
+/* Improved flow control for Telnet CMS Sessions */
+/* Fix handling Config file without a newline after last line */
+/* Add non - Promiscuous mode option for BPQETHER  */
+/* Change Console Window to a Dialog Box. */
+/* Fix possible corruption and loss of buffers in Tracker drivers */
+/* Add Beacon After Session option to Tracker and UZ7HO Drivers */
+/* Rewrite RigControl and add "Reread Config Command" */
+/* Support User Mode VCOM Driver for VKISS ports */
 
-// 5.2.4.1 January 2012
+/* 5.2.4.1 January 2012 */
 
-// Remove CR from Telnet User and Password Prompts
-// Add Rigcontrol to UZ7HO driver
-// Fix corruption of Free Buffer Count by Rigcontol
-// Fix WINMOR and V4 PTT
-// Add MultiPSK Driver
-// Add SendBeacon export for BPQAPRS
-// Add SendChatReport function
-// Fix check on length of Port Config ID String with trailing spaces
-// Fix interlock when Port Number <> Port Slot
-// Add NETROMCALL for L3 Activity
-// Add support for APRS Application
-// Fix Telnet with FBBPORT and no TCPPORT
-// Add Reread APRS Config
-// Fix switching to Pactor after scanning in normal packet mode (PTC)
+/* Remove CR from Telnet User and Password Prompts */
+/* Add Rigcontrol to UZ7HO driver */
+/* Fix corruption of Free Buffer Count by Rigcontol */
+/* Fix WINMOR and V4 PTT */
+/* Add MultiPSK Driver */
+/* Add SendBeacon export for BPQAPRS */
+/* Add SendChatReport function */
+/* Fix check on length of Port Config ID String with trailing spaces */
+/* Fix interlock when Port Number <> Port Slot */
+/* Add NETROMCALL for L3 Activity */
+/* Add support for APRS Application */
+/* Fix Telnet with FBBPORT and no TCPPORT */
+/* Add Reread APRS Config */
+/* Fix switching to Pactor after scanning in normal packet mode (PTC) */
 
-// 5.2.5.1 February 2012
+/* 5.2.5.1 February 2012 */
 
-// Stop reading Password file.
-// Add extra MPSK commands 
-// Fix MPSK Transparency
-// Make LOCATOR command compulsory
-// Add MobileBeaconInterval APRS param
-// Send Course and Speed when APRS is using GPS
-// Fix Robust Packet reporting in PTC driver
-// Fix corruption of some MIC-E APRS packets
+/* Stop reading Password file. */
+/* Add extra MPSK commands  */
+/* Fix MPSK Transparency */
+/* Make LOCATOR command compulsory */
+/* Add MobileBeaconInterval APRS param */
+/* Send Course and Speed when APRS is using GPS */
+/* Fix Robust Packet reporting in PTC driver */
+/* Fix corruption of some MIC-E APRS packets */
 
-// 5.2.6.1 February 2012
+/* 5.2.6.1 February 2012 */
 
-// Convert to MDI presentation of BPQ32.dll windows
-// Send APRS Status packets
-// Send QUIT not EXIT in PTC Init
-// Implement new WL2K reporting format and include traffic reporting info in CMS signon
-// New WL2KREPORT format
-// Prevent loops when APPL alias refers to itself
-// Add RigControl for Flex radios and ICOM IC-M710 Marine radio
+/* Convert to MDI presentation of BPQ32.dll windows */
+/* Send APRS Status packets */
+/* Send QUIT not EXIT in PTC Init */
+/* Implement new WL2K reporting format and include traffic reporting info in CMS signon */
+/* New WL2KREPORT format */
+/* Prevent loops when APPL alias refers to itself */
+/* Add RigControl for Flex radios and ICOM IC-M710 Marine radio */
 
-// 5.2.7.1
+/* 5.2.7.1 */
 
-//	Fix opening more thn one console window on Win98
-//  Change method of configuring multiple timelots on WL2K reporting
-//  Add option to update WK2K Sysop Database
-//	Add Web server
-//	Add UIONLY port option
+/*	Fix opening more thn one console window on Win98 */
+/*  Change method of configuring multiple timelots on WL2K reporting */
+/*  Add option to update WK2K Sysop Database */
+/*	Add Web server */
+/*	Add UIONLY port option */
 
-// 5.2.7.2
+/* 5.2.7.2 */
 
-//	Fix handling TelnetServer packets over 500 bytes in normal mode
+/*	Fix handling TelnetServer packets over 500 bytes in normal mode */
 
-// 5.2.7.3
+/* 5.2.7.3 */
 
-//	Fix Igate handling packets from UIView
+/*	Fix Igate handling packets from UIView */
 
-// 5.2.7.4
+/* 5.2.7.4 */
 
-//	Prototype Baycom driver.
+/*	Prototype Baycom driver. */
 
-// 5.2.7.5
+/* 5.2.7.5 */
 
-//  Set WK2K group ref to MARS (3) if using a MARS service code
+/*  Set WK2K group ref to MARS (3) if using a MARS service code */
 
-// 5.2.7.7
+/* 5.2.7.7 */
 
-//	Check for programs calling CloseBPQ32 when holding semaphore
-//  Try/Except round Status Timer Processing
+/*	Check for programs calling CloseBPQ32 when holding semaphore */
+/*  Try/Except round Status Timer Processing */
 
-// 5.2.7.8
+/* 5.2.7.8 */
 
-//  More Try/Except round Timer Processing
+/*  More Try/Except round Timer Processing */
 
-// 5.2.7.9
+/* 5.2.7.9 */
 
-//	Enable RX in Baycom, and remove test loopback in tx
+/*	Enable RX in Baycom, and remove test loopback in tx */
 
-// 5.2.7.10
+/* 5.2.7.10 */
 
-//	Try/Except round ProcessHTTPMessage
+/*	Try/Except round ProcessHTTPMessage */
 
-// 5.2.7.11
+/* 5.2.7.11 */
 
-//	BAYCOM tweaks
+/*	BAYCOM tweaks */
 
-// 5.2.7.13
+/* 5.2.7.13 */
 
-//	Release semaphore after program error in Timer Processing
-//  Check fro valid dest in REFRESHROUTE
+/*	Release semaphore after program error in Timer Processing */
+/*  Check fro valid dest in REFRESHROUTE */
 
 
-//	Add TNC-X KISSOPTION (includes the ACKMODE bytes in the checksum(
+/*	Add TNC-X KISSOPTION (includes the ACKMODE bytes in the checksum( */
 
-// Version 5.2.9.1 Sept 2012
+/* Version 5.2.9.1 Sept 2012 */
 
-// Fix using KISS ports with COMn > 16
-// Add "KISS over UDP" driver for PI as a TNC concentrator
+/* Fix using KISS ports with COMn > 16 */
+/* Add "KISS over UDP" driver for PI as a TNC concentrator */
 
-// Version 6.0.1.1
+/* Version 6.0.1.1 */
 
-// Convert to C for linux portability
-// Try to speed up kiss polling
+/* Convert to C for linux portability */
+/* Try to speed up kiss polling */
 
-// Version 6.0.2.1
+/* Version 6.0.2.1 */
 
-// Fix operation on Win98
-// Fix callsign error with AGWtoBPQ
-// Fix PTT problem with WINMOR
-// Fix Reread telnet config
-// Add Secure CMS signon
-// Fix error in cashing addresses of CMS servers
-// Fix Port Number when using Send Raw.
-// Fix PE in KISS driver if invalid subchannel received
-// Fix Orignal address of beacons
-// Speed up Telnet port monitoring.
-// Add TNC Emulators
-// Add CountFramesQueuedOnStream API
-// Limit number of frames that can be queued on a session.
-// Add XDIGI feature
-// Add Winmor Robust Mode switching for compatibility with new Winmor TNC
-// Move most APRS code from BPQAPRS to here
-// Stop corruption caused by overlong KISS frames
+/* Fix operation on Win98 */
+/* Fix callsign error with AGWtoBPQ */
+/* Fix PTT problem with WINMOR */
+/* Fix Reread telnet config */
+/* Add Secure CMS signon */
+/* Fix error in cashing addresses of CMS servers */
+/* Fix Port Number when using Send Raw. */
+/* Fix PE in KISS driver if invalid subchannel received */
+/* Fix Orignal address of beacons */
+/* Speed up Telnet port monitoring. */
+/* Add TNC Emulators */
+/* Add CountFramesQueuedOnStream API */
+/* Limit number of frames that can be queued on a session. */
+/* Add XDIGI feature */
+/* Add Winmor Robust Mode switching for compatibility with new Winmor TNC */
+/* Move most APRS code from BPQAPRS to here */
+/* Stop corruption caused by overlong KISS frames */
 
-// Version 6.0.3.1
+/* Version 6.0.3.1 */
 
-// Add starting/killing WINMOR TNC on remote host
-// Fix Program Error when APRS Item or Object name is same as call of reporting station
-// Dont digi a frame that we have already digi'ed
-// Add ChangeSessionIdleTime API
-// Add WK2KSYSOP Command
-// Add IDLETIME Command
-// Fix Errors in RELAYAPPL processing
-// Fix PE cauaed by invalid Rigcontrol Line
+/* Add starting/killing WINMOR TNC on remote host */
+/* Fix Program Error when APRS Item or Object name is same as call of reporting station */
+/* Dont digi a frame that we have already digi'ed */
+/* Add ChangeSessionIdleTime API */
+/* Add WK2KSYSOP Command */
+/* Add IDLETIME Command */
+/* Fix Errors in RELAYAPPL processing */
+/* Fix PE cauaed by invalid Rigcontrol Line */
 
-// Version 6.0.4.1
+/* Version 6.0.4.1 */
 
-// Add frequency dependent autoconnect appls for SCS Pactor
-// Fix DED Monitoring of I and UI with no data
-// Include AGWPE Emulator (from AGWtoBPQ)
-// accept DEL (Hex 7F) as backspace in Telnet
-// Fix re-running resolver on re-read AXIP config
-// Speed up processing, mainly for Telnet Sessions
-// Fix APRS init on restart of bpq32.exe
-// Change to 2 stop bits
-// Fix scrolling of WINMOR trace window
-// Fix Crash when ueing DED TNC Emulator
-// Fix Disconnect when using BPQDED2 Driver with Telnet Sessions
-// Allow HOST applications even when CMS option is disabled
-// Fix processing of APRS DIGIMAP command with no targets (didn't suppress default settings)
-
-// Version 6.0.5.1 January 2014
-
-//	Add UTF8 conversion mode to Telnet (converts non-UTF-8 chars to UTF-8)
-//	Add "Clear" option to MH command
-//	Add "Connect to RMS Relay" Option
-//  Revert to one stop bit on serial ports, explictly set two on FT2000 rig control
-//  Fix routing of first call in Robust Packet
-//	Add Options to switch input source on rigs with build in soundcards (sor far only IC7100 and Kenwood 590)
-//  Add RTS>CAT PTT option for Sound Card rigs
-//	Add Clear Nodes Option (NODE DEL ALL)
-//  SCS Pactor can set differeant APPLCALLS when scanning.
-//	Fix possible Scan hangup after a manual requency change with SCS Pactor
-//	Accept Scan entry of W0 to disable WINMOR on that frequency
-//  Fix corruption of NETROMCALL by SIMPLE config command
-//	Enforce Pactor Levels
-//	Add Telnet outward connect
-//	Add Relay/Trimode Emulation
-//	Fix V4 Driver
-//	Add PTT Mux
-//  Add Locked ARP Entries (via bpq32.cfg)
-//	Fix IDLETIME node command
-//	Fix STAY param on connect
-//	Add STAY option to Attach and Application Commands
-//	Fix crash on copying a large AXIP MH Window
-//	Fix possible crash when bpq32.exe dies
-//	Fix DIGIPORT for UI frames
-
-//  Version 6.0.6.1 April 2014
-
-//  FLDigi Interface
-//  Fix "All CMS Servers are inaccessible" message so Mail Forwarding ELSE works.
-//	Validate INP3 messages to try to prevent crash
-//  Fix possible crash if an overlarge KISS frame is received
-//	Fix error in AXR command
-//	Add LF to Telnet Outward Connect signin if NEEDLF added to connect line
-//	Add CBELL to TNC21 emulator
-//	Add sent objects and third party messages to APRS Dup List
-//  Incorporate UIUtil
-//	Use Memory Mapped file to pass APRS info to BPQAPRS, and process APRS HTTP in BPQ32
-//	Improvements to FLDIGI interlocking
-//	Fix TNC State Display for Tracker
-//	Cache CMS Addresses on LinBPQ
-//	Fix count error on DED Driver when handling 256 byte packets
-//	Add basic SNMP interface for MRTG
-//	Fix memory loss from getaddrinfo
-//	Process "BUSY" response from Tracker
-//	Handle serial port writes that don't accept all the data
-//	Trap Error 10038 and try to reopen socket
-//	Fix crash if overlong command line received
-
-//  Version 6.0.7.1 Aptil 2014
-//	Fix RigContol with no frequencies for Kenwood and Yaesu
-//	Add busy check to FLDIGI connects
-
-//  Version 6.0.8.1 August 2014
-
-//	Use HKEY_CURRENT_USER on all OS versions
-//	Fix crash when APRS symbol is a space.
-//	Fixes for FT847 CAT
-//	Fix display of 3rd byte of FRMR
-//	Add "DEFAULT ROBUST" and "FORCE ROBUST" commands to SCSPactor Driver
-//	Fix possible memory corruption in WINMOR driver
-//	Fix FT2000 Modes
-//	Use new WL2K reporting system (Web API Based)
-//	APRS Server now cycles through hosts if DNS returns more than one
-//	BPQ32 can now start and stop FLDIGI
-//	Fix loss of AXIP Resolver when running more than one AXIP port
-
-//  Version 6.0.9.1 November 2014
-
-//	Fix setting NOKEEPALIVE flag on route created from incoming L3 message
-//	Ignore NODES from locked route with quality 0
-//	Fix seting source port in AXIP
-//	Fix Dual Stack (IPV4/V6) on Linux.
-//	Fix RELAYSOCK if IPv6 is enabled.
-//	Add support for FT1000
-//	Fix hang when APRS Messaging packet received on RF
-//	Attempt to normalize Node qualies when stations use widely differing Route qualities
-//	Add NODES VIA command to display nodes reachable via a specified neighbour
-//	Fix applying "DisconnectOnClose" setting on HOST API connects (Telnet Server)
-//	Fix buffering large messages in Telnet Host API
-//	Fix occasional crash in terminal part line processing
-//	Add "NoFallback" command to Telnet server to disable "fallback to Relay"
-//	Improved support for APPLCALL scanning with Pactor
-//	MAXBUFFS config statement is no longer needed.
-//	Fix USEAPPLCALLS with Tracker when connect to APPLCALL fails
-//	Implement LISTEN and CQ commands
-//	FLDIGI driver can now start FLDIGI on a remote system.
-//	Add IGNOREUNLOCKEDROUTES parameter
-//	Fix error if too many Telnet server connections
-
-//  Version 6.0.10.1 Feb 2015
-
-//	Fix crash if corrupt HTML request received.
-//	Allow SSID's of 'R' and 'T' on non-ax.25 ports for WL2K Radio Only network.
-//	Make HTTP server HTTP Version 1.1 complient - use persistent conections and close after 2.5 mins
-//	Add	INP3ONLY flag.
-//	Fix program error if enter UNPROTO without a destination path
-//	Show client IP address on HTTP sessions in Telnet Server
-//	Reduce frequency and number of attempts to connect to routes when Keepalives or INP3 is set
-//	Add FT990 RigControl support, fix FT1000MP support.
-//	Support ARMV5 processors
-//  Changes to support LinBPQ APRS Client
-//	Add IC7410 to supported Soundcard rigs
-//	Add CAT PTT to NMEA type (for ICOM Marine Radios_
-//	Fix ACKMODE
-//	Add KISS over TCP
-//	Support ACKMode on VKISS
-//	Improved reporting of configuration file format errors
-//	Experimental driver to support ARQ sessions using UI frames
-
-//  Version 6.0.11.1 September 2015
-
-//	Fixes for IPGateway configuration and Virtual Circuit Mode
-//	Separate Portmapper from IPGateway
-//	Add PING Command
-//	Add ARDOP Driver
-//	Add basic APPLCALL support for PTC-PRO/Dragon 7800 Packet (using MYALIAS)
-//	Add "VeryOldMode" for KAM Version 5.02
-//	Add KISS over TCP Slave Mode.
-//	Support Pactor and Packet on P4Dragon on one port
-//	Add "Remote Staton Quality" to Web ROUTES display
-//	Add Virtual Host option for IPGateway NET44 Encap
-//	Add NAT for local hosts to IPGateway
-//	Fix setting filter from RADIO command for IC7410
-//	Add Memory Channel Scanning for ICOM Radios
-//	Try to reopen Rig Control port if it fails (could be unplugged USB)
-//	Fix restoring position of Monitor Window
-//	Stop Codec on Winmor and ARDOP when an interlocked port is attached (instead of listen false)
-//	Support APRS beacons in RP mode on Dragon//
-//	Change Virtual MAC address on IPGateway to include last octet of IP Address
-//	Fix "NOS Fragmentation" in IP over ax.25 Virtual Circuit Mode
-//	Fix sending I frames before L2 session is up
-//	Fix Flow control on Telnet outbound sessions.
-//	Fix reporting of unterminatred comments in config
-//	Add option for RigControl to not change mode on FT100/FT990/FT1000
-//	Add "Attach and Connect" for Telnet ports
-
-//  Version 6.0.12.1	November 2015
-
-//	Fix logging of IP addresses for connects to FBBPORT
-//	Allow lower case user and passwords in Telnet "Attach and Connect"
-//	Fix possible hang in KISS over TCP Slave mode
-//	Fix duplicating LinBPQ process if running ARDOP fails
-//	Allow lower case command aliases and increase alias length to 48
-//	Fix saving long IP frames pending ARP resolution
-//	Fix dropping last entry from a RIP44 message.
-//	Fix displaying Digis in MH list
-//	Add port name to Monitor config screen port list
-//	Fix APRS command display filter and add port filter
-//	Support port names in BPQTermTCP Monitor config
-//	Add FINDBUFFS command to dump lost buffers to Debugview/Syslog
-//	Buffer Web Mgmt Edit Config output
-//	Add WebMail Support
-//	Fix not closing APRS Send WX file.
-//	Add RUN option to APRS Config to start APRS Client
-//	LinBPQ run FindLostBuffers and exit if QCOUNT < 5
-//	Close and reopen ARDOP connection if nothing received for 90 secs
-//	Add facility to bridge traffic between ports (similar to APRS Bridge but for all frame types)
-//	Add KISSOPTION TRACKER to set SCS Tracker into KISS Mode
-
-// 6.0.13.1
-
-//	Allow /ex to exit UNPROTO mode
-//	Support ARQBW commands.
-//	Support IC735
-//	Fix sending ARDOP beacons after a busy holdoff
-//	Enable BPQDED driver to beacon via non-ax.25 ports.
-//	Fix channel number in UZ7HO monitoring
-//	Add SATGate mode to APRSIS Code.
-//	Fix crash caused by overlong user name in telnet logon
-//	Add option to log L4 connects
-//	Add AUTOADDQuiet mode to AXIP.
-//	Add EXCLUDE processing
-//	Support WinmorControl in UZ7HO driver and fix starting TNC on Linux
-//	Convert calls in MAP entries to upper case.
-//	Support Linux COM Port names for APRS GPS
-//	Fix using NETROM serial protocol on ASYNC Port
-//	Fix setting MYLEVEL by scanner after manual level change.
-//	Add DEBUGLOG config param to SCS Pactor Driver to log serial port traffic
-//	Uue #myl to set SCS Pactor MYLEVEL, and add checklevel command
-//	Add Multicast RX interface to FLDIGI Driver
-//	Fix processing application aliases to a connect command.
-//	Fix Buffer loss if radio connected to PTC rig port but BPQ not configured to use it
-//	Save backups of bpq32.cfg when editing with Web interface and report old and new length
-//	Add DD command to SCS Pactor, and use it for forced disconnect.
-//	Add ARDOP mode select to scan config
-//	ARDOP changes for ARDOP V 0.5+
-//	Flip SSID bits on UZ7HO downlink connects
-
-
-// Version 6.0.14.1
-
-//	Fix Socket leak in ARDOP and FLDIGI drivers.
-//	Add option to change CMS Server hostname
-//	ARDOP Changes for 0.8.0+
-//	Discard Terminal Keepalive message (two nulls) in ARDOP command hander
-//	Allow parameters to be passed to ARDOP TNC when starting it
-//	Fix Web update of Beacon params
-//	Retry connects to KISS ports after failure
-//	Add support for ARDOP Serial Interface Native mode.
-//	Fix gating APRS-IS Messages to RF
-//	Fix Beacons when PORTNUM used
-//	Make sure old monitor flag is cleared for TermTCP sessions
-//	Add CI-V antenna control for IC746
-//	Don't allow ARDOP beacons when connected
-//	Add support for ARDOP Serial over I2C
-//	Fix possble crash when using manual RADIO messages
-//	Save out of sequence L2 frames for possible reuse after retry
-//	Add KISS command to send KISS control frame to TNC
-//	Stop removing unused digis from packets sent to APRS-IS
-
-//	Processing of ARDOP PING and PINGACK responses
-//	Handle changed encoding of WL2K update responses.
-//	Allow anonymous logon to telnet
-//	Don't use APPL= for RP Calls in Dragon Single mode.
-//	Add basic messaging page to APRS Web Server
-//	Add debug log option to SCSTracker and TrkMulti Driver
-//	Support REBOOT command on LinBPQ
-//  Allow LISTEN command on all ports that support ax.25 monitoring
-
-//	Version 6.0.15.1 Feb 2018
-
-//	partial support for ax.25 V2.2
-//	Add MHU and MHL commands and MH filter option
-//	Fix scan interlock with ARDOP
-//	Add Input source seiect for IC7300
-//	Remove % transparency from web terminal signon message
-//	Fix L4 Connects In count on stats
-//	Fix crash caused by corrupt CMSInfo.txt
-//	Add Input peaks display to ARDOP status window
-//  Add options to show time in local and distances in KM on APRS Web pages
-//	Add VARA support
-//	Fix WINMOR Busy left set when port Suspended
-//	Add ARDOP-Packet Support
-//	Add Antenna Switching for TS 480
-//	Fix possible crash in Web Terminal
-//	Support different Code Pages on Console sessions
-//	Use new Winlink API interface (api.winlink.org)
-//	Support USB/ACC switching on TS590SG
-//	Fix scanning when ARDOP or WINMOR is used without an Interlocked Pactor port.
-//	Set NODECALL to first Application Callsign if NODE=0 and BBSCALL not set.
-//	Add RIGCONTROL TUNE and POWER commands for some ICOM and Kenwwod rigs
-//	Fix timing out ARDOP PENDING Lock
-//	Support mixed case WINLINK Passwords
-//	Add TUNE and POWER Rigcontol Commands for some radios
-//  ADD LOCALTIME and DISPKM options to APRS Digi/Igate
-
-// 6.0.16.1 March 2018
-
-//	Fix Setting data mode and filter for IC7300 radios
-//	Add VARA to WL2KREPORT
-//	Add trace to SCS Tracker status window
-//	Fix possible hang in IPGATEWAY
-//	Add BeacontoIS parameter to APRSDIGI. Allows you to stop sending beacons to APRS-IS.
-//	Fix sending CTEXT on WINMOR sessions 
-
-// 6.0.17.1 November 2018
-
-//	Change WINMOR Restart after connection to Restart after Failure and add same option to ARDOP and VARA
-//	Add Abort Connection to WINMOR and VARA Interfaces
-//	Reinstate accidentally removed CMS Access logging
-//	Fix MH CLEAR 
-//  Fix corruption of NODE table if NODES received from station with null alias
-//	Fix loss of buffer if session closed with something in PARTCMDBUFFER
-//	Fix Spurious GUARD ZONE CORRUPT message in IP Code.
-//	Remove "reread bpq32.cfg and reconfigure" menu options
-//	Add support for PTT using CM108 based soundcard interfaces
-//	Datestamp Telnet log files and delete old Telnet and CMSAcces logs
-
-// 6.0.18.1 January 2019
-
-//	Fix validation of NODES broadcasts
-//  Fix HIDENODES
-//  Check for failure to reread config on axip reconfigure
-//	Fix crash if STOPPORT or STARTPORT used on KISS over TCP port
-//	Send Beacons from BCALL or PORTCALL if configured
-//  Fix possible corruption of last entry in MH display
-//	Ensure RTS/DTR is down when opening PTT Port
-//	Remove RECONFIG command
-//	Preparations for 64 bit version
-
-// 6.0.19 Sept 2019
-//	Fix UZ7HO interlock
-//	Add commands to set Centre Frequency and Modem with UZ7HO Soundmodem (on Windows only)
-//	Add option to save and restore MH lists and SAVEMH command
-//	Add Frequency (if known) to UZ7HO MH lists
-//	Add Gateway option to Telnet for PAT
-//	Try to fix SCS Tracker recovery
-//	Ensure RTS/DTR is down on CAT port if using that line for PTT
-//	Experimental APRS Messaging in Kernel
-//	Add Rigcontrol on remote PC's using WinmorControl
-//	ADD VARAFM and VARAFM96 WL2KREPORT modes
-//	Fix WL2K sysop update for new Winlink API
-//	Fix APRS when using PORTNUM higher than the number of ports
-//	Add Serial Port Type
-//	Add option to linbpq to log APRS-IS messages.
-//	Send WL2K Session Reports
-//	Drop Tunneled Packets from 44.192 - 44.255 
-//	Log incoming Telnet Connects
-//	Add IPV4: and IPV6: overrides on AXIP Resolver.
-//	Add SessionTimeLimit to HF sessions (ARDOP, SCSPactor, WINMOR, VARA)
-//	Add RADIO FREQ command to display current frequency
-
-// 6.0.20 April 2020
-
-//	Trap and reject YAPP file transfer request.
-//	Fix possible overrun of TCP to Node Buffer
-//	Fix possible crash if APRS WX file doesn't have a terminating newline
-//	Change communication with BPQAPRS.exe to restore old message popup behaviour
-//	Preparation for 64 bit version
-//	Improve flow control on SCS Dragon
-//	Fragment messages from network links to L2 links with smaller paclen
-//	Change WL2K report rate to once every two hours
-//	Add PASS, CTEXT and CMSG commands and Stream Switch support to TNC2 Emulator
-//	Add SessionTimeLimit command to  HF drivers (ARDOP, SCSPactor, WINMOR, VARA)
-//	Add links to Ports Web Manangement Page to open individual Driver windows
-//	Add STOPPORT/STARTPORT support to ARDOP, KAM and SCSPactor drivers
-//	Add CLOSE and OPEN RADIO command so Rigcontrol port can be freed fpr other use.
-//	Don't try to send WL2K Traffic report if Internet is down
-//	Move WL2K Traffic reporting to a separate thread so it doesn't block if it can't connect to server
-//	ADD AGWAPPL config command to set application number. AGWMASK is still supported
-//	Register Node Alias with UZ7HO Driver
-//	Register calls when UZ7HO TNC Restarts and at intervals afterwards
-//	Fix crash when no IOADDR or COMPORT in async port definition
-//  Fix Crash with Paclink-Unix when parsing ; VE7SPR-10 DE N7NIX QTC 1
-//	Only apply BBSFLAG=NOBBS to APPPLICATION 1
-//	Add RIGREONFIG command
-//	fix APRS RECONFIG on LinBPQ
-//	Fix Web Terminal scroll to end problem on some browsers
-//	Add PTT_SETS_INPUT option for IC7600
-//	Add TELRECONFIG command to reread users or whole config
-//	Enforce PACLEN on UZ7HO ports
-//	Fix PACLEN on Command Output.
-//	Retry axip resolver if it fails at startup
-//	Fix AGWAPI connect via digis
-//  Fix Select() for Linux in MultiPSK, UZ7HO and V4 drivers
-//	Limit APRS OBJECT length to 80 chars
-//	UZ7HO disconnect incoming call if no free streams
-//	Improve response to REJ (no F) followed by RR (F). 
-//	Try to prevent more than MAXFRAME frames outstanding when transmitting
-//	Allow more than one instance of APRS on Linux
-//	Stop APRS digi by originating station
-//	Send driver window trace to main monitor system
-//	Improve handling of IPOLL messages
-//	Fix setting end of address bit on dest call on connects to listening sessions
-//	Set default BBS and CHAT application number and number of streams on LinBPQ
-//	Support #include in bpq32.cfg processing
-
-// Version 6.0.21 14 December 2020
-
-//	Fix occasional missing newlines in some node command reponses
-//	More 64 bit fixes
-//	Add option to stop setting PDUPLEX param in SCSPACTOR
-//	Try to fix buffer loss
-//	Remove extra space from APRS position reports
-//	Suppress VARA IAMALIVE messages
-//	Add display and control of QtSoundModem modems
-//	Only send "No CMS connection available" message if fallbacktorelay is set.
-//	Add HAMLIB backend and emulator support to RIGCONTROL
-//	Ensure all beacons are sent even with very short beacon intervals
-//	Add VARA500 WL2K Reporting Mode
-//  Fix problem with prpcessing frame collector
-//	Temporarily disable L2 and L4 collectors till I can find problem
-//	Fix possible problem with interactive RADIO commands not giving a response,
-//	Incease maximum length of NODE command responses to handle maximum length INFO message,
-//	Allow WL2KREPORT in CONFIG section of UZ7HO port config.
-//	Fix program error in processing hamlib frame
-//	Save RestartAfterFailure option for VARA
-//	Check callsign has a winlink account before sending WL2KREPORT messages
-//	Add Bandwidth control to VARA scanning
-//	Renable L2 collector
-//	Fix TNCPORT reconnect on Linux
-//	Add SecureTelnet option to limit telnet outward connect to sysop mode sessions or Application Aliases
-//	Add option to suppress sending call to application in Telnet HOST API
-//	Add FT991A support to RigControl
-//	Use background.jpg for Edit Config page
-//	Send OK response to SCS Pactor commands starting with #
-//	Resend ICOM PTT OFF command after 30 seconds
-//	Add WXCall to APRS config
-//	Fixes for AEAPactor
-//	Allow PTTMUX to use real or com0com com ports
-//	Fix monitoring with AGW Emulator
-//	Derive approx position from packets on APRS ports with a valid 6 char location
-//	Fix corruption of APRS message lists if the station table fills up.
-//	Don't accept empty username or password on Relay sessions.
-//	Fix occasional empty Nodes broadcasts
-//	Add Digis to UZ7HO Port MH list
-//	Add PERMITTEDAPPLS port param
-//	Fix WK2K Session Record Reporting for Airmail and some Pactor Modes.
-//	Fix handling AX/IP (proto 93) frames
-//	Fix possible corruption sending APRS messages
-//	Allow Telnet connections to be made using Connect command as well as Attach then Connect
-//	Fix Cancel Sysop Signin
-//	Save axip resolver info and restore on restart
-//	Add Transparent mode to Telnet Server HOST API 
-//	Fix Tracker driver if WL2KREPRRT is in main config section
-//	SNMP InOctets count corrected to include all frames and encoding of zero values fixed.
-//	Change IP Gateway to exclude handling bits of 44 Net sold to Amazon
-//	Fix crash in Web terminal when processing very long lines
-
-//  Version 6.0.22.1 August 2021
-
-//	Fix bug in KAM TNCEMULATOR
-//	Add WinRPR Driver (DED over TCP)
-//	Fix handling of VARA config commands FM1200 and FM9600
-//	Improve Web Termanal Line folding
-//	Add StartTNC to WinRPR driver
-//	Add support for VARA2750 Mode
-//	Add support for VARA connects via a VARA Digipeater
-//	Add digis to SCSTracker and WinRPR MHeard
-//	Separate RIGCONTROL config from PORT config and add RigControl window
-//	Fix crash when a Windows HID device doesn't have a product_string
-//	Changes to VARA TNC connection and restart process
-//	Trigger FALLBACKTORELAY if attempt to connect to all CMS servers fail.
-//	Fix saving part lines in adif log and Winlink Session reporting
-//	Add port specific CTEXT
-//	Add FRMR monitoring to UZ7HO driver
-//	Add audio input switching for IC7610
-//	Include Rigcontrol Support for IC-F8101E
-//	Process any response to KISS command 
-//	Fix NODE ADD command
-//	Add noUpdate flag to AXIP MAP
-//	Fix clearing NOFALLBACK flag in Telnet Server
-//	Allow connects to RMS Relay running on another host 
-//	Allow use of Power setting in Rigcontol scan lines for Kenwood radios
-//	Prevent problems caused by using "CMS" as a Node Alias
-//	Include standard APRS Station pages in code
-//	Fix VALIDCALLS processing in HF drivers
-//	Send Netrom Link reports to Node Map
-//	Add REALTELNET mode to Telnet Outward Connect
-//	Fix using S (Stay) parameter on Telnet connects when using CMDPORT and C HOST
-//	Add Default frequency to rigcontrol to set a freq/mode to return to after a connection
-//	Fix long (> 60 seconds) scan intervals
-//	Improved debugging of stuck semaphores
-//	Fix potential securiby bug in BPQ Web server
-//	Send Chat Updates to chatupdate.g8bpq.net port 81
-//	Add ReportRelayTraffic to Telnet config to send WL2K traffic reports for connections to RELAY
-//	Add experimental Mode reporting
-//	Add SendTandRtoRelay param to SCS Pactor, ARDOP and VARA drivers to divert calls to CMS for -T and -R to RELAY
-//	Add UPNP Support
-
-//  Version 6.0.23.1 June 2022 
-
-//	Add option to control which applcalls are enabled in VARA
-//	Add support for rtl_udp to Rig Control
-//	Fix Telnet Auto Conneect to Application when using TermTCP or Web Terminal
-//	Allow setting css styles for Web Terminal
-//	And Kill TNC and Kill and Restart TNC commands to Web Driver Windows
-//	More flexible RigControl for split frequency operation, eg for QO100
-//	Increase stack size for ProcessHTMLMessage	(.11)	
-//	Fix HTML Content-Type on images (.12)
-//	Add AIS and ADSB Support (.13)
-//	Compress web pages (.14)
-//	Change minidump routine and close after program error (.15)
-//  Add RMS Relay SYNC Mode (.17)
-//  Changes for compatibility with Winlink Hybrid
-//	Add Rigcontrol CMD feature to Yaesu code (21)
-//  More diagnostic code
-//	Trap potential buffer overrun in ax/tcp code
-//	Fix possible hang in UZ7HO driver if connect takes a long time to succeed or fail
-//	Add FLRIG as backend for RigControl (.24)
-//	Fix bug in compressing some management web pages
-//	Fix bugs in AGW Emulator (.25)
-//	Add more PTT_Sets_Freq options for split frequency working (.26)
-//	Allow RIGCONTROL using Radio Number (Rnn) as well as Port (.26)
-//	Fix Telnet negotiation and backspace processing (.29)
-//	Fix VARA Mode change when scanning (.30)
-//	Add Web Mgmt Log Display (.33)
-//	Fix crash when connecting to RELAY when CMS=0 (.36)
-//	Send OK to user for manual freq changes with hamlib or flrig
-//	Fix Rigcontrol leaving port disabled when using an empty timeband
-//	Fix processing of backspace in Telnet character processing (.40)
-//	Increase max size of connect script
-//	Fix HAMLIB Slave Thread control
-//	Add processing of VARA mode responses and display of VARA Mode (41)
-//	Fix crash when VARA session aborted on LinBPQ (43)
-//	Fix handling port selector (2:call or p2 call) on SCS PTC packet ports (44)
-//	Include APRS Map web page
-//	Add Enable/Disable to KAMPACTOR scan control (use P0 or P1) (45)
-//	Add Basic DRATS interface (46)
-//	Fix MYCALLS on VARA (49)
-//	Add FreeData driver (51)
-//	Add additonal Rigcontrol options for QO100 (51)
-//	Set Content-Type: application/pdf for pdf files downloaded via web interface (51)
-//	Fix sending large compressed web messages (52)
-//	Fix freq display when using flrig or hamlib backends to rigcontrol
-//	Change VARA Driver to send ABORT when Session Time limit expires
-//	Add Chat Log to Web Logs display
-//	Fix possible buffer loss in RigControl
-//	Allow hosts on local lan to be treated as secure
-//	Improve validation of data sent to Winlink SessionAdd API call
-//	Add support for FreeDATA modem.
-//	Add GetLOC API Call
-//	Change Leaflet link in aprs map.
-//	Add Connect Log (64)
-//	Fix crash when Resolve CMS Servers returns ipv6 addresses
-//	Fix Reporting P4 sessions to Winlink (68)
-//	Add support for FreeBSD (68)
-//	Fix Rigcontrol PTCPORT (69)
-//	Set TNC Emulator sessions as secure (72)
-//	Fix not always detecting loss of FLRIG (73)
-//	Add ? and * wildcards to NODES command (74)
-//  Add Port RADIO config parameter (74)
-
-//  Version 6.0.24.1 ??
-
-//	Apply NODES command wildcard to alias as well a call (2)
-//	Add STOPPORT/STARTPORT to VARA Driver (2)
-//	Add bandwidth setting to FLRIG interface. (2)
-//	Fix N VIA (3)
-//	Fix NODE ADD and NODE DEL (4)
-//	Improvements to FLRIG Rigcontrol backend (6, 7)
-//	Fix UZ7HO Window Title Update
-//	Reject L2 calls with a blank from call (8)
-//	Update WinRPR Window header with BPQ Port Description (8)
-//	Fix error in blank call code (9)
-//	Change web buttons to white on black when pressed (10)
-//	Fix Port CTEXT paclen on Tracker and WinRPR drivers (11)
-//	Add RADIO PTT command for testing PTT (11)
-//	Fix using APPLCALLs on SCSTracker RP call (12)
-//	Add Rigcntol Web Page (13)
-//	Fix scan bandwidth change with ARDOPOFDM (13)
-//	Fix setting Min Pactor Level in SCSPactor (13)
-//	Fix length of commands sent via CMD_TO_APPL flag (14)
-//	Add filter by quality option to N display (15)
-//	Fix VARA Mode reporting to WL2K (16)
-//	Add FLRIG POWER and TUNE commands (18)
-//	Fix crash when processing "C " without a call in UZ7HO, FLDIGI or MULTIPSK drivers (19)
-//	FLDIGI improvements (19)
-//	Fix hang at start if Telnet port Number > Number of Telnet Streams (20)
-//	Fix processing C command if first port driver is SCSPACTROR (20)
-//	Fix crash in UZ7HO driver if bad raw frame received (21)
-//	Fix using FLARQ chat mode with FLDIGI ddriover (22)
-//	Fixed to KISSHF driver (23)
-//	Fix for application buffer loss (24)
-//	Add Web Sockets auto-refresh option for Webmail index page (25)
-//	Fix FREEDATA driver for compatibility with FreeData TNC version 0.6.4-alpha.3 (25)
-//	Add SmartID for bridged frames - Send ID only if packets sent recently (26)
-//	Add option to save and restore received APRS messages (27)
-//	Add mechanism to run a user program on certain events (27)
-//	If BeacontoIS is zero don't Gate any of our messages received locally to APRS-IS (28)
-//	Add Node Help command (28)
-//	Add APRS Igate RXOnly option (29)
-//	Fix RMC message handling with prefixes other than GP (29)
-//	Add GPSD support for APRS (30)
-//	Attempt to fix Tracker/WinRPR reconnect code (30)
-//	Changes to FreeDATA - Don't use deamon and add txlevel and send text commands (31)
-//	Fix interactive commands in tracker driver (33)
-//  Fix SESSIONTIMELIMIT processing
-//	Add STOPPORT/STARTPORT for UZ7HO driver
-//	Fix processing of extended QtSM 'g' frame (36)
-//	Allow setting just freq on Yaseu rigs (37)
-//	Enable KISSHF driver on Linux (40)
-//	Allow AISHOST and ADSBHOST to be a name as well as an address (41)
-//	Fix Interlock of incoming UZ7HO connections (41)
-//	Disable VARA Actions menu if not sysop (41)
-//	Fix Port CTEXT on UZ7HO B C or D channels (42)
-//	Fix repeated trigger of SessionTimeLimit (43)
-//  Fix posible memory corruption in UpateMH (44)
-//	Add PHG to APRS beacons (45)
-//	Dont send DM to stations in exclude list(45)
-//	Improvements to RMS Relay SYNC Mode (46)
-//	Check L4 connects against EXCLUDE list (47)
-//	Add vaidation of LOC in WL2K Session Reports (49)
-//	Change gpsd support for compatibility with Share Gps (50)
-//	Switch APRS Map to my Tiles (52)
-//	Fix using ; in UNPROTO Mode messages (52)
-//	Use sha1 code from https://www.packetizer.com/security/sha1/ instead of openssl (53)
-//	Fix TNC Emulator Monitoring (53)
-//	Fix attach and connect on Telnet port bug introduced in .55 (56)
-//	Fix stopping WinRPR TNC and Start/Stop UZ7HO TNCX on Linux (57)
-//	Fix stack size in beginthread for MAC (58)
-//	Add NETROM over VARA (60)
-//	Add Disconnect Script (64)
-//	Add node commands to set UZ7HO modem mode and freq (64)
-//	Trap empty NODECALL or NETROMCALL(65)
-//	Trap NODES messages with empty From Call (65)
-//	Add RigControl for SDRConsole (66)
-//  Fix FLRig crash (66)
-//	Fix VARA disconnect handling (67)
-//	Support 64 ports (69)
-//	Fix Node commands for setting UZ7HO Modem (70)
-//	Fix processing SABM on an existing session (71)
-//	Extend KISS Node command to send more than one parameter byte (72)
-//	Add G7TAJ's code to record activity of HF ports for stats display (72)
-//	Add option to send KISS command to TNC on startup (73)
-//	Fix Bug in DED Emulator Monitor code (74)
-//	Add Filters to DED Monitor code (75)
-//	Detect loss of DED application (76)
-//	Fix connects to Application Alias with UZ7HO Driver (76)
-//	Fix Interlock of ports on same UZ7HO modem. (76)
+/* Add frequency dependent autoconnect appls for SCS Pactor */
+/* Fix DED Monitoring of I and UI with no data */
+/* Include AGWPE Emulator (from AGWtoBPQ) */
+/* accept DEL (Hex 7F) as backspace in Telnet */
+/* Fix re-running resolver on re-read AXIP config */
+/* Speed up processing, mainly for Telnet Sessions */
+/* Fix APRS init on restart of bpq32.exe */
+/* Change to 2 stop bits */
+/* Fix scrolling of WINMOR trace window */
+/* Fix Crash when ueing DED TNC Emulator */
+/* Fix Disconnect when using BPQDED2 Driver with Telnet Sessions */
+/* Allow HOST applications even when CMS option is disabled */
+/* Fix processing of APRS DIGIMAP command with no targets (didn't suppress default settings) */
+
+/* Version 6.0.5.1 January 2014 */
+
+/*	Add UTF8 conversion mode to Telnet (converts non-UTF-8 chars to UTF-8) */
+/*	Add "Clear" option to MH command */
+/*	Add "Connect to RMS Relay" Option */
+/*  Revert to one stop bit on serial ports, explictly set two on FT2000 rig control */
+/*  Fix routing of first call in Robust Packet */
+/*	Add Options to switch input source on rigs with build in soundcards (sor far only IC7100 and Kenwood 590) */
+/*  Add RTS>CAT PTT option for Sound Card rigs */
+/*	Add Clear Nodes Option (NODE DEL ALL) */
+/*  SCS Pactor can set differeant APPLCALLS when scanning. */
+/*	Fix possible Scan hangup after a manual requency change with SCS Pactor */
+/*	Accept Scan entry of W0 to disable WINMOR on that frequency */
+/*  Fix corruption of NETROMCALL by SIMPLE config command */
+/*	Enforce Pactor Levels */
+/*	Add Telnet outward connect */
+/*	Add Relay/Trimode Emulation */
+/*	Fix V4 Driver */
+/*	Add PTT Mux */
+/*  Add Locked ARP Entries (via bpq32.cfg) */
+/*	Fix IDLETIME node command */
+/*	Fix STAY param on connect */
+/*	Add STAY option to Attach and Application Commands */
+/*	Fix crash on copying a large AXIP MH Window */
+/*	Fix possible crash when bpq32.exe dies */
+/*	Fix DIGIPORT for UI frames */
+
+/*  Version 6.0.6.1 April 2014 */
+
+/*  FLDigi Interface */
+/*  Fix "All CMS Servers are inaccessible" message so Mail Forwarding ELSE works. */
+/*	Validate INP3 messages to try to prevent crash */
+/*  Fix possible crash if an overlarge KISS frame is received */
+/*	Fix error in AXR command */
+/*	Add LF to Telnet Outward Connect signin if NEEDLF added to connect line */
+/*	Add CBELL to TNC21 emulator */
+/*	Add sent objects and third party messages to APRS Dup List */
+/*  Incorporate UIUtil */
+/*	Use Memory Mapped file to pass APRS info to BPQAPRS, and process APRS HTTP in BPQ32 */
+/*	Improvements to FLDIGI interlocking */
+/*	Fix TNC State Display for Tracker */
+/*	Cache CMS Addresses on LinBPQ */
+/*	Fix count error on DED Driver when handling 256 byte packets */
+/*	Add basic SNMP interface for MRTG */
+/*	Fix memory loss from getaddrinfo */
+/*	Process "BUSY" response from Tracker */
+/*	Handle serial port writes that don't accept all the data */
+/*	Trap Error 10038 and try to reopen socket */
+/*	Fix crash if overlong command line received */
+
+/*  Version 6.0.7.1 Aptil 2014 */
+/*	Fix RigContol with no frequencies for Kenwood and Yaesu */
+/*	Add busy check to FLDIGI connects */
+
+/*  Version 6.0.8.1 August 2014 */
+
+/*	Use HKEY_CURRENT_USER on all OS versions */
+/*	Fix crash when APRS symbol is a space. */
+/*	Fixes for FT847 CAT */
+/*	Fix display of 3rd byte of FRMR */
+/*	Add "DEFAULT ROBUST" and "FORCE ROBUST" commands to SCSPactor Driver */
+/*	Fix possible memory corruption in WINMOR driver */
+/*	Fix FT2000 Modes */
+/*	Use new WL2K reporting system (Web API Based) */
+/*	APRS Server now cycles through hosts if DNS returns more than one */
+/*	BPQ32 can now start and stop FLDIGI */
+/*	Fix loss of AXIP Resolver when running more than one AXIP port */
+
+/*  Version 6.0.9.1 November 2014 */
+
+/*	Fix setting NOKEEPALIVE flag on route created from incoming L3 message */
+/*	Ignore NODES from locked route with quality 0 */
+/*	Fix seting source port in AXIP */
+/*	Fix Dual Stack (IPV4/V6) on Linux. */
+/*	Fix RELAYSOCK if IPv6 is enabled. */
+/*	Add support for FT1000 */
+/*	Fix hang when APRS Messaging packet received on RF */
+/*	Attempt to normalize Node qualies when stations use widely differing Route qualities */
+/*	Add NODES VIA command to display nodes reachable via a specified neighbour */
+/*	Fix applying "DisconnectOnClose" setting on HOST API connects (Telnet Server) */
+/*	Fix buffering large messages in Telnet Host API */
+/*	Fix occasional crash in terminal part line processing */
+/*	Add "NoFallback" command to Telnet server to disable "fallback to Relay" */
+/*	Improved support for APPLCALL scanning with Pactor */
+/*	MAXBUFFS config statement is no longer needed. */
+/*	Fix USEAPPLCALLS with Tracker when connect to APPLCALL fails */
+/*	Implement LISTEN and CQ commands */
+/*	FLDIGI driver can now start FLDIGI on a remote system. */
+/*	Add IGNOREUNLOCKEDROUTES parameter */
+/*	Fix error if too many Telnet server connections */
+
+/*  Version 6.0.10.1 Feb 2015 */
+
+/*	Fix crash if corrupt HTML request received. */
+/*	Allow SSID's of 'R' and 'T' on non-ax.25 ports for WL2K Radio Only network. */
+/*	Make HTTP server HTTP Version 1.1 complient - use persistent conections and close after 2.5 mins */
+/*	Add	INP3ONLY flag. */
+/*	Fix program error if enter UNPROTO without a destination path */
+/*	Show client IP address on HTTP sessions in Telnet Server */
+/*	Reduce frequency and number of attempts to connect to routes when Keepalives or INP3 is set */
+/*	Add FT990 RigControl support, fix FT1000MP support. */
+/*	Support ARMV5 processors */
+/*  Changes to support LinBPQ APRS Client */
+/*	Add IC7410 to supported Soundcard rigs */
+/*	Add CAT PTT to NMEA type (for ICOM Marine Radios_ */
+/*	Fix ACKMODE */
+/*	Add KISS over TCP */
+/*	Support ACKMode on VKISS */
+/*	Improved reporting of configuration file format errors */
+/*	Experimental driver to support ARQ sessions using UI frames */
+
+/*  Version 6.0.11.1 September 2015 */
+
+/*	Fixes for IPGateway configuration and Virtual Circuit Mode */
+/*	Separate Portmapper from IPGateway */
+/*	Add PING Command */
+/*	Add ARDOP Driver */
+/*	Add basic APPLCALL support for PTC-PRO/Dragon 7800 Packet (using MYALIAS) */
+/*	Add "VeryOldMode" for KAM Version 5.02 */
+/*	Add KISS over TCP Slave Mode. */
+/*	Support Pactor and Packet on P4Dragon on one port */
+/*	Add "Remote Staton Quality" to Web ROUTES display */
+/*	Add Virtual Host option for IPGateway NET44 Encap */
+/*	Add NAT for local hosts to IPGateway */
+/*	Fix setting filter from RADIO command for IC7410 */
+/*	Add Memory Channel Scanning for ICOM Radios */
+/*	Try to reopen Rig Control port if it fails (could be unplugged USB) */
+/*	Fix restoring position of Monitor Window */
+/*	Stop Codec on Winmor and ARDOP when an interlocked port is attached (instead of listen false) */
+/*	Support APRS beacons in RP mode on Dragon// */
+/*	Change Virtual MAC address on IPGateway to include last octet of IP Address */
+/*	Fix "NOS Fragmentation" in IP over ax.25 Virtual Circuit Mode */
+/*	Fix sending I frames before L2 session is up */
+/*	Fix Flow control on Telnet outbound sessions. */
+/*	Fix reporting of unterminatred comments in config */
+/*	Add option for RigControl to not change mode on FT100/FT990/FT1000 */
+/*	Add "Attach and Connect" for Telnet ports */
+
+/*  Version 6.0.12.1	November 2015 */
+
+/*	Fix logging of IP addresses for connects to FBBPORT */
+/*	Allow lower case user and passwords in Telnet "Attach and Connect" */
+/*	Fix possible hang in KISS over TCP Slave mode */
+/*	Fix duplicating LinBPQ process if running ARDOP fails */
+/*	Allow lower case command aliases and increase alias length to 48 */
+/*	Fix saving long IP frames pending ARP resolution */
+/*	Fix dropping last entry from a RIP44 message. */
+/*	Fix displaying Digis in MH list */
+/*	Add port name to Monitor config screen port list */
+/*	Fix APRS command display filter and add port filter */
+/*	Support port names in BPQTermTCP Monitor config */
+/*	Add FINDBUFFS command to dump lost buffers to Debugview/Syslog */
+/*	Buffer Web Mgmt Edit Config output */
+/*	Add WebMail Support */
+/*	Fix not closing APRS Send WX file. */
+/*	Add RUN option to APRS Config to start APRS Client */
+/*	LinBPQ run FindLostBuffers and exit if QCOUNT < 5 */
+/*	Close and reopen ARDOP connection if nothing received for 90 secs */
+/*	Add facility to bridge traffic between ports (similar to APRS Bridge but for all frame types) */
+/*	Add KISSOPTION TRACKER to set SCS Tracker into KISS Mode */
+
+/* 6.0.13.1 */
+
+/*	Allow /ex to exit UNPROTO mode */
+/*	Support ARQBW commands. */
+/*	Support IC735 */
+/*	Fix sending ARDOP beacons after a busy holdoff */
+/*	Enable BPQDED driver to beacon via non-ax.25 ports. */
+/*	Fix channel number in UZ7HO monitoring */
+/*	Add SATGate mode to APRSIS Code. */
+/*	Fix crash caused by overlong user name in telnet logon */
+/*	Add option to log L4 connects */
+/*	Add AUTOADDQuiet mode to AXIP. */
+/*	Add EXCLUDE processing */
+/*	Support WinmorControl in UZ7HO driver and fix starting TNC on Linux */
+/*	Convert calls in MAP entries to upper case. */
+/*	Support Linux COM Port names for APRS GPS */
+/*	Fix using NETROM serial protocol on ASYNC Port */
+/*	Fix setting MYLEVEL by scanner after manual level change. */
+/*	Add DEBUGLOG config param to SCS Pactor Driver to log serial port traffic */
+/*	Uue #myl to set SCS Pactor MYLEVEL, and add checklevel command */
+/*	Add Multicast RX interface to FLDIGI Driver */
+/*	Fix processing application aliases to a connect command. */
+/*	Fix Buffer loss if radio connected to PTC rig port but BPQ not configured to use it */
+/*	Save backups of bpq32.cfg when editing with Web interface and report old and new length */
+/*	Add DD command to SCS Pactor, and use it for forced disconnect. */
+/*	Add ARDOP mode select to scan config */
+/*	ARDOP changes for ARDOP V 0.5+ */
+/*	Flip SSID bits on UZ7HO downlink connects */
+
+
+/* Version 6.0.14.1 */
+
+/*	Fix Socket leak in ARDOP and FLDIGI drivers. */
+/*	Add option to change CMS Server hostname */
+/*	ARDOP Changes for 0.8.0+ */
+/*	Discard Terminal Keepalive message (two nulls) in ARDOP command hander */
+/*	Allow parameters to be passed to ARDOP TNC when starting it */
+/*	Fix Web update of Beacon params */
+/*	Retry connects to KISS ports after failure */
+/*	Add support for ARDOP Serial Interface Native mode. */
+/*	Fix gating APRS-IS Messages to RF */
+/*	Fix Beacons when PORTNUM used */
+/*	Make sure old monitor flag is cleared for TermTCP sessions */
+/*	Add CI-V antenna control for IC746 */
+/*	Don't allow ARDOP beacons when connected */
+/*	Add support for ARDOP Serial over I2C */
+/*	Fix possble crash when using manual RADIO messages */
+/*	Save out of sequence L2 frames for possible reuse after retry */
+/*	Add KISS command to send KISS control frame to TNC */
+/*	Stop removing unused digis from packets sent to APRS-IS */
+
+/*	Processing of ARDOP PING and PINGACK responses */
+/*	Handle changed encoding of WL2K update responses. */
+/*	Allow anonymous logon to telnet */
+/*	Don't use APPL= for RP Calls in Dragon Single mode. */
+/*	Add basic messaging page to APRS Web Server */
+/*	Add debug log option to SCSTracker and TrkMulti Driver */
+/*	Support REBOOT command on LinBPQ */
+/*  Allow LISTEN command on all ports that support ax.25 monitoring */
+
+/*	Version 6.0.15.1 Feb 2018 */
+
+/*	partial support for ax.25 V2.2 */
+/*	Add MHU and MHL commands and MH filter option */
+/*	Fix scan interlock with ARDOP */
+/*	Add Input source seiect for IC7300 */
+/*	Remove % transparency from web terminal signon message */
+/*	Fix L4 Connects In count on stats */
+/*	Fix crash caused by corrupt CMSInfo.txt */
+/*	Add Input peaks display to ARDOP status window */
+/*  Add options to show time in local and distances in KM on APRS Web pages */
+/*	Add VARA support */
+/*	Fix WINMOR Busy left set when port Suspended */
+/*	Add ARDOP-Packet Support */
+/*	Add Antenna Switching for TS 480 */
+/*	Fix possible crash in Web Terminal */
+/*	Support different Code Pages on Console sessions */
+/*	Use new Winlink API interface (api.winlink.org) */
+/*	Support USB/ACC switching on TS590SG */
+/*	Fix scanning when ARDOP or WINMOR is used without an Interlocked Pactor port. */
+/*	Set NODECALL to first Application Callsign if NODE=0 and BBSCALL not set. */
+/*	Add RIGCONTROL TUNE and POWER commands for some ICOM and Kenwwod rigs */
+/*	Fix timing out ARDOP PENDING Lock */
+/*	Support mixed case WINLINK Passwords */
+/*	Add TUNE and POWER Rigcontol Commands for some radios */
+/*  ADD LOCALTIME and DISPKM options to APRS Digi/Igate */
+
+/* 6.0.16.1 March 2018 */
+
+/*	Fix Setting data mode and filter for IC7300 radios */
+/*	Add VARA to WL2KREPORT */
+/*	Add trace to SCS Tracker status window */
+/*	Fix possible hang in IPGATEWAY */
+/*	Add BeacontoIS parameter to APRSDIGI. Allows you to stop sending beacons to APRS-IS. */
+/*	Fix sending CTEXT on WINMOR sessions  */
+
+/* 6.0.17.1 November 2018 */
+
+/*	Change WINMOR Restart after connection to Restart after Failure and add same option to ARDOP and VARA */
+/*	Add Abort Connection to WINMOR and VARA Interfaces */
+/*	Reinstate accidentally removed CMS Access logging */
+/*	Fix MH CLEAR  */
+/*  Fix corruption of NODE table if NODES received from station with null alias */
+/*	Fix loss of buffer if session closed with something in PARTCMDBUFFER */
+/*	Fix Spurious GUARD ZONE CORRUPT message in IP Code. */
+/*	Remove "reread bpq32.cfg and reconfigure" menu options */
+/*	Add support for PTT using CM108 based soundcard interfaces */
+/*	Datestamp Telnet log files and delete old Telnet and CMSAcces logs */
+
+/* 6.0.18.1 January 2019 */
+
+/*	Fix validation of NODES broadcasts */
+/*  Fix HIDENODES */
+/*  Check for failure to reread config on axip reconfigure */
+/*	Fix crash if STOPPORT or STARTPORT used on KISS over TCP port */
+/*	Send Beacons from BCALL or PORTCALL if configured */
+/*  Fix possible corruption of last entry in MH display */
+/*	Ensure RTS/DTR is down when opening PTT Port */
+/*	Remove RECONFIG command */
+/*	Preparations for 64 bit version */
+
+/* 6.0.19 Sept 2019 */
+/*	Fix UZ7HO interlock */
+/*	Add commands to set Centre Frequency and Modem with UZ7HO Soundmodem (on Windows only) */
+/*	Add option to save and restore MH lists and SAVEMH command */
+/*	Add Frequency (if known) to UZ7HO MH lists */
+/*	Add Gateway option to Telnet for PAT */
+/*	Try to fix SCS Tracker recovery */
+/*	Ensure RTS/DTR is down on CAT port if using that line for PTT */
+/*	Experimental APRS Messaging in Kernel */
+/*	Add Rigcontrol on remote PC's using WinmorControl */
+/*	ADD VARAFM and VARAFM96 WL2KREPORT modes */
+/*	Fix WL2K sysop update for new Winlink API */
+/*	Fix APRS when using PORTNUM higher than the number of ports */
+/*	Add Serial Port Type */
+/*	Add option to linbpq to log APRS-IS messages. */
+/*	Send WL2K Session Reports */
+/*	Drop Tunneled Packets from 44.192 - 44.255  */
+/*	Log incoming Telnet Connects */
+/*	Add IPV4: and IPV6: overrides on AXIP Resolver. */
+/*	Add SessionTimeLimit to HF sessions (ARDOP, SCSPactor, WINMOR, VARA) */
+/*	Add RADIO FREQ command to display current frequency */
+
+/* 6.0.20 April 2020 */
+
+/*	Trap and reject YAPP file transfer request. */
+/*	Fix possible overrun of TCP to Node Buffer */
+/*	Fix possible crash if APRS WX file doesn't have a terminating newline */
+/*	Change communication with BPQAPRS.exe to restore old message popup behaviour */
+/*	Preparation for 64 bit version */
+/*	Improve flow control on SCS Dragon */
+/*	Fragment messages from network links to L2 links with smaller paclen */
+/*	Change WL2K report rate to once every two hours */
+/*	Add PASS, CTEXT and CMSG commands and Stream Switch support to TNC2 Emulator */
+/*	Add SessionTimeLimit command to  HF drivers (ARDOP, SCSPactor, WINMOR, VARA) */
+/*	Add links to Ports Web Manangement Page to open individual Driver windows */
+/*	Add STOPPORT/STARTPORT support to ARDOP, KAM and SCSPactor drivers */
+/*	Add CLOSE and OPEN RADIO command so Rigcontrol port can be freed fpr other use. */
+/*	Don't try to send WL2K Traffic report if Internet is down */
+/*	Move WL2K Traffic reporting to a separate thread so it doesn't block if it can't connect to server */
+/*	ADD AGWAPPL config command to set application number. AGWMASK is still supported */
+/*	Register Node Alias with UZ7HO Driver */
+/*	Register calls when UZ7HO TNC Restarts and at intervals afterwards */
+/*	Fix crash when no IOADDR or COMPORT in async port definition */
+/*  Fix Crash with Paclink-Unix when parsing ; VE7SPR-10 DE N7NIX QTC 1 */
+/*	Only apply BBSFLAG=NOBBS to APPPLICATION 1 */
+/*	Add RIGREONFIG command */
+/*	fix APRS RECONFIG on LinBPQ */
+/*	Fix Web Terminal scroll to end problem on some browsers */
+/*	Add PTT_SETS_INPUT option for IC7600 */
+/*	Add TELRECONFIG command to reread users or whole config */
+/*	Enforce PACLEN on UZ7HO ports */
+/*	Fix PACLEN on Command Output. */
+/*	Retry axip resolver if it fails at startup */
+/*	Fix AGWAPI connect via digis */
+/*  Fix Select() for Linux in MultiPSK, UZ7HO and V4 drivers */
+/*	Limit APRS OBJECT length to 80 chars */
+/*	UZ7HO disconnect incoming call if no free streams */
+/*	Improve response to REJ (no F) followed by RR (F).  */
+/*	Try to prevent more than MAXFRAME frames outstanding when transmitting */
+/*	Allow more than one instance of APRS on Linux */
+/*	Stop APRS digi by originating station */
+/*	Send driver window trace to main monitor system */
+/*	Improve handling of IPOLL messages */
+/*	Fix setting end of address bit on dest call on connects to listening sessions */
+/*	Set default BBS and CHAT application number and number of streams on LinBPQ */
+/*	Support #include in bpq32.cfg processing */
+
+/* Version 6.0.21 14 December 2020 */
+
+/*	Fix occasional missing newlines in some node command reponses */
+/*	More 64 bit fixes */
+/*	Add option to stop setting PDUPLEX param in SCSPACTOR */
+/*	Try to fix buffer loss */
+/*	Remove extra space from APRS position reports */
+/*	Suppress VARA IAMALIVE messages */
+/*	Add display and control of QtSoundModem modems */
+/*	Only send "No CMS connection available" message if fallbacktorelay is set. */
+/*	Add HAMLIB backend and emulator support to RIGCONTROL */
+/*	Ensure all beacons are sent even with very short beacon intervals */
+/*	Add VARA500 WL2K Reporting Mode */
+/*  Fix problem with prpcessing frame collector */
+/*	Temporarily disable L2 and L4 collectors till I can find problem */
+/*	Fix possible problem with interactive RADIO commands not giving a response, */
+/*	Incease maximum length of NODE command responses to handle maximum length INFO message, */
+/*	Allow WL2KREPORT in CONFIG section of UZ7HO port config. */
+/*	Fix program error in processing hamlib frame */
+/*	Save RestartAfterFailure option for VARA */
+/*	Check callsign has a winlink account before sending WL2KREPORT messages */
+/*	Add Bandwidth control to VARA scanning */
+/*	Renable L2 collector */
+/*	Fix TNCPORT reconnect on Linux */
+/*	Add SecureTelnet option to limit telnet outward connect to sysop mode sessions or Application Aliases */
+/*	Add option to suppress sending call to application in Telnet HOST API */
+/*	Add FT991A support to RigControl */
+/*	Use background.jpg for Edit Config page */
+/*	Send OK response to SCS Pactor commands starting with # */
+/*	Resend ICOM PTT OFF command after 30 seconds */
+/*	Add WXCall to APRS config */
+/*	Fixes for AEAPactor */
+/*	Allow PTTMUX to use real or com0com com ports */
+/*	Fix monitoring with AGW Emulator */
+/*	Derive approx position from packets on APRS ports with a valid 6 char location */
+/*	Fix corruption of APRS message lists if the station table fills up. */
+/*	Don't accept empty username or password on Relay sessions. */
+/*	Fix occasional empty Nodes broadcasts */
+/*	Add Digis to UZ7HO Port MH list */
+/*	Add PERMITTEDAPPLS port param */
+/*	Fix WK2K Session Record Reporting for Airmail and some Pactor Modes. */
+/*	Fix handling AX/IP (proto 93) frames */
+/*	Fix possible corruption sending APRS messages */
+/*	Allow Telnet connections to be made using Connect command as well as Attach then Connect */
+/*	Fix Cancel Sysop Signin */
+/*	Save axip resolver info and restore on restart */
+/*	Add Transparent mode to Telnet Server HOST API  */
+/*	Fix Tracker driver if WL2KREPRRT is in main config section */
+/*	SNMP InOctets count corrected to include all frames and encoding of zero values fixed. */
+/*	Change IP Gateway to exclude handling bits of 44 Net sold to Amazon */
+/*	Fix crash in Web terminal when processing very long lines */
+
+/*  Version 6.0.22.1 August 2021 */
+
+/*	Fix bug in KAM TNCEMULATOR */
+/*	Add WinRPR Driver (DED over TCP) */
+/*	Fix handling of VARA config commands FM1200 and FM9600 */
+/*	Improve Web Termanal Line folding */
+/*	Add StartTNC to WinRPR driver */
+/*	Add support for VARA2750 Mode */
+/*	Add support for VARA connects via a VARA Digipeater */
+/*	Add digis to SCSTracker and WinRPR MHeard */
+/*	Separate RIGCONTROL config from PORT config and add RigControl window */
+/*	Fix crash when a Windows HID device doesn't have a product_string */
+/*	Changes to VARA TNC connection and restart process */
+/*	Trigger FALLBACKTORELAY if attempt to connect to all CMS servers fail. */
+/*	Fix saving part lines in adif log and Winlink Session reporting */
+/*	Add port specific CTEXT */
+/*	Add FRMR monitoring to UZ7HO driver */
+/*	Add audio input switching for IC7610 */
+/*	Include Rigcontrol Support for IC-F8101E */
+/*	Process any response to KISS command  */
+/*	Fix NODE ADD command */
+/*	Add noUpdate flag to AXIP MAP */
+/*	Fix clearing NOFALLBACK flag in Telnet Server */
+/*	Allow connects to RMS Relay running on another host  */
+/*	Allow use of Power setting in Rigcontol scan lines for Kenwood radios */
+/*	Prevent problems caused by using "CMS" as a Node Alias */
+/*	Include standard APRS Station pages in code */
+/*	Fix VALIDCALLS processing in HF drivers */
+/*	Send Netrom Link reports to Node Map */
+/*	Add REALTELNET mode to Telnet Outward Connect */
+/*	Fix using S (Stay) parameter on Telnet connects when using CMDPORT and C HOST */
+/*	Add Default frequency to rigcontrol to set a freq/mode to return to after a connection */
+/*	Fix long (> 60 seconds) scan intervals */
+/*	Improved debugging of stuck semaphores */
+/*	Fix potential securiby bug in BPQ Web server */
+/*	Send Chat Updates to chatupdate.g8bpq.net port 81 */
+/*	Add ReportRelayTraffic to Telnet config to send WL2K traffic reports for connections to RELAY */
+/*	Add experimental Mode reporting */
+/*	Add SendTandRtoRelay param to SCS Pactor, ARDOP and VARA drivers to divert calls to CMS for -T and -R to RELAY */
+/*	Add UPNP Support */
+
+/*  Version 6.0.23.1 June 2022  */
+
+/*	Add option to control which applcalls are enabled in VARA */
+/*	Add support for rtl_udp to Rig Control */
+/*	Fix Telnet Auto Conneect to Application when using TermTCP or Web Terminal */
+/*	Allow setting css styles for Web Terminal */
+/*	And Kill TNC and Kill and Restart TNC commands to Web Driver Windows */
+/*	More flexible RigControl for split frequency operation, eg for QO100 */
+/*	Increase stack size for ProcessHTMLMessage	(.11)	 */
+/*	Fix HTML Content-Type on images (.12) */
+/*	Add AIS and ADSB Support (.13) */
+/*	Compress web pages (.14) */
+/*	Change minidump routine and close after program error (.15) */
+/*  Add RMS Relay SYNC Mode (.17) */
+/*  Changes for compatibility with Winlink Hybrid */
+/*	Add Rigcontrol CMD feature to Yaesu code (21) */
+/*  More diagnostic code */
+/*	Trap potential buffer overrun in ax/tcp code */
+/*	Fix possible hang in UZ7HO driver if connect takes a long time to succeed or fail */
+/*	Add FLRIG as backend for RigControl (.24) */
+/*	Fix bug in compressing some management web pages */
+/*	Fix bugs in AGW Emulator (.25) */
+/*	Add more PTT_Sets_Freq options for split frequency working (.26) */
+/*	Allow RIGCONTROL using Radio Number (Rnn) as well as Port (.26) */
+/*	Fix Telnet negotiation and backspace processing (.29) */
+/*	Fix VARA Mode change when scanning (.30) */
+/*	Add Web Mgmt Log Display (.33) */
+/*	Fix crash when connecting to RELAY when CMS=0 (.36) */
+/*	Send OK to user for manual freq changes with hamlib or flrig */
+/*	Fix Rigcontrol leaving port disabled when using an empty timeband */
+/*	Fix processing of backspace in Telnet character processing (.40) */
+/*	Increase max size of connect script */
+/*	Fix HAMLIB Slave Thread control */
+/*	Add processing of VARA mode responses and display of VARA Mode (41) */
+/*	Fix crash when VARA session aborted on LinBPQ (43) */
+/*	Fix handling port selector (2:call or p2 call) on SCS PTC packet ports (44) */
+/*	Include APRS Map web page */
+/*	Add Enable/Disable to KAMPACTOR scan control (use P0 or P1) (45) */
+/*	Add Basic DRATS interface (46) */
+/*	Fix MYCALLS on VARA (49) */
+/*	Add FreeData driver (51) */
+/*	Add additonal Rigcontrol options for QO100 (51) */
+/*	Set Content-Type: application/pdf for pdf files downloaded via web interface (51) */
+/*	Fix sending large compressed web messages (52) */
+/*	Fix freq display when using flrig or hamlib backends to rigcontrol */
+/*	Change VARA Driver to send ABORT when Session Time limit expires */
+/*	Add Chat Log to Web Logs display */
+/*	Fix possible buffer loss in RigControl */
+/*	Allow hosts on local lan to be treated as secure */
+/*	Improve validation of data sent to Winlink SessionAdd API call */
+/*	Add support for FreeDATA modem. */
+/*	Add GetLOC API Call */
+/*	Change Leaflet link in aprs map. */
+/*	Add Connect Log (64) */
+/*	Fix crash when Resolve CMS Servers returns ipv6 addresses */
+/*	Fix Reporting P4 sessions to Winlink (68) */
+/*	Add support for FreeBSD (68) */
+/*	Fix Rigcontrol PTCPORT (69) */
+/*	Set TNC Emulator sessions as secure (72) */
+/*	Fix not always detecting loss of FLRIG (73) */
+/*	Add ? and * wildcards to NODES command (74) */
+/*  Add Port RADIO config parameter (74) */
+
+/*  Version 6.0.24.1 ?? */
+
+/*	Apply NODES command wildcard to alias as well a call (2) */
+/*	Add STOPPORT/STARTPORT to VARA Driver (2) */
+/*	Add bandwidth setting to FLRIG interface. (2) */
+/*	Fix N VIA (3) */
+/*	Fix NODE ADD and NODE DEL (4) */
+/*	Improvements to FLRIG Rigcontrol backend (6, 7) */
+/*	Fix UZ7HO Window Title Update */
+/*	Reject L2 calls with a blank from call (8) */
+/*	Update WinRPR Window header with BPQ Port Description (8) */
+/*	Fix error in blank call code (9) */
+/*	Change web buttons to white on black when pressed (10) */
+/*	Fix Port CTEXT paclen on Tracker and WinRPR drivers (11) */
+/*	Add RADIO PTT command for testing PTT (11) */
+/*	Fix using APPLCALLs on SCSTracker RP call (12) */
+/*	Add Rigcntol Web Page (13) */
+/*	Fix scan bandwidth change with ARDOPOFDM (13) */
+/*	Fix setting Min Pactor Level in SCSPactor (13) */
+/*	Fix length of commands sent via CMD_TO_APPL flag (14) */
+/*	Add filter by quality option to N display (15) */
+/*	Fix VARA Mode reporting to WL2K (16) */
+/*	Add FLRIG POWER and TUNE commands (18) */
+/*	Fix crash when processing "C " without a call in UZ7HO, FLDIGI or MULTIPSK drivers (19) */
+/*	FLDIGI improvements (19) */
+/*	Fix hang at start if Telnet port Number > Number of Telnet Streams (20) */
+/*	Fix processing C command if first port driver is SCSPACTROR (20) */
+/*	Fix crash in UZ7HO driver if bad raw frame received (21) */
+/*	Fix using FLARQ chat mode with FLDIGI ddriover (22) */
+/*	Fixed to KISSHF driver (23) */
+/*	Fix for application buffer loss (24) */
+/*	Add Web Sockets auto-refresh option for Webmail index page (25) */
+/*	Fix FREEDATA driver for compatibility with FreeData TNC version 0.6.4-alpha.3 (25) */
+/*	Add SmartID for bridged frames - Send ID only if packets sent recently (26) */
+/*	Add option to save and restore received APRS messages (27) */
+/*	Add mechanism to run a user program on certain events (27) */
+/*	If BeacontoIS is zero don't Gate any of our messages received locally to APRS-IS (28) */
+/*	Add Node Help command (28) */
+/*	Add APRS Igate RXOnly option (29) */
+/*	Fix RMC message handling with prefixes other than GP (29) */
+/*	Add GPSD support for APRS (30) */
+/*	Attempt to fix Tracker/WinRPR reconnect code (30) */
+/*	Changes to FreeDATA - Don't use deamon and add txlevel and send text commands (31) */
+/*	Fix interactive commands in tracker driver (33) */
+/*  Fix SESSIONTIMELIMIT processing */
+/*	Add STOPPORT/STARTPORT for UZ7HO driver */
+/*	Fix processing of extended QtSM 'g' frame (36) */
+/*	Allow setting just freq on Yaseu rigs (37) */
+/*	Enable KISSHF driver on Linux (40) */
+/*	Allow AISHOST and ADSBHOST to be a name as well as an address (41) */
+/*	Fix Interlock of incoming UZ7HO connections (41) */
+/*	Disable VARA Actions menu if not sysop (41) */
+/*	Fix Port CTEXT on UZ7HO B C or D channels (42) */
+/*	Fix repeated trigger of SessionTimeLimit (43) */
+/*  Fix posible memory corruption in UpateMH (44) */
+/*	Add PHG to APRS beacons (45) */
+/*	Dont send DM to stations in exclude list(45) */
+/*	Improvements to RMS Relay SYNC Mode (46) */
+/*	Check L4 connects against EXCLUDE list (47) */
+/*	Add vaidation of LOC in WL2K Session Reports (49) */
+/*	Change gpsd support for compatibility with Share Gps (50) */
+/*	Switch APRS Map to my Tiles (52) */
+/*	Fix using ; in UNPROTO Mode messages (52) */
+/*	Use sha1 code from https://www.packetizer.com/security/sha1/ instead of openssl (53) */
+/*	Fix TNC Emulator Monitoring (53) */
+/*	Fix attach and connect on Telnet port bug introduced in .55 (56) */
+/*	Fix stopping WinRPR TNC and Start/Stop UZ7HO TNCX on Linux (57) */
+/*	Fix stack size in beginthread for MAC (58) */
+/*	Add NETROM over VARA (60) */
+/*	Add Disconnect Script (64) */
+/*	Add node commands to set UZ7HO modem mode and freq (64) */
+/*	Trap empty NODECALL or NETROMCALL(65) */
+/*	Trap NODES messages with empty From Call (65) */
+/*	Add RigControl for SDRConsole (66) */
+/*  Fix FLRig crash (66) */
+/*	Fix VARA disconnect handling (67) */
+/*	Support 64 ports (69) */
+/*	Fix Node commands for setting UZ7HO Modem (70) */
+/*	Fix processing SABM on an existing session (71) */
+/*	Extend KISS Node command to send more than one parameter byte (72) */
+/*	Add G7TAJ's code to record activity of HF ports for stats display (72) */
+/*	Add option to send KISS command to TNC on startup (73) */
+/*	Fix Bug in DED Emulator Monitor code (74) */
+/*	Add Filters to DED Monitor code (75) */
+/*	Detect loss of DED application (76) */
+/*	Fix connects to Application Alias with UZ7HO Driver (76) */
+/*	Fix Interlock of ports on same UZ7HO modem. (76) */
 
 #define CKernel
 
@@ -1212,12 +1212,12 @@ void _CheckGuardZone(char * File, int Line);
 #define	BPQCONDIS		  6
 #define	GETBUFFERSTATUS	  7
 #define	GETCONNECTIONINFO 8
-#define	BPQRETURN		  9  // GETCALLS
-//#define	RAWTX			  10  //IE KISS TYPE DATA
+#define	BPQRETURN		  9  /* GETCALLS */
+/*#define	RAWTX			  10  //IE KISS TYPE DATA */
 #define	GETRAWFRAME		  11
 #define	UPDATESWITCH	  12
 #define	BPQALLOC		  13
-//#define	SENDNETFRAME	  14
+/*#define	SENDNETFRAME	  14 */
 #define	GETTIME			  15
 
 extern short NUMBEROFPORTS;
@@ -1225,7 +1225,7 @@ extern long PORTENTRYLEN;
 extern long LINKTABLELEN;
 extern struct PORTCONTROL * PORTTABLE;
 extern void * FREE_Q;
-extern UINT APPL_Q;				// Queue of frames for APRS Appl
+extern UINT APPL_Q;				/* Queue of frames for APRS Appl */
 
 extern TRANSPORTENTRY * L4TABLE;
 extern UCHAR NEXTID;
@@ -1250,7 +1250,7 @@ void * ETHERExtInit(struct PORTCONTROL *  PortEntry);
 void * AGWExtInit(struct PORTCONTROL *  PortEntry);
 void * WinmorExtInit(EXTPORTDATA * PortEntry);
 void * TelnetExtInit(EXTPORTDATA * PortEntry);
-//void * SoundModemExtInit(EXTPORTDATA * PortEntry);
+/*void * SoundModemExtInit(EXTPORTDATA * PortEntry); */
 void * TrackerExtInit(EXTPORTDATA * PortEntry);
 void * TrackerMExtInit(EXTPORTDATA * PortEntry);
 void * V4ExtInit(EXTPORTDATA * PortEntry);
@@ -1266,7 +1266,7 @@ void * WinRPRExtInit(EXTPORTDATA * PortEntry);
 void * HSMODEMExtInit(EXTPORTDATA * PortEntry);
 void * FreeDataExtInit(EXTPORTDATA * PortEntry);
 
-extern char * ConfigBuffer;	// Config Area
+extern char * ConfigBuffer;	/* Config Area */
 VOID REMOVENODE(dest_list * DEST);
 DllExport int ConvFromAX25(unsigned char * incall,unsigned char * outcall);
 DllExport int ConvToAX25(unsigned char * incall,unsigned char * outcall);
@@ -1280,14 +1280,14 @@ extern BOOL ADIFLogEnabled;
 
 int CloseOnError = 0;
 
-char UIClassName[]="UIMAINWINDOW";					// the main window class name
+char UIClassName[]="UIMAINWINDOW";					/* the main window class name */
 
 HWND UIhWnd;
 
 extern char AUTOSAVE;
 extern char AUTOSAVEMH;
 
-extern char MYNODECALL;	// 10 chars,not null terminated
+extern char MYNODECALL;	/* 10 chars,not null terminated */
 
 extern QCOUNT; 
 extern BPQVECSTRUC BPQHOSTVECTOR[];
@@ -1304,9 +1304,9 @@ extern struct ROUTE * NEIGHBOURS;
 extern int  ROUTE_LEN;
 extern int  MAXNEIGHBOURS;
 
-extern struct DEST_LIST * DESTS;				// NODE LIST
+extern struct DEST_LIST * DESTS;				/* NODE LIST */
 extern int  DEST_LIST_LEN;
-extern int  MAXDESTS;			// MAX NODES IN SYSTEM
+extern int  MAXDESTS;			/* MAX NODES IN SYSTEM */
 
 extern struct _LINKTABLE * LINKS;
 extern int	LINK_TABLE_LEN; 
@@ -1325,7 +1325,7 @@ extern int FINDFREEDESTINATION();
 extern int RAWTX();
 extern int RELBUFF();
 extern int SENDNETFRAME();
-extern char MYCALL[];			// 7 chars, ax.25 format
+extern char MYCALL[];			/* 7 chars, ax.25 format */
 
 extern HWND hIPResWnd;
 extern BOOL IPMinimized;
@@ -1387,15 +1387,15 @@ char SESSIONHDDR[80] = "";
 int SESSHDDRLEN = 0;
 
 BOOL IncludesMail = FALSE;
-BOOL IncludesChat = FALSE;		// Set if pgram is running - used for Web Page Index
+BOOL IncludesChat = FALSE;		/* Set if pgram is running - used for Web Page Index */
 
 
 char WL2KCall[10];
 char WL2KLoc[7];
 
-extern char LOCATOR[];			// Locator for Reporting - may be Maidenhead or LAT:LON
-extern char MAPCOMMENT[];		// Locator for Reporting - may be Maidenhead or LAT:LON
-extern char LOC[7];				// Maidenhead Locator for Reporting
+extern char LOCATOR[];			/* Locator for Reporting - may be Maidenhead or LAT:LON */
+extern char MAPCOMMENT[];		/* Locator for Reporting - may be Maidenhead or LAT:LON */
+extern char LOC[7];				/* Maidenhead Locator for Reporting */
 extern char ReportDest[7];
 
 VOID __cdecl Debugprintf(const char * format, ...);
@@ -1429,7 +1429,7 @@ VOID Poll_AGW();
 BOOL AGWAPIInit();
 int AGWAPITerminate();
 
-int * Flag = (int *)&Flag;			//	 for Dump Analysis
+int * Flag = (int *)&Flag;			/*	 for Dump Analysis */
 int MAJORVERSION=4;
 int MINORVERSION=9;
 
@@ -1448,7 +1448,7 @@ void GetSemaphore(struct SEM * Semaphore, int ID);
 void FreeSemaphore(struct SEM * Semaphore);
 
 DllExport void * BPQHOSTAPIPTR = &BPQHOSTAPI;
-//DllExport long  MONDECODEPTR = (long)&MONDECODE;
+/*DllExport long  MONDECODEPTR = (long)&MONDECODE; */
 
 extern UCHAR BPQDirectory[];
 extern UCHAR LogDirectory[];
@@ -1470,15 +1470,15 @@ UINT BPQMsg=0;
 
 HBRUSH bgBrush = NULL;
 
-//int LINELEN=120;
-//int SCREENLEN=50;
+/*int LINELEN=120; */
+/*int SCREENLEN=50; */
 
-//char Screen[MAXLINELEN*MAXSCREENLEN]={0};
+/*char Screen[MAXLINELEN*MAXSCREENLEN]={0}; */
 
-//int lineno=0;
-//int col=0;
+/*int lineno=0; */
+/*int col=0; */
 
-#define REPORTINTERVAL 15 * 549;	// Magic Ticks Per Minute for PC's nominal 100 ms timer 
+#define REPORTINTERVAL 15 * 549;	/* Magic Ticks Per Minute for PC's nominal 100 ms timer  */
 int ReportTimer = 0;
 
 HANDLE OpenConfigFile(char * file);
@@ -1486,10 +1486,10 @@ HANDLE OpenConfigFile(char * file);
 VOID SetupBPQDirectory();
 VOID SendLocation();
 
-//uintptr_t _beginthread(void(*start_address)(), unsigned stack_size, int arglist);
+/*uintptr_t _beginthread(void(*start_address)(), unsigned stack_size, int arglist); */
 
-#define TRAY_ICON_ID	      1		    //		ID number for the Notify Icon
-#define MY_TRAY_ICON_MESSAGE  WM_APP	//		the message ID sent to our window
+#define TRAY_ICON_ID	      1		    /*		ID number for the Notify Icon */
+#define MY_TRAY_ICON_MESSAGE  WM_APP	/*		the message ID sent to our window */
 
 NOTIFYICONDATA niData; 
 
@@ -1508,15 +1508,15 @@ HWND hConsWnd = NULL, hWndCons = NULL, hWndBG = NULL, ClientWnd = NULL,  FrameWn
 BOOL FrameMaximized = FALSE;
 
 BOOL IGateEnabled = TRUE;
-extern int ISDelayTimer;			// Time before trying to reopen APRS-IS link
+extern int ISDelayTimer;			/* Time before trying to reopen APRS-IS link */
 extern int ISPort;
 
 UINT * WINMORTraceQ = NULL;
 UINT * SetWindowTextQ = NULL;
 
-static RECT Rect = {100,100,400,400};	// Console Window Position
-RECT FRect = {100,100,800,600};	// Frame 
-static RECT StatusRect = {100,100,850,500};	// Status Window
+static RECT Rect = {100,100,400,400};	/* Console Window Position */
+RECT FRect = {100,100,800,600};	/* Frame  */
+static RECT StatusRect = {100,100,850,500};	/* Status Window */
 
 DllExport int APIENTRY DumpSystem();
 DllExport int APIENTRY SaveNodes ();
@@ -1537,13 +1537,13 @@ DllExport int APIENTRY DeallocateStream(int stream);
 int VECTORLENGTH = sizeof (struct _BPQVECSTRUC);
 
 int FirstEntry = 1;
-BOOL CloseLast = TRUE;			// If the user started BPQ32.exe, don't close it when other programs close
-BOOL Closing = FALSE;			// Set if Close All called - prevents respawning bpq32.exe
+BOOL CloseLast = TRUE;			/* If the user started BPQ32.exe, don't close it when other programs close */
+BOOL Closing = FALSE;			/* Set if Close All called - prevents respawning bpq32.exe */
 
-BOOL BPQ32_EXE;					// Set if Process is running BPQ32.exe. Not initialised.
-								// Used to Kill surplus BPQ32.exe processes
+BOOL BPQ32_EXE;					/* Set if Process is running BPQ32.exe. Not initialised. */
+								/* Used to Kill surplus BPQ32.exe processes */
 
-DWORD Our_PID;					// Our Process ID - local variable
+DWORD Our_PID;					/* Our Process ID - local variable */
 
 void * InitDone = 0;
 int FirstInitDone = 0;
@@ -1574,16 +1574,16 @@ HWND hWndArray[100] = {0};
 int PIDArray[100] = {0};
 char PopupText[30][100] = {""};
 
-// Next 3 should be uninitialised so they are local to each process
+/* Next 3 should be uninitialised so they are local to each process */
 
 UCHAR	MCOM;
 UCHAR	MTX;
 uint64_t MMASK;
 UCHAR	MUIONLY;
 
-UCHAR AuthorisedProgram;			// Local Variable. Set if Program is on secure list
+UCHAR AuthorisedProgram;			/* Local Variable. Set if Program is on secure list */
 
-char pgm[256];						// Uninitialised so per process
+char pgm[256];						/* Uninitialised so per process */
 
 HANDLE Mutex;
 
@@ -1686,9 +1686,9 @@ BOOL GetProcess(int ProcessID, char * Program)
 
    if (CreateToolHelp32SnapShotPtr==0)
    {
-	   return (TRUE);	// Routine not available
+	   return (TRUE);	/* Routine not available */
    }
-  // Take a snapshot of all processes in the system.
+  /* Take a snapshot of all processes in the system. */
   hProcessSnap = (HANDLE)CreateToolHelp32SnapShotPtr(TH32CS_SNAPPROCESS, 0);
   if( hProcessSnap == INVALID_HANDLE_VALUE )
   {
@@ -1696,25 +1696,25 @@ BOOL GetProcess(int ProcessID, char * Program)
     return( FALSE );
   }
 
-  // Set the size of the structure before using it.
+  /* Set the size of the structure before using it. */
   pe32.dwSize = sizeof( PROCESSENTRY32 );
 
-  // Retrieve information about the first process,
-  // and exit if unsuccessful
+  /* Retrieve information about the first process, */
+  /* and exit if unsuccessful */
   if( !Process32Firstptr( hProcessSnap, &pe32 ) )
   {
-    OutputDebugString( "Process32First Failed\n" );  // Show cause of failure
-    CloseHandle( hProcessSnap );     // Must clean up the snapshot object!
+    OutputDebugString( "Process32First Failed\n" );  /* Show cause of failure */
+    CloseHandle( hProcessSnap );     /* Must clean up the snapshot object! */
     return( FALSE );
   }
 
-  // Now walk the snapshot of processes, and
-  // display information about each process in turn
+  /* Now walk the snapshot of processes, and */
+  /* display information about each process in turn */
   do
   {
 	if (ProcessID==pe32.th32ProcessID)
 	{
-		  // if running on 98, program contains the full path - remove it
+		  /* if running on 98, program contains the full path - remove it */
 
 		for (p = (int)strlen(pe32.szExeFile); p >= 0; p--)
 		{
@@ -1740,28 +1740,28 @@ BOOL GetProcess(int ProcessID, char * Program)
 
 BOOL IsProcess(int ProcessID)
 {
-	// Check that Process exists
+	/* Check that Process exists */
 
   HANDLE hProcessSnap;
   PROCESSENTRY32 pe32;
 
-  if (CreateToolHelp32SnapShotPtr==0) return (TRUE);  // Routine not available
+  if (CreateToolHelp32SnapShotPtr==0) return (TRUE);  /* Routine not available */
 
   hProcessSnap = (HANDLE)CreateToolHelp32SnapShotPtr(TH32CS_SNAPPROCESS, 0);
 
   if( hProcessSnap == INVALID_HANDLE_VALUE )
   {
     OutputDebugString( "CreateToolhelp32Snapshot (of processes) Failed\n" );
-    return(TRUE);		// Don't know, so assume ok
+    return(TRUE);		/* Don't know, so assume ok */
   }
 
   pe32.dwSize = sizeof( PROCESSENTRY32 );
 
    if( !Process32Firstptr( hProcessSnap, &pe32 ) )
   {
-    OutputDebugString( "Process32First Failed\n" );  // Show cause of failure
-    CloseHandle( hProcessSnap );     // Must clean up the snapshot object!
-    return(TRUE);		// Don't know, so assume ok
+    OutputDebugString( "Process32First Failed\n" );  /* Show cause of failure */
+    CloseHandle( hProcessSnap );     /* Must clean up the snapshot object! */
+    return(TRUE);		/* Don't know, so assume ok */
    }
 
    do
@@ -1782,20 +1782,20 @@ BOOL IsProcess(int ProcessID)
 
 VOID MonitorThread(int x)
 {
-	// Thread to detect killed processes. Runs in process owning timer.
+	/* Thread to detect killed processes. Runs in process owning timer. */
 
-	// Obviously can't detect loss of timer owning thread!
+	/* Obviously can't detect loss of timer owning thread! */
 
 	do 
 	{
 		if (Semaphore.Gets == LastSemGets && Semaphore.Flag)
 		{
-			// It is stuck - try to release
+			/* It is stuck - try to release */
 
 				Debugprintf ("Semaphore locked - Process ID = %d, Held By %d",
 					Semaphore.SemProcessID, SemHeldByAPI);
 			
-			// Write a minidump
+			/* Write a minidump */
 
 			WriteMiniDump();
 			
@@ -1822,12 +1822,12 @@ VOID CheckforLostProcesses()
 			
 		if (!IsProcess(ProcessID))
 		{
-			// Process has died - Treat as a detach
+			/* Process has died - Treat as a detach */
 
 			sprintf(Log,"BPQ32 Process %d Died\n", ProcessID);
 			OutputDebugString(Log);
 
-			// Remove Tray Icon Entry
+			/* Remove Tray Icon Entry */
 
 			for( i = 0; i < 100; ++i )
 			{
@@ -1840,7 +1840,7 @@ VOID CheckforLostProcesses()
 				}
 			}
 
-			// If process had the semaphore, release it
+			/* If process had the semaphore, release it */
 
 			if (Semaphore.Flag == 1 && ProcessID == Semaphore.SemProcessID)
 			{
@@ -1865,7 +1865,7 @@ VOID CheckforLostProcesses()
 				KillTimer(NULL,TimerHandle);
 				TimerHandle=0;
 				TimerInst=0xffffffff;
-//				Tell_Sessions();
+/*				Tell_Sessions(); */
 				OutputDebugString("BPQ32 Process was running timer \n");
 			
 				if (MinimizetoTray)
@@ -1874,7 +1874,7 @@ VOID CheckforLostProcesses()
 				
 			}
 				
-			//	Remove this entry from PID List
+			/*	Remove this entry from PID List */
 
 			for (i=n; i< AttachedProcesses; i++)
 			{
@@ -1889,7 +1889,7 @@ VOID CheckforLostProcesses()
 }
 VOID MonitorTimerThread(int x)
 {	
-	// Thread to detect killed timer process. Runs in all other BPQ32 processes.
+	/* Thread to detect killed timer process. Runs in all other BPQ32 processes. */
 
 	do {
 
@@ -1897,12 +1897,12 @@ VOID MonitorTimerThread(int x)
 
 		if (TimerInst != 0xffffffff && !IsProcess(TimerInst))
 		{
-			// Timer owning Process has died - Force a new timer to be created
-			//	New timer thread will detect lost process and tidy up
+			/* Timer owning Process has died - Force a new timer to be created */
+			/*	New timer thread will detect lost process and tidy up */
 		
 			Debugprintf("BPQ32 Process %d with Timer died", TimerInst);
 
-			// If process was holding the semaphore, release it
+			/* If process was holding the semaphore, release it */
 
 			if (Semaphore.Flag == 1 && TimerInst == Semaphore.SemProcessID)
 			{
@@ -1913,17 +1913,17 @@ VOID MonitorTimerThread(int x)
 				SemHeldByAPI = 0;
 			}
 
-//			KillTimer(NULL,TimerHandle);
-//			TimerHandle=0;
-//			TimerInst=0xffffffff;
-//			Tell_Sessions();
+/*			KillTimer(NULL,TimerHandle); */
+/*			TimerHandle=0; */
+/*			TimerInst=0xffffffff; */
+/*			Tell_Sessions(); */
 
-			CheckforLostProcesses();		// Normally only done in timer thread, which is now dead
+			CheckforLostProcesses();		/* Normally only done in timer thread, which is now dead */
 
-			// Timer can only run in BPQ32.exe
+			/* Timer can only run in BPQ32.exe */
 
-			TimerInst=0xffffffff;			// So we dont keep doing it
-			TimerHandle = 0;				// So new process attaches
+			TimerInst=0xffffffff;			/* So we dont keep doing it */
+			TimerHandle = 0;				/* So new process attaches */
 
 			if (Closing == FALSE && AttachingProcess == FALSE)
 			{
@@ -1931,8 +1931,8 @@ VOID MonitorTimerThread(int x)
 				StartBPQ32();
 			}
 
-//			if (MinimizetoTray)
-//				Shell_NotifyIcon(NIM_DELETE,&niData);
+/*			if (MinimizetoTray) */
+/*				Shell_NotifyIcon(NIM_DELETE,&niData); */
 		}
 	
 	} while (TRUE);
@@ -1943,10 +1943,10 @@ VOID WritetoTraceSupport(struct TNCINFO * TNC, char * Msg, int Len);
 VOID TimerProcX();
 
 VOID CALLBACK TimerProc(
-	HWND  hwnd,	// handle of window for timer messages 
-    UINT  uMsg,	// WM_TIMER message
-    UINT  idEvent,	// timer identifier
-    DWORD  dwTime)	// current system time	
+	HWND  hwnd,	/* handle of window for timer messages  */
+    UINT  uMsg,	/* WM_TIMER message */
+    UINT  idEvent,	/* timer identifier */
+    DWORD  dwTime)	/* current system time	 */
 {
  	KillTimer(NULL,TimerHandle);
 	TimerProcX();
@@ -1956,22 +1956,22 @@ VOID TimerProcX()
 {
 	struct _EXCEPTION_POINTERS exinfo;
 
-	//
-	//	Get semaphore before proceeeding
-	//
+	/* */
+	/*	Get semaphore before proceeeding */
+	/* */
 
 	GetSemaphore(&Semaphore, 2);
 
-	// Get time since last run
+	/* Get time since last run */
 
 	QueryPerformanceCounter(&currentTime);
 
 	interval = (int)(currentTime.QuadPart - lastRunTime.QuadPart) / ticksPerMillisec;
 	lastRunTime.QuadPart = currentTime.QuadPart;
 
-	//Debugprintf("%d", interval);
+	/*Debugprintf("%d", interval); */
 
-	// Process WINMORTraceQ
+	/* Process WINMORTraceQ */
 
 	while (WINMORTraceQ)
 	{
@@ -2002,7 +2002,7 @@ VOID TimerProcX()
 	if (trayMenu == NULL)
 		SetupTrayIcon();
 
-	// See if reconfigure requested
+	/* See if reconfigure requested */
 
 	if (CloseAllNeeded)
 	{
@@ -2012,14 +2012,14 @@ VOID TimerProcX()
 
 	if (ReconfigFlag)
 	{
-		// Only do it it timer owning process, or we could get in a real mess!
+		/* Only do it it timer owning process, or we could get in a real mess! */
 
 		if(TimerInst == GetCurrentProcessId())
 		{
 			int i;
 			BPQVECSTRUC * HOSTVEC;
 			PEXTPORTDATA PORTVEC=(PEXTPORTDATA)PORTTABLE;
-			WSADATA       WsaData;            // receives data from WSAStartup
+			WSADATA       WsaData;            /* receives data from WSAStartup */
 			RECT cRect;
 
 			ReconfigFlag = FALSE;
@@ -2031,18 +2031,18 @@ VOID TimerProcX()
 
 			GetWindowRect(FrameWnd, &FRect);
 
-			SaveWindowPos(64);		// Rigcontrol
+			SaveWindowPos(64);		/* Rigcontrol */
 
 			for (i=0;i<NUMBEROFPORTS;i++)
 			{
-				if (PORTVEC->PORTCONTROL.PORTTYPE == 0x10)			// External
+				if (PORTVEC->PORTCONTROL.PORTTYPE == 0x10)			/* External */
 				{
 					if (PORTVEC->PORT_EXT_ADDR)
 					{
 						SaveWindowPos(PORTVEC->PORTCONTROL.PORTNUMBER);
 						SaveAXIPWindowPos(PORTVEC->PORTCONTROL.PORTNUMBER);
 						CloseDriverWindow(PORTVEC->PORTCONTROL.PORTNUMBER);
-						PORTVEC->PORT_EXT_ADDR(5,PORTVEC->PORTCONTROL.PORTNUMBER, NULL);	// Close External Ports
+						PORTVEC->PORT_EXT_ADDR(5,PORTVEC->PORTCONTROL.PORTNUMBER, NULL);	/* Close External Ports */
 					}
 				}
 				PORTVEC->PORTCONTROL.PORTCLOSECODE(&PORTVEC->PORTCONTROL);
@@ -2070,30 +2070,30 @@ VOID TimerProcX()
 	
 			Start();
 
-			INITIALISEPORTS();			// Restart Ports
+			INITIALISEPORTS();			/* Restart Ports */
 
 			SetApplPorts();
 
 			FreeConfig();
 
-			for (i=1; i<68; i++)			// Include Telnet, APRS and IP Vec
+			for (i=1; i<68; i++)			/* Include Telnet, APRS and IP Vec */
 			{
 				HOSTVEC=&BPQHOSTVECTOR[i-1];
 
-				HOSTVEC->HOSTTRACEQ=0;			// Clear header (pool has been reinitialized
+				HOSTVEC->HOSTTRACEQ=0;			/* Clear header (pool has been reinitialized */
 
 				if (HOSTVEC->HOSTSESSION !=0)
 				{
-					// Had a connection
+					/* Had a connection */
 					
 					HOSTVEC->HOSTSESSION=0;
-					HOSTVEC->HOSTFLAGS |=3;	// Disconnected
+					HOSTVEC->HOSTFLAGS |=3;	/* Disconnected */
 					
 					PostMessage(HOSTVEC->HOSTHANDLE, BPQMsg, i, 4);
 				}
 			}
 
-			// Free the APRS Appl Q
+			/* Free the APRS Appl Q */
 
 			APPL_Q = 0;
 
@@ -2142,14 +2142,14 @@ VOID TimerProcX()
 
 	if (RigReconfigFlag)
 	{
-		// Only do it it timer owning process, or we could get in a real mess!
+		/* Only do it it timer owning process, or we could get in a real mess! */
 
 		if(TimerInst == GetCurrentProcessId())
 		{
 			RigReconfigFlag = FALSE;
 			CloseDriverWindow(40);
 			Rig_Close();
-			Sleep(6000);		// Allow any CATPTT, HAMLIB and FLRIG threads to close
+			Sleep(6000);		/* Allow any CATPTT, HAMLIB and FLRIG threads to close */
 			RigActive = Rig_Init();
 			
 			WritetoConsole("Rigcontrol Reconfiguration Complete\n");	
@@ -2158,7 +2158,7 @@ VOID TimerProcX()
 
 	if (APRSReconfigFlag)
 	{
-		// Only do it it timer owning process, or we could get in a real mess!
+		/* Only do it it timer owning process, or we could get in a real mess! */
 
 		if(TimerInst == GetCurrentProcessId())
 		{
@@ -2205,7 +2205,7 @@ VOID TimerProcX()
 
 		CheckGuardZone();
 
-		FreeSemaphore(&Semaphore);			// SendLocation needs to get the semaphore
+		FreeSemaphore(&Semaphore);			/* SendLocation needs to get the semaphore */
 
 		if (NUMBEROFTNCPORTS)
 			TNCTimer();
@@ -2256,20 +2256,20 @@ int (WINAPI FAR *EnumProcessesPtr)() = NULL;
 
 FirstInit()
 {
-    WSADATA       WsaData;            // receives data from WSAStartup
+    WSADATA       WsaData;            /* receives data from WSAStartup */
 	HINSTANCE ExtDriver=0;
 	RECT cRect;
 
 
-	// First Time Ports and Timer init
+	/* First Time Ports and Timer init */
 
-	// Moved from DLLINIT to sort out perl problem, and meet MS Guidelines on minimising DLLMain 
+	/* Moved from DLLINIT to sort out perl problem, and meet MS Guidelines on minimising DLLMain  */
 
-	// Call wsastartup - most systems need winsock, and duplicate statups could be a problem
+	/* Call wsastartup - most systems need winsock, and duplicate statups could be a problem */
 
     WSAStartup(MAKEWORD(2, 0), &WsaData);
 
-	// Load Psapi.dll if possible
+	/* Load Psapi.dll if possible */
 
 	ExtDriver=LoadLibrary("Psapi.dll");
 
@@ -2336,7 +2336,7 @@ FirstInit()
 	TimerInst=GetCurrentProcessId();
 	SessHandle = SetTimer(NULL, 0, 5000, lpSetupTermSessions);
 
-	// If ARIF reporting is enabled write a Trimode Like ini for RMS Analyser
+	/* If ARIF reporting is enabled write a Trimode Like ini for RMS Analyser */
 
 	if (ADIFLogEnabled)
 		ADIFWriteFreqList();
@@ -2380,7 +2380,7 @@ Check_Timer()
 				InitializeTNCEmulator();
 
 			AGWActive = AGWAPIInit();
-			FirstInitDone=1;					// Only init in BPQ32.exe
+			FirstInitDone=1;					/* Only init in BPQ32.exe */
 			return 0;
 		}
 		else
@@ -2392,11 +2392,11 @@ Check_Timer()
 
 	if (TimerHandle == 0 && FirstInitDone == 1)
 	{
-	    WSADATA       WsaData;            // receives data from WSAStartup
+	    WSADATA       WsaData;            /* receives data from WSAStartup */
 		HINSTANCE ExtDriver=0;
 		RECT cRect;
 
-		// Only attach timer to bpq32.exe
+		/* Only attach timer to bpq32.exe */
 
 		if (_stricmp(pgm, "bpq32.exe") != 0)
 		{
@@ -2430,11 +2430,11 @@ Check_Timer()
  
 		SetupBPQDirectory();
 
-		Sleep(1000);			// Allow time for sockets to close	
+		Sleep(1000);			/* Allow time for sockets to close	 */
 
 		WSAStartup(MAKEWORD(2, 0), &WsaData);
 
-		// Load Psapi.dll if possible
+		/* Load Psapi.dll if possible */
 
 		ExtDriver = LoadLibrary("Psapi.dll");
 
@@ -2463,8 +2463,8 @@ Check_Timer()
 
 		CreateMutex(NULL,TRUE,"BPQLOCKMUTEX");
 
-//		NPHandle=CreateNamedPipe("\\\\.\\pipe\\BPQ32pipe",
-//					PIPE_ACCESS_DUPLEX,0,64,4096,4096,1000,NULL);
+/*		NPHandle=CreateNamedPipe("\\\\.\\pipe\\BPQ32pipe", */
+/*					PIPE_ACCESS_DUPLEX,0,64,4096,4096,1000,NULL); */
 
 		if (IPRequired)	IPActive = Init_IP();
 		if (PMRequired)	PMActive = Init_PM();
@@ -2529,10 +2529,10 @@ DllExport INT APIENTRY CheckTimer()
 
 Tell_Sessions()
 {
-	//
-	//	Post a message to all listening sessions, so they call the 
-	//	API, and cause a new timer to be allocated
-	//
+	/* */
+	/*	Post a message to all listening sessions, so they call the  */
+	/*	API, and cause a new timer to be allocated */
+	/* */
 	HWND hWnd;
 	int i;
 
@@ -2568,9 +2568,9 @@ BOOL APIENTRY DllMain(HANDLE hInst, DWORD ul_reason_being_called, LPVOID lpReser
 	{
 	case DLL_PROCESS_ATTACH:
 			  
-		if (sizeof(HDLCDATA) > PORTENTRYLEN + 200)	// 200 bytes of Hardwaredata
+		if (sizeof(HDLCDATA) > PORTENTRYLEN + 200)	/* 200 bytes of Hardwaredata */
 		{
-			// Catastrophic - Refuse to load
+			/* Catastrophic - Refuse to load */
 			
 			MessageBox(NULL,"BPQ32 Too much HDLC data - Recompile","BPQ32", MB_OK);
 			return 0;
@@ -2578,14 +2578,14 @@ BOOL APIENTRY DllMain(HANDLE hInst, DWORD ul_reason_being_called, LPVOID lpReser
 			  
 		if (sizeof(LINKTABLE) != LINK_TABLE_LEN)
 		{
-			// Catastrophic - Refuse to load
+			/* Catastrophic - Refuse to load */
 			
 			MessageBox(NULL,"L2 LINK Table .c and .asm mismatch - fix and rebuild","BPQ32", MB_OK);
 			return 0;
 		}
 		if (sizeof(struct ROUTE) != ROUTE_LEN)
 		{
-			// Catastrophic - Refuse to load
+			/* Catastrophic - Refuse to load */
 			
 			MessageBox(NULL,"ROUTE Table .c and .asm mismatch - fix and rebuild", "BPQ32", MB_OK);
 			return 0;
@@ -2593,7 +2593,7 @@ BOOL APIENTRY DllMain(HANDLE hInst, DWORD ul_reason_being_called, LPVOID lpReser
 	
 		if (sizeof(struct DEST_LIST) != DEST_LIST_LEN)
 		{
-			// Catastrophic - Refuse to load
+			/* Catastrophic - Refuse to load */
 			
 			MessageBox(NULL,"NODES Table .c and .asm mismatch - fix and rebuild", "BPQ32", MB_OK);
 			return 0;
@@ -2617,7 +2617,7 @@ BOOL APIENTRY DllMain(HANDLE hInst, DWORD ul_reason_being_called, LPVOID lpReser
 
 		if (_stricmp(pgm, "regsvr32.exe") == 0 || _stricmp(pgm, "bpqcontrol.exe") == 0)
 		{
-			AttachedProcesses++;			// We will get a detach
+			AttachedProcesses++;			/* We will get a detach */
 			FreeSemaphore(&Semaphore);
 			return 1;
 		}
@@ -2634,7 +2634,7 @@ BOOL APIENTRY DllMain(HANDLE hInst, DWORD ul_reason_being_called, LPVOID lpReser
 		if (_stricmp(pgm,"BPQChat.exe") == 0)
 			IncludesChat = TRUE;
 
-		if (FirstEntry)				// If loaded by BPQ32.exe, dont close it at end
+		if (FirstEntry)				/* If loaded by BPQ32.exe, dont close it at end */
 		{
 			FirstEntry = 0;
 			if (BPQ32_EXE)
@@ -2644,7 +2644,7 @@ BOOL APIENTRY DllMain(HANDLE hInst, DWORD ul_reason_being_called, LPVOID lpReser
 		{
 			if (BPQ32_EXE && AttachingProcess == 0)
 			{
-				AttachedProcesses++;			// We will get a detach
+				AttachedProcesses++;			/* We will get a detach */
 				FreeSemaphore(&Semaphore);
 				MessageBox(NULL,"BPQ32.exe is already running\r\n\r\nIt should only be run once", "BPQ32", MB_OK);
 				return 0;
@@ -2654,7 +2654,7 @@ BOOL APIENTRY DllMain(HANDLE hInst, DWORD ul_reason_being_called, LPVOID lpReser
 		if (_stricmp(pgm,"BPQTelnetServer.exe") == 0)
 		{
 			MessageBox(NULL,"BPQTelnetServer is no longer supported\r\n\r\nUse the TelnetServer in BPQ32.dll", "BPQ32", MB_OK);
-			AttachedProcesses++;			// We will get a detach
+			AttachedProcesses++;			/* We will get a detach */
 			FreeSemaphore(&Semaphore);
 			return 0;
 		}
@@ -2662,7 +2662,7 @@ BOOL APIENTRY DllMain(HANDLE hInst, DWORD ul_reason_being_called, LPVOID lpReser
 		if (_stricmp(pgm,"BPQUIUtil.exe") == 0)
 		{
 			MessageBox(NULL,"BPQUIUtil is now part of BPQ32.dll\r\nBPQUIUtil.exe cannot be run\r\n", "BPQ32", MB_OK);
-			AttachedProcesses++;			// We will get a detach
+			AttachedProcesses++;			/* We will get a detach */
 			FreeSemaphore(&Semaphore);
 			return 0;
 		}
@@ -2670,7 +2670,7 @@ BOOL APIENTRY DllMain(HANDLE hInst, DWORD ul_reason_being_called, LPVOID lpReser
 		if (_stricmp(pgm,"BPQMailChat.exe") == 0)
 		{
 			MessageBox(NULL,"BPQMailChat is obsolete. Run BPQMail.exe and/or BPQChat.exe instead", "BPQ32", MB_OK);
-			AttachedProcesses++;			// We will get a detach
+			AttachedProcesses++;			/* We will get a detach */
 			FreeSemaphore(&Semaphore);
 			return 0;
 		}
@@ -2678,17 +2678,17 @@ BOOL APIENTRY DllMain(HANDLE hInst, DWORD ul_reason_being_called, LPVOID lpReser
 
 		if (InitDone == 0)
 		{
-//			#pragma warning(push)
-//			#pragma warning(disable : 4996)
+/*			#pragma warning(push) */
+/*			#pragma warning(disable : 4996) */
 
-//			if (_winver < 0x0600)
-//			#pragma warning(pop)
-//			{
-//				// Below Vista
-//
-//				REGTREE = HKEY_LOCAL_MACHINE;
-//				strcpy(REGTREETEXT, "HKEY_LOCAL_MACHINE");
-//			}
+/*			if (_winver < 0x0600) */
+/*			#pragma warning(pop) */
+/*			{ */
+/*				// Below Vista */
+/* */
+/*				REGTREE = HKEY_LOCAL_MACHINE; */
+/*				strcpy(REGTREETEXT, "HKEY_LOCAL_MACHINE"); */
+/*			} */
 
 			hInstance=hInst;
 
@@ -2707,9 +2707,9 @@ BOOL APIENTRY DllMain(HANDLE hInst, DWORD ul_reason_being_called, LPVOID lpReser
 
 			if (!BPQ32_EXE)
 			{
-				if (CheckifBPQ32isLoaded() == FALSE)		// Start BPQ32.exe if needed
+				if (CheckifBPQ32isLoaded() == FALSE)		/* Start BPQ32.exe if needed */
 				{
-					// Wasn't Loaded, so we have started it, and should let it init system
+					/* Wasn't Loaded, so we have started it, and should let it init system */
 
 					goto SkipInit;		
 				}
@@ -2761,8 +2761,8 @@ BOOL APIENTRY DllMain(HANDLE hInst, DWORD ul_reason_being_called, LPVOID lpReser
 
 				InitDone = &InitDone;
 				BPQMsg = RegisterWindowMessage(BPQWinMsg);
-//				TimerHandle=SetTimer(NULL,0,100,lpTimerFunc);
-//				TimerInst=GetCurrentProcessId();
+/*				TimerHandle=SetTimer(NULL,0,100,lpTimerFunc); */
+/*				TimerInst=GetCurrentProcessId(); */
 
 /*				Mutex=OpenMutex(MUTEX_ALL_ACCESS,FALSE,"BPQLOCKMUTEX");
 
@@ -2777,14 +2777,14 @@ BOOL APIENTRY DllMain(HANDLE hInst, DWORD ul_reason_being_called, LPVOID lpReser
 */
 				Mutex=CreateMutex(NULL,TRUE,"BPQLOCKMUTEX");
 
-//				CreatePipe(&H1,&H2,NULL,1000);
+/*				CreatePipe(&H1,&H2,NULL,1000); */
   
-//				GetLastError();
+/*				GetLastError(); */
 
-//				NPHandle=CreateNamedPipe("\\\\.\\pipe\\BPQ32pipe",
-//					PIPE_ACCESS_DUPLEX,0,64,4096,4096,1000,NULL);
+/*				NPHandle=CreateNamedPipe("\\\\.\\pipe\\BPQ32pipe", */
+/*					PIPE_ACCESS_DUPLEX,0,64,4096,4096,1000,NULL); */
 				
-//				GetLastError();
+/*				GetLastError(); */
 
 /*
 				//
@@ -2808,7 +2808,7 @@ BOOL APIENTRY DllMain(HANDLE hInst, DWORD ul_reason_being_called, LPVOID lpReser
 					}
 				}
 */			
-				for (i=0;PWTEXT[i] > 0x20;i++); //Scan for cr or null 
+				for (i=0;PWTEXT[i] > 0x20;i++); /*Scan for cr or null  */
 				PWLen=i;
 				
 			}
@@ -2823,7 +2823,7 @@ BOOL APIENTRY DllMain(HANDLE hInst, DWORD ul_reason_being_called, LPVOID lpReser
 			}
 		}
 			
-		// Run timer monitor thread in all processes - it is possible for the TImer thread not to be the first thread
+		/* Run timer monitor thread in all processes - it is possible for the TImer thread not to be the first thread */
 SkipInit:
 
 		_beginthread(MonitorTimerThread,0,0);
@@ -2838,19 +2838,19 @@ SkipInit:
 		n=sprintf(buf,"BPQ32 DLL Attach complete - Program %s - %d Process(es) Attached\n",pgm,AttachedProcesses);
 		OutputDebugString(buf);
 
-		// Set up local variables
+		/* Set up local variables */
 		
 		MCOM=1;
 		MTX=1;
 		MMASK=0xffffffffffffffff;
 
-//		if (StartMinimized)
-//			if (MinimizetoTray)
-//				ShowWindow(FrameWnd, SW_HIDE);
-//			else
-//				ShowWindow(FrameWnd, SW_SHOWMINIMIZED);	
-//		else
-//			ShowWindow(FrameWnd, SW_RESTORE);
+/*		if (StartMinimized) */
+/*			if (MinimizetoTray) */
+/*				ShowWindow(FrameWnd, SW_HIDE); */
+/*			else */
+/*				ShowWindow(FrameWnd, SW_SHOWMINIMIZED);	 */
+/*		else */
+/*			ShowWindow(FrameWnd, SW_RESTORE); */
 
 		return 1;
    		
@@ -2874,20 +2874,20 @@ SkipInit:
 
 		Debugprintf("BPQ32 Process %d Detaching", ProcessID); 
 		
-		// Release any streams that the app has failed to release
+		/* Release any streams that the app has failed to release */
 
 		for (i=1;i<65;i++)
 		{
 			if (BPQHOSTVECTOR[i-1].STREAMOWNER == ProcessID)
 			{
-				// If connected, disconnect
+				/* If connected, disconnect */
 
 				SessionControl(i, 2, 0);
 				DeallocateStream(i);
 			}
 		}
 
-		// Remove any Tray Icon Entries
+		/* Remove any Tray Icon Entries */
 
 		for( i = 0; i < 100; ++i )
 		{
@@ -2903,7 +2903,7 @@ SkipInit:
 
 		if (Mutex) CloseHandle(Mutex);
 
-		//	Remove our entry from PID List
+		/*	Remove our entry from PID List */
 
 		for (i=0;  i< AttachedProcesses; i++)
 			if (AttachedPIDList[i] == ProcessID)
@@ -2922,17 +2922,17 @@ SkipInit:
 	
 			OutputDebugString("BPQ32 Process with Timer closing\n");
 
-			// Call Port Close Routines
+			/* Call Port Close Routines */
 			
 			for (i=0;i<NUMBEROFPORTS;i++)
 			{
-				if (PORTVEC->PORTCONTROL.PORTTYPE == 0x10)			// External
+				if (PORTVEC->PORTCONTROL.PORTTYPE == 0x10)			/* External */
 				{
-					if (PORTVEC->PORT_EXT_ADDR && PORTVEC->DLLhandle == NULL) // Don't call if real .dll - it's not there!
+					if (PORTVEC->PORT_EXT_ADDR && PORTVEC->DLLhandle == NULL) /* Don't call if real .dll - it's not there! */
 					{
 						SaveWindowPos(PORTVEC->PORTCONTROL.PORTNUMBER);
 						SaveAXIPWindowPos(PORTVEC->PORTCONTROL.PORTNUMBER);
-						PORTVEC->PORT_EXT_ADDR(5,PORTVEC->PORTCONTROL.PORTNUMBER, NULL);	// Close External Ports
+						PORTVEC->PORT_EXT_ADDR(5,PORTVEC->PORTCONTROL.PORTNUMBER, NULL);	/* Close External Ports */
 					}	
 				}
 
@@ -2964,7 +2964,7 @@ SkipInit:
 			TimerHandle=0;
 			TimerInst=0xffffffff;
 
-			if (AttachedProcesses && Closing == FALSE && AttachingProcess == 0)		// Other processes 
+			if (AttachedProcesses && Closing == FALSE && AttachingProcess == 0)		/* Other processes  */
 			{
 				OutputDebugString("BPQ32 Reloading BPQ32.exe\n");
 				StartBPQ32();
@@ -2972,9 +2972,9 @@ SkipInit:
 		}
 		else
 		{
-			// Not Timer Process
+			/* Not Timer Process */
 
-			if (AttachedProcesses == 1 && CloseLast)		// Only bpq32.exe left
+			if (AttachedProcesses == 1 && CloseLast)		/* Only bpq32.exe left */
 			{
 				Debugprintf("Only BPQ32.exe running - close it");
 				CloseAllNeeded = TRUE;
@@ -2999,7 +2999,7 @@ SkipInit:
 			if (MinimizetoTray)
 				Shell_NotifyIcon(NIM_DELETE,&niData);
 
-			// Unload External Drivers
+			/* Unload External Drivers */
 
 			{
 				PEXTPORTDATA PORTVEC=(PEXTPORTDATA)PORTTABLE;
@@ -3025,7 +3025,7 @@ SkipInit:
 
 DllExport int APIENTRY CloseBPQ32()	
 {
-	// Unload External Drivers
+	/* Unload External Drivers */
 
 	PEXTPORTDATA PORTVEC=(PEXTPORTDATA)PORTTABLE;
 	int i;
@@ -3050,7 +3050,7 @@ DllExport int APIENTRY CloseBPQ32()
 
 		for (i=0;i<NUMBEROFPORTS;i++)
 		{
-			if (PORTVEC->PORTCONTROL.PORTTYPE == 0x10)			// External
+			if (PORTVEC->PORTCONTROL.PORTTYPE == 0x10)			/* External */
 			{
 				if (PORTVEC->PORT_EXT_ADDR)
 				{
@@ -3082,7 +3082,7 @@ DllExport int APIENTRY CloseBPQ32()
 
 		Debugprintf("AttachedProcesses %d ", AttachedProcesses);
 
-		if (AttachedProcesses > 1 && Closing == FALSE && AttachingProcess == 0)		// Other processes 
+		if (AttachedProcesses > 1 && Closing == FALSE && AttachingProcess == 0)		/* Other processes  */
 		{
 			OutputDebugString("BPQ32 Reloading BPQ32.exe\n");
 			StartBPQ32();
@@ -3144,7 +3144,7 @@ if (_winver < 0x0600)
 		}
 		else
 		{
-			// If necessary, move reg from HKEY_LOCAL_MACHINE to HKEY_CURRENT_USER
+			/* If necessary, move reg from HKEY_LOCAL_MACHINE to HKEY_CURRENT_USER */
 
 			retCode = RegOpenKeyEx (HKEY_LOCAL_MACHINE,
 				                  "SOFTWARE\\G8BPQ\\BPQ32",
@@ -3154,7 +3154,7 @@ if (_winver < 0x0600)
 
 			retCode = RegCreateKeyEx(HKEY_CURRENT_USER, "SOFTWARE\\G8BPQ\\BPQ32", 0, 0, 0, KEY_ALL_ACCESS, NULL, &hKeyOut, &disp);
 
-			// See if Version Key exists in HKEY_CURRENT_USER - if it does, we have already done the copy
+			/* See if Version Key exists in HKEY_CURRENT_USER - if it does, we have already done the copy */
 
 			Vallen = MAX_PATH;
 			retCode = RegQueryValueEx(hKeyOut, "Version" ,0 , &Type,(UCHAR *)&msg, &Vallen);
@@ -3180,7 +3180,7 @@ if (_winver < 0x0600)
 
     if (retCode == ERROR_SUCCESS)
 	{
-		// Try "BPQ Directory"
+		/* Try "BPQ Directory" */
 		
 		Vallen = MAX_PATH;
 		retCode = RegQueryValueEx(hKey,"BPQ Directory",0,			
@@ -3194,7 +3194,7 @@ if (_winver < 0x0600)
 
 		if (ValfromReg[0] == 0)
 		{
-			// BPQ Directory absent or = "" - try "Config File Location"
+			/* BPQ Directory absent or = "" - try "Config File Location" */
 
 			Vallen = MAX_PATH;
 			
@@ -3210,7 +3210,7 @@ if (_winver < 0x0600)
 
  		if (ValfromReg[0] == 0) GetCurrentDirectory(MAX_PATH, ValfromReg);
 
-		// Get StartMinimized and MinimizetoTray flags
+		/* Get StartMinimized and MinimizetoTray flags */
 
 		Vallen = 4;
 		retCode = RegQueryValueEx(hKey, "Start Minimized", 0, &Type, (UCHAR *)&StartMinimized, &Vallen);
@@ -3220,7 +3220,7 @@ if (_winver < 0x0600)
 
 		ExpandEnvironmentStrings(ValfromReg, BPQDirectory, MAX_PATH);
 
-		// Also get "BPQ Program Directory"
+		/* Also get "BPQ Program Directory" */
 
 		ValfromReg[0] = 0;
 		Vallen = MAX_PATH;
@@ -3230,7 +3230,7 @@ if (_winver < 0x0600)
 		if (retCode == ERROR_SUCCESS)
 			ExpandEnvironmentStrings(ValfromReg, BPQProgramDirectory, MAX_PATH);
 
-		// And Log Directory
+		/* And Log Directory */
 
 		ValfromReg[0] = 0;
 		Vallen = MAX_PATH;
@@ -3279,8 +3279,8 @@ if (_winver < 0x0600)
 	msg[i-1]=0;
 	OutputDebugString(msg);
 
-	// Don't write the Version Key if loaded by regsvr32.exe (Installer is running with Admin rights,
-	//	so will write the wrong tree on )
+	/* Don't write the Version Key if loaded by regsvr32.exe (Installer is running with Admin rights, */
+	/*	so will write the wrong tree on ) */
 
 	if (_stricmp(pgm, "regsvr32.exe") == 0)
 	{
@@ -3296,7 +3296,7 @@ if (_winver < 0x0600)
 		RegCloseKey(hKey);
 	}
 
-	// Make sure Logs Directory exists
+	/* Make sure Logs Directory exists */
 					
 	sprintf(LogDir, "%s/Logs", LogDirectory);
 	
@@ -3314,7 +3314,7 @@ HANDLE OpenConfigFile(char *fn)
 	char Msg[256];
 
 
-	// If no directory, use current
+	/* If no directory, use current */
 	if (BPQDirectory[0] == 0)
 	{
 		strcpy(Value,fn);
@@ -3358,10 +3358,10 @@ DllExport int APIENTRY GETBPQAPI()
  	return (int)BPQHOSTAPI;
 }
     
-//DllExport UINT APIENTRY GETMONDECODE()
-//{
-// 	return (UINT)MONDECODE;
-//}
+/*DllExport UINT APIENTRY GETMONDECODE() */
+/*{ */
+/* 	return (UINT)MONDECODE; */
+/*} */
     
 
 DllExport INT APIENTRY BPQAPI(int Fn, char * params)
@@ -3525,8 +3525,8 @@ DllExport int APIENTRY InitSwitch()
 */
 DllExport int APIENTRY GetFreeBuffs()
 {
-//	Returns number of free buffers
-//	(BPQHOST function 7 (part)).
+/*	Returns number of free buffers */
+/*	(BPQHOST function 7 (part)). */
 	return (QCOUNT);
 }
 
@@ -3633,7 +3633,7 @@ BOOL UpdateNodesForApp(int Appl)
 
 	if (DEST == NULL)
 	{
-		// No dest at the moment. If we have valid call and Qual, create an entry
+		/* No dest at the moment. If we have valid call and Qual, create an entry */
 		
 		if (APPLCALLTABLE[App].APPLQUAL == 0) return FALSE;
 
@@ -3646,13 +3646,13 @@ BOOL UpdateNodesForApp(int Appl)
 	
 		while (n--)
 		{
-			if (DEST->DEST_CALL[0] == 0)		// Spare
+			if (DEST->DEST_CALL[0] == 0)		/* Spare */
 				break;
 		}		
 
 		if (n == 0)
 		{
-			// no dests
+			/* no dests */
 
 			FreeSemaphore(&Semaphore);
 			return FALSE;
@@ -3663,7 +3663,7 @@ BOOL UpdateNodesForApp(int Appl)
 		
 		memmove (DEST->DEST_CALL,APPL->APPLCALL,13);
 
-		DEST->DEST_STATE=0x80;	// SPECIAL ENTRY
+		DEST->DEST_STATE=0x80;	/* SPECIAL ENTRY */
 	
 		DEST->NRROUTE[0].ROUT_QUALITY = (BYTE)APPL->APPLQUAL;
 		DEST->NRROUTE[0].ROUT_OBSCOUNT = 255;
@@ -3673,13 +3673,13 @@ BOOL UpdateNodesForApp(int Appl)
 		return TRUE;
 	}
 
-	//	We have a destination. If Quality is zero, remove it, else update it
+	/*	We have a destination. If Quality is zero, remove it, else update it */
 
 	if (APPLCALLTABLE[App].APPLQUAL == 0)
 	{
 		GetSemaphore(&Semaphore, 6);
 
-		REMOVENODE(DEST);			// Clear buffers, Remove from Sorted Nodes chain, and zap entry
+		REMOVENODE(DEST);			/* Clear buffers, Remove from Sorted Nodes chain, and zap entry */
 		
 		APPL->NODEPOINTER=NULL;
 
@@ -3694,7 +3694,7 @@ BOOL UpdateNodesForApp(int Appl)
 
 	memmove (DEST->DEST_CALL,APPL->APPLCALL,13);
 
-	DEST->DEST_STATE=0x80;	// SPECIAL ENTRY
+	DEST->DEST_STATE=0x80;	/* SPECIAL ENTRY */
 	
 	DEST->NRROUTE[0].ROUT_QUALITY = (BYTE)APPL->APPLQUAL;
 	DEST->NRROUTE[0].ROUT_OBSCOUNT = 255;
@@ -3741,7 +3741,7 @@ DllExport UCHAR * APIENTRY GetLogDirectory()
 	return (&LogDirectory[0]);
 }
 
-// Version for Visual Basic
+/* Version for Visual Basic */
 
 DllExport char * APIENTRY CopyBPQDirectory(char * dir)
 {
@@ -3782,7 +3782,7 @@ VOID * InitializeExtDriver(PEXTPORTDATA PORTVEC)
 	HKEY hKey=0;
 	UCHAR Value[MAX_PATH];
 	
-	// If no directory, use current
+	/* If no directory, use current */
 
 	if (BPQDirectory[0] == 0)
 	{
@@ -3795,7 +3795,7 @@ VOID * InitializeExtDriver(PEXTPORTDATA PORTVEC)
 		strcat(Value,PORTVEC->PORT_DLL_NAME);
 	}
 
-	// Several Drivers are now built into bpq32.dll
+	/* Several Drivers are now built into bpq32.dll */
 
 	_strupr(Value);
 
@@ -3832,8 +3832,8 @@ VOID * InitializeExtDriver(PEXTPORTDATA PORTVEC)
 	if (strstr(Value, "TELNET"))
 		return TelnetExtInit;
 
-//	if (strstr(Value, "SOUNDMODEM"))
-//		return SoundModemExtInit;
+/*	if (strstr(Value, "SOUNDMODEM")) */
+/*		return SoundModemExtInit; */
 
 	if (strstr(Value, "SCSTRACKER"))
 		return TrackerExtInit;
@@ -3853,8 +3853,8 @@ VOID * InitializeExtDriver(PEXTPORTDATA PORTVEC)
 	if (strstr(Value, "UIARQ"))
 		return UIARQExtInit;
 
-//	if (strstr(Value, "BAYCOM"))
-//		return (UINT) BaycomExtInit;
+/*	if (strstr(Value, "BAYCOM")) */
+/*		return (UINT) BaycomExtInit; */
 
 	if (strstr(Value, "VARA"))
 		return VARAExtInit;
@@ -3927,9 +3927,9 @@ DllExport int * APIENTRY SaveNodesSupport()
 	return (&DATABASESTART);
 }
 
-//
-//	Internal BPQNODES support
-//
+/* */
+/*	Internal BPQNODES support */
+/* */
 
 #define UCHAR unsigned char
 
@@ -3973,7 +3973,7 @@ int APIENTRY Restart()
 	{
 		PID = AttachedPIDList[i];
 		
-		// Kill Timer Owner last
+		/* Kill Timer Owner last */
 
 		if (TimerInst != PID)
 		{
@@ -4001,7 +4001,7 @@ int APIENTRY Restart()
 
 int APIENTRY Reboot()
 {
-	// Run shutdown -r -f
+	/* Run shutdown -r -f */
 
 	STARTUPINFO  SInfo;
     PROCESS_INFORMATION PInfo;
@@ -4031,10 +4031,10 @@ int APIENTRY Reconfig()
 	return 1;
 }
 */
-// Code to support minimizing all BPQ Apps to a single Tray ICON
+/* Code to support minimizing all BPQ Apps to a single Tray ICON */
 
-// As we can't minimize the console window to the tray, I'll use an ordinary
-// window instead. This also gives me somewhere to post the messages to
+/* As we can't minimize the console window to the tray, I'll use an ordinary */
+/* window instead. This also gives me somewhere to post the messages to */
 
 
 char AppName[] = "BPQ32";
@@ -4044,7 +4044,7 @@ int NewLine();
 
 char FrameClassName[]	= TEXT("MdiFrame");
 
-HWND ClientWnd; //This stores the MDI client area window handle
+HWND ClientWnd; /*This stores the MDI client area window handle */
 
 LOGFONT LFTTYFONT ;
 
@@ -4088,7 +4088,7 @@ static INT_PTR CALLBACK ConfigWndProc(HWND hDlg, UINT message, WPARAM wParam, LP
 
 		if (GetWL2KSYSOPInfo(WL2KCall, _REPLYBUFFER))
 		{
-//			if (strstr(_REPLYBUFFER, "\"ErrorMessage\":") == 0)
+/*			if (strstr(_REPLYBUFFER, "\"ErrorMessage\":") == 0) */
 
 			GetJSONValue(_REPLYBUFFER, "\"SysopName\":", Value);	
 			SetDlgItemText(hDlg, NAME, Value);
@@ -4173,10 +4173,10 @@ static INT_PTR CALLBACK ConfigWndProc(HWND hDlg, UINT message, WPARAM wParam, LP
 			GetDlgItemText(hDlg, ADDITIONALDATA, Data, 99);
 
 
-//{"Callsign":"String","GridSquare":"String","SysopName":"String",
-//"StreetAddress1":"String","StreetAddress2":"String","City":"String",
-//"State":"String","Country":"String","PostalCode":"String","Email":"String",
-//"Phones":"String","Website":"String","Comments":"String"}
+/*{"Callsign":"String","GridSquare":"String","SysopName":"String", */
+/*"StreetAddress1":"String","StreetAddress2":"String","City":"String", */
+/*"State":"String","Country":"String","PostalCode":"String","Email":"String", */
+/*"Phones":"String","Website":"String","Comments":"String"} */
 
 			Len = sprintf(Message,
 				"\"Callsign\":\"%s\","
@@ -4248,8 +4248,8 @@ LRESULT CALLBACK FrameWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 	POINT pos;
 	BOOL ret;
 
-	CLIENTCREATESTRUCT MDIClientCreateStruct; // Structure to be used for MDI client area
-	//HWND m_hwndSystemInformation = 0;
+	CLIENTCREATESTRUCT MDIClientCreateStruct; /* Structure to be used for MDI client area */
+	/*HWND m_hwndSystemInformation = 0; */
 
 	if (message == BPQMsg)
 	{
@@ -4276,7 +4276,7 @@ LRESULT CALLBACK FrameWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 
 				GetCursorPos(&pos);
 
-	//			SetForegroundWindow(FrameWnd);
+	/*			SetForegroundWindow(FrameWnd); */
 
 				TrackPopupMenu(trayMenu, 0, pos.x, pos.y, 0, FrameWnd, 0);
 				return 0;
@@ -4300,17 +4300,17 @@ LRESULT CALLBACK FrameWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 
 		case WM_CREATE:
 
-		// On creation of main frame, create the MDI client area
+		/* On creation of main frame, create the MDI client area */
 
 		MDIClientCreateStruct.hWindowMenu	= NULL;
 		MDIClientCreateStruct.idFirstChild	= IDM_FIRSTCHILD;
 		
-		ClientWnd = CreateWindow(TEXT("MDICLIENT"), // predefined value for MDI client area
-									NULL, // no caption required
+		ClientWnd = CreateWindow(TEXT("MDICLIENT"), /* predefined value for MDI client area */
+									NULL, /* no caption required */
 									WS_CHILD | WS_CLIPCHILDREN | WS_VISIBLE,
-									0, // No need to give any x/y or height/width since this client
-									   // will just be used to get client windows created, effectively
-									   // in the main window we will be seeing the mainframe window client area itself.
+									0, /* No need to give any x/y or height/width since this client */
+									   /* will just be used to get client windows created, effectively */
+									   /* in the main window we will be seeing the mainframe window client area itself. */
 									0, 
 									0,
 									0,
@@ -4324,8 +4324,8 @@ LRESULT CALLBACK FrameWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 
 		case WM_COMMAND:
 
-			wmId    = LOWORD(wParam); // Remember, these are...
-			wmEvent = HIWORD(wParam); // ...different for Win32!
+			wmId    = LOWORD(wParam); /* Remember, these are... */
+			wmEvent = HIWORD(wParam); /* ...different for Win32! */
 
 			if (wmId >= TRAYBASEID && wmId < (TRAYBASEID + 100))
 			{ 
@@ -4363,7 +4363,7 @@ LRESULT CALLBACK FrameWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 
 			case BPQCLOSEALL:
 				CloseAllPrograms();
-	//			SendMessage(ClientWnd, WM_MDIICONARRANGE, 0 ,0);
+	/*			SendMessage(ClientWnd, WM_MDIICONARRANGE, 0 ,0); */
 
 				return 0;
 
@@ -4399,9 +4399,9 @@ LRESULT CALLBACK FrameWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 				MySetWindowText(UIhWnd, Title);
 				ShowWindow(UIhWnd, SW_NORMAL);
 	
-				OnTabbedDialogInit(UIhWnd);			// Set up pages
+				OnTabbedDialogInit(UIhWnd);			/* Set up pages */
 
-	//			UpdateWindow(UIhWnd);
+	/*			UpdateWindow(UIhWnd); */
 				return 0;
 			}
 
@@ -4418,7 +4418,7 @@ LRESULT CALLBACK FrameWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 				break;
 
 		
-			 // Handle MDI Window commands
+			 /* Handle MDI Window commands */
             
 			default:
 			{
@@ -4448,8 +4448,8 @@ LRESULT CALLBACK FrameWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 
 		case WM_SYSCOMMAND:
 
-		wmId    = LOWORD(wParam); // Remember, these are...
-		wmEvent = HIWORD(wParam); // ...different for Win32!
+		wmId    = LOWORD(wParam); /* Remember, these are... */
+		wmEvent = HIWORD(wParam); /* ...different for Win32! */
 
 		switch (wmId)
 		{ 
@@ -4560,7 +4560,7 @@ int SetupConsoleWindow()
 		}
 
 
-		// Get StartMinimized and MinimizetoTray flags
+		/* Get StartMinimized and MinimizetoTray flags */
 
 		Vallen = 4;
 		retCode = RegQueryValueEx(hKey, "Start Minimized", 0, &Type, (UCHAR *)&StartMinimized, &Vallen);
@@ -4592,7 +4592,7 @@ int SetupConsoleWindow()
 
 	bgBrush = CreateSolidBrush(BGCOLOUR);
 
-//	hMainFrameMenu = LoadMenu(hInstance, MAKEINTRESOURCE(IDR_MAINFRAME_MENU));
+/*	hMainFrameMenu = LoadMenu(hInstance, MAKEINTRESOURCE(IDR_MAINFRAME_MENU)); */
 
 	hBaseMenu = LoadMenu(hInstance, MAKEINTRESOURCE(CONS_MENU));
 	hConsMenu = GetSubMenu(hBaseMenu, 1);
@@ -4612,7 +4612,7 @@ int SetupConsoleWindow()
 	hMainFrameMenu = CreateMenu();
 	AppendMenu(hMainFrameMenu, MF_STRING + MF_POPUP, (UINT)hWndMenu, "Window");
 
-	//Create the main MDI frame window
+	/*Create the main MDI frame window */
 
 	ClientWnd = NULL;
 
@@ -4623,14 +4623,14 @@ int SetupConsoleWindow()
 								FRect.top,
 								FRect.right - FRect.left,
 								FRect.bottom - FRect.top,
-								NULL,			// handle to parent window
-								hMainFrameMenu, // handle to menu
-								hInstance,	// handle to the instance of module
-								NULL);		// Long pointer to a value to be passed to the window through the 
-											// CREATESTRUCT structure passed in the lParam parameter the WM_CREATE message
+								NULL,			/* handle to parent window */
+								hMainFrameMenu, /* handle to menu */
+								hInstance,	/* handle to the instance of module */
+								NULL);		/* Long pointer to a value to be passed to the window through the  */
+											/* CREATESTRUCT structure passed in the lParam parameter the WM_CREATE message */
 
 
-	// Get Client Params
+	/* Get Client Params */
 
 	if (FrameWnd == 0)
 	{
@@ -4649,7 +4649,7 @@ int SetupConsoleWindow()
 	OffsetW -= CRect.right;
 	OffsetH -= 4;
 
-	// Create Console Window
+	/* Create Console Window */
         
 	wc.style         = CS_HREDRAW | CS_VREDRAW | CS_NOCLOSE;
 	wc.lpfnWndProc   = (WNDPROC)WndProc;
@@ -4688,7 +4688,7 @@ int SetupConsoleWindow()
 
 	i=RegisterClass(&wc);
 
-	if (StatusRect.top < OffsetH)			// Make sure not off top of MDI frame
+	if (StatusRect.top < OffsetH)			/* Make sure not off top of MDI frame */
 	{
 		int Error = OffsetH - StatusRect.top;
 		StatusRect.top += Error;
@@ -4715,7 +4715,7 @@ int SetupConsoleWindow()
 	
 	DrawMenuBar(hConsWnd);	
 
-	// setup default font information
+	/* setup default font information */
 
    LFTTYFONT.lfHeight =			12;
    LFTTYFONT.lfWidth =          8 ;
@@ -4741,7 +4741,7 @@ int SetupConsoleWindow()
 		GetWindowRect(hConsWnd, &Rect);
 	}
 
-	if (Rect.top < OffsetH)			// Make sure not off top of MDI frame
+	if (Rect.top < OffsetH)			/* Make sure not off top of MDI frame */
 	{
 		int Error = OffsetH - Rect.top;
 		Rect.top += Error;
@@ -4760,7 +4760,7 @@ int SetupConsoleWindow()
 		Rect.left,	Rect.top, Rect.right - Rect.left, Rect.bottom - Rect.top,
 		hConsWnd, NULL, hInstance, NULL);
 
-//	SendMessage(hWndCons, WM_SETFONT, hFont, 0);
+/*	SendMessage(hWndCons, WM_SETFONT, hFont, 0); */
 
 	SendMessage(hWndCons, LB_SETHORIZONTALEXTENT , 1000, 0);
 
@@ -4825,33 +4825,33 @@ doneit:
 			AppendMenu(trayMenu,MF_STRING,TRAYBASEID+i,PopupText[i]);
 	}
 
-	//	Set up Tray ICON
+	/*	Set up Tray ICON */
 
 	ZeroMemory(&niData,sizeof(NOTIFYICONDATA));
 
 	niData.cbSize = sizeof(NOTIFYICONDATA);
 
-	// the ID number can be any UINT you choose and will
-	// be used to identify your icon in later calls to
-	// Shell_NotifyIcon
+	/* the ID number can be any UINT you choose and will */
+	/* be used to identify your icon in later calls to */
+	/* Shell_NotifyIcon */
 
 	niData.uID = TRAY_ICON_ID;
 
-	// state which structure members are valid
-	// here you can also choose the style of tooltip
-	// window if any - specifying a balloon window:
-	// NIF_INFO is a little more complicated 
+	/* state which structure members are valid */
+	/* here you can also choose the style of tooltip */
+	/* window if any - specifying a balloon window: */
+	/* NIF_INFO is a little more complicated  */
 
 	strcpy(niData.szTip,"BPQ32 Windows"); 
 
 	niData.uFlags = NIF_ICON|NIF_MESSAGE|NIF_TIP;
 
-	// load the icon note: you should destroy the icon
-	// after the call to Shell_NotifyIcon
+	/* load the icon note: you should destroy the icon */
+	/* after the call to Shell_NotifyIcon */
 
 	niData.hIcon = 
 		
-		//LoadIcon(NULL, IDI_APPLICATION);
+		/*LoadIcon(NULL, IDI_APPLICATION); */
 
 		(HICON)LoadImage( hInstance,
 			MAKEINTRESOURCE(BPQICON),
@@ -4861,22 +4861,22 @@ doneit:
 			LR_DEFAULTCOLOR);
 
 
-	// set the window you want to receive event messages
+	/* set the window you want to receive event messages */
 
 	niData.hWnd = FrameWnd;
 
-	// set the message to send
-	// note: the message value should be in the
-	// range of WM_APP through 0xBFFF
+	/* set the message to send */
+	/* note: the message value should be in the */
+	/* range of WM_APP through 0xBFFF */
 
 	niData.uCallbackMessage = MY_TRAY_ICON_MESSAGE;
 
-	//	Call Shell_NotifyIcon. NIM_ADD adds a new tray icon
+	/*	Call Shell_NotifyIcon. NIM_ADD adds a new tray icon */
 
 	if (Shell_NotifyIcon(NIM_ADD,&niData))
 		Debugprintf("BPQ32 Create Tray Icon Ok");
-//	else
-//		Debugprintf("BPQ32 Create Tray Icon failed %d", GetLastError());
+/*	else */
+/*		Debugprintf("BPQ32 Create Tray Icon failed %d", GetLastError()); */
 
 	return 0;
 }
@@ -4888,11 +4888,11 @@ VOID SaveConfig()
 
 	retCode = RegCreateKeyEx(REGTREE,
                               "SOFTWARE\\G8BPQ\\BPQ32",
-                              0,	// Reserved
-							  0,	// Class
-							  0,	// Options
+                              0,	/* Reserved */
+							  0,	/* Class */
+							  0,	/* Options */
                               KEY_ALL_ACCESS,
-							  NULL,	// Security Attrs
+							  NULL,	/* Security Attrs */
                               &hKey,
 							  &disp);
 
@@ -4914,13 +4914,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_MDIACTIVATE:
 				 
-	// Set the system info menu when getting activated
+	/* Set the system info menu when getting activated */
 			 
 		if (lParam == (LPARAM) hWnd)
 		{
-			// Activate
+			/* Activate */
 
-			// GetSubMenu function should retrieve a handle to the drop-down menu or submenu.
+			/* GetSubMenu function should retrieve a handle to the drop-down menu or submenu. */
 
 			RemoveMenu(hBaseMenu, 1, MF_BYPOSITION);
 			AppendMenu(hBaseMenu, MF_STRING + MF_POPUP, (UINT)hConsMenu, "Actions");
@@ -4928,14 +4928,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		else
 		{
-			 // Deactivate
+			 /* Deactivate */
 	
 			SendMessage(ClientWnd, WM_MDISETMENU, (WPARAM) hMainFrameMenu, (LPARAM) NULL);
 		}
 	 
 		DrawMenuBar(FrameWnd);
 
-		return TRUE; //DefMDIChildProc(hWnd, message, wParam, lParam);
+		return TRUE; /*DefMDIChildProc(hWnd, message, wParam, lParam); */
 
 	case MY_TRAY_ICON_MESSAGE:
 			
@@ -4959,8 +4959,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		case WM_COMMAND:
 
-			wmId    = LOWORD(wParam); // Remember, these are...
-			wmEvent = HIWORD(wParam); // ...different for Win32!
+			wmId    = LOWORD(wParam); /* Remember, these are... */
+			wmEvent = HIWORD(wParam); /* ...different for Win32! */
 
 			if (wmId == IDC_ENIGATE)
 			{
@@ -4974,11 +4974,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 				retCode = RegCreateKeyEx(REGTREE,
                               "SOFTWARE\\G8BPQ\\BPQ32",
-                              0,	// Reserved
-							  0,	// Class
-							  0,	// Options
+                              0,	/* Reserved */
+							  0,	/* Class */
+							  0,	/* Options */
                               KEY_ALL_ACCESS,
-							  NULL,	// Security Attrs
+							  NULL,	/* Security Attrs */
                               &hKey,
 							  &disp);
 
@@ -5142,8 +5142,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	
 		case WM_SYSCOMMAND:
 
-			wmId    = LOWORD(wParam); // Remember, these are...
-			wmEvent = HIWORD(wParam); // ...different for Win32!
+			wmId    = LOWORD(wParam); /* Remember, these are... */
+			wmEvent = HIWORD(wParam); /* ...different for Win32! */
 	
 			switch (wmId)
 			{ 
@@ -5174,7 +5174,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		else
 			MoveWindow(hWndCons, 2, 2, cRect.right-4, cRect.bottom - 4, TRUE);
 
-//		InvalidateRect(hWnd, NULL, TRUE);
+/*		InvalidateRect(hWnd, NULL, TRUE); */
 		break;
 
 /*
@@ -5197,9 +5197,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		case WM_DESTROY:
 		
-//			SessionControl(Stream, 2, 0);
-//			DeallocateStream(Stream);
-//			PostQuitMessage(0);
+/*			SessionControl(Stream, 2, 0); */
+/*			DeallocateStream(Stream); */
+/*			PostQuitMessage(0); */
 			
 			break;
 
@@ -5233,7 +5233,7 @@ DllExport BOOL APIENTRY GetMinimizetoTrayFlag()
 		Sleep(1000);
 	}
 
-	if (InitDone == (VOID *)-1)			// Init failed
+	if (InitDone == (VOID *)-1)			/* Init failed */
 		exit(0);
 	
 	return MinimizetoTray;
@@ -5299,7 +5299,7 @@ int WritetoConsoleLocal(char * buff)
 		return WritetoConsoleSupport(buff);
 
 	buffptr = GetBuff();
-	if (buffptr == 0)	// No buffers, so send direct
+	if (buffptr == 0)	/* No buffers, so send direct */
 		return WritetoConsoleSupport(buff);
 
 	if (len > 300)
@@ -5327,7 +5327,7 @@ int WritetoConsoleSupport(char * buff)
 	}
 
 	if ((strlen(Temp) + strlen(buff)) > 1990)
-		Temp[0] = 0;			// Should never have anything this long
+		Temp[0] = 0;			/* Should never have anything this long */
 	
 	strcat(Temp, buff);
 
@@ -5352,8 +5352,8 @@ HANDLE handle;
 char fn[]="BPQDUMP";
 ULONG cnt;
 char * stack;
-//char screen[1920];
-//COORD ReadCoord;
+/*char screen[1920]; */
+/*COORD ReadCoord; */
 
 #define DATABYTES 400000
 
@@ -5384,7 +5384,7 @@ DllExport int APIENTRY  DumpSystem()
 	WriteFile(handle,stack,128,&cnt,NULL);
 #endif
 
-//	WriteFile(handle,Screen,MAXLINELEN*MAXSCREENLEN,&cnt,NULL);
+/*	WriteFile(handle,Screen,MAXLINELEN*MAXSCREENLEN,&cnt,NULL); */
 
 	WriteFile(handle,DATAAREA, DATABYTES,&cnt,NULL);
 
@@ -5402,14 +5402,14 @@ BOOLEAN CheckifBPQ32isLoaded()
 {
 	HANDLE Mutex;
 	
-	// See if BPQ32 is running - if we create it in the NTVDM address space by
-	// loading bpq32.dll it will not work.
+	/* See if BPQ32 is running - if we create it in the NTVDM address space by */
+	/* loading bpq32.dll it will not work. */
 
 	Mutex=OpenMutex(MUTEX_ALL_ACCESS,FALSE,"BPQLOCKMUTEX");
 
 	if (Mutex == NULL)
 	{	
-		if (AttachingProcess == 0)			// Already starting BPQ32
+		if (AttachingProcess == 0)			/* Already starting BPQ32 */
 		{
 			OutputDebugString("BPQ32 No other bpq32 programs running - Loading BPQ32.exe\n");
 			StartBPQ32();
@@ -5434,12 +5434,12 @@ BOOLEAN StartBPQ32()
 	char Errbuff[100];
 	char buff[20];		
 
-	STARTUPINFO  StartupInfo;					// pointer to STARTUPINFO 
-    PROCESS_INFORMATION  ProcessInformation; 	// pointer to PROCESS_INFORMATION 
+	STARTUPINFO  StartupInfo;					/* pointer to STARTUPINFO  */
+    PROCESS_INFORMATION  ProcessInformation; 	/* pointer to PROCESS_INFORMATION  */
 
 	AttachingProcess = 1;
 
-// Get address of BPQ Directory
+/* Get address of BPQ Directory */
 
 	Value[0]=0;
 
@@ -5463,7 +5463,7 @@ BOOLEAN StartBPQ32()
 		if (Value[0] == 0)
 		{
 		
-			// BPQ Directory absent or = "" - "try Config File Location"
+			/* BPQ Directory absent or = "" - "try Config File Location" */
 			
 			ret = RegQueryValueEx(hKey,"BPQ Directory",0,			
 							&Type,(UCHAR *)&Value,&Vallen);
@@ -5609,13 +5609,13 @@ VOID CreateRegBackup()
 	int len, written;
 	char RegLine[300];
 
-//	SHELLEXECUTEINFO   sei;
-//	STARTUPINFO SInfo;
-//	PROCESS_INFORMATION PInfo;
+/*	SHELLEXECUTEINFO   sei; */
+/*	STARTUPINFO SInfo; */
+/*	PROCESS_INFORMATION PInfo; */
 
 	sprintf(RegFileName, "%s\\BPQ32.reg", BPQDirectory);
 
-	// Keep 4 Generations
+	/* Keep 4 Generations */
 
 	strcpy(Backup2, RegFileName);
 	strcat(Backup2, ".bak.3");
@@ -5623,23 +5623,23 @@ VOID CreateRegBackup()
 	strcpy(Backup1, RegFileName);
 	strcat(Backup1, ".bak.2");
 
-	DeleteFile(Backup2);			// Remove old .bak.3
-	MoveFile(Backup1, Backup2);		// Move .bak.2 to .bak.3
+	DeleteFile(Backup2);			/* Remove old .bak.3 */
+	MoveFile(Backup1, Backup2);		/* Move .bak.2 to .bak.3 */
 
 	strcpy(Backup2, RegFileName);
 	strcat(Backup2, ".bak.1");
 
-	MoveFile(Backup2, Backup1);		// Move .bak.1 to .bak.2
+	MoveFile(Backup2, Backup1);		/* Move .bak.1 to .bak.2 */
 
 	strcpy(Backup1, RegFileName);
 	strcat(Backup1, ".bak");
 
-	MoveFile(Backup1, Backup2);		//Move .bak to .bak.1
+	MoveFile(Backup1, Backup2);		/*Move .bak to .bak.1 */
 
 	strcpy(Backup2, RegFileName);
 	strcat(Backup2, ".bak");
 
-	CopyFile(RegFileName, Backup2, FALSE);	// Copy to .bak
+	CopyFile(RegFileName, Backup2, FALSE);	/* Copy to .bak */
 
 	handle = CreateFile(RegFileName, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
@@ -5728,7 +5728,7 @@ BOOL CALLBACK EnumForCloseProc(HWND hwnd, LPARAM  lParam)
 		{
 			Debugprintf("BPQ32 Close All Closing PID %d", ProcessId);
 			PostMessage(hwnd, WM_CLOSE, 1, 1);
-	//		AttachedPIDList[i] = 0;				// So we don't do it again
+	/*		AttachedPIDList[i] = 0;				// So we don't do it again */
 			break;
 		}
 	}
@@ -5748,9 +5748,9 @@ DllExport VOID APIENTRY CreateNewTrayIcon()
 
 DllExport VOID APIENTRY CloseAllPrograms()
 {
-//	HANDLE hProc;
+/*	HANDLE hProc; */
 
-	// Close all attached BPQ32 programs
+	/* Close all attached BPQ32 programs */
 
 	Closing  = TRUE;
 
@@ -5779,40 +5779,40 @@ DllExport VOID APIENTRY CloseAllPrograms()
 
 BOOL CopyReg(HKEY hKeyIn, HKEY hKeyOut)
 {
-	TCHAR    achKey[MAX_KEY_LENGTH];   // buffer for subkey name
-    DWORD    cbName;                   // size of name string 
-    TCHAR    achClass[MAX_PATH] = TEXT("");  // buffer for class name 
-    DWORD    cchClassName = MAX_PATH;  // size of class string 
-    DWORD    cSubKeys=0;               // number of subkeys 
-    DWORD    cbMaxSubKey;              // longest subkey size 
-    DWORD    cchMaxClass;              // longest class string 
-    DWORD    cValues;              // number of values for key 
-    DWORD    cchMaxValue;          // longest value name 
-    DWORD    cbMaxValueData;       // longest value data 
-    DWORD    cbSecurityDescriptor; // size of security descriptor 
-    FILETIME ftLastWriteTime;      // last write time 
+	TCHAR    achKey[MAX_KEY_LENGTH];   /* buffer for subkey name */
+    DWORD    cbName;                   /* size of name string  */
+    TCHAR    achClass[MAX_PATH] = TEXT("");  /* buffer for class name  */
+    DWORD    cchClassName = MAX_PATH;  /* size of class string  */
+    DWORD    cSubKeys=0;               /* number of subkeys  */
+    DWORD    cbMaxSubKey;              /* longest subkey size  */
+    DWORD    cchMaxClass;              /* longest class string  */
+    DWORD    cValues;              /* number of values for key  */
+    DWORD    cchMaxValue;          /* longest value name  */
+    DWORD    cbMaxValueData;       /* longest value data  */
+    DWORD    cbSecurityDescriptor; /* size of security descriptor  */
+    FILETIME ftLastWriteTime;      /* last write time  */
  
     DWORD i, retCode; 
  
     TCHAR  achValue[MAX_VALUE_NAME]; 
     DWORD cchValue = MAX_VALUE_NAME; 
  
-    // Get the class name and the value count. 
+    /* Get the class name and the value count.  */
     retCode = RegQueryInfoKey(
-        hKeyIn,                    // key handle 
-        achClass,                // buffer for class name 
-        &cchClassName,           // size of class string 
-        NULL,                    // reserved 
-        &cSubKeys,               // number of subkeys 
-        &cbMaxSubKey,            // longest subkey size 
-        &cchMaxClass,            // longest class string 
-        &cValues,                // number of values for this key 
-        &cchMaxValue,            // longest value name 
-        &cbMaxValueData,         // longest value data 
-        &cbSecurityDescriptor,   // security descriptor 
-        &ftLastWriteTime);       // last write time 
+        hKeyIn,                    /* key handle  */
+        achClass,                /* buffer for class name  */
+        &cchClassName,           /* size of class string  */
+        NULL,                    /* reserved  */
+        &cSubKeys,               /* number of subkeys  */
+        &cbMaxSubKey,            /* longest subkey size  */
+        &cchMaxClass,            /* longest class string  */
+        &cValues,                /* number of values for this key  */
+        &cchMaxValue,            /* longest value name  */
+        &cbMaxValueData,         /* longest value data  */
+        &cbSecurityDescriptor,   /* security descriptor  */
+        &ftLastWriteTime);       /* last write time  */
  
-    // Enumerate the subkeys, until RegEnumKeyEx fails.
+    /* Enumerate the subkeys, until RegEnumKeyEx fails. */
     
     if (cSubKeys)
     {
@@ -5845,7 +5845,7 @@ BOOL CopyReg(HKEY hKeyIn, HKEY hKeyOut)
         }
     } 
  
-    // Enumerate the key values. 
+    /* Enumerate the key values.  */
 
     if (cValues) 
     {
@@ -5884,18 +5884,18 @@ BOOL CopyReg(HKEY hKeyIn, HKEY hKeyOut)
 
 DllExport BOOL APIENTRY SaveReg(char * KeyIn, HANDLE hFile)
 {
-	TCHAR    achKey[MAX_KEY_LENGTH];   // buffer for subkey name
-    DWORD    cbName;                   // size of name string 
-    TCHAR    achClass[MAX_PATH] = TEXT("");  // buffer for class name 
-    DWORD    cchClassName = MAX_PATH;  // size of class string 
-    DWORD    cSubKeys=0;               // number of subkeys 
-    DWORD    cbMaxSubKey;              // longest subkey size 
-    DWORD    cchMaxClass;              // longest class string 
-    DWORD    cValues;              // number of values for key 
-    DWORD    cchMaxValue;          // longest value name 
-    DWORD    cbMaxValueData;       // longest value data 
-    DWORD    cbSecurityDescriptor; // size of security descriptor 
-    FILETIME ftLastWriteTime;      // last write time 
+	TCHAR    achKey[MAX_KEY_LENGTH];   /* buffer for subkey name */
+    DWORD    cbName;                   /* size of name string  */
+    TCHAR    achClass[MAX_PATH] = TEXT("");  /* buffer for class name  */
+    DWORD    cchClassName = MAX_PATH;  /* size of class string  */
+    DWORD    cSubKeys=0;               /* number of subkeys  */
+    DWORD    cbMaxSubKey;              /* longest subkey size  */
+    DWORD    cchMaxClass;              /* longest class string  */
+    DWORD    cValues;              /* number of values for key  */
+    DWORD    cchMaxValue;          /* longest value name  */
+    DWORD    cbMaxValueData;       /* longest value data  */
+    DWORD    cbSecurityDescriptor; /* size of security descriptor  */
+    FILETIME ftLastWriteTime;      /* last write time  */
  
     DWORD i, retCode; 
 	HKEY hKeyIn;
@@ -5918,22 +5918,22 @@ DllExport BOOL APIENTRY SaveReg(char * KeyIn, HANDLE hFile)
 
 	WriteFile(hFile, RegLine, len, &written, NULL);
  
-    // Get the class name and the value count. 
+    /* Get the class name and the value count.  */
     retCode = RegQueryInfoKey(
-        hKeyIn,                    // key handle 
-        achClass,                // buffer for class name 
-        &cchClassName,           // size of class string 
-        NULL,                    // reserved 
-        &cSubKeys,               // number of subkeys 
-        &cbMaxSubKey,            // longest subkey size 
-        &cchMaxClass,            // longest class string 
-        &cValues,                // number of values for this key 
-        &cchMaxValue,            // longest value name 
-        &cbMaxValueData,         // longest value data 
-        &cbSecurityDescriptor,   // security descriptor 
-        &ftLastWriteTime);       // last write time 
+        hKeyIn,                    /* key handle  */
+        achClass,                /* buffer for class name  */
+        &cchClassName,           /* size of class string  */
+        NULL,                    /* reserved  */
+        &cSubKeys,               /* number of subkeys  */
+        &cbMaxSubKey,            /* longest subkey size  */
+        &cchMaxClass,            /* longest class string  */
+        &cValues,                /* number of values for this key  */
+        &cchMaxValue,            /* longest value name  */
+        &cbMaxValueData,         /* longest value data  */
+        &cbSecurityDescriptor,   /* security descriptor  */
+        &ftLastWriteTime);       /* last write time  */
 
-	    // Enumerate the key values. 
+	    /* Enumerate the key values.  */
 
     if (cValues) 
 	{
@@ -5958,15 +5958,15 @@ DllExport BOOL APIENTRY SaveReg(char * KeyIn, HANDLE hFile)
  
             if (retCode == ERROR_SUCCESS ) 
             {
-				// Encode the param depending on Type
+				/* Encode the param depending on Type */
 
 				    switch(Type)
 					{
-					case REG_NONE:						//( 0 )   // No value type
+					case REG_NONE:						/*( 0 )   // No value type */
 						break;
-					case REG_SZ:						//( 1 )   // Unicode nul terminated string
+					case REG_SZ:						/*( 1 )   // Unicode nul terminated string */
 						
-						// Need to escape any \ or " in Value
+						/* Need to escape any \ or " in Value */
 						
 						ptr1 = Value;
 						ptr2 = ValCopy;
@@ -5989,11 +5989,11 @@ DllExport BOOL APIENTRY SaveReg(char * KeyIn, HANDLE hFile)
 						len = sprintf(RegLine, "\"%s\"=\"%s\"\r\n", achValue, ValCopy);
 						break;
 
-					case REG_EXPAND_SZ:					//( 2 )   // Unicode nul terminated string
-														// (with environment variable references)
+					case REG_EXPAND_SZ:					/*( 2 )   // Unicode nul terminated string */
+														/* (with environment variable references) */
 						break;
 
-					case REG_BINARY:					//( 3 )   // Free form binary - hex:86,50 etc
+					case REG_BINARY:					/*( 3 )   // Free form binary - hex:86,50 etc */
 
 						len = sprintf(RegLine, "\"%s\"=hex:%02x,", achValue, Value[0]);
 						for (k = 1; k < ValLen; k++)
@@ -6014,18 +6014,18 @@ DllExport BOOL APIENTRY SaveReg(char * KeyIn, HANDLE hFile)
 
 						break;
 
-					case REG_DWORD:						//( 4 )   // 32-bit number
-//					case REG_DWORD_LITTLE_ENDIAN:		//( 4 )   // 32-bit number (same as REG_DWORD)
+					case REG_DWORD:						/*( 4 )   // 32-bit number */
+/*					case REG_DWORD_LITTLE_ENDIAN:		//( 4 )   // 32-bit number (same as REG_DWORD) */
 					
 						memcpy(&Intval, Value, 4);
 						len = sprintf(RegLine, "\"%s\"=dword:%08x\r\n", achValue, Intval);
 					break;
 				
-					case REG_DWORD_BIG_ENDIAN:			//( 5 )   // 32-bit number
+					case REG_DWORD_BIG_ENDIAN:			/*( 5 )   // 32-bit number */
 						break;
-					case REG_LINK:						//( 6 )   // Symbolic Link (unicode)
+					case REG_LINK:						/*( 6 )   // Symbolic Link (unicode) */
 						break;
-					case REG_MULTI_SZ:					//( 7 )   // Multiple Unicode strings
+					case REG_MULTI_SZ:					/*( 7 )   // Multiple Unicode strings */
 
 						len = sprintf(RegLine, "\"%s\"=hex(7):%02x,00,", achValue, Value[0]);
 						for (k = 1; k < ValLen; k++)
@@ -6052,14 +6052,14 @@ DllExport BOOL APIENTRY SaveReg(char * KeyIn, HANDLE hFile)
 						len++;
 						break;
 
-					case REG_RESOURCE_LIST:				//( 8 )   // Resource list in the resource map
+					case REG_RESOURCE_LIST:				/*( 8 )   // Resource list in the resource map */
 						break;
-					case REG_FULL_RESOURCE_DESCRIPTOR:	//( 9 )  // Resource list in the hardware description
+					case REG_FULL_RESOURCE_DESCRIPTOR:	/*( 9 )  // Resource list in the hardware description */
 						break;
-					case REG_RESOURCE_REQUIREMENTS_LIST://( 10 )
+					case REG_RESOURCE_REQUIREMENTS_LIST:/*( 10 ) */
 						break;
-					case REG_QWORD:						//( 11 )  // 64-bit number
-//					case REG_QWORD_LITTLE_ENDIAN:		//( 11 )  // 64-bit number (same as REG_QWORD)
+					case REG_QWORD:						/*( 11 )  // 64-bit number */
+/*					case REG_QWORD_LITTLE_ENDIAN:		//( 11 )  // 64-bit number (same as REG_QWORD) */
 						break;
 
 					}
@@ -6071,7 +6071,7 @@ DllExport BOOL APIENTRY SaveReg(char * KeyIn, HANDLE hFile)
 	
 	WriteFile(hFile, "\r\n", 2, &written, NULL);
 	
-    // Enumerate the subkeys, until RegEnumKeyEx fails.
+    /* Enumerate the subkeys, until RegEnumKeyEx fails. */
     
     if (cSubKeys)
     {
@@ -6133,7 +6133,7 @@ int DoStatus()
 
 		Mask = MaskCopy = Get_APPLMASK(i);
 
-		// if only one bit set, convert to number
+		/* if only one bit set, convert to number */
 
 		AppNumber = 0;
 		OneBits = 0;
@@ -6168,7 +6168,7 @@ int DoStatus()
 
 	}
 
-	if (memcmp(Screen, NewScreen, 33 * 108) == 0)	// No Change
+	if (memcmp(Screen, NewScreen, 33 * 108) == 0)	/* No Change */
 		return 0;
 
 	memcpy(Screen, NewScreen, 33 * 108);
@@ -6197,11 +6197,11 @@ LRESULT CALLBACK StatusWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 
 	case WM_MDIACTIVATE:
 				 
-		// Set the system info menu when getting activated
+		/* Set the system info menu when getting activated */
 			 
 		if (lParam == (LPARAM) hWnd)
 		{
-			// Activate
+			/* Activate */
 
 			RemoveMenu(hBaseMenu, 1, MF_BYPOSITION);
 			AppendMenu(hBaseMenu, MF_STRING + MF_POPUP, (UINT)hConsMenu, "Actions");
@@ -6214,7 +6214,7 @@ LRESULT CALLBACK StatusWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 	 
 		DrawMenuBar(FrameWnd);
 
-		return TRUE; //DefMDIChildProc(hWnd, message, wParam, lParam);
+		return TRUE; /*DefMDIChildProc(hWnd, message, wParam, lParam); */
 
 	case WM_GETMINMAXINFO:
 			
@@ -6227,10 +6227,10 @@ LRESULT CALLBACK StatusWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 
 	case WM_COMMAND:
 
-		wmId    = LOWORD(wParam); // Remember, these are...
-		wmEvent = HIWORD(wParam); // ...different for Win32!
+		wmId    = LOWORD(wParam); /* Remember, these are... */
+		wmEvent = HIWORD(wParam); /* ...different for Win32! */
 
-		//Parse the menu selections:
+		/*Parse the menu selections: */
 		
 		switch (wmId)
 		{
@@ -6260,16 +6260,16 @@ LRESULT CALLBACK StatusWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 	
 			case BPQCOPY:
 		
-			//
-			//	Copy buffer to clipboard
-			//
+			/* */
+			/*	Copy buffer to clipboard */
+			/* */
 			hMem=GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, 33*110);
 		
 			if (hMem != 0)
 			{
 				if (OpenClipboard(hWnd))
 				{
-//					CopyScreentoBuffer(GlobalLock(hMem));
+/*					CopyScreentoBuffer(GlobalLock(hMem)); */
 					GlobalUnlock(hMem);
 					EmptyClipboard();
 					SetClipboardData(CF_TEXT,hMem);
@@ -6291,8 +6291,8 @@ LRESULT CALLBACK StatusWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 
 		case WM_SYSCOMMAND:
 
-		wmId    = LOWORD(wParam); // Remember, these are...
-		wmEvent = HIWORD(wParam); // ...different for Win32!
+		wmId    = LOWORD(wParam); /* Remember, these are... */
+		wmEvent = HIWORD(wParam); /* ...different for Win32! */
 
 		switch (wmId)
 		{ 
@@ -6332,7 +6332,7 @@ LRESULT CALLBACK StatusWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 
 		case WM_DESTROY:
 		
-//			PostQuitMessage(0);
+/*			PostQuitMessage(0); */
 			
 			break;
 
@@ -6361,7 +6361,7 @@ VOID SaveMDIWindowPos(HWND hWnd, char * RegKey, char * Value, BOOL Minimized)
 	if (GetWindowRect(hWnd, &Rect) == FALSE)
 		return;
 
-	// Make relative to Frame
+	/* Make relative to Frame */
 
 	Rect.top -= FRect.top ;
 	Rect.left -= FRect.left;
@@ -6382,8 +6382,8 @@ VOID SaveMDIWindowPos(HWND hWnd, char * RegKey, char * Value, BOOL Minimized)
 }
 
 extern int GPSPort;
-extern char LAT[];			// in standard APRS Format      
-extern char LON[];			// in standard APRS Format
+extern char LAT[];			/* in standard APRS Format       */
+extern char LON[];			/* in standard APRS Format */
 
 VOID SaveBPQ32Windows()
 {
@@ -6400,7 +6400,7 @@ VOID SaveBPQ32Windows()
 		sprintf(Size,"%d,%d,%d,%d", FRect.left, FRect.right, FRect.top, FRect.bottom);
 		retCode = RegSetValueEx(hKey, "FrameWindowSize", 0, REG_SZ, (BYTE *)&Size, strlen(Size));
 
-		// Save GPS Position
+		/* Save GPS Position */
 
 		if (GPSPort)
 		{
@@ -6416,7 +6416,7 @@ VOID SaveBPQ32Windows()
 
 	for (i=0;i<NUMBEROFPORTS;i++)
 	{
-		if (PORTVEC->PORTCONTROL.PORTTYPE == 0x10)			// External
+		if (PORTVEC->PORTCONTROL.PORTTYPE == 0x10)			/* External */
 		{
 			if (PORTVEC->PORT_EXT_ADDR)
 			{
@@ -6427,7 +6427,7 @@ VOID SaveBPQ32Windows()
 		PORTVEC=(PEXTPORTDATA)PORTVEC->PORTCONTROL.PORTPOINTER;		
 	}
 
-	SaveWindowPos(40);		// Rigcontrol
+	SaveWindowPos(40);		/* Rigcontrol */
 
 
 	if (hIPResWnd)
@@ -6438,10 +6438,10 @@ VOID SaveBPQ32Windows()
 
 DllExport BOOL APIENTRY CheckIfOwner()
 {
-	//
-	//	Returns TRUE if current process is root process
-	//	that loaded the DLL
-	//
+	/* */
+	/*	Returns TRUE if current process is root process */
+	/*	that loaded the DLL */
+	/* */
 	
 	if (TimerInst == GetCurrentProcessId())
 
@@ -6462,9 +6462,9 @@ VOID GetParam(char * input, char * key, char * value)
 		ptr2 = strchr(ptr, '&');
 		if (ptr2) *ptr2 = 0;
 		strcpy(Param, ptr + strlen(key));
-		if (ptr2) *ptr2 = '&';					// Restore string
+		if (ptr2) *ptr2 = '&';					/* Restore string */
 
-		// Undo any % transparency
+		/* Undo any % transparency */
 
 		ptr1 = Param;
 		ptr2 = Param;
@@ -6504,9 +6504,9 @@ int GetListeningPortsPID(int Port)
 	int dwSize = 0;
 	DWORD n;
 
-	// Get PID of process for this TCP Port
+	/* Get PID of process for this TCP Port */
 
-	// Get Length of table
+	/* Get Length of table */
 	
 	GetExtendedTcpTable(TcpTable, &dwSize, TRUE, AF_INET, TCP_TABLE_OWNER_PID_LISTENER, 0);
 
@@ -6527,7 +6527,7 @@ int GetListeningPortsPID(int Port)
 			break;
 		}
 	}
-	return 0;			// Not found
+	return 0;			/* Not found */
 }
 
 DllExport char *  APIENTRY GetLOC()
@@ -6535,16 +6535,16 @@ DllExport char *  APIENTRY GetLOC()
 	return LOC;
 }
 
-// UZ7HO Dll PTT interface
+/* UZ7HO Dll PTT interface */
 
-// 1 ext_PTT_info
-// 2 ext_PTT_settings
-// 3 ext_PTT_OFF
-// 4 ext_PTT_ON
-// 5 ext_PTT_close
-// 6 ext_PTT_open
+/* 1 ext_PTT_info */
+/* 2 ext_PTT_settings */
+/* 3 ext_PTT_OFF */
+/* 4 ext_PTT_ON */
+/* 5 ext_PTT_close */
+/* 6 ext_PTT_open */
 
-extern struct RIGINFO * DLLRIG;			// Rig record for dll PTT interface (currently only for UZ7HO);
+extern struct RIGINFO * DLLRIG;			/* Rig record for dll PTT interface (currently only for UZ7HO); */
 
 VOID Rig_PTT(struct TNCINFO * TNC, BOOL PTTState);
 VOID Rig_PTTEx(struct RIGINFO * RIG, BOOL PTTState, struct TNCINFO * TNC);

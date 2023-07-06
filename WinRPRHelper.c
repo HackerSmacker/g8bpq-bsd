@@ -7,16 +7,16 @@
 struct RIGPORTINFO
 {
 	char IOBASE[80];
-	char PTTIOBASE[80];			// Port for Hardware PTT - may be same as control port.
+	char PTTIOBASE[80];			/* Port for Hardware PTT - may be same as control port. */
 	int SPEED;
 
-	HANDLE hDevice;					// COM device Handle
+	HANDLE hDevice;					/* COM device Handle */
 	int ReopenDelay;
-	SOCKET remoteSock;				// Socket for use with WINMORCONROL
-	struct sockaddr remoteDest;		// Dest for above
-	UCHAR TXBuffer[500];			// Last message sent - saved for Retry
-	int TXLen;						// Len of last sent
-	int CONNECTED;					// for HAMLIB
+	SOCKET remoteSock;				/* Socket for use with WINMORCONROL */
+	struct sockaddr remoteDest;		/* Dest for above */
+	UCHAR TXBuffer[500];			/* Last message sent - saved for Retry */
+	int TXLen;						/* Len of last sent */
+	int CONNECTED;					/* for HAMLIB */
 	int CONNECTING;
 	int Alerted;
 };
@@ -25,7 +25,7 @@ struct RIGPORTINFO PORTS[4];
 
 char PTTCATPort[4][64] = {"", "", "", ""};
 HANDLE PTTCATHandles[4] = {0, 0, 0, 0};
-int RealMux[4] = {0, 0, 0, 0};		// BPQ Virtual or Real
+int RealMux[4] = {0, 0, 0, 0};		/* BPQ Virtual or Real */
 
 
 VOID PTTCATThread();
@@ -33,11 +33,11 @@ VOID ConnecttoHAMLIB(struct RIGPORTINFO * PORT);
 
 char * strlop(char * buf, char delim)
 {
-	// Terminate buf at delim, and return rest of string
+	/* Terminate buf at delim, and return rest of string */
 
 	char * ptr;
 
-	if (buf == NULL) return NULL;		// Protect
+	if (buf == NULL) return NULL;		/* Protect */
 
 	ptr = strchr(buf, delim);
 
@@ -61,7 +61,7 @@ void SendHamLib(struct RIGPORTINFO * PORT, int PTTState)
 
 int DecodeHAMLIBAddr(struct RIGPORTINFO * PORT, char * ptr)
 {
-	// Param is IPADDR:PORT. Only Allow numeric addresses 
+	/* Param is IPADDR:PORT. Only Allow numeric addresses  */
 	
 	struct sockaddr_in * destaddr = (SOCKADDR_IN *)&PORT->remoteDest;
 	char * port;
@@ -83,7 +83,7 @@ int DecodeHAMLIBAddr(struct RIGPORTINFO * PORT, char * ptr)
 
 void HAMLIBProcessMessage(struct RIGPORTINFO * PORT)
 {
-	// Called from Background thread. I think we just need to read and discard
+	/* Called from Background thread. I think we just need to read and discard */
 
 	char RXBuffer[512];
 
@@ -107,7 +107,7 @@ int main(int argc, char ** argv)
 {
 	struct RIGPORTINFO * PORT;
 	int n = 0;
-	WSADATA WsaData;            // receives data from WSAStartup
+	WSADATA WsaData;            /* receives data from WSAStartup */
 
 	if (argc < 3)
 	{
@@ -135,7 +135,7 @@ int main(int argc, char ** argv)
 
 	for (n = 0; n < 4; n++)
 	{
-		if (PTTCATPort[n][0])			// Serial port RTS to HAMLIB PTT 
+		if (PTTCATPort[n][0])			/* Serial port RTS to HAMLIB PTT  */
 		{
 			PORT = &PORTS[n];
 			ConnecttoHAMLIB(PORT);
@@ -153,13 +153,13 @@ int main(int argc, char ** argv)
 
 		for (n = 0; n < 4; n++)
 		{
-			if (PTTCATPort[n][0])			// Serial port RTS to HAMLIB PTT 
+			if (PTTCATPort[n][0])			/* Serial port RTS to HAMLIB PTT  */
 			{
 				PORT = &PORTS[n];
 
 				if (PORT->hDevice == 0)
 				{
-					// Try to reopen every 15 secs 
+					/* Try to reopen every 15 secs  */
 
 					PORT->ReopenDelay++;
 
@@ -208,7 +208,7 @@ VOID PTTCATThread()
 			int Err = GetLastError();
 			printf("PTTMUX port BPQ%s Open failed code %d - trying real com port\r\n", PTTCATPort[PIndex], Err);
 
-			// See if real com port
+			/* See if real com port */
 
 			sprintf(Port, "\\\\.\\\\%s", PTTCATPort[PIndex]);
 
@@ -224,7 +224,7 @@ VOID PTTCATThread()
 			}
 			else
 			{
-				rc = SetCommMask(Handle[HIndex], EV_CTS | EV_DSR);		// Request notifications
+				rc = SetCommMask(Handle[HIndex], EV_CTS | EV_DSR);		/* Request notifications */
 				HIndex++;
 				printf("PTTMUX port %s Opened\r\n", PTTCATPort[PIndex]);
 			}
@@ -237,7 +237,7 @@ VOID PTTCATThread()
 	}
 
 	if (PIndex == 0)
-		return;				// No ports
+		return;				/* No ports */
 
 	Event = CreateEvent(NULL, TRUE, FALSE, NULL);
 
@@ -248,7 +248,7 @@ VOID PTTCATThread()
 
 		if (RealMux[i])
 		{
-			// Request Interface change notifications
+			/* Request Interface change notifications */
 
 			rc = WaitCommEvent(Handle[i], &EvtMask[i], &Overlapped[i]);
 			rc = GetLastError();
@@ -257,7 +257,7 @@ VOID PTTCATThread()
 		else
 		{
 
-			// Prime a read on each handle
+			/* Prime a read on each handle */
 
 			ReadFile(Handle[i], Block[i], 80, &Length, &Overlapped[i]);
 		}
@@ -275,7 +275,7 @@ WaitAgain:
 
 		ResetEvent(Event);
 
-		// See which request(s) have completed
+		/* See which request(s) have completed */
 
 		for (i = 0; i < HIndex; i ++)
 		{
@@ -285,7 +285,7 @@ WaitAgain:
 			{
 				if (RealMux[i])
 				{
-					// Request Interface change notifications
+					/* Request Interface change notifications */
 
 					DWORD Mask;
 
@@ -318,14 +318,14 @@ WaitAgain:
 							c = *(ptr1++);
 							Length--;
 
-							if (c == 0xff)			// ff ff means ff
+							if (c == 0xff)			/* ff ff means ff */
 							{
 								Length--;
 							}
 							else
 							{
-								// This is connection / RTS/DTR statua from other end
-								// Convert to CAT Command
+								/* This is connection / RTS/DTR statua from other end */
+								/* Convert to CAT Command */
 
 								if (c == CurrentState[i])
 									continue;
@@ -364,7 +364,7 @@ VOID ConnecttoHAMLIB(struct RIGPORTINFO * PORT)
 
 VOID HAMLIBThread(struct RIGPORTINFO * PORT)
 {
-	// Opens sockets and looks for data
+	/* Opens sockets and looks for data */
 	
 	char Msg[255];
 	int err, i, ret;
@@ -396,9 +396,9 @@ VOID HAMLIBThread(struct RIGPORTINFO * PORT)
 
 	if (connect(PORT->remoteSock,(LPSOCKADDR) &PORT->remoteDest,sizeof(PORT->remoteDest)) == 0)
 	{
-		//
-		//	Connected successful
-		//
+		/* */
+		/*	Connected successful */
+		/* */
 
 		ioctlsocket(PORT->remoteSock, FIONBIO, &param);
    		printf("Connected to HAMLIB socket Addr %s\r\n", PORT->IOBASE);
@@ -425,7 +425,7 @@ VOID HAMLIBThread(struct RIGPORTINFO * PORT)
 	}
 
 	PORT->CONNECTED = TRUE;
-	PORT->hDevice = (HANDLE)1;				// simplifies check code
+	PORT->hDevice = (HANDLE)1;				/* simplifies check code */
 
 	PORT->Alerted = TRUE;
 
@@ -450,7 +450,7 @@ VOID HAMLIBThread(struct RIGPORTINFO * PORT)
 
 		if (ret > 0)
 		{
-			//	See what happened
+			/*	See what happened */
 
 			if (FD_ISSET(PORT->remoteSock, &readfs))
 			{
@@ -465,7 +465,7 @@ Lost:
 
 				PORT->CONNECTED = FALSE;
 				PORT->Alerted = FALSE;
-				PORT->hDevice = 0;				// simplifies check code
+				PORT->hDevice = 0;				/* simplifies check code */
 
 				closesocket(PORT->remoteSock);
 				PORT->remoteSock = 0;

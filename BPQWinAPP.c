@@ -1,15 +1,15 @@
 
-// Version 1. 0. 2. 1 October 2010
+/* Version 1. 0. 2. 1 October 2010 */
 
-//	Add Delay on start option, and dynamically load bpq32
+/*	Add Delay on start option, and dynamically load bpq32 */
 
-// Version 1. 0. 3. 1 October 2011
+/* Version 1. 0. 3. 1 October 2011 */
 
-//		Call CloseBPQ32 on exit
+/*		Call CloseBPQ32 on exit */
 
-// Version 2.0.1.1 July 2002
+/* Version 2.0.1.1 July 2002 */
 
-//		Add try/except round main loop
+/*		Add try/except round main loop */
 
 #define _CRT_SECURE_NO_DEPRECATE
 
@@ -22,7 +22,7 @@
 #include <time.h>
 #include "DbgHelp.h"
 
-//#define DYNLOADBPQ		// Dynamically Load BPQ32.dll
+/*#define DYNLOADBPQ		// Dynamically Load BPQ32.dll */
 #include "..\Include\bpq32.h"
 
 VOID APIENTRY SetFrameWnd(HWND hWnd);
@@ -34,7 +34,7 @@ char AppName[] = "BPQ32";
 char Title[80] = "Program to hold BPQ32.dll in memory";
 
 
-// Foward declarations of functions included in this code module:
+/* Foward declarations of functions included in this code module: */
 
 ATOM MyRegisterClass(CONST WNDCLASS*);
 BOOL InitApplication(HINSTANCE);
@@ -73,7 +73,7 @@ VOID WriteMiniDump()
 
 	if((hFile != NULL) && (hFile != INVALID_HANDLE_VALUE))
 	{
-		// Create the minidump
+		/* Create the minidump */
 
 		ret = MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(),
 			hFile, MiniDumpNormal, 0, 0, 0 );
@@ -89,16 +89,16 @@ VOID WriteMiniDump()
 
 
 
-//
-//  FUNCTION: WinMain(HANDLE, HANDLE, LPSTR, int)
-//
-//  PURPOSE: Entry point for the application.
-//
-//  COMMENTS:
-//
-//	This function initializes the application and processes the
-//	message loop.
-//
+/* */
+/*  FUNCTION: WinMain(HANDLE, HANDLE, LPSTR, int) */
+/* */
+/*  PURPOSE: Entry point for the application. */
+/* */
+/*  COMMENTS: */
+/* */
+/*	This function initializes the application and processes the */
+/*	message loop. */
+/* */
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	MSG msg;
@@ -107,15 +107,15 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	Debugprintf("BPQ32.exe %s Entered", lpCmdLine);
 
-	if (_stricmp(lpCmdLine, "Wait") == 0)				// If AutoRestart then Delay 5 Secs				
+	if (_stricmp(lpCmdLine, "Wait") == 0)				/* If AutoRestart then Delay 5 Secs				 */
 		Sleep(5000);
 
-//	GetAPI();
+/*	GetAPI(); */
 
 	if (!InitInstance(hInstance, nCmdShow))
 		return (FALSE);
 
-	// Main message loop:
+	/* Main message loop: */
 
 	__try 
 	{
@@ -144,31 +144,31 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	KillTimer(NULL,TimerHandle);
 
-	CloseBPQ32();				// Close Ext Drivers if last bpq32 process
+	CloseBPQ32();				/* Close Ext Drivers if last bpq32 process */
 
 	return (msg.wParam);
 }
 
-//
+/* */
 
 
-//
-//   FUNCTION: InitInstance(HANDLE, int)
-//
-//   PURPOSE: Saves instance handle and creates main window 
-//
-//   COMMENTS:
-//
-//        In this function, we save the instance handle in a global variable and
-//        create and display the main program window.
-//
+/* */
+/*   FUNCTION: InitInstance(HANDLE, int) */
+/* */
+/*   PURPOSE: Saves instance handle and creates main window  */
+/* */
+/*   COMMENTS: */
+/* */
+/*        In this function, we save the instance handle in a global variable and */
+/*        create and display the main program window. */
+/* */
 
 
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
 	WNDCLASSEX wndclassMainFrame;
 
-	hInst = hInstance; // Store instance handle in our global variable
+	hInst = hInstance; /* Store instance handle in our global variable */
 
 	wndclassMainFrame.cbSize		= sizeof(WNDCLASSEX);
 	wndclassMainFrame.style			= CS_HREDRAW | CS_VREDRAW;
@@ -193,16 +193,16 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	FrameWnd = CreateWindow(AppName, 
 								"BPQ32", 
 								WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
-								CW_USEDEFAULT,	// allows system choose an x position
-								CW_USEDEFAULT,	// allows system choose a y position
-								CW_USEDEFAULT,	// width, CW_USEDEFAULT allows system to choose height and width
-								CW_USEDEFAULT,	// height, CW_USEDEFAULT ignores heights as this is set by setting
-												// CW_USEDEFAULT in width above.
-								HWND_MESSAGE,	// Message only Window
-								NULL, // handle to menu
-								hInstance,	// handle to the instance of module
-								NULL);		// Long pointer to a value to be passed to the window through the 
-											// CREATESTRUCT structure passed in the lParam parameter the WM_CREATE message
+								CW_USEDEFAULT,	/* allows system choose an x position */
+								CW_USEDEFAULT,	/* allows system choose a y position */
+								CW_USEDEFAULT,	/* width, CW_USEDEFAULT allows system to choose height and width */
+								CW_USEDEFAULT,	/* height, CW_USEDEFAULT ignores heights as this is set by setting */
+												/* CW_USEDEFAULT in width above. */
+								HWND_MESSAGE,	/* Message only Window */
+								NULL, /* handle to menu */
+								hInstance,	/* handle to the instance of module */
+								NULL);		/* Long pointer to a value to be passed to the window through the  */
+											/* CREATESTRUCT structure passed in the lParam parameter the WM_CREATE message */
 
 	
 
@@ -214,11 +214,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 }
 
-//
-//  FUNCTION: WndProc(HWND, unsigned, WORD, LONG)
-//
-//  PURPOSE:  Processes messages for the main window.
-//
+/* */
+/*  FUNCTION: WndProc(HWND, unsigned, WORD, LONG) */
+/* */
+/*  PURPOSE:  Processes messages for the main window. */
+/* */
 
 
 LRESULT CALLBACK FrameWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)

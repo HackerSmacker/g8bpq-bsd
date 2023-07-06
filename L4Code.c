@@ -17,9 +17,9 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-//
-//	C replacement for L4Code.asm
-//
+/* */
+/*	C replacement for L4Code.asm */
+/* */
 #define Kernel
 
 #define _CRT_SECURE_NO_DEPRECATE 
@@ -73,16 +73,16 @@ extern UINT APPLMASK;
 extern BOOL LogL4Connects;
 extern BOOL LogAllConnects;
 
-// L4 Flags Values
+/* L4 Flags Values */
 
-#define DISCPENDING	8		// SEND DISC WHEN ALL DATA ACK'ED
+#define DISCPENDING	8		/* SEND DISC WHEN ALL DATA ACK'ED */
 
 extern APPLCALLS * APPL;
 
 VOID NETROMMSG(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG)
 {
-	//	MAKE SURE PID IS 0CF - IN CASE SOMEONE IS SENDING L2 STUFF ON WHAT 
-	//	WE THINK IS A _NODE-_NODE LINK
+	/*	MAKE SURE PID IS 0CF - IN CASE SOMEONE IS SENDING L2 STUFF ON WHAT  */
+	/*	WE THINK IS A _NODE-_NODE LINK */
 
 	struct DEST_LIST * DEST;
 
@@ -96,33 +96,33 @@ VOID NETROMMSG(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG)
 
 	if (LINK->NEIGHBOUR == 0)
 	{
-		// NO ROUTE ASSOCIATED WITH THIS CIRCUIT - SET ONE UP
+		/* NO ROUTE ASSOCIATED WITH THIS CIRCUIT - SET ONE UP */
 
 		CHECKNEIGHBOUR(LINK, L3MSG);
 
 		if (LINK->NEIGHBOUR == 0)
 		{
-			//	COULDNT SET UP NEIGHBOUR - CAN ONLY THROW IT AWAY
+			/*	COULDNT SET UP NEIGHBOUR - CAN ONLY THROW IT AWAY */
 
 			ReleaseBuffer(L3MSG);
 			return;
 		}
 	}
 
-	// See if a INP3 RIF (first Byte 0xFF)
+	/* See if a INP3 RIF (first Byte 0xFF) */
 
 	if (L3MSG->L3SRCE[0] == 0xff)
 	{
-		// INP3
+		/* INP3 */
 
 		ProcessINP3RIF(LINK->NEIGHBOUR, &L3MSG->L3SRCE[1], L3MSG->LENGTH - 9, L3MSG->Port);
 		ReleaseBuffer(L3MSG);
 		return;
 	}
 
-	APPLMASK = 0;		//	NOT APPLICATION 
+	APPLMASK = 0;		/*	NOT APPLICATION  */
 	
-	if (NODE)				// _NODE SUPPORT INCLUDED?
+	if (NODE)				/* _NODE SUPPORT INCLUDED? */
 	{
 
 		if (CompareCalls(L3MSG->L3DEST, MYCALL))
@@ -132,7 +132,7 @@ VOID NETROMMSG(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG)
 		}
 	}
 	
-	//	CHECK ALL L4 CALLS
+	/*	CHECK ALL L4 CALLS */
 
 	APPLMASK = 1;
 	ALIASPTR = &CMDALIAS[0][0];
@@ -143,7 +143,7 @@ VOID NETROMMSG(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG)
 
 	while (n--)
 	{
-		if (APPL->APPLCALL[0] > 0x40)		// Valid ax.25 addr
+		if (APPL->APPLCALL[0] > 0x40)		/* Valid ax.25 addr */
 		{
 			if (CompareCalls(L3MSG->L3DEST, APPL->APPLCALL))
 			{
@@ -156,7 +156,7 @@ VOID NETROMMSG(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG)
 		APPL++;
 	}
 
-	//	IS IT INP3 (L3RTT)
+	/*	IS IT INP3 (L3RTT) */
 
 	if (CompareCalls(L3MSG->L3DEST, L3RTT))
 	{
@@ -172,11 +172,11 @@ VOID NETROMMSG(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG)
 		return;
 	}
 
-	//	If it is a record route frame we should add our call to the list before sending on
+	/*	If it is a record route frame we should add our call to the list before sending on */
 
 	if (L3MSG->L4FLAGS == 0 && L3MSG->L4ID == 1 && L3MSG->L4INDEX == 0)
 	{
-		//	Add our call on end, and increase count
+		/*	Add our call on end, and increase count */
 
 		int Len = L3MSG->LENGTH;
 		int Count;
@@ -187,7 +187,7 @@ VOID NETROMMSG(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG)
 		{
 			ptr += (Len - 1);
 
-			Count = (*(ptr++)) & 0x7F;		// Mask End of Route
+			Count = (*(ptr++)) & 0x7F;		/* Mask End of Route */
 
 			memcpy(ptr, MYCALL, 7);
 
@@ -202,24 +202,24 @@ VOID NETROMMSG(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG)
 	}
 
 	if (L3MSG->L3TTL > L3LIVES)
-		L3MSG->L3TTL = L3LIVES;		// ENFORCE LIMIT ON ALL FRAMES SENT
+		L3MSG->L3TTL = L3LIVES;		/* ENFORCE LIMIT ON ALL FRAMES SENT */
 
 	if (FindDestination(L3MSG->L3DEST, &DEST) == 0)
 	{
-		ReleaseBuffer(L3MSG);			// CANT FIND DESTINATION
+		ReleaseBuffer(L3MSG);			/* CANT FIND DESTINATION */
 		return;
 	}
 
-	//	IF MESSAGE ORIGINTED HERE, THERE MUST BE A ROUTING LOOP - 
-	//   THERE IS LITTLE POINT SENDING IT OVER THE SAME ROUTE AGAIN,
-	//   SO SET ANOTHER ROUTE ACTIVE IF POSSIBLE
+	/*	IF MESSAGE ORIGINTED HERE, THERE MUST BE A ROUTING LOOP -  */
+	/*   THERE IS LITTLE POINT SENDING IT OVER THE SAME ROUTE AGAIN, */
+	/*   SO SET ANOTHER ROUTE ACTIVE IF POSSIBLE */
 
 	if (CompareCalls(L3MSG->L3SRCE, MYCALL) || CompareCalls(L3MSG->L3SRCE, APPLCALLTABLE->APPLCALL))
 	{
-		//	MESSAGE HAS COME BACK TO ITS STARTING POINT - ACTIVATE ANOTHER ROUTE,
-		// UNLESS THERE IS ONLY ONE, IN WHICH CASE DISCARD IT
+		/*	MESSAGE HAS COME BACK TO ITS STARTING POINT - ACTIVATE ANOTHER ROUTE, */
+		/* UNLESS THERE IS ONLY ONE, IN WHICH CASE DISCARD IT */
 
-		if (DEST->NRROUTE[1].ROUT_NEIGHBOUR == 0)	// No more routes
+		if (DEST->NRROUTE[1].ROUT_NEIGHBOUR == 0)	/* No more routes */
 		{
 			ReleaseBuffer(L3MSG);
 			return;
@@ -227,18 +227,18 @@ VOID NETROMMSG(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG)
 
 		DEST->DEST_ROUTE++;
 
-		if (DEST->DEST_ROUTE == 4)		// TO NEXT 
-			DEST->DEST_ROUTE  = 1;		// TRY TO ACTIVATE FIRST
+		if (DEST->DEST_ROUTE == 4)		/* TO NEXT  */
+			DEST->DEST_ROUTE  = 1;		/* TRY TO ACTIVATE FIRST */
 	}
 
-	//	IF CURRENT ROUTE IS BACK THE WAY WE CAME, THEN ACTIVATE
-	//ANOTHER (IF POSSIBLE). 
+	/*	IF CURRENT ROUTE IS BACK THE WAY WE CAME, THEN ACTIVATE */
+	/*ANOTHER (IF POSSIBLE).  */
 
 	if (DEST->DEST_ROUTE)
 	{
 		if (DEST->NRROUTE[DEST->DEST_ROUTE -1].ROUT_NEIGHBOUR == LINK->NEIGHBOUR)
 		{
-			//	Current ROUTE IS BACK THE WAY WE CAME - ACTIVATE ANOTHER IF POSSIBLE
+			/*	Current ROUTE IS BACK THE WAY WE CAME - ACTIVATE ANOTHER IF POSSIBLE */
 
 			DEST->DEST_ROUTE++;
 			if (DEST->DEST_ROUTE == 4)
@@ -248,13 +248,13 @@ VOID NETROMMSG(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG)
 	}
 	else
 	{
-		//	DONT HAVE AN ACTIVE ROUTE
+		/*	DONT HAVE AN ACTIVE ROUTE */
 
 		if (DEST->NRROUTE[0].ROUT_NEIGHBOUR == LINK->NEIGHBOUR)
 		{
-			//	FIRST ROUTE IS BACK THE WAY WE CAME - ACTIVATE ANOTHER IF POSSIBLE
+			/*	FIRST ROUTE IS BACK THE WAY WE CAME - ACTIVATE ANOTHER IF POSSIBLE */
 
-			DEST->DEST_ROUTE = 2;	// WILL BE RESET BY L3 CODE IF THERE IS NOT OTHER ROUTE
+			DEST->DEST_ROUTE = 2;	/* WILL BE RESET BY L3 CODE IF THERE IS NOT OTHER ROUTE */
 		}
 	}
 
@@ -262,8 +262,8 @@ NO_PROBLEM:
 
 	CHECKL3TABLES(LINK, L3MSG);
 
-//	EVEN IF WE CANT PUT ORIGINATING NODE INTO OUR TABLES, PASS MSG ON
-//	   ANYWAY - THE FINAL TARGET MAY HAVE ANOTHER WAY BACK
+/*	EVEN IF WE CANT PUT ORIGINATING NODE INTO OUR TABLES, PASS MSG ON */
+/*	   ANYWAY - THE FINAL TARGET MAY HAVE ANOTHER WAY BACK */
 
 
 	C_Q_ADD(&DEST->DEST_Q, L3MSG);
@@ -279,15 +279,15 @@ VOID SENDL4MESSAGE(TRANSPORTENTRY * L4, struct DATAMESSAGE * Msg)
 	int FRAGFLAG = 0;
 	int Len;
 
-	// These make it simpler to understand code
+	/* These make it simpler to understand code */
 
-#define NullPKTLen  4 + sizeof(void *)			// 4 is Port, Len, PID
-#define MaxL4Len  236 + 4 + sizeof(void *)		// Max NETROM Size
+#define NullPKTLen  4 + sizeof(void *)			/* 4 is Port, Len, PID */
+#define MaxL4Len  236 + 4 + sizeof(void *)		/* Max NETROM Size */
 
 
 	if (Msg->LENGTH == NullPKTLen)
 	{
-		//	NO DATA - DISCARD IT
+		/*	NO DATA - DISCARD IT */
 
 		ReleaseBuffer(Msg);
 		return;
@@ -297,9 +297,9 @@ VOID SENDL4MESSAGE(TRANSPORTENTRY * L4, struct DATAMESSAGE * Msg)
 
 	if (L3MSG == 0)
 	{
-		//	DONT THINK WE SHOULD GET HERE, UNLESS _QCOUNT IS CORRUPT,
-		//	BUT IF WE DO, SHOULD RETURN MSG TO FREE Q - START TIMER, AND
-		//	DROP THROUGH TO RELBUFF
+		/*	DONT THINK WE SHOULD GET HERE, UNLESS _QCOUNT IS CORRUPT, */
+		/*	BUT IF WE DO, SHOULD RETURN MSG TO FREE Q - START TIMER, AND */
+		/*	DROP THROUGH TO RELBUFF */
 
 		L4->L4TIMER = L4->SESSIONT1;
 
@@ -307,7 +307,7 @@ VOID SENDL4MESSAGE(TRANSPORTENTRY * L4, struct DATAMESSAGE * Msg)
 		return;
 	}
 
-	L3MSG->L3PID = 0xCF;			// NET MESSAGE
+	L3MSG->L3PID = 0xCF;			/* NET MESSAGE */
 
 	memcpy(L3MSG->L3SRCE, L4->L4MYCALL, 7);
 
@@ -321,7 +321,7 @@ VOID SENDL4MESSAGE(TRANSPORTENTRY * L4, struct DATAMESSAGE * Msg)
 
 	L3MSG->L4TXNO = L4->TXSEQNO;
 
-	//	SET UP RTT TIMER
+	/*	SET UP RTT TIMER */
 
 	if (L4->RTT_TIMER == 0)
 	{
@@ -333,22 +333,22 @@ VOID SENDL4MESSAGE(TRANSPORTENTRY * L4, struct DATAMESSAGE * Msg)
 	L4->TXSEQNO++;
 	
 
-	L4->L4LASTACKED	= L3MSG->L4RXNO = L4->RXSEQNO;		// SAVE LAST NUMBER ACKED
+	L4->L4LASTACKED	= L3MSG->L4RXNO = L4->RXSEQNO;		/* SAVE LAST NUMBER ACKED */
 
-	// SEE IF CROSSSESSION IS BUSY
+	/* SEE IF CROSSSESSION IS BUSY */
 
-	GETBUSYBIT(L4);							// Sets BUSY in NAKBITS if Busy
+	GETBUSYBIT(L4);							/* Sets BUSY in NAKBITS if Busy */
 
 	L3MSG->L4FLAGS = L4INFO | L4->NAKBITS;
 
-	L4->L4TIMER = L4->SESSIONT1;			// SET TIMER
-	L4->L4ACKREQ = 0;						// CANCEL ACK NEEDED
+	L4->L4TIMER = L4->SESSIONT1;			/* SET TIMER */
+	L4->L4ACKREQ = 0;						/* CANCEL ACK NEEDED */
 
 	Len = Msg->LENGTH;
 
-	if (Len > MaxL4Len)							// 236 DATA + 8 HEADER
+	if (Len > MaxL4Len)							/* 236 DATA + 8 HEADER */
 	{
-		//	MUST FRAGMENT MESSAGE
+		/*	MUST FRAGMENT MESSAGE */
 
 		L3MSG->L4FLAGS |= L4MORE;
 		FRAGFLAG = 1;
@@ -356,21 +356,21 @@ VOID SENDL4MESSAGE(TRANSPORTENTRY * L4, struct DATAMESSAGE * Msg)
 		Len = MaxL4Len;
 	}
 	
-	Len += 20;								// L3/4 Header
+	Len += 20;								/* L3/4 Header */
 
 	L3MSG->LENGTH = Len;
 
-	Len -= (20 + NullPKTLen);				// Actual Data
+	Len -= (20 + NullPKTLen);				/* Actual Data */
 
 	memcpy(L3MSG->L4DATA, Msg->L2DATA, Len);
 
-	//	CREATE COPY FOR POSSIBLE RETRY
+	/*	CREATE COPY FOR POSSIBLE RETRY */
 
 	Copy = GetBuff();
 
 	if (Copy == 0)
 	{
-		// SHOULD NEVER HAPPEN
+		/* SHOULD NEVER HAPPEN */
 		
 		ReleaseBuffer(Msg);
 		return;
@@ -378,8 +378,8 @@ VOID SENDL4MESSAGE(TRANSPORTENTRY * L4, struct DATAMESSAGE * Msg)
 
 	memcpy(Copy, L3MSG, L3MSG->LENGTH);
 	
-	// If we have fragmented, we should adjust length, or retry will send too much
-	//	(bug in .asm code)
+	/* If we have fragmented, we should adjust length, or retry will send too much */
+	/*	(bug in .asm code) */
 
 	if (FRAGFLAG)
 		Copy->LENGTH = MaxL4Len;
@@ -388,13 +388,13 @@ VOID SENDL4MESSAGE(TRANSPORTENTRY * L4, struct DATAMESSAGE * Msg)
 
 	C_Q_ADD(&DEST->DEST_Q, L3MSG);
 
-	DEST->DEST_COUNT++;				// COUNT THEM
+	DEST->DEST_COUNT++;				/* COUNT THEM */
 
 	L4FRAMESTX++;
 
 	if (FRAGFLAG)
 	{
-		//	MESSAGE WAS TOO BIG - ADJUST IT AND LOOP BACK
+		/*	MESSAGE WAS TOO BIG - ADJUST IT AND LOOP BACK */
 
 		Msg->LENGTH -= 236;
 
@@ -407,11 +407,11 @@ VOID SENDL4MESSAGE(TRANSPORTENTRY * L4, struct DATAMESSAGE * Msg)
 
 int GETBUSYBIT(TRANSPORTENTRY * L4)
 {
-	//	SEE IF CROSSSESSION IS BUSY
+	/*	SEE IF CROSSSESSION IS BUSY */
 
-	L4->NAKBITS &= ~L4BUSY;		// Clear busy
+	L4->NAKBITS &= ~L4BUSY;		/* Clear busy */
 			
-	L4->NAKBITS |= CHECKIFBUSYL4(L4);		// RETURNS AL WITH BUSY BIT SET IF CROSSSESSION IS BUSY
+	L4->NAKBITS |= CHECKIFBUSYL4(L4);		/* RETURNS AL WITH BUSY BIT SET IF CROSSSESSION IS BUSY */
 	
 	return L4->NAKBITS;
 }
@@ -420,7 +420,7 @@ VOID Q_IP_MSG(MESSAGE * Buffer)
 {
 	if (IPHOSTVECTOR.HOSTAPPLFLAGS & 0x80)
 	{
-		//	CHECK WE ARENT USING TOO MANY BUFFERS
+		/*	CHECK WE ARENT USING TOO MANY BUFFERS */
 		
 		if (C_Q_COUNT(&IPHOSTVECTOR.HOSTTRACEQ) > 20)
 			ReleaseBuffer(Q_REM((void *)&IPHOSTVECTOR.HOSTTRACEQ));
@@ -447,7 +447,7 @@ VOID SENDL4CONNECT(TRANSPORTENTRY * Session)
 		return;
 	}
 
-	MSG->L3PID = 0xCF;			// NET MESSAGE
+	MSG->L3PID = 0xCF;			/* NET MESSAGE */
 	
 	memcpy(MSG->L3SRCE, Session->L4MYCALL, 7);
 	memcpy(MSG->L3DEST, DEST->DEST_CALL, 7);
@@ -460,19 +460,19 @@ VOID SENDL4CONNECT(TRANSPORTENTRY * Session)
 	MSG->L4RXNO = 0;
 	MSG->L4FLAGS = L4CREQ;
 
-	MSG->L4DATA[0] = L4DEFAULTWINDOW;	// PROPOSED WINDOW
+	MSG->L4DATA[0] = L4DEFAULTWINDOW;	/* PROPOSED WINDOW */
 
-	memcpy(&MSG->L4DATA[1], Session->L4USER, 7);		// ORIG CALL
+	memcpy(&MSG->L4DATA[1], Session->L4USER, 7);		/* ORIG CALL */
 	memcpy(&MSG->L4DATA[8], Session->L4MYCALL, 7);
 	
-	Session->L4TIMER = Session->SESSIONT1;				// START TIMER
-	memcpy(&MSG->L4DATA[15], &Session->SESSIONT1, 2);	// AND PUT IN MSG
+	Session->L4TIMER = Session->SESSIONT1;				/* START TIMER */
+	memcpy(&MSG->L4DATA[15], &Session->SESSIONT1, 2);	/* AND PUT IN MSG */
 
 	MSG->LENGTH = (int)(&MSG->L4DATA[17] - (UCHAR *)MSG);
 
 	if (Session->SPYFLAG)
 	{
-		MSG->L4DATA[17] = 'Z';							// ADD SPY ON BBS FLAG
+		MSG->L4DATA[17] = 'Z';							/* ADD SPY ON BBS FLAG */
 		MSG->LENGTH++;
 	}
 	C_Q_ADD(&DEST->DEST_Q, (UINT *)MSG);
@@ -480,7 +480,7 @@ VOID SENDL4CONNECT(TRANSPORTENTRY * Session)
 
 void RETURNEDTONODE(TRANSPORTENTRY * Session)
 {
-	//	SEND RETURNED TO ALIAS:CALL
+	/*	SEND RETURNED TO ALIAS:CALL */
 
 	struct DATAMESSAGE * Msg = (struct DATAMESSAGE *)GetBuff();
 	char Nodename[20];
@@ -489,7 +489,7 @@ void RETURNEDTONODE(TRANSPORTENTRY * Session)
 	{
 		Msg->PID = 0xf0;
 
-		Nodename[DecodeNodeName(MYCALLWITHALIAS, Nodename)] = 0;		// null terminate
+		Nodename[DecodeNodeName(MYCALLWITHALIAS, Nodename)] = 0;		/* null terminate */
 
 		Msg->LENGTH = (USHORT)sprintf(&Msg->L2DATA[0], "Returned to Node %s\r", Nodename) + 4 + sizeof(void *);
 		C_Q_ADD(&Session->L4TX_Q, (UINT *)Msg);
@@ -502,7 +502,7 @@ extern void * BUFFER;
 
 VOID L4BG()
 {
-	// PROCESS DATA QUEUED ON SESSIONS
+	/* PROCESS DATA QUEUED ON SESSIONS */
 
 	int n = MAXCIRCUITS;
 	TRANSPORTENTRY * L4 = L4TABLE;
@@ -523,21 +523,21 @@ VOID L4BG()
 		while (L4->L4TX_Q)	
 		{
 			if (L4->L4CIRCUITTYPE & BPQHOST)
-				break;							// Leave on TXQ
+				break;							/* Leave on TXQ */
 
-			//	SEE IF BUSY - NEED DIFFERENT TESTS FOR EACH SESSION TYPE
+			/*	SEE IF BUSY - NEED DIFFERENT TESTS FOR EACH SESSION TYPE */
 
 			if (L4->L4CIRCUITTYPE & SESSION)
 			{
-				//	L4 SESSION - WILL NEED BUFFERS FOR SAVING COPY,
-				//	 AND POSSIBLY FRAGMENTATION
+				/*	L4 SESSION - WILL NEED BUFFERS FOR SAVING COPY, */
+				/*	 AND POSSIBLY FRAGMENTATION */
 
 				if (QCOUNT < 15)
 					break;
 
 				if (L4->FLAGS & L4BUSY)
 				{
-					//	CHOKED - MAKE SURE TIMER IS RUNNING
+					/*	CHOKED - MAKE SURE TIMER IS RUNNING */
 
 					if (L4->L4TIMER == 0)
 						L4->L4TIMER = L4->SESSIONT1;
@@ -545,11 +545,11 @@ VOID L4BG()
 					break;
 				}
 				
-				//	CHECK WINDOW
+				/*	CHECK WINDOW */
 
-				Outstanding = L4->TXSEQNO - L4->L4WS;	// LAST FRAME ACKED - GIVES NUMBER OUTSTANING
+				Outstanding = L4->TXSEQNO - L4->L4WS;	/* LAST FRAME ACKED - GIVES NUMBER OUTSTANING */
 
-				//	MOD 256, SO SHOULD HANDLE WRAP??
+				/*	MOD 256, SO SHOULD HANDLE WRAP?? */
 
 				if (Outstanding > L4->L4WINDOW)
 					break;
@@ -557,7 +557,7 @@ VOID L4BG()
 			}
 			else if (L4->L4CIRCUITTYPE & L2LINK)
 			{
-				// L2 LINK 
+				/* L2 LINK  */
 
 				LINK = L4->L4TARGET.LINK;
 
@@ -565,9 +565,9 @@ VOID L4BG()
 					break;
 			}
 
-			// Not busy, so continue
+			/* Not busy, so continue */
 
-			L4->L4KILLTIMER = 0;		//RESET SESSION TIMEOUTS
+			L4->L4KILLTIMER = 0;		/*RESET SESSION TIMEOUTS */
 
 			if(L4->L4CROSSLINK)
 				L4->L4CROSSLINK->L4KILLTIMER = 0;
@@ -576,9 +576,9 @@ VOID L4BG()
 
 			if (L4->L4CIRCUITTYPE & PACTOR)
 			{
-				//	PACTOR-like - queue to Port
+				/*	PACTOR-like - queue to Port */
 
-				//  Stream Number is in KAMSESSION
+				/*  Stream Number is in KAMSESSION */
 
 				Msg->PORT = L4->KAMSESSION;
 				PORT = L4->L4TARGET.PORT;
@@ -587,9 +587,9 @@ VOID L4BG()
 
 				continue;
 			}
-			//	non-pactor
+			/*	non-pactor */
 
-			//	IF CROSSLINK, QUEUE TO NEIGHBOUR, ELSE QUEUE ON LINK ENTRY
+			/*	IF CROSSLINK, QUEUE TO NEIGHBOUR, ELSE QUEUE ON LINK ENTRY */
 
 			if (L4->L4CIRCUITTYPE & SESSION)
 			{
@@ -600,9 +600,9 @@ VOID L4BG()
 
 			LINK = L4->L4TARGET.LINK;
 
-			// If we want to enforce PACLEN this may be a good place to do it
+			/* If we want to enforce PACLEN this may be a good place to do it */
 
-			Msglen = Msg->LENGTH - (MSGHDDRLEN + 1); //Dont include PID
+			Msglen = Msg->LENGTH - (MSGHDDRLEN + 1); /*Dont include PID */
 			Paclen = L4->SESSPACLEN;
 
 			if (Paclen == 0)
@@ -610,14 +610,14 @@ VOID L4BG()
 
 			if (Msglen > Paclen)
 			{
-				// Fragment it. 
-				// Is it best to send Paclen packets then short or equal length?
-				// I think equal length;
+				/* Fragment it.  */
+				/* Is it best to send Paclen packets then short or equal length? */
+				/* I think equal length; */
 
 				int Fragments = (Msglen + Paclen - 1) / Paclen;
 				int Fraglen = Msglen / Fragments;
 						
-				if ((Msglen & 1))		// Odd
+				if ((Msglen & 1))		/* Odd */
 					Fraglen ++;
 
 				while (Msglen > Fraglen)
@@ -625,7 +625,7 @@ VOID L4BG()
 					PDATAMESSAGE Fragment = GetBuff();
 
 					if (Fragment == NULL)
-						break;				// Cant do much else
+						break;				/* Cant do much else */
 
 					Fragment->PORT = Msg->PORT;
 					Fragment->PID = Msg->PID;
@@ -640,16 +640,16 @@ VOID L4BG()
 					Msg->LENGTH -= Fraglen;
 				}
 
-				// Drop through to send last bit
+				/* Drop through to send last bit */
 
 			}
 	
 			C_Q_ADD(&LINK->TX_Q, Msg);
 		}
 
-		// if nothing on TX Queue If there is stuff on hold queue, timer must be running
+		/* if nothing on TX Queue If there is stuff on hold queue, timer must be running */
 
-//		if (L4->L4TX_Q == 0 && L4->L4HOLD_Q)
+/*		if (L4->L4TX_Q == 0 && L4->L4HOLD_Q) */
 		if (L4->L4HOLD_Q)
 		{
 			if (L4->L4TIMER == 0)
@@ -658,7 +658,7 @@ VOID L4BG()
 			}
 		}
 		
-		// now check for rxed frames
+		/* now check for rxed frames */
 
 		while(L4->L4RX_Q)
 		{
@@ -666,11 +666,11 @@ VOID L4BG()
 
 			IFRM150(L4, Msg);
 
-			if (L4->L4USER[0] == 0)		// HAVE JUST CLOSED SESSION!	
+			if (L4->L4USER[0] == 0)		/* HAVE JUST CLOSED SESSION!	 */
 				goto NextSess;
 		}
 
-		//	IF ACK IS PENDING, AND WE ARE AT RX WINDOW, SEND ACK NOW
+		/*	IF ACK IS PENDING, AND WE ARE AT RX WINDOW, SEND ACK NOW */
 
 		Outstanding = L4->RXSEQNO - L4->L4LASTACKED;
 		if (Outstanding >= L4->L4WINDOW)
@@ -683,7 +683,7 @@ NextSess:
 VOID CLEARSESSIONENTRY(TRANSPORTENTRY * Session)
 {
 
-	//	RETURN ANY QUEUED BUFFERS TO FREE QUEUE
+	/*	RETURN ANY QUEUED BUFFERS TO FREE QUEUE */
 
 	while (Session->L4TX_Q)
 		ReleaseBuffer(Q_REM((void *)&Session->L4TX_Q));
@@ -711,7 +711,7 @@ VOID CLEARSESSIONENTRY(TRANSPORTENTRY * Session)
 
 VOID CloseSessionPartner(TRANSPORTENTRY * Session)
 {
-	//	SEND CLOSE TO CROSSLINKED SESSION AND CLEAR LOCAL SESSION
+	/*	SEND CLOSE TO CROSSLINKED SESSION AND CLEAR LOCAL SESSION */
 
 	if (Session == NULL)
 		return;
@@ -728,29 +728,29 @@ VOID CLOSECURRENTSESSION(TRANSPORTENTRY * Session)
 	MESSAGE * Buffer;
 	struct _LINKTABLE * LINK;
 
-//	SHUT DOWN SESSION AND UNLINK IF CROSSLINKED
+/*	SHUT DOWN SESSION AND UNLINK IF CROSSLINKED */
 
 	if (Session == NULL)
 		return;
 
 	Session->L4CROSSLINK = NULL;
 
-	//	IF STAY FLAG SET, KEEP SESSION, AND SEND MESSAGE
+	/*	IF STAY FLAG SET, KEEP SESSION, AND SEND MESSAGE */
 
 	if (Session->STAYFLAG)
 	{
 		RETURNEDTONODE(Session);
-		Session->STAYFLAG = 0;			// Only do it once
+		Session->STAYFLAG = 0;			/* Only do it once */
 		return;
 	}
 
 	if (Session->L4CIRCUITTYPE & BPQHOST)
 	{
-		//	BPQ HOST MODE SESSION - INDICATE STATUS CHANGE
+		/*	BPQ HOST MODE SESSION - INDICATE STATUS CHANGE */
 
 		PBPQVECSTRUC HOST = Session->L4TARGET.HOST;
 		HOST->HOSTSESSION = 0;
-		HOST->HOSTFLAGS |= 3;		/// State Change
+		HOST->HOSTFLAGS |= 3;		/*/ State Change */
 
 		PostStateChange(Session);
 		CLEARSESSIONENTRY(Session);
@@ -759,11 +759,11 @@ VOID CLOSECURRENTSESSION(TRANSPORTENTRY * Session)
 
 	if (Session->L4CIRCUITTYPE & PACTOR)
 	{
-		//	PACTOR-type (Session linked to Port)
+		/*	PACTOR-type (Session linked to Port) */
 
 		struct _EXTPORTDATA * EXTPORT = Session->L4TARGET.EXTPORT;
 
-		// If any data is queued, move it to the port entry, so it can be sent before the disconnect
+		/* If any data is queued, move it to the port entry, so it can be sent before the disconnect */
 		
 		while (Session->L4TX_Q)
 		{
@@ -779,11 +779,11 @@ VOID CLOSECURRENTSESSION(TRANSPORTENTRY * Session)
 
 	if (Session->L4CIRCUITTYPE & SESSION)
 	{
-		//	L4 SESSION TO CLOSE
+		/*	L4 SESSION TO CLOSE */
 
-		if (Session->L4HOLD_Q || Session->L4TX_Q)	// WAITING FOR ACK or MORE TO SEND - SEND DISC LATER
+		if (Session->L4HOLD_Q || Session->L4TX_Q)	/* WAITING FOR ACK or MORE TO SEND - SEND DISC LATER */
 		{
-			Session->FLAGS |= DISCPENDING;			// SEND DISC WHEN ALL DATA ACKED
+			Session->FLAGS |= DISCPENDING;			/* SEND DISC WHEN ALL DATA ACKED */
 			return;
 		}
 
@@ -791,13 +791,13 @@ VOID CLOSECURRENTSESSION(TRANSPORTENTRY * Session)
 		return;
 	}
 
-	//	Must be LEVEL 2 SESSION TO CLOSE
+	/*	Must be LEVEL 2 SESSION TO CLOSE */
 
-	//	COPY ANY PENDING DATA TO L2 TX Q, THEN GET RID OF SESSION
+	/*	COPY ANY PENDING DATA TO L2 TX Q, THEN GET RID OF SESSION */
 
 	LINK = Session->L4TARGET.LINK;
 
-	if (LINK == NULL)			// just in case!
+	if (LINK == NULL)			/* just in case! */
 	{
 		CLEARSESSIONENTRY(Session);
 		return;
@@ -809,22 +809,22 @@ VOID CLOSECURRENTSESSION(TRANSPORTENTRY * Session)
 		C_Q_ADD(&LINK->TX_Q, Buffer);
 	}
 
-	//	NOTHING LEFT AT SESSION LEVEL
+	/*	NOTHING LEFT AT SESSION LEVEL */
 	
-	LINK->CIRCUITPOINTER = NULL;	// CLEAR REVERSE LINK
+	LINK->CIRCUITPOINTER = NULL;	/* CLEAR REVERSE LINK */
 
 	if ((LINK->LINKWS != LINK->LINKNS) || LINK->TX_Q)
 	{
-		// STILL MORE TO SEND - SEND DISC LATER
+		/* STILL MORE TO SEND - SEND DISC LATER */
 		
-		LINK->L2FLAGS |= DISCPENDING;	// SEND DISC WHEN ALL DATA ACKED
+		LINK->L2FLAGS |= DISCPENDING;	/* SEND DISC WHEN ALL DATA ACKED */
 	}
 	else
 	{
-		//	NOTHING QUEUED - CAN SEND DISC NOW
+		/*	NOTHING QUEUED - CAN SEND DISC NOW */
 
-		LINK->L2STATE = 4;				// DISCONNECTING
-		LINK->L2TIMER = 1;				// USE TIMER TO KICK OFF DISC
+		LINK->L2STATE = 4;				/* DISCONNECTING */
+		LINK->L2TIMER = 1;				/* USE TIMER TO KICK OFF DISC */
 	}
 
 	CLEARSESSIONENTRY(Session);
@@ -833,7 +833,7 @@ VOID CLOSECURRENTSESSION(TRANSPORTENTRY * Session)
 
 VOID L4TimerProc()
 {
-	//	CHECK FOR TIMER EXPIRY
+	/*	CHECK FOR TIMER EXPIRY */
 
 	int n = MAXCIRCUITS;
 	TRANSPORTENTRY * L4 = L4TABLE;
@@ -848,38 +848,38 @@ VOID L4TimerProc()
 			continue;
 		}
 		
-		//	CHECK FOR L4BUSY SET AND NO LONGER BUSY
+		/*	CHECK FOR L4BUSY SET AND NO LONGER BUSY */
 
 		if (L4->NAKBITS & L4BUSY)
 		{
 			if ((CHECKIFBUSYL4(L4) & L4BUSY) == 0)
 			{
-				// no longer busy
+				/* no longer busy */
 
-				L4->NAKBITS &= ~L4BUSY;		// Clear busy
-				L4->L4ACKREQ = 1;			// SEND ACK
+				L4->NAKBITS &= ~L4BUSY;		/* Clear busy */
+				L4->L4ACKREQ = 1;			/* SEND ACK */
 			}
 		}
 
-		if (L4->L4TIMER)					// Timer Running?
+		if (L4->L4TIMER)					/* Timer Running? */
 		{
 			L4->L4TIMER--;
-			if (L4->L4TIMER == 0)			// Expired
+			if (L4->L4TIMER == 0)			/* Expired */
 				L4TIMEOUT(L4);	
 		}
 	
-		if (L4->L4ACKREQ)					// DELAYED ACK Timer Running?
+		if (L4->L4ACKREQ)					/* DELAYED ACK Timer Running? */
 		{
 			L4->L4ACKREQ--;
-			if (L4->L4ACKREQ == 0)			// Expired
+			if (L4->L4ACKREQ == 0)			/* Expired */
 				SENDL4IACK(L4);
 		}
 
 		L4->L4KILLTIMER++;
 
-		//	IF BIT 6 OF APPLFLAGS SET, SEND MSG EVERY 11 MINS TO KEEP SESSION OPEN
+		/*	IF BIT 6 OF APPLFLAGS SET, SEND MSG EVERY 11 MINS TO KEEP SESSION OPEN */
 
-		if (L4->L4CROSSLINK)			// CONNECTED?
+		if (L4->L4CROSSLINK)			/* CONNECTED? */
 			if (L4->SESS_APPLFLAGS & 0x40)
 				if (L4->L4KILLTIMER > 11 * 60)
 					AUTOTIMER(L4);
@@ -892,7 +892,7 @@ VOID L4TimerProc()
 			{
 				L4->L4KILLTIMER = 0;
 				
-				//	CLOSE THIS SESSION, AND ITS PARTNER (IF ANY)
+				/*	CLOSE THIS SESSION, AND ITS PARTNER (IF ANY) */
 
 				L4->STAYFLAG = 0;
 
@@ -901,8 +901,8 @@ VOID L4TimerProc()
 				
 				if (Partner)
 				{
-					Partner->L4KILLTIMER = 0;		//ITS TIMES IS ALSO ABOUT TO EXPIRE
-					CLOSECURRENTSESSION(Partner);	// CLOSE THIS ONE
+					Partner->L4KILLTIMER = 0;		/*ITS TIMES IS ALSO ABOUT TO EXPIRE */
+					CLOSECURRENTSESSION(Partner);	/* CLOSE THIS ONE */
 				}
 			}
 		}
@@ -912,11 +912,11 @@ VOID L4TimerProc()
 
 VOID L4TIMEOUT(TRANSPORTENTRY * L4)
 {
-	//	TIMER EXPIRED
+	/*	TIMER EXPIRED */
 
-	//	    IF LINK UP REPEAT TEXT
-	//	    IF S2, REPEAT CONNECT REQUEST
-	//	    IF S4, REPEAT DISCONNECT REQUEST
+	/*	    IF LINK UP REPEAT TEXT */
+	/*	    IF S2, REPEAT CONNECT REQUEST */
+	/*	    IF S4, REPEAT DISCONNECT REQUEST */
 
 	struct DATAMESSAGE * Msg;
 	struct DATAMESSAGE * Copy;
@@ -927,61 +927,61 @@ VOID L4TIMEOUT(TRANSPORTENTRY * L4)
 
 	if (L4->L4STATE == 2)
 	{
-		//	RETRY CONNECT
+		/*	RETRY CONNECT */
 
 		L4->L4RETRIES++;
 
 		if (L4->L4RETRIES > L4N2)
 		{
-			//	RETRIED N2 TIMES - FAIL LINK
+			/*	RETRIED N2 TIMES - FAIL LINK */
 
-			L4CONNECTFAILED(L4);		// TELL OTHER PARTNER IT FAILED
+			L4CONNECTFAILED(L4);		/* TELL OTHER PARTNER IT FAILED */
 			CLEARSESSIONENTRY(L4);
 			return;
 		}
 
 		Debugprintf("Retrying L4 Connect Request");
 
-		SENDL4CONNECT(L4);				// Resend connect
+		SENDL4CONNECT(L4);				/* Resend connect */
 		return;
 	}
 
 	if (L4->L4STATE == 4)
 	{
-		//	RETRY DISCONNECT
+		/*	RETRY DISCONNECT */
 
 		L4->L4RETRIES++;
 
 		if (L4->L4RETRIES > L4N2)
 		{
-			//	RETRIED N2 TIMES - FAIL LINK
+			/*	RETRIED N2 TIMES - FAIL LINK */
 
 
 			CLEARSESSIONENTRY(L4);
 			return;
 		}
 
-		SENDL4DISC(L4);				// Resend connect
+		SENDL4DISC(L4);				/* Resend connect */
 		return;
 	}
-	//	STATE 5 OR ABOVE - RETRY INFO
+	/*	STATE 5 OR ABOVE - RETRY INFO */
 
 
-	L4->FLAGS &= ~L4BUSY;		// CANCEL CHOKE
+	L4->FLAGS &= ~L4BUSY;		/* CANCEL CHOKE */
 	
 	L4->L4RETRIES++;
 
 	if (L4->L4RETRIES > L4N2)
 	{
-		//	RETRIED N2 TIMES - FAIL LINK
+		/*	RETRIED N2 TIMES - FAIL LINK */
 
-		CloseSessionPartner(L4);	// SEND CLOSE TO PARTNER (IF PRESENT)
+		CloseSessionPartner(L4);	/* SEND CLOSE TO PARTNER (IF PRESENT) */
 		return;
 	}
 
-	//	RESEND ALL OUTSTANDING FRAMES
+	/*	RESEND ALL OUTSTANDING FRAMES */
 
-	L4->FLAGS &= 0x7F;				// CLEAR CHOKED
+	L4->FLAGS &= 0x7F;				/* CLEAR CHOKED */
 
 	Msg = L4->L4HOLD_Q;
 
@@ -1006,7 +1006,7 @@ VOID L4TIMEOUT(TRANSPORTENTRY * L4)
 
 VOID AUTOTIMER(TRANSPORTENTRY * L4)
 {
-	//	SEND MESSAGE TO USER TO KEEP CIRCUIT OPEN
+	/*	SEND MESSAGE TO USER TO KEEP CIRCUIT OPEN */
 
 	struct DATAMESSAGE * Msg = GetBuff();
 
@@ -1031,7 +1031,7 @@ VOID AUTOTIMER(TRANSPORTENTRY * L4)
 
 VOID L4CONNECTFAILED(TRANSPORTENTRY * L4)
 {
-	//	CONNECT HAS TIMED OUT - SEND MESSAGE TO OTHER END
+	/*	CONNECT HAS TIMED OUT - SEND MESSAGE TO OTHER END */
 
 	struct DATAMESSAGE * Msg;
 	TRANSPORTENTRY * Partner;
@@ -1054,7 +1054,7 @@ VOID L4CONNECTFAILED(TRANSPORTENTRY * L4)
 	ptr1 = SetupNodeHeader(Msg);
 
 	DEST = L4->L4TARGET.DEST;
-	Nodename[DecodeNodeName(DEST->DEST_CALL, Nodename)] = 0;		// null terminate
+	Nodename[DecodeNodeName(DEST->DEST_CALL, Nodename)] = 0;		/* null terminate */
 
 	ptr1 += sprintf(ptr1, "Failure with %s\r", Nodename);
 
@@ -1064,23 +1064,23 @@ VOID L4CONNECTFAILED(TRANSPORTENTRY * L4)
 
 	PostDataAvailable(Partner);
 
-	Partner->L4CROSSLINK = 0;		// Back to command lewel
+	Partner->L4CROSSLINK = 0;		/* Back to command lewel */
 }
 
 
 VOID ProcessIframe(struct _LINKTABLE * LINK, PDATAMESSAGE Buffer)
 {
-	//	IF UP/DOWN LINK, AND CIRCUIT ESTABLISHED, ADD LEVEL 3/4 HEADERS
-	//	   (FRAGMENTING IF NECESSARY), AND PASS TO TRANSPORT CONTROL
-	//	   FOR ESTABLISHED ROUTE
+	/*	IF UP/DOWN LINK, AND CIRCUIT ESTABLISHED, ADD LEVEL 3/4 HEADERS */
+	/*	   (FRAGMENTING IF NECESSARY), AND PASS TO TRANSPORT CONTROL */
+	/*	   FOR ESTABLISHED ROUTE */
 
-	//	IF INTERNODE MESSAGE, PASS TO ROUTE CONTROL 
+	/*	IF INTERNODE MESSAGE, PASS TO ROUTE CONTROL  */
 
-	//	IF UP/DOWN, AND NO CIRCUIT, PASS TO COMMAND HANDLER
+	/*	IF UP/DOWN, AND NO CIRCUIT, PASS TO COMMAND HANDLER */
 
 	TRANSPORTENTRY * Session;
 
-	//	IT IS POSSIBLE TO MULTIPLEX NETROM AND IP STUFF ON THE SAME LINK
+	/*	IT IS POSSIBLE TO MULTIPLEX NETROM AND IP STUFF ON THE SAME LINK */
 
 	if (Buffer->PID == 0xCC || Buffer->PID == 0xCD)
 	{
@@ -1090,20 +1090,20 @@ VOID ProcessIframe(struct _LINKTABLE * LINK, PDATAMESSAGE Buffer)
 
 	if (Buffer->PID ==	0xCF)
 	{
-		//	INTERNODE frame
+		/*	INTERNODE frame */
 
-		//	IF LINKTYPE IS NOT 3, MUST CHECK IF WE HAVE ACCIDENTALLY  ATTACHED A BBS PORT TO THE NODE
+		/*	IF LINKTYPE IS NOT 3, MUST CHECK IF WE HAVE ACCIDENTALLY  ATTACHED A BBS PORT TO THE NODE */
 
 		if (LINK->LINKTYPE != 3)
 		{
 			if (LINK->CIRCUITPOINTER)
 			{
-				//	MUST KILL SESSION
+				/*	MUST KILL SESSION */
 
-				InformPartner(LINK, NORMALCLOSE);			// CLOSE IT
-				LINK->CIRCUITPOINTER = NULL;	// AND UNHOOK
+				InformPartner(LINK, NORMALCLOSE);			/* CLOSE IT */
+				LINK->CIRCUITPOINTER = NULL;	/* AND UNHOOK */
 			}
-			LINK->LINKTYPE = 3;					// NOW WE KNOW ITS A CROSSLINK
+			LINK->LINKTYPE = 3;					/* NOW WE KNOW ITS A CROSSLINK */
 		}
 
 		NETROMMSG(LINK, (L3MESSAGEBUFFER *)Buffer);
@@ -1112,7 +1112,7 @@ VOID ProcessIframe(struct _LINKTABLE * LINK, PDATAMESSAGE Buffer)
 
 	if (LINK->LINKTYPE == 3)
 	{
-		// Weve receved a non- netrom frame on an inernode link
+		/* Weve receved a non- netrom frame on an inernode link */
 
 		ReleaseBuffer(Buffer);
 		return;
@@ -1120,13 +1120,13 @@ VOID ProcessIframe(struct _LINKTABLE * LINK, PDATAMESSAGE Buffer)
 
 	if (LINK->CIRCUITPOINTER)
 	{
-		// Pass to Session 
+		/* Pass to Session  */
 		
 		IFRM150(LINK->CIRCUITPOINTER, Buffer);
 		return;
 	}
 
-	//	UPLINK MESSAGE WITHOUT LEVEL 4 ENTRY - CREATE ONE
+	/*	UPLINK MESSAGE WITHOUT LEVEL 4 ENTRY - CREATE ONE */
 
 	Session = SetupSessionForL2(LINK);
 
@@ -1144,13 +1144,13 @@ VOID IFRM100(struct _LINKTABLE * LINK, PDATAMESSAGE Buffer)
 	
 	if (LINK->CIRCUITPOINTER)
 	{
-		// Pass to Session 
+		/* Pass to Session  */
 		
 		IFRM150(LINK->CIRCUITPOINTER, Buffer);
 		return;
 	}
 
-	//	UPLINK MESSAGE WITHOUT LEVEL 4 ENTRY - CREATE ONE
+	/*	UPLINK MESSAGE WITHOUT LEVEL 4 ENTRY - CREATE ONE */
 
 	Session = SetupSessionForL2(LINK);
 
@@ -1167,17 +1167,17 @@ VOID IFRM150(TRANSPORTENTRY * Session, PDATAMESSAGE Buffer)
 	TRANSPORTENTRY * Partner;
 	struct _LINKTABLE * LINK;
 	
-	Session->L4KILLTIMER = 0;			// RESET SESSION TIMEOUT
+	Session->L4KILLTIMER = 0;			/* RESET SESSION TIMEOUT */
 
-	if (Session->L4CROSSLINK == NULL)			// CONNECTED?
+	if (Session->L4CROSSLINK == NULL)			/* CONNECTED? */
 	{
-		//	NO, SO PASS TO COMMAND HANDLER
+		/*	NO, SO PASS TO COMMAND HANDLER */
 		
 		CommandHandler(Session, Buffer);
 		return;
 	}
 
- 	Partner = Session->L4CROSSLINK;			// TO SESSION PARTNER
+ 	Partner = Session->L4CROSSLINK;			/* TO SESSION PARTNER */
 
 	if (Partner->L4STATE == 5)
 	{
@@ -1188,25 +1188,25 @@ VOID IFRM150(TRANSPORTENTRY * Session, PDATAMESSAGE Buffer)
 
 
 
-	//	MESSAGE RECEIVED BEFORE SESSION IS UP - CANCEL SESSION
-	//	  AND PASS MESSAGE TO COMMAND HANDLER
+	/*	MESSAGE RECEIVED BEFORE SESSION IS UP - CANCEL SESSION */
+	/*	  AND PASS MESSAGE TO COMMAND HANDLER */
 
-	if (Partner->L4CIRCUITTYPE & L2LINK)		// L2 SESSION?
+	if (Partner->L4CIRCUITTYPE & L2LINK)		/* L2 SESSION? */
 	{
-		//	MUST CANCEL L2 SESSION
+		/*	MUST CANCEL L2 SESSION */
 
 		LINK = Partner->L4TARGET.LINK;
-		LINK->CIRCUITPOINTER = NULL;	// CLEAR REVERSE LINK
+		LINK->CIRCUITPOINTER = NULL;	/* CLEAR REVERSE LINK */
 
-		LINK->L2STATE = 4;				// DISCONNECTING
-		LINK->L2TIMER = 1;				// USE TIMER TO KICK OFF DISC
+		LINK->L2STATE = 4;				/* DISCONNECTING */
+		LINK->L2TIMER = 1;				/* USE TIMER TO KICK OFF DISC */
 
-		LINK->L2RETRIES = LINK->LINKPORT->PORTN2 - 2;	//ONLY SEND DISC ONCE
+		LINK->L2RETRIES = LINK->LINKPORT->PORTN2 - 2;	/*ONLY SEND DISC ONCE */
 	}
 
 	CLEARSESSIONENTRY(Partner);
 
-	Session->L4CROSSLINK = 0;		// CLEAR CROSS LINK
+	Session->L4CROSSLINK = 0;		/* CLEAR CROSS LINK */
 	CommandHandler(Session, Buffer);
 	return;
 }
@@ -1219,22 +1219,22 @@ VOID SENDL4DISC(TRANSPORTENTRY * Session)
 
 	if (Session->L4STATE < 4)
 	{
-		//	CIRCUIT NOT UP OR CLOSING - PROBABLY NOT YET SET UP - JUST ZAP IT
+		/*	CIRCUIT NOT UP OR CLOSING - PROBABLY NOT YET SET UP - JUST ZAP IT */
 
 		CLEARSESSIONENTRY(Session);
 		return;
 	}
 	
-	Session->L4TIMER = Session->SESSIONT1;	// START TIMER
-	Session->L4STATE = 4;					// SET DISCONNECTING
-	Session->L4ACKREQ = 0;					// CANCEL ACK NEEDED
+	Session->L4TIMER = Session->SESSIONT1;	/* START TIMER */
+	Session->L4STATE = 4;					/* SET DISCONNECTING */
+	Session->L4ACKREQ = 0;					/* CANCEL ACK NEEDED */
 
 	MSG = GetBuff();
 
 	if (MSG == NULL)
 		return;
 
-	MSG->L3PID = 0xCF;			// NET MESSAGE
+	MSG->L3PID = 0xCF;			/* NET MESSAGE */
 	
 	memcpy(MSG->L3SRCE, Session->L4MYCALL, 7);
 	memcpy(MSG->L3DEST, DEST->DEST_CALL, 7);
@@ -1286,22 +1286,22 @@ void WriteL4LogLine(UCHAR * mycall, UCHAR * call, UCHAR * node)
 
 VOID CONNECTREQUEST(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG, UINT ApplMask, UCHAR * ApplCall)
 {
-	//	CONNECT REQUEST - SEE IF EXISTING SESSION
-	//	IF NOT, GET AND FORMAT SESSION TABLE ENTRY
-	//	SEND CONNECT ACK
+	/*	CONNECT REQUEST - SEE IF EXISTING SESSION */
+	/*	IF NOT, GET AND FORMAT SESSION TABLE ENTRY */
+	/*	SEND CONNECT ACK */
 
-	//	EDI = _BUFFER, EBX = LINK
+	/*	EDI = _BUFFER, EBX = LINK */
 
 	TRANSPORTENTRY * L4;
-	int BPQNODE = 0;				// NOT ONE OF MINE
-	char BPQPARAMS[10];				// Extended Connect Params from BPQ Node
+	int BPQNODE = 0;				/* NOT ONE OF MINE */
+	char BPQPARAMS[10];				/* Extended Connect Params from BPQ Node */
 	int CONERROR;
 	int Index;
 	char xxx[16] = "";
 
-	memcpy(BPQPARAMS, &L4T1, 2);	// SET DEFAULT T1 IN CASE NOT FROM ANOTHER BPQ NODE
+	memcpy(BPQPARAMS, &L4T1, 2);	/* SET DEFAULT T1 IN CASE NOT FROM ANOTHER BPQ NODE */
 
-	BPQPARAMS[2] = 0;				// 'SPY' NOT SET	
+	BPQPARAMS[2] = 0;				/* 'SPY' NOT SET	 */
 
 	ConvFromAX25(&L3MSG->L4DATA[1], xxx);
 
@@ -1313,7 +1313,7 @@ VOID CONNECTREQUEST(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG, UINT Appl
 							
 	if (FINDCIRCUIT(L3MSG, &L4, &Index))
 	{
-		// SESSION EXISTS - ASSUME RETRY AND SEND ACK
+		/* SESSION EXISTS - ASSUME RETRY AND SEND ACK */
 
 		SendConACK(LINK, L4, L3MSG, BPQNODE, ApplMask, ApplCall);
 		return;
@@ -1332,29 +1332,29 @@ VOID CONNECTREQUEST(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG, UINT Appl
 
 	if (L4->L4TARGET.DEST == 0)
 	{
-		// NODE NOT IN TABLE, AND TABLE FULL - CANCEL IT
+		/* NODE NOT IN TABLE, AND TABLE FULL - CANCEL IT */
 
 		memset(L4, 0, sizeof (TRANSPORTENTRY));
 		SendConNAK(LINK, L3MSG);
 		return;
 	}
-	//	IF CONNECT TO APPL, ALLOCATE BBS PORT
+	/*	IF CONNECT TO APPL, ALLOCATE BBS PORT */
 
-	if (ApplMask == 0 || BPQPARAMS[2] == 'Z')		// Z is "Spy" Connect
+	if (ApplMask == 0 || BPQPARAMS[2] == 'Z')		/* Z is "Spy" Connect */
 	{
 		SendConACK(LINK, L4, L3MSG, BPQNODE, ApplMask, ApplCall);
 
 		return;
 	}
 
-	//	IF APPL CONNECT, SEE IF APPL HAS AN ALIAS
+	/*	IF APPL CONNECT, SEE IF APPL HAS AN ALIAS */
 
 
 	if (ALIASPTR[0] > ' ')
 	{
 		struct DATAMESSAGE * Msg;
 
-		//	ACCEPT THE CONNECT, THEN INVOKE THE ALIAS
+		/*	ACCEPT THE CONNECT, THEN INVOKE THE ALIAS */
 
 		SendConACK(LINK, L4, L3MSG, BPQNODE, ApplMask, ApplCall);
 
@@ -1365,7 +1365,7 @@ VOID CONNECTREQUEST(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG, UINT Appl
 			Msg->PID = 0xf0;
 			memcpy(Msg->L2DATA, APPL->APPLCMD, 12);
 			Msg->L2DATA[12] = 13;
-			Msg->LENGTH = MSGHDDRLEN + 12 + 2;		// 2 for PID and CR
+			Msg->LENGTH = MSGHDDRLEN + 12 + 2;		/* 2 for PID and CR */
 
 			C_Q_ADD(&L4->L4RX_Q, Msg);
 			return;
@@ -1378,7 +1378,7 @@ VOID CONNECTREQUEST(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG, UINT Appl
 		return;
 	}
 	
-	//	NO BBS AVAILABLE
+	/*	NO BBS AVAILABLE */
 	
 	CLEARSESSIONENTRY(L4);
 	SendConNAK(LINK, L3MSG);
@@ -1387,7 +1387,7 @@ VOID CONNECTREQUEST(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG, UINT Appl
 
 VOID SendConACK(struct _LINKTABLE * LINK, TRANSPORTENTRY * L4, L3MESSAGEBUFFER * L3MSG, BOOL BPQNODE, UINT Applmask, UCHAR * ApplCall)
 {
-	//	SEND CONNECT ACK	
+	/*	SEND CONNECT ACK	 */
 
 	struct TNCINFO * TNC;
 
@@ -1396,7 +1396,7 @@ VOID SendConACK(struct _LINKTABLE * LINK, TRANSPORTENTRY * L4, L3MESSAGEBUFFER *
 	L3MSG->L4TXNO = L4->CIRCUITINDEX;
 	L3MSG->L4RXNO = L4->CIRCUITID;
 
-	L3MSG->L4DATA[0] = L4->L4WINDOW;			//WINDOW
+	L3MSG->L4DATA[0] = L4->L4WINDOW;			/*WINDOW */
 
 	L3MSG->L4FLAGS = L4CACK;
 
@@ -1417,7 +1417,7 @@ VOID SendConACK(struct _LINKTABLE * LINK, TRANSPORTENTRY * L4, L3MESSAGEBUFFER *
 	}
 
 
-	if (CTEXTLEN && (Applmask == 0) && FULL_CTEXT)	// Any connect, or call to alias
+	if (CTEXTLEN && (Applmask == 0) && FULL_CTEXT)	/* Any connect, or call to alias */
 	{
 		struct DATAMESSAGE * Msg;
 		int Totallen = CTEXTLEN;
@@ -1432,7 +1432,7 @@ VOID SendConACK(struct _LINKTABLE * LINK, TRANSPORTENTRY * L4, L3MESSAGEBUFFER *
 			Msg = GetBuff();
 
 			if (Msg == NULL)
-				break;				// No Buffers
+				break;				/* No Buffers */
 
 			Msg->PID = 0xf0;
 
@@ -1442,7 +1442,7 @@ VOID SendConACK(struct _LINKTABLE * LINK, TRANSPORTENTRY * L4, L3MESSAGEBUFFER *
 			memcpy(Msg->L2DATA, ptr, Paclen);
 			Msg->LENGTH = Paclen + MSGHDDRLEN + 1;
 
-			C_Q_ADD(&L4->L4TX_Q, Msg);			// SEND MESSAGE TO CALLER
+			C_Q_ADD(&L4->L4TX_Q, Msg);			/* SEND MESSAGE TO CALLER */
 			PostDataAvailable(L4);
 			ptr += Paclen;
 			Totallen -= Paclen;
@@ -1453,11 +1453,11 @@ VOID SendConACK(struct _LINKTABLE * LINK, TRANSPORTENTRY * L4, L3MESSAGEBUFFER *
 	
 	L3MSG->L3TTL = L3LIVES;
 
-	L3MSG->LENGTH = MSGHDDRLEN + 22;		// CTL 20 BYTE Header Window
+	L3MSG->LENGTH = MSGHDDRLEN + 22;		/* CTL 20 BYTE Header Window */
 
 	if (BPQNODE)
 	{
-		L3MSG->L4DATA[1] = L3LIVES;		// Our TTL
+		L3MSG->L4DATA[1] = L3LIVES;		/* Our TTL */
 		L3MSG->LENGTH++;
 	}
 
@@ -1471,7 +1471,7 @@ VOID SendConACK(struct _LINKTABLE * LINK, TRANSPORTENTRY * L4, L3MESSAGEBUFFER *
 
 int FINDCIRCUIT(L3MESSAGEBUFFER * L3MSG, TRANSPORTENTRY ** REQL4, int * NewIndex)
 {
-	//	FIND CIRCUIT FOR AN INCOMING MESSAGE
+	/*	FIND CIRCUIT FOR AN INCOMING MESSAGE */
 
 	TRANSPORTENTRY * L4 = L4TABLE;
 	TRANSPORTENTRY * FIRSTSPARE = NULL;
@@ -1481,7 +1481,7 @@ int FINDCIRCUIT(L3MESSAGEBUFFER * L3MSG, TRANSPORTENTRY ** REQL4, int * NewIndex
 	
 	while (Index < MAXCIRCUITS)
 	{
-		if (L4->L4USER[0] == 0)		// Spare
+		if (L4->L4USER[0] == 0)		/* Spare */
 		{
 			if (FIRSTSPARE == NULL)
 			{			
@@ -1498,7 +1498,7 @@ int FINDCIRCUIT(L3MESSAGEBUFFER * L3MSG, TRANSPORTENTRY ** REQL4, int * NewIndex
 
 		if (DEST == NULL)
 		{
-			// L4 entry without a Dest shouldn't happen. (I don't think!)
+			/* L4 entry without a Dest shouldn't happen. (I don't think!) */
 
 			char Call1[12], Call2[12];
 
@@ -1517,7 +1517,7 @@ int FINDCIRCUIT(L3MESSAGEBUFFER * L3MSG, TRANSPORTENTRY ** REQL4, int * NewIndex
 		{
 			if (L4->FARID == L3MSG->L4ID && L4->FARINDEX == L3MSG->L4INDEX)
 			{
-				// Found it
+				/* Found it */
 				
 				*REQL4 = L4;
 				return TRUE;
@@ -1527,7 +1527,7 @@ int FINDCIRCUIT(L3MESSAGEBUFFER * L3MSG, TRANSPORTENTRY ** REQL4, int * NewIndex
 		Index++;
 	}
 
-	//	ENTRY NOT FOUND - FIRSTSPARE HAS FIRST FREE ENTRY, OR ZERO IF TABLE FULL
+	/*	ENTRY NOT FOUND - FIRSTSPARE HAS FIRST FREE ENTRY, OR ZERO IF TABLE FULL */
 
 	*REQL4 = FIRSTSPARE;
 	return FALSE;
@@ -1535,7 +1535,7 @@ int FINDCIRCUIT(L3MESSAGEBUFFER * L3MSG, TRANSPORTENTRY ** REQL4, int * NewIndex
 
 VOID L3SWAPADDRESSES(L3MESSAGEBUFFER * L3MSG)
 {
-	//	EXCHANGE ORIGIN AND DEST
+	/*	EXCHANGE ORIGIN AND DEST */
 
 	char Temp[7];
 
@@ -1543,15 +1543,15 @@ VOID L3SWAPADDRESSES(L3MESSAGEBUFFER * L3MSG)
 	memcpy(L3MSG->L3SRCE, L3MSG->L3DEST, 7);
 	memcpy(L3MSG->L3DEST, Temp, 7);
 
-	L3MSG->L3DEST[6] &= 0x1E;		// Mack EOA and CMD
+	L3MSG->L3DEST[6] &= 0x1E;		/* Mack EOA and CMD */
 	L3MSG->L3SRCE[6] &= 0x1E;
-	L3MSG->L3SRCE[6] |= 1;			// Set Last Call
+	L3MSG->L3SRCE[6] |= 1;			/* Set Last Call */
 }
 
 VOID SendConNAK(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG)
 {
-	L3MSG->L4FLAGS = L4CACK | L4BUSY;			// REJECT
-	L3MSG->L4DATA[0] = 0;						// WINDOW
+	L3MSG->L4FLAGS = L4CACK | L4BUSY;			/* REJECT */
+	L3MSG->L4DATA[0] = 0;						/* WINDOW */
 
 	L3SWAPADDRESSES(L3MSG);	
 	L3MSG->L3TTL = L3LIVES;
@@ -1563,18 +1563,18 @@ VOID SETUPNEWCIRCUIT(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG,
 					 TRANSPORTENTRY * L4, char * BPQPARAMS, int ApplMask, int * BPQNODE)
 {
 	struct DEST_LIST * DEST;
-	int Maxtries = 2;					// Just in case
+	int Maxtries = 2;					/* Just in case */
 
 	L4->FARINDEX = L3MSG->L4INDEX;
 	L4->FARID = L3MSG->L4ID;
 
-	// Index set by caller
+	/* Index set by caller */
 
 	L4->CIRCUITID = NEXTID;
 
 	NEXTID++;
 		if (NEXTID == 0)
-			NEXTID++;								// kEEP nON-ZERO
+			NEXTID++;								/* kEEP nON-ZERO */
 
 	L4->SESSIONT1 = L4T1;
 	
@@ -1583,19 +1583,19 @@ VOID SETUPNEWCIRCUIT(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG,
 	if (L3MSG->L4DATA[0] > L4DEFAULTWINDOW)
 		L4->L4WINDOW = L3MSG->L4DATA[0];
 		
-	memcpy(L4->L4USER, &L3MSG->L4DATA[1], 7);		// Originator's call from Call Request
+	memcpy(L4->L4USER, &L3MSG->L4DATA[1], 7);		/* Originator's call from Call Request */
 	
 	if (ApplMask)
 	{
-		// Should get APPLCALL if set ( maybe ???????????????
+		/* Should get APPLCALL if set ( maybe ??????????????? */
 	}
 
-//	MOV	ESI,APPLCALLTABLEPTR
-//	LEA	ESI,APPLCALL[ESI]
+/*	MOV	ESI,APPLCALLTABLEPTR */
+/*	LEA	ESI,APPLCALL[ESI] */
 
 	memcpy(L4->L4MYCALL, MYCALL, 7);
 
-	//	GET BPQ EXTENDED CONNECT PARAMS IF PRESENT
+	/*	GET BPQ EXTENDED CONNECT PARAMS IF PRESENT */
 
 	if (L3MSG->LENGTH  == MSGHDDRLEN + 38 || L3MSG->LENGTH  == MSGHDDRLEN + 39)
 	{
@@ -1618,11 +1618,11 @@ TryAgain:
 		struct DEST_LIST * WorstDest = NULL;
 		int n = MAXDESTS;
 
-		//	Node not it table and table full
+		/*	Node not it table and table full */
 
-		//	Replace worst quality node with session counts of zero
+		/*	Replace worst quality node with session counts of zero */
 
-		//	But could have been excluded, so check
+		/*	But could have been excluded, so check */
 
 		if (CheckExcludeList(L3MSG->L3SRCE) == 0)
 			return;
@@ -1631,7 +1631,7 @@ TryAgain:
 
 		while (n--)
 		{
-			if (DEST->DEST_COUNT == 0 && DEST->DEST_RTT == 0)		// Not used and not INP3
+			if (DEST->DEST_COUNT == 0 && DEST->DEST_RTT == 0)		/* Not used and not INP3 */
 			{
 				if (DEST->NRROUTE[0].ROUT_QUALITY < WorstQual)
 				{
@@ -1646,10 +1646,10 @@ TryAgain:
 		{
 			REMOVENODE(WorstDest);
 			if (Maxtries--)
-				goto TryAgain;			// We now have a spare (but protect against loop if something amiss)
+				goto TryAgain;			/* We now have a spare (but protect against loop if something amiss) */
 		}
 
-		// Nothing to delete, so just ignore connect
+		/* Nothing to delete, so just ignore connect */
 
 		return;
 	}
@@ -1658,7 +1658,7 @@ TryAgain:
 	{	
 		SHORT T1;
 		
-		DEST->DEST_STATE |= 0x40;			// SET BPQ _NODE BIT
+		DEST->DEST_STATE |= 0x40;			/* SET BPQ _NODE BIT */
 		memcpy((char *)&T1, BPQPARAMS, 2);
 
 		if (T1 > 300)
@@ -1667,19 +1667,19 @@ TryAgain:
 			L4->SESSIONT1 = T1;
 	}
 	else
-		L4->SESSIONT1 = L4T1;			// DEFAULT TIMEOUT
+		L4->SESSIONT1 = L4T1;			/* DEFAULT TIMEOUT */
 	
-	L4->SESSPACLEN = PACLEN;			// DEFAULT
+	L4->SESSPACLEN = PACLEN;			/* DEFAULT */
 }
 
 
 int CHECKIFBUSYL4(TRANSPORTENTRY * L4)
 {
-	//	RETURN TOP BIT OF AL SET IF SESSION PARTNER IS BUSY
+	/*	RETURN TOP BIT OF AL SET IF SESSION PARTNER IS BUSY */
 
 	int Count;
 
-	if (L4->L4CROSSLINK)		// CONNECTED?
+	if (L4->L4CROSSLINK)		/* CONNECTED? */
 		Count = CountFramesQueuedOnSession(L4->L4CROSSLINK);
 	else
 		Count = CountFramesQueuedOnSession(L4);
@@ -1692,7 +1692,7 @@ int CHECKIFBUSYL4(TRANSPORTENTRY * L4)
 
 VOID FRAMEFORUS(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG, int ApplMask, UCHAR * ApplCall)
 {
-	//	INTERNODE LINK
+	/*	INTERNODE LINK */
 
 	TRANSPORTENTRY * L4;
 	struct DEST_LIST * DEST;
@@ -1716,8 +1716,8 @@ VOID FRAMEFORUS(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG, int ApplMask,
 	{
 	case 0:
 
-		//	OPCODE 0 is used for a variety of functions, using L4INDEX and L4ID as qualifiers
-		//	0c0c is used for IP
+		/*	OPCODE 0 is used for a variety of functions, using L4INDEX and L4ID as qualifiers */
+		/*	0c0c is used for IP */
 
 		if (L3MSG->L4ID == 0x0C && L3MSG->L4INDEX == 0x0C)
 		{
@@ -1725,7 +1725,7 @@ VOID FRAMEFORUS(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG, int ApplMask,
 			return;
 		}
 
-		//	 00 01 Seesm to be Netrom Record Route
+		/*	 00 01 Seesm to be Netrom Record Route */
 
 		if (L3MSG->L4ID == 1 && L3MSG->L4INDEX == 0)
 		{
@@ -1742,7 +1742,7 @@ VOID FRAMEFORUS(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG, int ApplMask,
 		return;
 	}
 		
-	//	OTHERS NEED A SESSION
+	/*	OTHERS NEED A SESSION */
 
 	L4 = &L4TABLE[L3MSG->L4INDEX];
 
@@ -1754,49 +1754,49 @@ VOID FRAMEFORUS(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG, int ApplMask,
 
 	if ((L4->L4CIRCUITTYPE & SESSION) == 0)
 	{
-		// Not an L4 Session - must be an old connection
+		/* Not an L4 Session - must be an old connection */
 
 		ReleaseBuffer(L3MSG);
 		return;
 	}
 
-	//	HAVE FOUND CORRECT SESSION ENTRY
+	/*	HAVE FOUND CORRECT SESSION ENTRY */
 
 	switch (Opcode)
 	{
 	case L4CACK:
 
-		//	CONNECT ACK
+		/*	CONNECT ACK */
 	
 		DEST = L4->L4TARGET.DEST;
 	
-		//	EXTRACT EXTENDED PARAMS IF PRESENT
+		/*	EXTRACT EXTENDED PARAMS IF PRESENT */
 
-		if (L3MSG->LENGTH > MSGHDDRLEN + 22)		// Standard Msg
+		if (L3MSG->LENGTH > MSGHDDRLEN + 22)		/* Standard Msg */
 		{
 			DEST->DEST_STATE &= 0x80;
-			DEST->DEST_STATE |= (L3MSG->L4DATA[1] - L3MSG->L3TTL) + 0x41; // Hops to dest + x40
+			DEST->DEST_STATE |= (L3MSG->L4DATA[1] - L3MSG->L3TTL) + 0x41; /* Hops to dest + x40 */
 		}
 
 		Partner = L4->L4CROSSLINK;
 
 		if (L3MSG->L4FLAGS & L4BUSY)
 		{
-			// Refused
+			/* Refused */
 
 			CLEARSESSIONENTRY(L4);
 			if (Partner)
-				Partner->L4CROSSLINK = NULL;	// CLEAR CROSSLINK
+				Partner->L4CROSSLINK = NULL;	/* CLEAR CROSSLINK */
 
 			strcpy(ReplyText, "Busy from");
 		}
 		else
 		{
-			// Connect OK
+			/* Connect OK */
 
 			if (L4->L4STATE == 5)
 			{
-				// MUST BE REPEAT MSG - DISCARD
+				/* MUST BE REPEAT MSG - DISCARD */
 
 				ReleaseBuffer(L3MSG);
 				return;
@@ -1805,7 +1805,7 @@ VOID FRAMEFORUS(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG, int ApplMask,
 			L4->FARINDEX = L3MSG->L4TXNO;
 			L4->FARID = L3MSG->L4RXNO;
 
-			L4->L4STATE = 5;			// ACTIVE
+			L4->L4STATE = 5;			/* ACTIVE */
 			L4->L4TIMER = 0;
 			L4->L4RETRIES = 0;
 
@@ -1820,12 +1820,12 @@ VOID FRAMEFORUS(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG, int ApplMask,
 			return;
 		}
 
-		Msg = (PDATAMESSAGE)L3MSG;					// reuse input buffer
+		Msg = (PDATAMESSAGE)L3MSG;					/* reuse input buffer */
 
 		Msg->PID = 0xf0;
 		ptr1 = SetupNodeHeader(Msg);
 
-		Nodename[DecodeNodeName(DEST->DEST_CALL, Nodename)] = 0;		// null terminate
+		Nodename[DecodeNodeName(DEST->DEST_CALL, Nodename)] = 0;		/* null terminate */
 
 		ptr1 += sprintf(ptr1, "%s %s\r", ReplyText, Nodename);
 
@@ -1838,14 +1838,14 @@ VOID FRAMEFORUS(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG, int ApplMask,
 
 	case L4DREQ:
 
-		// DISCONNECT REQUEST
+		/* DISCONNECT REQUEST */
 
 		 L3MSG->L4INDEX = L4->FARINDEX;
 		 L3MSG->L4ID = L4->FARID;
 		 
 		 L3MSG->L4FLAGS = L4DACK;
 
-		 L3SWAPADDRESSES(L3MSG);				// EXCHANGE SOURCE AND DEST
+		 L3SWAPADDRESSES(L3MSG);				/* EXCHANGE SOURCE AND DEST */
 		 L3MSG->L3TTL = L3LIVES;
 
 		TNC = LINK->LINKPORT->TNC;
@@ -1855,7 +1855,7 @@ VOID FRAMEFORUS(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG, int ApplMask,
 		else
 			C_Q_ADD(&LINK->TX_Q, L3MSG);
 
-		 CloseSessionPartner(L4);				// SEND CLOSE TO PARTNER (IF PRESENT)
+		 CloseSessionPartner(L4);				/* SEND CLOSE TO PARTNER (IF PRESENT) */
 		 return;
 	
 	case L4DACK:
@@ -1866,17 +1866,17 @@ VOID FRAMEFORUS(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG, int ApplMask,
 
 	case L4INFO:
 
-		//MAKE SURE SESSION IS UP - FIRST I FRAME COULD ARRIVE BEFORE CONNECT ACK
+		/*MAKE SURE SESSION IS UP - FIRST I FRAME COULD ARRIVE BEFORE CONNECT ACK */
 
 		if (L4->L4STATE == 2)
 		{
-			ReleaseBuffer(L3MSG);		// SHOULD SAVE - WILL AVOID NEED TO RETRANSMIT
+			ReleaseBuffer(L3MSG);		/* SHOULD SAVE - WILL AVOID NEED TO RETRANSMIT */
 			return;	
 		}
 
 		ACKFRAMES(L3MSG, L4, L3MSG->L4RXNO);
 
-		//	If DISCPENDING or STATE IS 4, THEN SESSION IS CLOSING - IGNORE ANY I FRAMES
+		/*	If DISCPENDING or STATE IS 4, THEN SESSION IS CLOSING - IGNORE ANY I FRAMES */
 
 		if ((L4->FLAGS & DISCPENDING) || L4->L4STATE == 4)
 		{
@@ -1884,18 +1884,18 @@ VOID FRAMEFORUS(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG, int ApplMask,
 			return;
 		} 
 
-		// CHECK RECEIVED SEQUENCE
+		/* CHECK RECEIVED SEQUENCE */
 
-		FramesMissing = L3MSG->L4TXNO - L4->RXSEQNO;	// WHAT WE GOT -  WHAT WE WANT
+		FramesMissing = L3MSG->L4TXNO - L4->RXSEQNO;	/* WHAT WE GOT -  WHAT WE WANT */
 
 		if (FramesMissing > 128)
 			FramesMissing -= 256;
 
-		// if NUMBER OF FRAMES MISSING is  -VE, THEN IN FACT IT	INDICATES A REPEAT
+		/* if NUMBER OF FRAMES MISSING is  -VE, THEN IN FACT IT	INDICATES A REPEAT */
 
 		if (FramesMissing < 0)
 		{
-			// FRAME IS A REPEAT
+			/* FRAME IS A REPEAT */
 
 			Call[ConvFromAX25(L3MSG->L3SRCE, Call)] = 0;
 			Debugprintf("Discarding repeated frame seq %d from %s", L3MSG->L4TXNO, Call);
@@ -1907,14 +1907,14 @@ VOID FRAMEFORUS(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG, int ApplMask,
 		
 		if (FramesMissing > 0)
 		{
-			//	EXPECTED FRAME HAS BEEN MISSED - ASK FOR IT AGAIN,
-			//	AND KEEP THIS FRAME UNTIL MISSING ONE ARRIVES
+			/*	EXPECTED FRAME HAS BEEN MISSED - ASK FOR IT AGAIN, */
+			/*	AND KEEP THIS FRAME UNTIL MISSING ONE ARRIVES */
 
-			L4->NAKBITS |= L4NAK;			// SET NAK REQUIRED
+			L4->NAKBITS |= L4NAK;			/* SET NAK REQUIRED */
 	
-			SENDL4IACK(L4);			// SEND DATA ACK COMMAND TO ACK OUTSTANDING FRAMES
+			SENDL4IACK(L4);			/* SEND DATA ACK COMMAND TO ACK OUTSTANDING FRAMES */
 	
-			//	SEE IF WE ALREADY HAVE A COPY OF THIS ONE
+			/*	SEE IF WE ALREADY HAVE A COPY OF THIS ONE */
 /*
 			Saved = L4->L4RESEQ_Q;
 
@@ -1940,7 +1940,7 @@ VOID FRAMEFORUS(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * L3MSG, int ApplMask,
 */
 		}
 
-		// Frame is OK
+		/* Frame is OK */
 
 L4INFO_OK:
 
@@ -1950,31 +1950,31 @@ L4INFO_OK:
 			return;
 		}
 
-		L4->NAKBITS &= ~L4NAK;				// CLEAR MESSAGE LOST STATE
+		L4->NAKBITS &= ~L4NAK;				/* CLEAR MESSAGE LOST STATE */
 
 		L4->RXSEQNO++;
 	
-		//	REMOVE HEADERS, AND QUEUE INFO 
+		/*	REMOVE HEADERS, AND QUEUE INFO  */
 
-		L3MSG->LENGTH -= 20;				// L3/L4 Header
+		L3MSG->LENGTH -= 20;				/* L3/L4 Header */
 
-		if (L3MSG->LENGTH < (4 + sizeof(void *)))	// No PID
+		if (L3MSG->LENGTH < (4 + sizeof(void *)))	/* No PID */
 		{					
 			ReleaseBuffer(L3MSG);
 			return;
 		}
 
-		L3MSG->L3PID = 0xF0;				// Normal Data PID
+		L3MSG->L3PID = 0xF0;				/* Normal Data PID */
 
 		memmove(L3MSG->L3SRCE, L3MSG->L4DATA, L3MSG->LENGTH - (4 + sizeof(void *)));
 
 		REFRESHROUTE(L4);
 
-		L4->L4ACKREQ = L4DELAY;				// SEND INFO ACK AFTER L4DELAY (UNLESS I FRAME SENT) 
+		L4->L4ACKREQ = L4DELAY;				/* SEND INFO ACK AFTER L4DELAY (UNLESS I FRAME SENT)  */
 
-		IFRM150(L4, (PDATAMESSAGE)L3MSG);	// CHECK IF SETTING UP AND PASS ON
+		IFRM150(L4, (PDATAMESSAGE)L3MSG);	/* CHECK IF SETTING UP AND PASS ON */
 
-		// See if anything on reseq Q to process
+		/* See if anything on reseq Q to process */
 
 		if (L4->L4RESEQ_Q == 0)
 			return;
@@ -1984,13 +1984,13 @@ L4INFO_OK:
 
 		while (Saved)
 		{
-			if (Saved->L4TXNO == L4->RXSEQNO)		// The one we want
+			if (Saved->L4TXNO == L4->RXSEQNO)		/* The one we want */
 			{
-				// REMOVE IT FROM QUEUE,AND PROCESS IT
+				/* REMOVE IT FROM QUEUE,AND PROCESS IT */
 
-				*Prev = Saved->Next;		// CHAIN  NEXT IN CHAIN TO PREVIOUS
+				*Prev = Saved->Next;		/* CHAIN  NEXT IN CHAIN TO PREVIOUS */
 
-				OLDFRAMES++;			// COUNT FOR STATS
+				OLDFRAMES++;			/* COUNT FOR STATS */
 	
 				L3MSG = Saved;
 				Debugprintf("Processing Saved Message %d Address %x", L4->RXSEQNO, L3MSG);
@@ -2010,10 +2010,10 @@ L4INFO_OK:
 		ACKFRAMES(L3MSG, L4, L3MSG->L4RXNO);
 		REFRESHROUTE(L4);
 
-		// Drop Through
+		/* Drop Through */
 	}
 
-	// Unrecognised - Ignore
+	/* Unrecognised - Ignore */
 
 	ReleaseBuffer(L3MSG);
 	return;
@@ -2022,8 +2022,8 @@ L4INFO_OK:
 
 VOID ACKFRAMES(L3MESSAGEBUFFER * L3MSG, TRANSPORTENTRY * L4, int NR)
 {
-	//	SEE HOW MANY FRAMES ARE ACKED - IF NEGATIVE, THAN THIS MUST BE A
-	//	DELAYED REPEAT OF AN ACK ALREADY PROCESSED
+	/*	SEE HOW MANY FRAMES ARE ACKED - IF NEGATIVE, THAN THIS MUST BE A */
+	/*	DELAYED REPEAT OF AN ACK ALREADY PROCESSED */
 
 	int Count = NR - L4->L4WS;
 	L3MESSAGEBUFFER * Saved;
@@ -2038,29 +2038,29 @@ VOID ACKFRAMES(L3MESSAGEBUFFER * L3MSG, TRANSPORTENTRY * L4, int NR)
 
 	if (Count < 0)
 	{
-		//	THIS MAY BE A DELAYED REPEAT OF AN ACK ALREADY PROCESSED
+		/*	THIS MAY BE A DELAYED REPEAT OF AN ACK ALREADY PROCESSED */
 
-		return;				// IGNORE COMPLETELY
+		return;				/* IGNORE COMPLETELY */
 	}
 
 	while (Count > 0)
 	{
-		// new ACK
+		/* new ACK */
 
-		//	FRAME L4WS HAS BEED ACKED - IT SHOULD BE FIRST ON HOLD QUEUE
+		/*	FRAME L4WS HAS BEED ACKED - IT SHOULD BE FIRST ON HOLD QUEUE */
 
 		Saved = Q_REM((void *)&L4->L4HOLD_Q);
 
 		if (Saved)
 			ReleaseBuffer(Saved);
 
-		//	CHECK RTT SEQUENCE
+		/*	CHECK RTT SEQUENCE */
 
 		if (L4->L4WS == L4->RTT_SEQ)
 		{
 			if (L4->RTT_TIMER)
 			{
-				//	FRAME BEING TIMED HAS BEEN ACKED - UPDATE DEST RTT TIMER
+				/*	FRAME BEING TIMED HAS BEEN ACKED - UPDATE DEST RTT TIMER */
 				
 				DEST = L4->L4TARGET.DEST;
 				
@@ -2069,7 +2069,7 @@ VOID ACKFRAMES(L3MESSAGEBUFFER * L3MSG, TRANSPORTENTRY * L4, int NR)
 				if (DEST->DEST_RTT == 0)
 					DEST->DEST_RTT = RTT;
 				else
-					DEST->DEST_RTT = ((DEST->DEST_RTT * 9) + RTT) /10;	// 90% Old + New
+					DEST->DEST_RTT = ((DEST->DEST_RTT * 9) + RTT) /10;	/* 90% Old + New */
 			}
 		}
 
@@ -2082,36 +2082,36 @@ VOID ACKFRAMES(L3MESSAGEBUFFER * L3MSG, TRANSPORTENTRY * L4, int NR)
 
 	if (NR != L4->TXSEQNO)
 	{
-		// Not all Acked
+		/* Not all Acked */
 
-		L4->L4TIMER = L4->SESSIONT1;	// RESTART TIMER
+		L4->L4TIMER = L4->SESSIONT1;	/* RESTART TIMER */
 	}
 	else
 	{
 		if ((L4->FLAGS & DISCPENDING) && L4->L4TX_Q == 0)
 		{
-			// All Acked and DISC Pending, so send it
+			/* All Acked and DISC Pending, so send it */
 		
 			SENDL4DISC(L4);
 			return;
 		}
 	}
 
-	//	SEE IF CHOKE SET
+	/*	SEE IF CHOKE SET */
 
 	L4->FLAGS &= ~L4BUSY;
 		
 	if (L3MSG->L4FLAGS & L4BUSY)
 	{
-		L4->FLAGS |= L3MSG->L4FLAGS & L4BUSY;		// Get Busy flag from message
+		L4->FLAGS |= L3MSG->L4FLAGS & L4BUSY;		/* Get Busy flag from message */
 
 		if ((L3MSG->L4FLAGS & L4NAK) == 0)
-			return;						// Dont send while biust unless NAC received
+			return;						/* Dont send while biust unless NAC received */
 	}
 
 	if (L3MSG->L4FLAGS & L4NAK)
 	{
-		//	RETRANSMIT REQUESTED MESSAGE - WILL BE FIRST ON HOLD QUEUE
+		/*	RETRANSMIT REQUESTED MESSAGE - WILL BE FIRST ON HOLD QUEUE */
 
 		Msg = L4->L4HOLD_Q;
 		
@@ -2147,7 +2147,7 @@ VOID ACKFRAMES(L3MESSAGEBUFFER * L3MSG, TRANSPORTENTRY * L4, int NR)
 
 VOID SENDL4IACK(TRANSPORTENTRY * Session)
 {
-	//	SEND INFO ACK
+	/*	SEND INFO ACK */
 
 	PL3MESSAGEBUFFER MSG = (PL3MESSAGEBUFFER)GetBuff();
 	struct DEST_LIST * DEST = Session->L4TARGET.DEST;
@@ -2155,7 +2155,7 @@ VOID SENDL4IACK(TRANSPORTENTRY * Session)
 	if (MSG == NULL)
 		return;
 
-	MSG->L3PID = 0xCF;			// NET MESSAGE
+	MSG->L3PID = 0xCF;			/* NET MESSAGE */
 
 	memcpy(MSG->L3SRCE, Session->L4MYCALL, 7);
 	memcpy(MSG->L3DEST, DEST->DEST_CALL, 7);
@@ -2169,7 +2169,7 @@ VOID SENDL4IACK(TRANSPORTENTRY * Session)
 
 	
 	MSG->L4RXNO = Session->RXSEQNO;
-	Session->L4LASTACKED = Session->RXSEQNO;	// SAVE LAST NUMBER ACKED
+	Session->L4LASTACKED = Session->RXSEQNO;	/* SAVE LAST NUMBER ACKED */
 
 	MSG->L4FLAGS = L4IACK | GETBUSYBIT(Session) | Session->NAKBITS;
 

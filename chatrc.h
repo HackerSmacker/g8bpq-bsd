@@ -1,7 +1,7 @@
-//{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
-// Used by BPQChat.rc
-//
+/*{{NO_DEPENDENCIES}} */
+/* Microsoft Developer Studio generated include file. */
+/* Used by BPQChat.rc */
+/* */
 
 #define IDC_NODES 501
 #define IDC_USERS 502
@@ -196,8 +196,8 @@
 #define ID_HELP_ONLINEHELP              40021
 #define ID_ACTIONS_SENDMESSAGE          40022
 
-// Next default values for new objects
-// 
+/* Next default values for new objects */
+/*  */
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        30009

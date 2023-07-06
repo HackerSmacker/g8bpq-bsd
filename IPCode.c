@@ -18,30 +18,30 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
 
-// Module to provide a basic Gateway between IP over AX.25 and the Internet.
+/* Module to provide a basic Gateway between IP over AX.25 and the Internet. */
 
-// Uses WinPcap on Windows, TAP Driver on Linux
+/* Uses WinPcap on Windows, TAP Driver on Linux */
 
-// Basically operates as a mac level bridge, with headers converted between ax.25 and Ethernet.
-// ARP frames are also reformatted, and monitored to build a simple routing table.
-// Apps may not use ARP (MSYS is configured with an ax.25 default route, rather than an IP one),
-// so the default route must be configured. 
+/* Basically operates as a mac level bridge, with headers converted between ax.25 and Ethernet. */
+/* ARP frames are also reformatted, and monitored to build a simple routing table. */
+/* Apps may not use ARP (MSYS is configured with an ax.25 default route, rather than an IP one), */
+/* so the default route must be configured.  */
 
-// Intended as a gateway for legacy apps, rather than a full function ip over ax.25 router.
-// Suggested config is to use the Internet Ethernet Adapter, behind a NAT/PAT Router.
-// The ax.25 applications will appear as single addresses on the Ethernet LAN
+/* Intended as a gateway for legacy apps, rather than a full function ip over ax.25 router. */
+/* Suggested config is to use the Internet Ethernet Adapter, behind a NAT/PAT Router. */
+/* The ax.25 applications will appear as single addresses on the Ethernet LAN */
 
-// The code can also switch packets between ax.25 interfaces
+/* The code can also switch packets between ax.25 interfaces */
 
-// First Version, July 2008
+/* First Version, July 2008 */
 
-// Version 1.2.1 January 2009
+/* Version 1.2.1 January 2009 */
 
-//	Add IP Address Mapping option
+/*	Add IP Address Mapping option */
 
-//	June 2014. Convert to Router instead of MAC Bridge, and include a RIP44 decoder
-//	so packets can be routed from RF to/from encapsulated 44 net subnets.
-//	Routes may also be learned from received RF packets, or added from config file
+/*	June 2014. Convert to Router instead of MAC Bridge, and include a RIP44 decoder */
+/*	so packets can be routed from RF to/from encapsulated 44 net subnets. */
+/*	Routes may also be learned from received RF packets, or added from config file */
 
 /*
 TODo	?Multiple Adapters
@@ -72,7 +72,7 @@ TODo	?Multiple Adapters
 */
 
 
-//int _winver = 0x0600;
+/*int _winver = 0x0600; */
 
 #pragma data_seg("_BPQDATA")
 
@@ -91,7 +91,7 @@ TODo	?Multiple Adapters
 #define write _write
 #define close _close
 #include <iphlpapi.h>
-// Link with Iphlpapi.lib
+/* Link with Iphlpapi.lib */
 #pragma comment(lib, "IPHLPAPI.lib")
 #endif
 
@@ -104,7 +104,7 @@ int pcap_sendpacket(pcap_t *p, u_char *buf, int size);
 LRESULT CALLBACK ResWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 #endif
 
-//#define s_addr  S_un.S_addr
+/*#define s_addr  S_un.S_addr */
 
 extern BPQVECSTRUC * IPHOSTVECTORPTR;
 
@@ -135,15 +135,15 @@ int C_Q_ADD_NP(VOID *PQ, VOID *PBUFF);
 
 #define ARPTIMEOUT 3600
 
-//       ARP REQUEST (AX.25)
+/*       ARP REQUEST (AX.25) */
 
 AXARP AXARPREQMSG = {0};
 
-//		ARP REQUEST/REPLY (Eth)
+/*		ARP REQUEST/REPLY (Eth) */
 
 ETHARP ETHARPREQMSG = {0};
 
-ARPDATA ** ARPRecords = NULL;				// ARP Table - malloc'ed as needed
+ARPDATA ** ARPRecords = NULL;				/* ARP Table - malloc'ed as needed */
 
 int NumberofARPEntries = 0;
 
@@ -153,26 +153,26 @@ int NumberofRoutes = 0;
 
 time_t LastRIP44Msg = 0;
 
-//HANDLE hBPQNET = INVALID_HANDLE_VALUE;
+/*HANDLE hBPQNET = INVALID_HANDLE_VALUE; */
 
 uint32_t OurIPAddr = 0;
-char IPAddrText[20];			// Text form of Our Address
+char IPAddrText[20];			/* Text form of Our Address */
 
-uint32_t EncapAddr = INADDR_NONE;	// Virtual Host for IPIP PCAP Mode.
-char EncapAddrText[20];			// Text form of Our Address
+uint32_t EncapAddr = INADDR_NONE;	/* Virtual Host for IPIP PCAP Mode. */
+char EncapAddrText[20];			/* Text form of Our Address */
 
-UCHAR RouterMac[6] = {0};		// Mac Address of our Internet Gateway.
+UCHAR RouterMac[6] = {0};		/* Mac Address of our Internet Gateway. */
 
-//uint32_t HostIPAddr = INADDR_NONE;	// Makes more sense to use same addr for host
+/*uint32_t HostIPAddr = INADDR_NONE;	// Makes more sense to use same addr for host */
 
-uint32_t HostNATAddr = INADDR_NONE;	// LAN address (not 44 net) of our host
+uint32_t HostNATAddr = INADDR_NONE;	/* LAN address (not 44 net) of our host */
 char HostNATAddrText[20];
 
 uint32_t OurNetMask = 0xffffffff;
 
 BOOL WantTAP = FALSE;
-BOOL WantEncap = 0;				// Run RIP44 and Net44 Encap
-BOOL NoDefaultRoute = FALSE;	// Don't add route to 44/8
+BOOL WantEncap = 0;				/* Run RIP44 and Net44 Encap */
+BOOL NoDefaultRoute = FALSE;	/* Don't add route to 44/8 */
 
 int WantUDPTunnel = 0;
 
@@ -182,9 +182,9 @@ SOCKET UDPSendSock = 0;
 BOOL UDPEncap = FALSE;
 
 BOOL IPv6 = FALSE;
-int UDPPort = 4473;			// RX Port, Send on +1
+int UDPPort = 4473;			/* RX Port, Send on +1 */
 
-BOOL BPQSNMP = FALSE;		// If set process SNMP in BPQ, else pass to host
+BOOL BPQSNMP = FALSE;		/* If set process SNMP in BPQ, else pass to host */
 
 int IPTTL = 128;
 
@@ -204,26 +204,26 @@ static int nat_table_len = 0;
 static struct nat_table_entry nat_table[MAX_ENTRIES];
 
 
-uint32_t UCSD44 = 0;		// RIP SOurce - Normally 44.0.0.1
+uint32_t UCSD44 = 0;		/* RIP SOurce - Normally 44.0.0.1 */
 
-// Following two fields used by stats to get round shared memmory problem
+/* Following two fields used by stats to get round shared memmory problem */
 
 ARPDATA Arp={0};
 int ARPFlag = -1;
 
-// Following Buffer is used for msgs from WinPcap. Put the Enet message part way down the buffer, 
-//	so there is room for ax.25 header instead of Enet header when we route the frame to ax.25
-//	Enet Header ia 14 bytes, AX.25 UI is 16
+/* Following Buffer is used for msgs from WinPcap. Put the Enet message part way down the buffer,  */
+/*	so there is room for ax.25 header instead of Enet header when we route the frame to ax.25 */
+/*	Enet Header ia 14 bytes, AX.25 UI is 16 */
 
-// Also used to reassemble NOS Fragmented ax.25 packets
+/* Also used to reassemble NOS Fragmented ax.25 packets */
 
 static UCHAR Buffer[4096] = {0};
 
-#define EthOffset 30				// Should be plenty
+#define EthOffset 30				/* Should be plenty */
 
 DWORD IPLen = 0;
 
-UCHAR QST[7]={'Q'+'Q','S'+'S','T'+'T',0x40,0x40,0x40,0xe0};		//QST IN AX25
+UCHAR QST[7]={'Q'+'Q','S'+'S','T'+'T',0x40,0x40,0x40,0xe0};		/*QST IN AX25 */
 
 #ifdef WIN32
 UCHAR ourMACAddr[6] = {02,'B','P','Q',2,2};
@@ -244,23 +244,23 @@ char IPRFN[MAX_PATH];
 
 HANDLE handle;
 
-//#ifdef WIN32
+/*#ifdef WIN32 */
 pcap_t *adhandle = 0;
 pcap_t * (FAR * pcap_open_livex)(const char *, int, int, int, char *);
 
 int pcap_reopen_delay;
-//#endif
+/*#endif */
 
 static char Adapter[256];
 
-int Promiscuous = 1;			// Default to Promiscuous
+int Promiscuous = 1;			/* Default to Promiscuous */
 
 #ifdef WIN32
 
 HINSTANCE PcapDriver=0;
 
 typedef void * (FAR *FARPROCX)();
-typedef int (FAR *FARPROCI)();		// Routines that return int
+typedef int (FAR *FARPROCI)();		/* Routines that return int */
 
 int (FAR * pcap_sendpacketx)();
 
@@ -294,17 +294,17 @@ FARPROCI GetAddressI(char * Proc);
 
 VOID __cdecl Debugprintf(const char * format, ...);
 
-// Out Address Space (now only have lower 3/4 of 44 net)
+/* Out Address Space (now only have lower 3/4 of 44 net) */
 
-DWORD Lower44;			// 44.0 to 44.127
-DWORD Upper44 ;			// 44.128 to 44.191
+DWORD Lower44;			/* 44.0 to 44.127 */
+DWORD Upper44 ;			/* 44.128 to 44.191 */
 DWORD Lower44Mask;
 DWORD Upper44Mask;
 
 
 #ifdef WIN32
 
-// Routine to check if a route to 44.0.0.0/9 exists and points to us
+/* Routine to check if a route to 44.0.0.0/9 exists and points to us */
 
 BOOL Check44Route(int Interface)
 {
@@ -315,7 +315,7 @@ BOOL Check44Route(int Interface)
 	int gotLower = 0;
 	int gotUpper = 0;
 
-	//	First call gets the required size
+	/*	First call gets the required size */
 
 	n = GetIpForwardTable(pIpForwardTable, &Size, FALSE);
 
@@ -324,7 +324,7 @@ BOOL Check44Route(int Interface)
 	n  = GetIpForwardTable(pIpForwardTable, &Size, FALSE);
 
 	if (n)
-		return FALSE;			// Couldnt read table
+		return FALSE;			/* Couldnt read table */
 
 	Row = pIpForwardTable->table;
 
@@ -351,11 +351,11 @@ BOOL Check44Route(int Interface)
 
 BOOL Setup44Route(int Interface, char * Gateway)
 {
-	//	Better just to call route.exe, so we can set -p flag and use runas
+	/*	Better just to call route.exe, so we can set -p flag and use runas */
 
 	char Params[256];
 
-	// delete old 44/8 route
+	/* delete old 44/8 route */
 
 	sprintf(Params, " -delete 44.0.0.0/8");
 	ShellExecute(NULL, "runas", "c:\\windows\\system32\\route.exe", Params, NULL, SW_SHOWNORMAL); 
@@ -501,15 +501,15 @@ Dll BOOL APIENTRY Init_IP()
 	}
 
 	Lower44 = inet_addr("44.0.0.0");
-	Upper44 = inet_addr("44.128.0.0");			// Loer Half
-	Lower44Mask = inet_addr("255.128.0.0");		// 44.128 to 44.192
+	Upper44 = inet_addr("44.128.0.0");			/* Loer Half */
+	Lower44Mask = inet_addr("255.128.0.0");		/* 44.128 to 44.192 */
 	Upper44Mask = inet_addr("255.192.0.0");
 
 
 	
-	//	Clear fields in case of restart
+	/*	Clear fields in case of restart */
 
-	ARPRecords = NULL;				// ARP Table - malloc'ed as needed
+	ARPRecords = NULL;				/* ARP Table - malloc'ed as needed */
 	NumberofARPEntries=0;
 
 	RouteRecords = NULL;
@@ -521,20 +521,20 @@ Dll BOOL APIENTRY Init_IP()
 
 	ourMACAddr[5] = (UCHAR)(OurIPAddr >> 24) & 255;
 	
-	// Clear old packets
+	/* Clear old packets */
 
-	IPHOSTVECTORPTR->HOSTAPPLFLAGS = 0x80;			// Request IP frames from Node
+	IPHOSTVECTORPTR->HOSTAPPLFLAGS = 0x80;			/* Request IP frames from Node */
 
-	// Set up static fields in ARP messages
+	/* Set up static fields in ARP messages */
 
-	AXARPREQMSG.HWTYPE=0x0300;				//	AX25
+	AXARPREQMSG.HWTYPE=0x0300;				/*	AX25 */
 	memcpy(AXARPREQMSG.MSGHDDR.DEST, QST, 7);
 	memcpy(AXARPREQMSG.MSGHDDR.ORIGIN, MYCALL, 7);
-	AXARPREQMSG.MSGHDDR.ORIGIN[6] |= 1;		// Set End of Call
-	AXARPREQMSG.MSGHDDR.PID = 0xcd;			// ARP
-	AXARPREQMSG.MSGHDDR.CTL = 03;			// UI
+	AXARPREQMSG.MSGHDDR.ORIGIN[6] |= 1;		/* Set End of Call */
+	AXARPREQMSG.MSGHDDR.PID = 0xcd;			/* ARP */
+	AXARPREQMSG.MSGHDDR.CTL = 03;			/* UI */
 
-	AXARPREQMSG.PID=0xcc00;					// TYPE
+	AXARPREQMSG.PID=0xcc00;					/* TYPE */
 	AXARPREQMSG.HWTYPE=0x0300;	
 	AXARPREQMSG.HWADDRLEN = 7;
 	AXARPREQMSG.IPADDRLEN = 4;
@@ -544,14 +544,14 @@ Dll BOOL APIENTRY Init_IP()
 
 	memset(ETHARPREQMSG.MSGHDDR.DEST, 255, 6);
 	memcpy(ETHARPREQMSG.MSGHDDR.SOURCE, ourMACAddr, 6);
-	ETHARPREQMSG.MSGHDDR.ETYPE = 0x0608;			// ARP
+	ETHARPREQMSG.MSGHDDR.ETYPE = 0x0608;			/* ARP */
 
-	ETHARPREQMSG.HWTYPE=0x0100;				//	Eth
+	ETHARPREQMSG.HWTYPE=0x0100;				/*	Eth */
 	ETHARPREQMSG.PID=0x0008;	
 	ETHARPREQMSG.HWADDRLEN = 6;
 	ETHARPREQMSG.IPADDRLEN = 4;
 
-//#ifdef WIN32
+/*#ifdef WIN32 */
 
 	if (Adapter[0] == 0)
 		return FALSE;
@@ -559,9 +559,9 @@ Dll BOOL APIENTRY Init_IP()
 	if (GetPCAP() == FALSE)
 		return FALSE;
 
-	// on Windows create a NAT entry for IPADDR.
-	// on linux enable the TAP device (on Linux you can't use pcap to talk to 
-	// the local host, whereas on Windows you can.
+	/* on Windows create a NAT entry for IPADDR. */
+	/* on linux enable the TAP device (on Linux you can't use pcap to talk to  */
+	/* the local host, whereas on Windows you can. */
 
 #ifndef MACBPQ
 #ifndef FREEBSD
@@ -570,11 +570,13 @@ Dll BOOL APIENTRY Init_IP()
 		char Line[80];
 		char ErrBuf[256];
 
-		// Find IP Addr of Adapter Interface
-		
-		pcap_findalldevsx(&ifs, ErrBuf);	
+		/* Find IP Addr of Adapter Interface */
 
-		saveifs = ifs;		// Save for release
+#ifndef NOPCAP
+		pcap_findalldevsx(&ifs, ErrBuf);	
+#endif
+
+		saveifs = ifs;		/* Save for release */
 
 		while (ifs)
 		{
@@ -608,16 +610,16 @@ Dll BOOL APIENTRY Init_IP()
 						(UCHAR)address->addr->sa_data[5]);			
 			}
 			
-			//	We need to create a NAT entry.
+			/*	We need to create a NAT entry. */
 
-			//  For now do for both Windows and Linux
+			/*  For now do for both Windows and Linux */
 
 			sprintf(Line, "NAT %s %s", IPAddrText, HostNATAddrText);
 			Debugprintf("Generated NAT %s\n", Line);
 			ProcessLine(Line);
 #ifdef WIN32
 #else
-			// Linux, need TAP
+			/* Linux, need TAP */
 
 			WantTAP = TRUE;
 
@@ -627,10 +629,10 @@ Dll BOOL APIENTRY Init_IP()
 				
 #endif
 #endif
-    //
-    // Open PCAP Driver
+    /* */
+    /* Open PCAP Driver */
 
-	if (Adapter[0])					// Don't have to have ethernet, if used just as ip over ax.25 switch 
+	if (Adapter[0])					/* Don't have to have ethernet, if used just as ip over ax.25 switch  */
 	{
 		char buf[80];
 
@@ -648,15 +650,15 @@ Dll BOOL APIENTRY Init_IP()
 		} 
 	}
 
-//#else
+/*#else */
 
-	// Linux - if TAP requested, open it
+	/* Linux - if TAP requested, open it */
 
 
 	ReadARP();
 	ReadIPRoutes();
 
-	// if we are running as Net44 encap, open a socket for IPIP
+	/* if we are running as Net44 encap, open a socket for IPIP */
 
 	if (WantUDPTunnel)
 	{
@@ -692,7 +694,7 @@ Dll BOOL APIENTRY Init_IP()
 
 #ifdef WIN32
 
-		// Find Interface number for PCAP Device
+		/* Find Interface number for PCAP Device */
 
 		{
 			UINT ulOutBufLen;
@@ -701,8 +703,8 @@ Dll BOOL APIENTRY Init_IP()
 			DWORD dwRetVal = 0;
 			int Interface = 0;
 
-			// Make an initial call to GetAdaptersInfo to get
-			// the necessary size into the ulOutBufLen variable
+			/* Make an initial call to GetAdaptersInfo to get */
+			/* the necessary size into the ulOutBufLen variable */
 
 			GetAdaptersInfo(NULL, &ulOutBufLen);
 
@@ -724,7 +726,7 @@ Dll BOOL APIENTRY Init_IP()
 			}
 			if (NoDefaultRoute == FALSE)
 			{
-				// Check Route to 44 and if not there add
+				/* Check Route to 44 and if not there add */
 
 				if (Check44Route(Interface))	
 					WritetoConsoleLocal("Route to 44/9 and 44.128/10 found\n");
@@ -757,7 +759,7 @@ Dll BOOL APIENTRY Init_IP()
 
 			if (EncapAddr != INADDR_NONE)
 			{
-				// Using Virtual Host on PCAP Adapter (Windows)
+				/* Using Virtual Host on PCAP Adapter (Windows) */
 
 				WritetoConsoleLocal("Net44 Tunnel opened on PCAP device\n");
 				WritetoConsoleLocal("IP Support Enabled\n");
@@ -766,7 +768,7 @@ Dll BOOL APIENTRY Init_IP()
 
 			if (UDPEncap)
 			{
-				// Open UDP Socket
+				/* Open UDP Socket */
 
 				if (IPv6)
 					EncapSock = socket(AF_INET6,SOCK_DGRAM,0);
@@ -777,7 +779,7 @@ Dll BOOL APIENTRY Init_IP()
 			}
 			else
 			{
-				// Open Raw Socket
+				/* Open Raw Socket */
 
 				EncapSock = socket(AF_INET, SOCK_RAW, 4);
 				sinx.sinx.sin_port = 0;
@@ -809,7 +811,7 @@ Dll BOOL APIENTRY Init_IP()
 
 				if (ret)
 				{
-					//	Bind Failed
+					/*	Bind Failed */
 
 					err = WSAGetLastError();
 					sprintf(Msg, "Bind Failed  for IPIP Encap socket - error code = %d\n", err);
@@ -833,7 +835,9 @@ VOID IPClose()
 	SaveIPRoutes();
 
 	if (adhandle)
+#ifndef NOPCAP
 		pcap_closex(adhandle);
+#endif
 	
 #ifdef LINBPQ
 	if (WantTAP && tap_fd)
@@ -857,9 +861,9 @@ Dll BOOL APIENTRY Poll_IP()
 	struct pcap_pkthdr *header;
 	const u_char *pkt_data;
 
-	// Entered every 100 mS
+	/* Entered every 100 mS */
 	
-	// if ARPFlag set, copy requested ARP record (For BPQStatus GUI)
+	/* if ARPFlag set, copy requested ARP record (For BPQStatus GUI) */
 
 	if (ARPFlag != -1)
 	{
@@ -878,11 +882,13 @@ Dll BOOL APIENTRY Poll_IP()
 
 Pollloop:
 
-//#ifdef WIN32
+/*#ifdef WIN32 */
 
 	if (adhandle)
 	{
+#ifndef NOPCAP
 		res = (int)pcap_next_exx(adhandle, &header, &pkt_data);
+#endif
 
 		if (res > 0)
 		{
@@ -890,7 +896,7 @@ Pollloop:
 			
 			if (header->len > 1514)
 			{
-//				Debugprintf("Ether Packet Len = %d", header->len);
+/*				Debugprintf("Ether Packet Len = %d", header->len); */
 				goto Pollloop;
 			}
 
@@ -899,8 +905,8 @@ Pollloop:
 			if (ethptr->ETYPE == 0x0008)
 			{
 				ProcessEthIPMsg((PETHMSG)&Buffer[EthOffset]);
-			//	PIPMSG ipptr = (PIPMSG)&Buffer[EthOffset+14];
-			//	ProcessIPMsg(ipptr, ethptr->SOURCE, 'E', 255);
+			/*	PIPMSG ipptr = (PIPMSG)&Buffer[EthOffset+14]; */
+			/*	ProcessIPMsg(ipptr, ethptr->SOURCE, 'E', 255); */
 				goto Pollloop;
 			}
 
@@ -910,7 +916,7 @@ Pollloop:
 				goto Pollloop;
 			}
 
-			// Ignore anything else
+			/* Ignore anything else */
 
 			goto Pollloop;
 		}
@@ -918,8 +924,10 @@ Pollloop:
 		{
 			if (res < 0)
 			{
+#ifndef NOPCAP
 				char * error  = (char *)pcap_geterrx(adhandle) ;
 				Debugprintf(error);
+#endif
 				if (OpenPCAP() == FALSE)
 					pcap_reopen_delay = 300;
 			}
@@ -927,21 +935,21 @@ Pollloop:
 	}
 	else
 	{
-		// No handle. 
+		/* No handle.  */
 		
-		if (Adapter[0])					// Don't have to have ethernet, if used just as ip over ax.25 switch 
+		if (Adapter[0])					/* Don't have to have ethernet, if used just as ip over ax.25 switch  */
 		{
-			// Try reopening periodically
+			/* Try reopening periodically */
 			
 			pcap_reopen_delay --;
 			
 			if (pcap_reopen_delay < 0)
 				if (OpenPCAP() == FALSE)
-					pcap_reopen_delay = 300;	// Retry every 30 seconds
+					pcap_reopen_delay = 300;	/* Retry every 30 seconds */
 		}
 	}
 
-//#endif
+/*#endif */
 
 #ifdef LINBPQ
 
@@ -969,7 +977,7 @@ PollTAPloop:
 				goto PollTAPloop;
 			}
 
-			// if 08FF pass to BPQETHER Driver
+			/* if 08FF pass to BPQETHER Driver */
 /*
 			if (ethptr->ETYPE == 0xFF08)
 			{
@@ -1031,9 +1039,9 @@ PollTAPloop:
 				goto PollTAPloop;
 			}
 */
-			// Ignore anything else
+			/* Ignore anything else */
 
-//			printf("TAP ype %X\n", ntohs(ethptr->ETYPE));
+/*			printf("TAP ype %X\n", ntohs(ethptr->ETYPE)); */
 
 			goto PollTAPloop;
 		}
@@ -1054,7 +1062,7 @@ PollEncaploop:
 		{
 			PIPMSG IPptr = (PIPMSG)&Buffer[EthOffset];
 
-			if (IPptr->IPPROTOCOL == 4)		// AMPRNET Tunnelled Packet
+			if (IPptr->IPPROTOCOL == 4)		/* AMPRNET Tunnelled Packet */
 			{
 				ProcessTunnelMsg(IPptr);
 			}
@@ -1076,7 +1084,7 @@ PollEncaploop:
 		{
 			PIPMSG IPptr = (PIPMSG)&Buffer[EthOffset];
 
-	//		RouteIPMsg(IPptr);
+	/*		RouteIPMsg(IPptr); */
 			ProcessIPMsg(IPptr, Buffer, 'E', 255);
 
 			goto PollEncaploop;
@@ -1099,14 +1107,14 @@ PollEncaploop:
 
 		savemsg=axmsg;
 
-		// Packet from AX.25
+		/* Packet from AX.25 */
 
-		if (axmsg->DEST[0] == 0xCF)		// Netrom
+		if (axmsg->DEST[0] == 0xCF)		/* Netrom */
 		{
-			//	Could we use the More bit for fragmentation??
-			//	Seems a good idea, but would'nt be compatible with NOS
+			/*	Could we use the More bit for fragmentation?? */
+			/*	Seems a good idea, but would'nt be compatible with NOS */
 
-			// Have to move message down buffer
+			/* Have to move message down buffer */
 
 			UCHAR TEMP[7];
 
@@ -1122,14 +1130,14 @@ PollEncaploop:
 		if (CompareCalls(axmsg->ORIGIN, MYCALL))
 		{
 			ReleaseBuffer(axmsg);
-			return 0;				// Echoed packet
+			return 0;				/* Echoed packet */
 		}
 
 		switch (axmsg->PID)
 		{
 		case  0xcc:
 
-			// IP Message, 
+			/* IP Message,  */
 
 			{
 				PIPMSG ipptr = (PIPMSG)++axmsg;
@@ -1140,7 +1148,7 @@ PollEncaploop:
 
 		case 0xcd:
 		
-			// ARP Message
+			/* ARP Message */
 
 			ProcessAXARPMsg((PAXARP)axmsg);
 			SaveARP();
@@ -1148,10 +1156,10 @@ PollEncaploop:
 
 		case 0x08:
 
-			// Fragmented message
+			/* Fragmented message */
 
-			// The L2 code ensures that the last fragment is present before passing the
-			// message up to us. It is just possible that bits are missing
+			/* The L2 code ensures that the last fragment is present before passing the */
+			/* message up to us. It is just possible that bits are missing */
 			{
 				UCHAR * ptr = &axmsg->PID;
 				UCHAR * nextfrag;
@@ -1162,24 +1170,24 @@ PollEncaploop:
 				ptr++;
 
 				if (!(*ptr & 0x80))
-					break;					// Not first fragment???
+					break;					/* Not first fragment??? */
 				
 				frags=*ptr++ & 0x7f;
 
 				len = axmsg->LENGTH;
 
 				len-= sizeof(BUFFHEADER);
-				len--;						// Remove Frag Control Byte
+				len--;						/* Remove Frag Control Byte */
 
 				memcpy(&Buffer[EthOffset], ptr, len);
 
 				nextfrag = &Buffer[EthOffset]+len;
 
-				// Release Buffer
+				/* Release Buffer */
 fragloop:
 				ReleaseBuffer(savemsg);
 
-				if (IPHOSTVECTORPTR->HOSTTRACEQ == 0)	goto Pollloop;		// Shouldn't happen
+				if (IPHOSTVECTORPTR->HOSTTRACEQ == 0)	goto Pollloop;		/* Shouldn't happen */
 
 				axmsg = (PBUFFHEADER)IPHOSTVECTORPTR->HOSTTRACEQ;
 				IPHOSTVECTORPTR->HOSTTRACEQ = axmsg->CHAIN;
@@ -1189,12 +1197,12 @@ fragloop:
 				ptr++;
 				
 				if (--frags != (*ptr++ & 0x7f))
-					break;					// Out of sequence
+					break;					/* Out of sequence */
 
 				len = axmsg->LENGTH;
 
 				len-= sizeof(BUFFHEADER);
-				len--;						// Remove Frag Control Byte
+				len--;						/* Remove Frag Control Byte */
 
 				memcpy(nextfrag, ptr, len);
 
@@ -1208,7 +1216,7 @@ fragloop:
 			}
 
 		}
-		// Release the buffer
+		/* Release the buffer */
 
 		ReleaseBuffer(savemsg);
 
@@ -1220,7 +1228,7 @@ fragloop:
 
 BOOL Send_ETH(VOID * Block, DWORD len, BOOL SendtoTAP)
 {
-	// On Windows we don't use TAP so everything goes to pcap
+	/* On Windows we don't use TAP so everything goes to pcap */
 
 	if (len < 60) len = 60;
 
@@ -1234,15 +1242,16 @@ BOOL Send_ETH(VOID * Block, DWORD len, BOOL SendtoTAP)
 	}
 #endif
 
-	// On Windows we don't use TAP so everything goes to pcap
+	/* On Windows we don't use TAP so everything goes to pcap */
 
 	if (adhandle)
 	{
-		// Send down the packet 
-
-		pcap_sendpacketx(adhandle,	// Adapter
-			Block,				// buffer with the packet
-			len);				// size
+		/* Send down the packet  */
+#ifndef NOPCAP
+		pcap_sendpacketx(adhandle,	/* Adapter */
+			Block,				/* buffer with the packet */
+			len);				/* size */
+#endif
 	}
     return TRUE;
 }
@@ -1253,21 +1262,21 @@ BOOL Send_ETH(VOID * Block, DWORD len, BOOL SendtoTAP)
 
 static VOID Send_AX_Datagram(PMESSAGE Block, DWORD Len, UCHAR Port, UCHAR * HWADDR)
 {
-	//	Can't use API SENDRAW, as that tries to get the semaphore, which we already have
+	/*	Can't use API SENDRAW, as that tries to get the semaphore, which we already have */
 
-	// Block includes the Msg Header (7 bytes), Len Does not!
+	/* Block includes the Msg Header (7 bytes), Len Does not! */
 
 	memcpy(Block->DEST, HWADDR, 7);
 	memcpy(Block->ORIGIN, MYCALL, 7);
-	Block->DEST[6] &= 0x7e;						// Clear End of Call
-	Block->ORIGIN[6] |= 1;						// Set End of Call
-	Block->CTL = 3;		//UI
+	Block->DEST[6] &= 0x7e;						/* Clear End of Call */
+	Block->ORIGIN[6] |= 1;						/* Set End of Call */
+	Block->CTL = 3;		/*UI */
 
 #ifdef LINBPQ
 
-	if (Port == 99)				// BPQETHER over BPQTUN Port
+	if (Port == 99)				/* BPQETHER over BPQTUN Port */
 	{
-		// Add BPQETHER Header
+		/* Add BPQETHER Header */
 
 		int txlen = Block->LENGTH;
 		UCHAR txbuff[1600];
@@ -1275,9 +1284,9 @@ static VOID Send_AX_Datagram(PMESSAGE Block, DWORD Len, UCHAR Port, UCHAR * HWAD
 		if (txlen < 1 || txlen > 400)
 			return;
 
-		// Length field is little-endian
+		/* Length field is little-endian */
 
-		// BPQEther Header is 14 bytes before the Length 
+		/* BPQEther Header is 14 bytes before the Length  */
 
 		txbuff[14]=(txlen & 0xff);
 		txbuff[15]=(txlen >> 8);
@@ -1285,9 +1294,9 @@ static VOID Send_AX_Datagram(PMESSAGE Block, DWORD Len, UCHAR Port, UCHAR * HWAD
 
 		memcpy(&txbuff[16],&Block[7],txlen);
 		
-		//memcpy(&txbuff[0],&EthDest[0],6);
-		//memcpy(&txbuff[6],&EthSource[0],6);
-		//memcpy(&txbuff[12],&EtherType,2);
+		/*memcpy(&txbuff[0],&EthDest[0],6); */
+		/*memcpy(&txbuff[6],&EthSource[0],6); */
+		/*memcpy(&txbuff[12],&EtherType,2); */
 	
 		write(tap_fd, Block, Len);
 		return;
@@ -1305,21 +1314,21 @@ VOID Send_AX_Connected(VOID * Block, DWORD Len, UCHAR Port, UCHAR * HWADDR)
 	int first = 1, fragno, txlen;
 	UCHAR * p;
 
-	// Len includes the 16 byte ax header (Addr CTL PID)
+	/* Len includes the 16 byte ax header (Addr CTL PID) */
 
-	// if Len - 16 is greater than PACLEN, then fragment (only possible on Virtual Circuits,
-	//	as fragmentation relies upon reliable delivery
+	/* if Len - 16 is greater than PACLEN, then fragment (only possible on Virtual Circuits, */
+	/*	as fragmentation relies upon reliable delivery */
 
 
-	if ((Len - 16) <= PACLEN)		// No need to fragment
+	if ((Len - 16) <= PACLEN)		/* No need to fragment */
 	{
 		SendNetFrame(HWADDR, MYCALL, Block, Len, Port);
 		return;
 	}
 
-	Len = Len-16;			// Back to real length
+	Len = Len-16;			/* Back to real length */
 
-	PACLEN-=2;				// Allow for fragment control info)
+	PACLEN-=2;				/* Allow for fragment control info) */
 
 	fragno = Len / PACLEN;
 
@@ -1341,13 +1350,13 @@ VOID Send_AX_Connected(VOID * Block, DWORD Len, UCHAR Port, UCHAR * HWADDR)
 
 		Debugprintf("Send IP to VC Fragment, Len = %d", txlen);
 
-		// Sobsequent fragments only add one byte (the PID is left in place)
+		/* Sobsequent fragments only add one byte (the PID is left in place) */
 
 		if (first)
 			SendNetFrame(HWADDR, MYCALL, p-23, txlen+18, Port); 
 		else
 		{
-			SendNetFrame(HWADDR, MYCALL, p-23, txlen+17, Port);  // only one frag byte
+			SendNetFrame(HWADDR, MYCALL, p-23, txlen+17, Port);  /* only one frag byte */
 			p--;
 		}
 		first = 0;
@@ -1360,7 +1369,7 @@ VOID Send_AX_Connected(VOID * Block, DWORD Len, UCHAR Port, UCHAR * HWADDR)
 
 static VOID SendNetFrame(UCHAR * ToCall, UCHAR * FromCall, UCHAR * Block, DWORD Len, UCHAR Port)
 {
-//	ATTACH FRAME TO OUTBOUND L3 QUEUES (ONLY USED FOR IP ROUTER)
+/*	ATTACH FRAME TO OUTBOUND L3 QUEUES (ONLY USED FOR IP ROUTER) */
 
 	struct DATAMESSAGE * buffptr;
 	struct _LINKTABLE * LINK;
@@ -1378,15 +1387,15 @@ static VOID SendNetFrame(UCHAR * ToCall, UCHAR * FromCall, UCHAR * Block, DWORD 
 	buffptr = GetBuff();
 
 	if (buffptr == 0)
-		return;			// No buffers
+		return;			/* No buffers */
 
-	Len -= 15;			// We added 16 before (for UI Header) but L2 send includes the PID, so is one more than datalength
+	Len -= 15;			/* We added 16 before (for UI Header) but L2 send includes the PID, so is one more than datalength */
 
 	buffptr->LENGTH = (USHORT)Len + MSGHDDRLEN;
 
-//	SEE IF L2 OR L3
+/*	SEE IF L2 OR L3 */
 
-	if (Port == 0)				// L3
+	if (Port == 0)				/* L3 */
 	{
 		struct DEST_LIST * DEST;
 		L3MESSAGE * L3Header;
@@ -1397,40 +1406,40 @@ static VOID SendNetFrame(UCHAR * ToCall, UCHAR * FromCall, UCHAR * Block, DWORD 
 			return;
 		}
 
-		// We have to build the Netrom Header
+		/* We have to build the Netrom Header */
 
 		L3Header = (L3MESSAGE *)&buffptr->L2DATA[0];
 
-		buffptr->PID = 0xCF;			// NETROM
+		buffptr->PID = 0xCF;			/* NETROM */
 
 		memcpy(L3Header->L3SRCE, FromCall, 7);
 		memcpy(L3Header->L3DEST, ToCall, 7);
 		L3Header->L3TTL = L3LIVES;
-		L3Header->L4FLAGS = 0;			// Opcode
-		L3Header->L4ID = 0x0C;			// IP
+		L3Header->L4FLAGS = 0;			/* Opcode */
+		L3Header->L4ID = 0x0C;			/* IP */
 		L3Header->L4INDEX = 0x0C;
 
-		memcpy(L3Header->L4DATA, &Block[23], Len);	// Dond Send PID - implied by OCOC above
+		memcpy(L3Header->L4DATA, &Block[23], Len);	/* Dond Send PID - implied by OCOC above */
 
-		buffptr->LENGTH += 20;			// Netrom Header
+		buffptr->LENGTH += 20;			/* Netrom Header */
 
 		C_Q_ADD(&DEST->DEST_Q, buffptr);
 		return;
 	}
 
-//	SEND FRAME TO L2 DEST, CREATING A LINK ENTRY IF NECESSARY
+/*	SEND FRAME TO L2 DEST, CREATING A LINK ENTRY IF NECESSARY */
 
 	memcpy(&buffptr->PID, &Block[22], Len);
 
 	if (FindLink(ToCall, FromCall, Port, &LINK))
 	{
-		// Have a link
+		/* Have a link */
 
 		C_Q_ADD(&LINK->TX_Q, buffptr);		
 		return;
 	}
 
-	if (LINK == NULL)				// No spare space
+	if (LINK == NULL)				/* No spare space */
 	{
 		ReleaseBuffer(buffptr);
 		return;
@@ -1439,12 +1448,12 @@ static VOID SendNetFrame(UCHAR * ToCall, UCHAR * FromCall, UCHAR * Block, DWORD 
 	LINK->LINKPORT = PORT = GetPortTableEntryFromPortNum(Port);
 
 	if (PORT == NULL)
-		return;						// maybe port has been deleted
+		return;						/* maybe port has been deleted */
 
-	LINK->L2TIME = PORT->PORTT1;			// SET TIMER VALUE
+	LINK->L2TIME = PORT->PORTT1;			/* SET TIMER VALUE */
 
 	if (ToCall[7])
-		LINK->L2TIME += PORT->PORTT1;		// Extend Timer for Digis
+		LINK->L2TIME += PORT->PORTT1;		/* Extend Timer for Digis */
 
 	LINK->LINKWINDOW = PORT->PORTWINDOW;
 
@@ -1454,7 +1463,7 @@ static VOID SendNetFrame(UCHAR * ToCall, UCHAR * FromCall, UCHAR * Block, DWORD 
 	memcpy(LINK->OURCALL, FromCall, 7);
 	memcpy(LINK->DIGIS, &ToCall[7], 56);
 
-	LINK->LINKTYPE = 2;						// Dopwnlink
+	LINK->LINKTYPE = 2;						/* Dopwnlink */
 
 	SENDSABM(LINK);
 
@@ -1469,12 +1478,12 @@ VOID ProcessEthIPMsg(PETHMSG Buffer)
 	int index;
 
 	if (memcmp(Buffer, ourMACAddr,6 ) != 0) 
-		return;		// Not for us
+		return;		/* Not for us */
 
 	if (memcmp(&Buffer[6], ourMACAddr,6 ) == 0) 
-		return;		// Discard our sends
+		return;		/* Discard our sends */
 
-	// See if from a NAT'ed address
+	/* See if from a NAT'ed address */
 
 	for (index=0; index < nat_table_len; index++)
 	{
@@ -1484,16 +1493,16 @@ VOID ProcessEthIPMsg(PETHMSG Buffer)
 		{
 			ipptr->IPSOURCE.addr = NAT->origipaddr;
 
-			ipptr->IPCHECKSUM = 0;		// to force cksum recalc below
+			ipptr->IPCHECKSUM = 0;		/* to force cksum recalc below */
 			break;
 		}
 	}
 
-	// if Checkum offload is active we get the packet before the NIC sees it (from PCAP)
+	/* if Checkum offload is active we get the packet before the NIC sees it (from PCAP) */
 
-	if (ipptr->IPCHECKSUM == 0)				// Windows seems to do this
+	if (ipptr->IPCHECKSUM == 0)				/* Windows seems to do this */
 	{
-		// Generate IP and TCP/UDP checksums
+		/* Generate IP and TCP/UDP checksums */
 
 		int Len = ntohs(ipptr->IPLENGTH);
 
@@ -1505,7 +1514,7 @@ VOID ProcessEthIPMsg(PETHMSG Buffer)
 
 		ipptr->IPCHECKSUM = Generate_CHECKSUM(ipptr, 20);
 
-		if (ipptr->IPPROTOCOL == 6)		// TCP	
+		if (ipptr->IPPROTOCOL == 6)		/* TCP	 */
 		{
 			PTCPMSG TCP = (PTCPMSG)&ipptr->Data;
 			PHEADER PH = {0};	
@@ -1522,12 +1531,12 @@ VOID ProcessEthIPMsg(PETHMSG Buffer)
 
 	if (ipptr->IPDEST.addr == EncapAddr)
 	{
-		if (ipptr->IPPROTOCOL == 4)		// AMPRNET Tunnelled Packet
+		if (ipptr->IPPROTOCOL == 4)		/* AMPRNET Tunnelled Packet */
 		{
 			memcpy(RouterMac, Buffer->SOURCE, 6);
 			ProcessTunnelMsg(ipptr);
 		}
-		return;							// Ignore Others
+		return;							/* Ignore Others */
 	}
 
 	ProcessIPMsg(ipptr, Buffer->SOURCE, 'E', 255);
@@ -1541,31 +1550,31 @@ VOID ProcessEthARPMsg(PETHARP arpptr, BOOL FromTAP)
 	BOOL Found;
 
 	if (memcmp(&arpptr->MSGHDDR.SOURCE, ourMACAddr,6 ) == 0 ) 
-		return;		// Discard our sends
+		return;		/* Discard our sends */
 
 	switch (arpptr->ARPOPCODE)
 	{
 	case 0x0100:
 
-		//	Is it for our ENCAP (not on our 44 LAN)
+		/*	Is it for our ENCAP (not on our 44 LAN) */
 
-//		printf("ARP Request for %08x Tell %08x\n",
-//			arpptr->TARGETIPADDR, arpptr->SENDIPADDR);
+/*		printf("ARP Request for %08x Tell %08x\n", */
+/*			arpptr->TARGETIPADDR, arpptr->SENDIPADDR); */
 
-		//  Process anything for 44 from TAP
-		// (or should the be from either..???)
+		/*  Process anything for 44 from TAP */
+		/* (or should the be from either..???) */
 
-//		if (FromTAP && (arpptr->TARGETIPADDR & 0xff) == 44)
+/*		if (FromTAP && (arpptr->TARGETIPADDR & 0xff) == 44) */
 		if ((arpptr->TARGETIPADDR & 0xff) == 44)
 			goto ARPOk;
 	
 		if (arpptr->TARGETIPADDR != EncapAddr)
 		{
-			// We should only accept requests from our subnet - we might have more than one net on iterface
+			/* We should only accept requests from our subnet - we might have more than one net on iterface */
 
 			if ((arpptr->SENDIPADDR & OurNetMask) != (OurIPAddr & OurNetMask))
 			{
-				// Discard Unless it is from a NAT'ed Host
+				/* Discard Unless it is from a NAT'ed Host */
 				
 				struct nat_table_entry * NAT = NULL;
 				int index;
@@ -1581,31 +1590,31 @@ VOID ProcessEthARPMsg(PETHARP arpptr, BOOL FromTAP)
 				if (index >= nat_table_len)
 					return;
 
-				// Also check it is for a 44. address or we send all LAN ARPS to 
-				//	RF
+				/* Also check it is for a 44. address or we send all LAN ARPS to  */
+				/*	RF */
 
 				if ((arpptr->TARGETIPADDR & 0xff) != 44)
 					return;
 
 			}
 
-			if (arpptr->TARGETIPADDR == 0)		// Request for 0.0.0.0
+			if (arpptr->TARGETIPADDR == 0)		/* Request for 0.0.0.0 */
 				return;
 	
 		}
 
-		// Add to our table, as we will almost certainly want to send back to it
+		/* Add to our table, as we will almost certainly want to send back to it */
 ARPOk:
-//		Debugprintf("ARP Request for %08x Tell %08x\n",
-//			arpptr->TARGETIPADDR, arpptr->SENDIPADDR);
+/*		Debugprintf("ARP Request for %08x Tell %08x\n", */
+/*			arpptr->TARGETIPADDR, arpptr->SENDIPADDR); */
 
 
 		Arp = LookupARP(arpptr->SENDIPADDR, TRUE, &Found);
 
 		if (Found)
-			goto AlreadyThere;				// Already there
+			goto AlreadyThere;				/* Already there */
 
-		if (Arp == NULL) return;	// No point if table full
+		if (Arp == NULL) return;	/* No point if table full */
 			
 		Arp->IPADDR = arpptr->SENDIPADDR;
 		Arp->ARPTYPE = 'E';
@@ -1614,7 +1623,7 @@ ARPOk:
 		Arp->ARPVALID = TRUE;
 		Arp->ARPTIMER =  ARPTIMEOUT;
 
-		// Also add to routes
+		/* Also add to routes */
 
 		AddToRoutes(Arp,arpptr->SENDIPADDR, 'E');
 
@@ -1636,35 +1645,35 @@ AlreadyThere:
 			memcpy(arpptr->MSGHDDR.DEST, arpptr->MSGHDDR.SOURCE ,6); 
 			memcpy(arpptr->MSGHDDR.SOURCE, ourMACAddr ,6); 
 
-//			Debugprintf("Forus ARP Reply for %08x Targ %08x HNAT %08x\n",
-//				arpptr->SENDIPADDR, arpptr->TARGETIPADDR, HostNATAddr);
+/*			Debugprintf("Forus ARP Reply for %08x Targ %08x HNAT %08x\n", */
+/*				arpptr->SENDIPADDR, arpptr->TARGETIPADDR, HostNATAddr); */
 
 			Send_ETH(arpptr,60, FromTAP);
 
 			return;
 		}
 
-		// If for our Ethernet Subnet, Ignore or we send loads of unnecessary msgs to ax.25
+		/* If for our Ethernet Subnet, Ignore or we send loads of unnecessary msgs to ax.25 */
 
-		// Actually our subnet could be subnetted further
+		/* Actually our subnet could be subnetted further */
 
-		// So respond for NAT'ed addresses
+		/* So respond for NAT'ed addresses */
 
-		// Why not just see if we have a route first??
+		/* Why not just see if we have a route first?? */
 
 		Route = FindRoute(arpptr->TARGETIPADDR);
 
 		if (Route)
 		{
 			if (Route->TYPE == 'T' || Route->TYPE == 'U')
-				goto ProxyARPReply;			// Assume we can always reach via tunnel
+				goto ProxyARPReply;			/* Assume we can always reach via tunnel */
 
 			Arp = LookupARP(Route->GATEWAY, FALSE, &Found);
 
 			if (Arp)
 			{
 				if(Arp->ARPVALID && (Arp->ARPTYPE == 'E'))
-					return;				// On LAN, so should reply direct
+					return;				/* On LAN, so should reply direct */
 
 				goto ProxyARPReply;
 			}
@@ -1672,7 +1681,7 @@ AlreadyThere:
 
 		if ((arpptr->TARGETIPADDR & OurNetMask) == (OurIPAddr & OurNetMask))
 		{
-			// Unless for a NAT'ed address, in which case we reply with our virtual MAC
+			/* Unless for a NAT'ed address, in which case we reply with our virtual MAC */
 
 			struct nat_table_entry * NAT = NULL;
 			int index;
@@ -1691,44 +1700,44 @@ AlreadyThere:
 			goto ProxyARPReply;
 
 		}
-		// Should't we just reply if we know it ?? (Proxy ARP)
+		/* Should't we just reply if we know it ?? (Proxy ARP) */
 
-		//	Maybe, but that may mean dowstream nodes dont learnit
+		/*	Maybe, but that may mean dowstream nodes dont learnit */
 
-		// Sould we look in routes table, as we may have a gateway to it.
+		/* Sould we look in routes table, as we may have a gateway to it. */
 
 		Route = FindRoute(arpptr->TARGETIPADDR);
 
 		if (Route)
 		{
 			if (Route->TYPE == 'T')
-				goto ProxyARPReply;			// Assume we can always reach via tunnel
+				goto ProxyARPReply;			/* Assume we can always reach via tunnel */
 
 			Arp = LookupARP(Route->GATEWAY, FALSE, &Found);
 
 			if (Arp)
 			{
 				if(Arp->ARPVALID && (Arp->ARPTYPE == 'E'))
-					return;				// On LAN, so should reply direct
+					return;				/* On LAN, so should reply direct */
 ProxyARPReply:
 					ETHARPREQMSG.TARGETIPADDR = arpptr->SENDIPADDR;
-					ETHARPREQMSG.ARPOPCODE = 0x0200;	// Reply
+					ETHARPREQMSG.ARPOPCODE = 0x0200;	/* Reply */
 					ETHARPREQMSG.SENDIPADDR = arpptr->TARGETIPADDR;
 					
 					memcpy(ETHARPREQMSG.SENDHWADDR,ourMACAddr, 6);
 					memcpy(ETHARPREQMSG.MSGHDDR.DEST, arpptr->SENDHWADDR, 6);
 
-//					Debugprintf("Proxy ARP Reply for %08x Targ %08x HNAT %08x\n",
-//						ETHARPREQMSG.SENDIPADDR, ETHARPREQMSG.TARGETIPADDR, HostNATAddr);
+/*					Debugprintf("Proxy ARP Reply for %08x Targ %08x HNAT %08x\n", */
+/*						ETHARPREQMSG.SENDIPADDR, ETHARPREQMSG.TARGETIPADDR, HostNATAddr); */
 	
-					//	We send to TAP if request from TAP
-//					Send_ETH(&ETHARPREQMSG, 42, ETHARPREQMSG.TARGETIPADDR == HostNATAddr);
+					/*	We send to TAP if request from TAP */
+/*					Send_ETH(&ETHARPREQMSG, 42, ETHARPREQMSG.TARGETIPADDR == HostNATAddr); */
 					Send_ETH(&ETHARPREQMSG, 42, FromTAP);
 					return;
 			}
 		}
 
-		// Not in our cache, so send to all other ports enabled for IP, reformatting as necessary
+		/* Not in our cache, so send to all other ports enabled for IP, reformatting as necessary */
 
 		AXARPREQMSG.TARGETIPADDR = arpptr->TARGETIPADDR;
 		AXARPREQMSG.SENDIPADDR = arpptr->SENDIPADDR;
@@ -1749,9 +1758,9 @@ ProxyARPReply:
 	case 0x0200:
 
 		if (memcmp(&arpptr->MSGHDDR.DEST, ourMACAddr,6 ) != 0 ) 
-			return;		// Not for us
+			return;		/* Not for us */
 
-		// Update ARP Cache
+		/* Update ARP Cache */
 
 		Arp = LookupARP(arpptr->SENDIPADDR, TRUE, &Found);
 
@@ -1761,7 +1770,7 @@ ProxyARPReply:
 		if (Arp == NULL)
 			goto SendBack;
 
-		// Also add to routes
+		/* Also add to routes */
 
 		AddToRoutes(Arp, arpptr->SENDIPADDR, 'E');
 Update:
@@ -1776,9 +1785,9 @@ Update:
 
 SendBack:
 		
-		//  Send Back to Originator of ARP Request
+		/*  Send Back to Originator of ARP Request */
 
-		if (Arp && arpptr->TARGETIPADDR == OurIPAddr)		// Reply to our request?
+		if (Arp && arpptr->TARGETIPADDR == OurIPAddr)		/* Reply to our request? */
 		{
 			struct DATAMESSAGE * buffptr;
 			PIPMSG IPptr;
@@ -1801,7 +1810,7 @@ SendBack:
 			if (Arp->ARPINTERFACE == 255)
 			{
 				ETHARPREQMSG.TARGETIPADDR = arpptr->TARGETIPADDR;
-				ETHARPREQMSG.ARPOPCODE = 0x0200;	// Reply
+				ETHARPREQMSG.ARPOPCODE = 0x0200;	/* Reply */
 				ETHARPREQMSG.SENDIPADDR = arpptr->SENDIPADDR;
 					
 				memcpy(ETHARPREQMSG.SENDHWADDR,ourMACAddr, 6);
@@ -1813,7 +1822,7 @@ SendBack:
 			else
 			{
 				AXARPREQMSG.TARGETIPADDR = arpptr->TARGETIPADDR;
-				AXARPREQMSG.ARPOPCODE = 0x0200;		// Reply
+				AXARPREQMSG.ARPOPCODE = 0x0200;		/* Reply */
 				AXARPREQMSG.SENDIPADDR = arpptr->SENDIPADDR;
 
 				memcpy(AXARPREQMSG.SENDHWADDR, MYCALL, 7);
@@ -1840,28 +1849,28 @@ VOID ProcessAXARPMsg(PAXARP arpptr)
 
 	BOOL Found;
 
-	arpptr->MSGHDDR.ORIGIN[6] &= 0x7e;			// Clear end of Call
+	arpptr->MSGHDDR.ORIGIN[6] &= 0x7e;			/* Clear end of Call */
 
-	if (memcmp(arpptr->MSGHDDR.ORIGIN, MYCALL, 7) == 0)	// ?Echoed packet?
+	if (memcmp(arpptr->MSGHDDR.ORIGIN, MYCALL, 7) == 0)	/* ?Echoed packet? */
 		return;
 
 	switch (arpptr->ARPOPCODE)
 	{
 	case 0x0100:
 	{
-		// Add to our table, as we will almost certainly want to send back to it
+		/* Add to our table, as we will almost certainly want to send back to it */
 
 		if (arpptr->TARGETIPADDR == 0)
-			return;							// Ignore 0.0.0.0
+			return;							/* Ignore 0.0.0.0 */
 
 		Arp = LookupARP(arpptr->SENDIPADDR, TRUE, &Found);
 
 		if (Found)
-			goto AlreadyThere;				// Already there
+			goto AlreadyThere;				/* Already there */
 				
 		if (Arp != NULL)
 		{
-			//   ENTRY NOT FOUND - IF ANY SPARE ENTRIES, USE ONE
+			/*   ENTRY NOT FOUND - IF ANY SPARE ENTRIES, USE ONE */
 
 			Arp->IPADDR = arpptr->SENDIPADDR;
 
@@ -1872,7 +1881,7 @@ VOID ProcessAXARPMsg(PAXARP arpptr)
 			Arp->ARPVALID = TRUE;
 			Arp->ARPTIMER =  ARPTIMEOUT;
 
-			// Also add to routes
+			/* Also add to routes */
 
 			AddToRoutes(Arp, arpptr->SENDIPADDR, 'D');
 		}
@@ -1893,26 +1902,26 @@ AlreadyThere:
 			return;
 		}
 
-		// Should't we just reply if we know it ?? (Proxy ARP)
+		/* Should't we just reply if we know it ?? (Proxy ARP) */
 
-		//	Maybe, but that may mean dowstream nodes dont learnit
+		/*	Maybe, but that may mean dowstream nodes dont learnit */
 
-		// Sould we look in routes table, as we may have a gateway to it.
+		/* Sould we look in routes table, as we may have a gateway to it. */
 
 		Route = FindRoute(arpptr->TARGETIPADDR);
 
 		if (Route)
 		{
 			if (Route->TYPE == 'T')
-				goto AXProxyARPReply;			// Assume we can always reach via tunnel
+				goto AXProxyARPReply;			/* Assume we can always reach via tunnel */
 
 
 		Arp = LookupARP(arpptr->TARGETIPADDR, FALSE, &Found);
 
 		if (Found)
 		{
-			// if Trarget is the station we got the request from, there is a loop
-			// KIll the ARP entry, and ignore
+			/* if Trarget is the station we got the request from, there is a loop */
+			/* KIll the ARP entry, and ignore */
 
 			if (memcmp(Arp->HWADDR, arpptr->SENDHWADDR, 7) == 0)
 			{
@@ -1922,7 +1931,7 @@ AlreadyThere:
 
 AXProxyARPReply:
 
-			AXARPREQMSG.ARPOPCODE = 0x0200;		// Reply
+			AXARPREQMSG.ARPOPCODE = 0x0200;		/* Reply */
 			AXARPREQMSG.TARGETIPADDR = arpptr->SENDIPADDR;
 			AXARPREQMSG.SENDIPADDR = arpptr->TARGETIPADDR;
 
@@ -1935,7 +1944,7 @@ AXProxyARPReply:
 		}
 		}
 
-		// Not in our cache, so send to all other ports enabled for IP, reformatting as necessary
+		/* Not in our cache, so send to all other ports enabled for IP, reformatting as necessary */
 	
 		AXARPREQMSG.ARPOPCODE = 0x0100;
 		AXARPREQMSG.TARGETIPADDR = arpptr->TARGETIPADDR;
@@ -1965,7 +1974,7 @@ AXProxyARPReply:
 
 	case 0x0200:
 
-		// Update ARP Cache
+		/* Update ARP Cache */
 	
 		Arp = LookupARP(arpptr->SENDIPADDR, TRUE, &Found);
 		
@@ -1975,7 +1984,7 @@ AXProxyARPReply:
 		if (Arp == NULL)
 			goto SendBack;
 
-		// Also add to routes
+		/* Also add to routes */
 
 		AddToRoutes(Arp, arpptr->SENDIPADDR, 'D');
 Update:
@@ -1989,9 +1998,9 @@ Update:
 
 SendBack:
 
-		//  Send Back to Originator of ARP Request
+		/*  Send Back to Originator of ARP Request */
 
-		if (arpptr->TARGETIPADDR == OurIPAddr)		// Reply to our request?
+		if (arpptr->TARGETIPADDR == OurIPAddr)		/* Reply to our request? */
 			break;
 
 		Arp = LookupARP(arpptr->TARGETIPADDR, FALSE, &Found);
@@ -2000,7 +2009,7 @@ SendBack:
 		{
 			if (Arp->ARPINTERFACE == 255)
 			{
-				ETHARPREQMSG.ARPOPCODE = 0x0200;	// Reply
+				ETHARPREQMSG.ARPOPCODE = 0x0200;	/* Reply */
 
 				ETHARPREQMSG.TARGETIPADDR = arpptr->TARGETIPADDR;
 				ETHARPREQMSG.SENDIPADDR = arpptr->SENDIPADDR;
@@ -2014,7 +2023,7 @@ SendBack:
 			}
 			else
 			{
-				AXARPREQMSG.ARPOPCODE = 0x0200;		// Reply
+				AXARPREQMSG.ARPOPCODE = 0x0200;		/* Reply */
 
 				AXARPREQMSG.TARGETIPADDR = arpptr->TARGETIPADDR;
 				AXARPREQMSG.SENDIPADDR = arpptr->SENDIPADDR;
@@ -2049,7 +2058,7 @@ VOID ProcessIPMsg(PIPMSG IPptr, UCHAR * MACADDR, char Type, UCHAR Port)
 	{
 		Dest = IPptr->IPDEST.addr;
 		Debugprintf("IP Pkt not 45 for %s\n", FormatIP(Dest));
-		return;  // Only support Type = 4, Len = 20
+		return;  /* Only support Type = 4, Len = 20 */
 	}
 	if (!CheckIPChecksum(IPptr))
 	{
@@ -2057,7 +2066,7 @@ VOID ProcessIPMsg(PIPMSG IPptr, UCHAR * MACADDR, char Type, UCHAR Port)
 		Debugprintf("IP Pkt Bad CKSUM for %s\n", FormatIP(Dest));
 		return;
 	}
-	// Make sure origin ia routable. If not, add to ARP
+	/* Make sure origin ia routable. If not, add to ARP */
 
 	Route = FindRoute(IPptr->IPSOURCE.addr);
 
@@ -2067,7 +2076,7 @@ VOID ProcessIPMsg(PIPMSG IPptr, UCHAR * MACADDR, char Type, UCHAR Port)
 
 		if (!Found)
 		{
-			// Add if possible
+			/* Add if possible */
 	
 			if (Arp != NULL)
 			{
@@ -2087,7 +2096,7 @@ VOID ProcessIPMsg(PIPMSG IPptr, UCHAR * MACADDR, char Type, UCHAR Port)
 				Arp->ARPVALID = TRUE;
 				Arp->ARPTIMER =  ARPTIMEOUT;
 
-				// Also add to routes
+				/* Also add to routes */
 
 				AddToRoutes(Arp, IPptr->IPSOURCE.addr, Type);
 
@@ -2097,12 +2106,12 @@ VOID ProcessIPMsg(PIPMSG IPptr, UCHAR * MACADDR, char Type, UCHAR Port)
 	}
 
 	if (Route && Route->ARP)
-		Route->ARP->ARPTIMER =  ARPTIMEOUT;				// Refresh
+		Route->ARP->ARPTIMER =  ARPTIMEOUT;				/* Refresh */
 
-	// See if for us - if not pass to router
+	/* See if for us - if not pass to router */
 
 	Dest = IPptr->IPDEST.addr;
-//	Debugprintf("IP Pkt for %s\n", FormatIP(Dest));
+/*	Debugprintf("IP Pkt for %s\n", FormatIP(Dest)); */
 
 	if (Dest == OurIPAddr)
 		goto ForUs;
@@ -2113,18 +2122,18 @@ VOID ProcessIPMsg(PIPMSG IPptr, UCHAR * MACADDR, char Type, UCHAR Port)
 
 ForUs:
 	
-	//	We now pass stuff addressed to us to the host, unless it is a reponse
-	//	to our ping request
+	/*	We now pass stuff addressed to us to the host, unless it is a reponse */
+	/*	to our ping request */
 
-	//	Not sure what to do with snmp (maybe option)
+	/*	Not sure what to do with snmp (maybe option) */
 
-//	if (IPptr->IPPROTOCOL == 4)		// AMPRNET Tunnelled Packet
-//	{
-//		ProcessTunnelMsg(IPptr);
-//		return;
-//	}
+/*	if (IPptr->IPPROTOCOL == 4)		// AMPRNET Tunnelled Packet */
+/*	{ */
+/*		ProcessTunnelMsg(IPptr); */
+/*		return; */
+/*	} */
 
-	if (IPptr->IPPROTOCOL == 1)		// ICMP
+	if (IPptr->IPPROTOCOL == 1)		/* ICMP */
 	{
 		int Len;
 		PICMPMSG ICMPptr = (PICMPMSG)&IPptr->Data;
@@ -2136,16 +2145,16 @@ ForUs:
 
 		if (Len == 28 && ICMPptr->ICMPTYPE == 0 && memcmp(ICMPptr->ICMPData, "*BPQ", 4) == 0)
 		{
-			// Probably our response
+			/* Probably our response */
 			
 			ProcessICMPMsg(IPptr);
 			return;
 		}
 	}
 
-	// Support UDP for SNMP
+	/* Support UDP for SNMP */
 
-	if (BPQSNMP && IPptr->IPPROTOCOL == 17)		// UDP
+	if (BPQSNMP && IPptr->IPPROTOCOL == 17)		/* UDP */
 	{
 		UDPptr = (PUDPMSG)&IPptr->Data;
 
@@ -2156,7 +2165,7 @@ ForUs:
 		}
 	}
 
-	// Pass rest to host
+	/* Pass rest to host */
 	
 	RouteIPMsg(IPptr);
 	return;
@@ -2167,13 +2176,13 @@ unsigned short cksum(unsigned short *ip, int len)
 	uint32_t sum = 0;  /* assume 32 bit long, 16 bit short */
 	unsigned short copy [2048];
 
-	// if not word aligned copy
+	/* if not word aligned copy */
 
 	if (len > 1024  ||  len < 0 || ip == 0)
 		Debugprintf("%d", len);
 	
 
-//	if (&ip & 1)
+/*	if (&ip & 1) */
 	{
 		memcpy(copy, ip, len);
 		ip = copy;
@@ -2201,7 +2210,7 @@ BOOL CheckIPChecksum(PIPMSG IPptr)
 	USHORT checksum=0;
 
 	if (IPptr->IPCHECKSUM == 0)
-		return TRUE; //Not used
+		return TRUE; /*Not used */
 
 	checksum = cksum((unsigned short *)IPptr, 20);
 
@@ -2229,11 +2238,11 @@ USHORT Generate_CHECKSUM(VOID * ptr1, int Len)
 VOID ProcessTunnelMsg(PIPMSG IPptr)
 {
 	UCHAR * ptr;
-	PIPMSG Outer = IPptr;			// Save tunnel header
+	PIPMSG Outer = IPptr;			/* Save tunnel header */
 	int Origlen;
-//	int InnerLen;
+/*	int InnerLen; */
 
-	// Check header length - for now drop any message with options
+	/* Check header length - for now drop any message with options */
 
 	if (IPptr->VERLEN != 0x45)
 		return;
@@ -2241,23 +2250,23 @@ VOID ProcessTunnelMsg(PIPMSG IPptr)
 	Origlen = htons(Outer->IPLENGTH);
 
 	ptr = (UCHAR *)IPptr;
-	ptr += 20;						// Skip IPIP Header
+	ptr += 20;						/* Skip IPIP Header */
 	IPptr = (PIPMSG) ptr;
 
-	//	If we are relaying it from a DMZ host there will be another header
+	/*	If we are relaying it from a DMZ host there will be another header */
 
-	if (IPptr->IPPROTOCOL == 4)		// IPIP
+	if (IPptr->IPPROTOCOL == 4)		/* IPIP */
 	{
 		Outer = IPptr;	
 		ptr = (UCHAR *)IPptr;
-		ptr += 20;						// Skip IPIP Header
+		ptr += 20;						/* Skip IPIP Header */
 		IPptr = (PIPMSG) ptr;
 		Origlen -= 20;
 	}
 		
-	// First check for RIP44 Messages
+	/* First check for RIP44 Messages */
 
-	if (IPptr->IPPROTOCOL == 17)		// UDP
+	if (IPptr->IPPROTOCOL == 17)		/* UDP */
 	{
 		PUDPMSG UDPptr = (PUDPMSG)&IPptr->Data;
 
@@ -2268,25 +2277,25 @@ VOID ProcessTunnelMsg(PIPMSG IPptr)
 		}
 	}
 
-	// for now drop anything not from a 44 address. 
-	// now also need to drop 44.192/10 as it has been sold to Amazon
+	/* for now drop anything not from a 44 address.  */
+	/* now also need to drop 44.192/10 as it has been sold to Amazon */
 
 	if (IPptr->IPSOURCE.S_un_b.s_b1 != 44)
 		return;
 
-	// Drop 44.192 - 44.255
+	/* Drop 44.192 - 44.255 */
 
 	if (IPptr->IPSOURCE.S_un_b.s_b2 >= 192)
 		return;
 
-	//	See if for us
+	/*	See if for us */
 
-	//	Handle Pings, our Ping responses and SNMP in BPQ
-	//	pass rest to host
+	/*	Handle Pings, our Ping responses and SNMP in BPQ */
+	/*	pass rest to host */
 
 	if (IPptr->IPDEST.addr == OurIPAddr)
 	{
-		if (IPptr->IPPROTOCOL == 1)		// ICMP
+		if (IPptr->IPPROTOCOL == 1)		/* ICMP */
 		{
 			int Len;
 			PICMPMSG ICMPptr = (PICMPMSG)&IPptr->Data;
@@ -2296,14 +2305,14 @@ VOID ProcessTunnelMsg(PIPMSG IPptr)
 
 			if (Len == 28 && ICMPptr->ICMPTYPE == 0 && memcmp(ICMPptr->ICMPData, "*BPQ", 4) == 0)
 			{
-				// Probably ours
+				/* Probably ours */
 			
 				ProcessICMPMsg(IPptr);
 				return;
 			}
 		}
 
-		if (IPptr->IPPROTOCOL == 1)		// ICMP
+		if (IPptr->IPPROTOCOL == 1)		/* ICMP */
 		{
 			PICMPMSG ICMPptr = (PICMPMSG)&IPptr->Data;
 
@@ -2314,9 +2323,9 @@ VOID ProcessTunnelMsg(PIPMSG IPptr)
 			}
 		}
 
-		// Support UDP for SNMP
+		/* Support UDP for SNMP */
 
-		if (IPptr->IPPROTOCOL == 17)		// UDP
+		if (IPptr->IPPROTOCOL == 17)		/* UDP */
 		{
 			PUDPMSG UDPptr = (PUDPMSG)&IPptr->Data;
 
@@ -2327,13 +2336,13 @@ VOID ProcessTunnelMsg(PIPMSG IPptr)
 			}
 		}
 
-		// Others should be passed to our host
+		/* Others should be passed to our host */
 
-		// I think we can just drop through to RouteIPMsg
+		/* I think we can just drop through to RouteIPMsg */
 
 	}
 
-	// I think anything else is just passed to the router
+	/* I think anything else is just passed to the router */
 
 	RouteIPMsg(IPptr);		
 }
@@ -2357,33 +2366,33 @@ VOID ProcessRIP44Message(PIPMSG IPptr)
 
 	RIP2 = (PRIP2ENTRY) ++HDDR;
 
-	Len -= 12;				// UDP and RIP Headers
+	Len -= 12;				/* UDP and RIP Headers */
 
 	if (RIP2->AddrFamily == 0xFFFF)
 	{
-		//	Authentication Entry
+		/*	Authentication Entry */
 
 		Len -= 20;
 		RIP2++;
 	}
 
-	while (Len >= 20)		// Entry Length
+	while (Len >= 20)		/* Entry Length */
 	{
-		// See if already in table
+		/* See if already in table */
 
 		PROUTEENTRY Route;
 		BOOL Found;
 
-		// if for our subnet, ignore
+		/* if for our subnet, ignore */
 
-		//	Actually don't need to, as we won't overwrite the preconfigured
-		//	interface route
+		/*	Actually don't need to, as we won't overwrite the preconfigured */
+		/*	interface route */
 
 		Route = LookupRoute(RIP2->IPAddress, RIP2->Mask, TRUE, &Found);
 
 		if (!Found)
 		{
-			// Add if possible
+			/* Add if possible */
 
 			if (Route != NULL && RIP2->Metric < 16)
 			{
@@ -2392,28 +2401,28 @@ VOID ProcessRIP44Message(PIPMSG IPptr)
 				Route->METRIC = RIP2->Metric;
 				Route->Encap = RIP2->NextHop;
 				Route->TYPE = 'T';
-				Route->RIPTIMOUT = 3600;		// 1 hour for now
+				Route->RIPTIMOUT = 3600;		/* 1 hour for now */
 			}
 		}
 		else
 		{
-			//	Already in table
+			/*	Already in table */
 
-			//	Should we replace an RF route with an ENCAP route??
-			//	For now, no. May make an option later
-			//	Should never replace our interface routes
+			/*	Should we replace an RF route with an ENCAP route?? */
+			/*	For now, no. May make an option later */
+			/*	Should never replace our interface routes */
 
 			if (Route->TYPE == 'T')
 			{
-				//	See if same Encap, and if not, is this better metric?
+				/*	See if same Encap, and if not, is this better metric? */
 
-				//	Is this possible with RIP44??
+				/*	Is this possible with RIP44?? */
 
 				if (Route->Encap != RIP2->NextHop)
 				{
 					if (Route->METRIC >= RIP2->Metric)
 					{
-						// Should also change if equal, as dynamic address could have changed
+						/* Should also change if equal, as dynamic address could have changed */
 				
 						Route->METRIC = RIP2->Metric;
 						Route->Encap = RIP2->NextHop;
@@ -2424,7 +2433,7 @@ VOID ProcessRIP44Message(PIPMSG IPptr)
 
 				if (RIP2->Metric >= 15)
 				{
-					//	HE IS TELLING US ITS UNREACHABLE - START DELETE TIMER
+					/*	HE IS TELLING US ITS UNREACHABLE - START DELETE TIMER */
 	
 					Route->RIPTIMOUT = 0;
 					if (Route->GARTIMOUT == 0)
@@ -2432,8 +2441,8 @@ VOID ProcessRIP44Message(PIPMSG IPptr)
 				}
 				else
 				{
-					Route->RIPTIMOUT = 3600;	// 1 hour for now
-					Route->GARTIMOUT = 0;		// In case started to delete
+					Route->RIPTIMOUT = 3600;	/* 1 hour for now */
+					Route->GARTIMOUT = 0;		/* In case started to delete */
 				}
 			}
 		}
@@ -2460,33 +2469,33 @@ VOID ProcessICMPMsg(PIPMSG IPptr)
 
 	if (ICMPptr->ICMPTYPE == 8)
 	{
-		//	ICMP_ECHO
+		/*	ICMP_ECHO */
 
-		ICMPptr->ICMPTYPE = 0;		// Convert to Reply
+		ICMPptr->ICMPTYPE = 0;		/* Convert to Reply */
 
-		// CHECKSUM IT
+		/* CHECKSUM IT */
 
 		ICMPptr->ICMPCHECKSUM = 0;
 		ICMPptr->ICMPCHECKSUM = Generate_CHECKSUM(ICMPptr, Len);
 
-		// Swap Dest to Origin
+		/* Swap Dest to Origin */
 
 		IPptr->IPDEST = IPptr->IPSOURCE;
 		IPptr->IPSOURCE.addr = OurIPAddr;
 		IPptr->IPTTL = IPTTL;
 
-		// RouteIPMsg redoes checksum
+		/* RouteIPMsg redoes checksum */
 
-		RouteIPMsg(IPptr);			// Send Back
+		RouteIPMsg(IPptr);			/* Send Back */
 		return;
 	}
 
 	if (ICMPptr->ICMPTYPE == 0)
 	{
-		//	ICMP_REPLY:
+		/*	ICMP_REPLY: */
 
-		//	It could be a reply to our request
-		//	or from a our host pc
+		/*	It could be a reply to our request */
+		/*	or from a our host pc */
 
 		UCHAR * BUFFER = GetBuff();
 		UCHAR * ptr1;
@@ -2495,11 +2504,11 @@ VOID ProcessICMPMsg(PIPMSG IPptr)
 		char IP[20];
 		unsigned char work[4];
 
-		// Internal Pings have Length 28 and Circuit Index as ID
+		/* Internal Pings have Length 28 and Circuit Index as ID */
 	
 		if (Len > 28 || ICMPptr->ICMPID >= MAXCIRCUITS)
 		{
-			// For Host
+			/* For Host */
 
 			ReleaseBuffer(BUFFER);
 			RouteIPMsg(IPptr);
@@ -2516,11 +2525,11 @@ VOID ProcessICMPMsg(PIPMSG IPptr)
 		memcpy(work, &IPptr->IPSOURCE, 4);
 		sprintf(IP, "%d.%d.%d.%d", work[0], work[1], work[2], work[3]);
 
-		*ptr1++ = 0xf0;			// PID
+		*ptr1++ = 0xf0;			/* PID */
 
 		ptr1 += sprintf(ptr1, "Ping Response from %s", IP);
 
-		*ptr1++ = 0x0d;			// CR
+		*ptr1++ = 0x0d;			/* CR */
 
 		Len = (int)(ptr1 - BUFFER);
 
@@ -2543,25 +2552,25 @@ VOID SendICMPMessage(PIPMSG IPptr, int Type, int Code, int P2)
 	UCHAR * ptr;
 
 	if (OurIPAddr == 0)
-		return;					// Can't do much without one
+		return;					/* Can't do much without one */
 
 	if (IPptr->IPPROTOCOL == ICMP && ICMPptr->ICMPTYPE == 11)
-		return;					// Don't send Time Exceeded for TimeExceded
+		return;					/* Don't send Time Exceeded for TimeExceded */
 
-	// Copy the Original IP Header and first 8 bytes of packet down the buffer
+	/* Copy the Original IP Header and first 8 bytes of packet down the buffer */
 
 	ptr = (UCHAR *) ICMPptr;
 
-	memmove(ptr + 8, IPptr, 28);		// IP header plus 8 data
+	memmove(ptr + 8, IPptr, 28);		/* IP header plus 8 data */
 
-//	We swap Souce to Dest, Convert to ICMP 11 and send back first 8 bytes of packet after header
+/*	We swap Souce to Dest, Convert to ICMP 11 and send back first 8 bytes of packet after header */
 
 	IPptr->IPDEST = IPptr->IPSOURCE;
 	IPptr->IPSOURCE.addr = OurIPAddr;
 	IPptr->IPPROTOCOL = ICMP;
 	IPptr->IPTTL = IPTTL;
 	IPptr->FRAGWORD = 0;
-	IPptr->IPLENGTH = htons(56);			// IP Header ICMP Header IP Header 8 Data
+	IPptr->IPLENGTH = htons(56);			/* IP Header ICMP Header IP Header 8 Data */
 
 	memset (ICMPptr, 0, 8);
 	ICMPptr->ICMPTYPE = Type;
@@ -2593,15 +2602,15 @@ VOID SendIPtoEncap(PIPMSG IPptr, uint32_t Encap)
 	TXaddr.txaddr.sin_family = AF_INET;
 	Origlen = htons(IPptr->IPLENGTH);
 
-	//	If we are using PCAP interface we have to add IPIP and MAC Headers.
+	/*	If we are using PCAP interface we have to add IPIP and MAC Headers. */
 
 	if (EncapAddr != INADDR_NONE)
 	{
-		UCHAR IPCopy[2048];				// Need Space to add headers
+		UCHAR IPCopy[2048];				/* Need Space to add headers */
 		PETHMSG Ethptr = (PETHMSG)IPCopy;
 		PIPMSG Outer = (PIPMSG)&IPCopy[14];
 
-		memset(IPCopy, 0, 34);			// Eth + IP Headers
+		memset(IPCopy, 0, 34);			/* Eth + IP Headers */
 
 		Outer->VERLEN = 0x45;
 		Outer->IPDEST.addr = Encap;
@@ -2630,8 +2639,8 @@ VOID SendIPtoEncap(PIPMSG IPptr, uint32_t Encap)
 		memcpy(&TXaddr, &RXaddr, sizeof(struct sockaddr_in6));
 		TXaddr.txaddr.sin_port = htons(UDPPort);
 
-		// UDP Processor Needs the Encap Address, but we don't need the IPIP hearer
-		//	as that is added by the raw send later. Just stick it on the end.
+		/* UDP Processor Needs the Encap Address, but we don't need the IPIP hearer */
+		/*	as that is added by the raw send later. Just stick it on the end. */
 
 
 		ptr = (UCHAR *)IPptr;
@@ -2655,9 +2664,9 @@ BOOL RouteIPMsg(PIPMSG IPptr)
 	BOOL Found;
 	struct nat_table_entry * NAT = NULL;
 	int index;
-	BOOL SendtoTAP = FALSE;		// used on LinBPQ for NAT to This Host
+	BOOL SendtoTAP = FALSE;		/* used on LinBPQ for NAT to This Host */
 
-	//	Decremnent TTL and Recalculate header checksum
+	/*	Decremnent TTL and Recalculate header checksum */
 
 	IPptr->IPTTL--;
 
@@ -2667,15 +2676,15 @@ BOOL RouteIPMsg(PIPMSG IPptr)
 		return FALSE;	
 	}
 
-	// See if for a NATed Address
+	/* See if for a NATed Address */
 
-//	Debugprintf("RouteIPFrame IP %s\n", FormatIP(IPptr->IPDEST.addr));
+/*	Debugprintf("RouteIPFrame IP %s\n", FormatIP(IPptr->IPDEST.addr)); */
 				
 	for (index=0; index < nat_table_len; index++)
 	{
 		NAT = &nat_table[index];
 					
-		// for the moment only map all ports
+		/* for the moment only map all ports */
 
 		if (NAT->origipaddr == IPptr->IPDEST.addr)
 		{
@@ -2686,7 +2695,7 @@ BOOL RouteIPMsg(PIPMSG IPptr)
 			ptr = sprintf(Msg, "NAT %s to ", FormatIP(IPptr->IPDEST.addr));
 			sprintf(&Msg[ptr], "%s\n", FormatIP(NAT->mappedipaddr));
 
-//			Debugprintf("%s", Msg);
+/*			Debugprintf("%s", Msg); */
 
 			IPptr->IPDEST.addr = NAT->mappedipaddr;
 
@@ -2696,8 +2705,8 @@ BOOL RouteIPMsg(PIPMSG IPptr)
 				RecalcUDPChecksum(IPptr);
 			else if (IPptr->IPPROTOCOL == 1)
 			{
-				// ICMP. If it has an inner packet (Time Exceeded or Need to Fragment)
-				// we also need to un-NAT the inner packet.
+				/* ICMP. If it has an inner packet (Time Exceeded or Need to Fragment) */
+				/* we also need to un-NAT the inner packet. */
 
 				PICMPMSG ICMPptr = (PICMPMSG)&IPptr->Data;
 			
@@ -2708,7 +2717,7 @@ BOOL RouteIPMsg(PIPMSG IPptr)
 					Debugprintf("NAT ICMP Unreachable or Time Exceeded %d", ICMPptr->ICMPTYPE); 
 					IPptr->IPSOURCE.addr = NAT->mappedipaddr;
 
-					// Dest could also need to be de-natted
+					/* Dest could also need to be de-natted */
 
 					for (index=0; index < nat_table_len; index++)
 					{
@@ -2740,12 +2749,12 @@ BOOL RouteIPMsg(PIPMSG IPptr)
 	IPptr->IPCHECKSUM = 0;
 	IPptr->IPCHECKSUM = Generate_CHECKSUM(IPptr, 20);
 
-	// Everything is in the routes table, even arp-derived routes. so just look there
+	/* Everything is in the routes table, even arp-derived routes. so just look there */
 
 	Route = FindRoute(IPptr->IPDEST.addr);
 
 	if (Route == NULL)
-		return FALSE;				// ?? Dest unreachable ??
+		return FALSE;				/* ?? Dest unreachable ?? */
 
 	Route->FRAMECOUNT++;
 
@@ -2772,7 +2781,7 @@ BOOL RouteIPMsg(PIPMSG IPptr)
 		}
 
 
-		// Look up target address in ARP 
+		/* Look up target address in ARP  */
 
 		if (Route->GATEWAY)
 			Arp = LookupARP(Route->GATEWAY, FALSE, &Found);
@@ -2781,7 +2790,7 @@ BOOL RouteIPMsg(PIPMSG IPptr)
 
 		if (!Found)
 		{
-			if (Route->GATEWAY == 0)	// Interace Route
+			if (Route->GATEWAY == 0)	/* Interace Route */
 			{	
 				ARPptr = AllocARPEntry();
 				if (ARPptr != NULL)
@@ -2794,7 +2803,7 @@ BOOL RouteIPMsg(PIPMSG IPptr)
 					ARPptr->ARPTYPE = 'E';
 					ARPptr->IPADDR = IPptr->IPDEST.addr;
 
-					// Save a copy to send on if ARP reply received
+					/* Save a copy to send on if ARP reply received */
 					
  					buffptr = malloc(2048);
 					
@@ -2835,7 +2844,7 @@ BOOL RouteIPMsg(PIPMSG IPptr)
 
 VOID SendIPtoEther(PIPMSG IPptr, UCHAR * HWADDR, BOOL SendtoTAP)
 {	
-	// AX.25 headers are bigger, so there will always be room in buffer for enet header
+	/* AX.25 headers are bigger, so there will always be room in buffer for enet header */
 	
 	PETHMSG Ethptr = (PETHMSG)IPptr;
 	int Len;
@@ -2844,7 +2853,7 @@ VOID SendIPtoEther(PIPMSG IPptr, UCHAR * HWADDR, BOOL SendtoTAP)
 
 	Len = ntohs(IPptr->IPLENGTH);
 
-	Len+=14;			// Add eth Header
+	Len+=14;			/* Add eth Header */
 
 	memcpy(Ethptr->DEST, HWADDR, 6);
 	memcpy(Ethptr->SOURCE, ourMACAddr, 6);
@@ -2865,16 +2874,16 @@ VOID SendIPtoAX25(PIPMSG IPptr, UCHAR * HWADDR, int Port, char Mode)
 
 
 	(UCHAR *)Msgptr--;
-	Msgptr->PID = 0xcc;		//IP
+	Msgptr->PID = 0xcc;		/*IP */
 
-	if (Port == 0)			// NETROM
+	if (Port == 0)			/* NETROM */
 		PACLEN = 235;
 
 	Len = ntohs(IPptr->IPLENGTH);
 
-	// Don't fragment VC stuff
+	/* Don't fragment VC stuff */
 
-	if (Mode == 'V')		// Virtual Circuit
+	if (Mode == 'V')		/* Virtual Circuit */
 	{
 		Send_AX_Connected((PMESSAGE)Msgptr, Len + 16, Port, HWADDR);
 		return;
@@ -2882,30 +2891,30 @@ VOID SendIPtoAX25(PIPMSG IPptr, UCHAR * HWADDR, int Port, char Mode)
 
 	while (Len > PACLEN)
 	{
-		// Need to Frgament
+		/* Need to Frgament */
 		
-		USHORT Fraglen;				// Max Fragment Size (PACLEN rounded down to 8 boundary))
-		USHORT Datalen;				// Data Content))
+		USHORT Fraglen;				/* Max Fragment Size (PACLEN rounded down to 8 boundary)) */
+		USHORT Datalen;				/* Data Content)) */
 
 		UCHAR * ptr1 = &IPptr->Data;
 
-		//Bit 0: reserved, must be zero
-		//Bit 1: (DF) 0 = May Fragment,  1 = Don't Fragment.
-		//Bit 2: (MF) 0 = Last Fragment, 1 = More Fragments.
-		//Fragment Offset:  13 bits
+		/*Bit 0: reserved, must be zero */
+		/*Bit 1: (DF) 0 = May Fragment,  1 = Don't Fragment. */
+		/*Bit 2: (MF) 0 = Last Fragment, 1 = More Fragments. */
+		/*Fragment Offset:  13 bits */
 
-//		FRAGWORD &= 0x3fff;		// Clear Dont Fragment bit
+/*		FRAGWORD &= 0x3fff;		// Clear Dont Fragment bit */
 
 		if (FRAGWORD & (1 << 14))
 		{
-			SendICMPMessage(IPptr, 3, 4, PACLEN);  // type 3 (dest unreachable), code 4 (frag needed but don't-fragment bit set))
+			SendICMPMessage(IPptr, 3, 4, PACLEN);  /* type 3 (dest unreachable), code 4 (frag needed but don't-fragment bit set)) */
 			return;	
 		}
 
-		FRAGWORD |= (1 << 13);				// Set More Fragments bit
+		FRAGWORD |= (1 << 13);				/* Set More Fragments bit */
 		IPptr->FRAGWORD = htons(FRAGWORD);
 
-		Datalen = (PACLEN - 20) & 0xFFF8;	// Must be multiple of 8 bytes
+		Datalen = (PACLEN - 20) & 0xFFF8;	/* Must be multiple of 8 bytes */
 		Fraglen = Datalen + 20;
 
 		IPptr->IPLENGTH = htons(Fraglen);
@@ -2913,32 +2922,32 @@ VOID SendIPtoAX25(PIPMSG IPptr, UCHAR * HWADDR, int Port, char Mode)
 		IPptr->IPCHECKSUM = 0;
 		IPptr->IPCHECKSUM = Generate_CHECKSUM(IPptr, 20);
 
-		// Send First Fragment
+		/* Send First Fragment */
 
-		if (Mode == 'D')		// Datagram
+		if (Mode == 'D')		/* Datagram */
 			Send_AX_Datagram((PMESSAGE)Msgptr, Fraglen + 16, Port, HWADDR);
 		else
 			Send_AX_Connected((PMESSAGE)Msgptr, Fraglen + 16, Port, HWADDR);
 
-		// Update Header
+		/* Update Header */
 
 		FRAGWORD += Datalen / 8;
 
-		// Move Data Down the buffer
+		/* Move Data Down the buffer */
 
 		Len -= Datalen;	
 		memmove(ptr1, ptr1 + (Datalen), Len);
 	}
 
-	//	Reset Header in case we've messed with it
+	/*	Reset Header in case we've messed with it */
 
 	IPptr->IPLENGTH = htons(Len);
 
-	// if this started out as a fragment before we split it more,
-	// we need to leave the MF bit set
+	/* if this started out as a fragment before we split it more, */
+	/* we need to leave the MF bit set */
 
 	if ((OrigFragWord & 0x2000) == 0)
-		FRAGWORD &= 0x5fff;		// Clear More Fragments bit
+		FRAGWORD &= 0x5fff;		/* Clear More Fragments bit */
 
 	IPptr->FRAGWORD = htons(FRAGWORD);
 
@@ -2947,7 +2956,7 @@ VOID SendIPtoAX25(PIPMSG IPptr, UCHAR * HWADDR, int Port, char Mode)
 
 	Len+=16;
 
-	if (Mode == 'D')		// Datagram
+	if (Mode == 'D')		/* Datagram */
 	{
 		Send_AX_Datagram((PMESSAGE)Msgptr, Len, Port, HWADDR);
 		return;
@@ -2999,13 +3008,13 @@ PARPDATA AllocARPEntry()
 
  VOID SendARPMsg(PARPDATA Arp, BOOL ToTAP)
  {
-	//	Send ARP. Initially used only to find default gateway
+	/*	Send ARP. Initially used only to find default gateway */
 
-	Arp->ARPTIMER =  5;							// Retry periodically
+	Arp->ARPTIMER =  5;							/* Retry periodically */
 
 	if (Arp->ARPINTERFACE == 255)				
 	{
-		ETHARPREQMSG.ARPOPCODE = 0x0100;		//             ; REQUEST
+		ETHARPREQMSG.ARPOPCODE = 0x0100;		/*             ; REQUEST */
 
 		ETHARPREQMSG.TARGETIPADDR = Arp->IPADDR;						
 		memset(ETHARPREQMSG.TARGETHWADDR, 0, 6);
@@ -3024,7 +3033,7 @@ PARPDATA AllocARPEntry()
 	{
 		AXARPREQMSG.TARGETIPADDR = Arp->IPADDR;
 		memset(AXARPREQMSG.TARGETHWADDR, 0, 7);
-		AXARPREQMSG.ARPOPCODE = 0x0100;		//             ; REQUEST
+		AXARPREQMSG.ARPOPCODE = 0x0100;		/*             ; REQUEST */
 		AXARPREQMSG.SENDIPADDR = OurIPAddr;
 
 		memcpy(AXARPREQMSG.SENDHWADDR, MYCALL, 7);
@@ -3070,7 +3079,7 @@ PROUTEENTRY LookupRoute(uint32_t IPADDR, uint32_t Mask, BOOL Add, BOOL * Found)
 		}
 	}
 
-	// Not Found
+	/* Not Found */
 
 	*Found = FALSE;
 
@@ -3099,7 +3108,7 @@ PARPDATA LookupARP(uint32_t IPADDR, BOOL Add, BOOL * Found)
 		}
 	}
 
-	// Not Found
+	/* Not Found */
 
 	*Found = FALSE;
 
@@ -3130,7 +3139,7 @@ VOID RemoveRoute(PROUTEENTRY Route)
 			if (Route->ARP)
 			{
 				PARPDATA Arp = Route->ARP;
-				Route->ARP->ARPROUTE = NULL;			// Avoid recursion
+				Route->ARP->ARPROUTE = NULL;			/* Avoid recursion */
 				if (Arp->LOCKED == 0)
 					RemoveARP(Arp);
 			}
@@ -3160,12 +3169,12 @@ VOID RemoveARP(PARPDATA Arp)
 				i++;
 			}
 
-			// Remove linked route
+			/* Remove linked route */
 
 			if (Arp->ARPROUTE)
 			{
 				PROUTEENTRY Route = Arp->ARPROUTE;
-				Arp->ARPROUTE->ARP = NULL;		// Avoid recursion
+				Arp->ARPROUTE->ARP = NULL;		/* Avoid recursion */
 			
 				if (Route->LOCKED == 0)
 					RemoveRoute(Route);
@@ -3203,12 +3212,12 @@ Dll int APIENTRY GetIPInfo(VOID * ARPRecs, VOID * IPStatsParam, int index)
 static BOOL ReadConfigFile()
 {
 
-// IPAddr 192.168.0.129
-// IPBroadcast 192.168.0.255
-// IPGateway 192.168.0.1
-// IPPorts 1,4 
+/* IPAddr 192.168.0.129 */
+/* IPBroadcast 192.168.0.255 */
+/* IPGateway 192.168.0.1 */
+/* IPPorts 1,4  */
 
-// MAP 192.168.0.100 1001 n9pmo.dyndns.org 1000
+/* MAP 192.168.0.100 1001 n9pmo.dyndns.org 1000 */
 
 	char * Config;
 	char * ptr1, * ptr2;
@@ -3216,11 +3225,11 @@ static BOOL ReadConfigFile()
 	BOOL Found;
 	char buf[256],errbuf[256];
 
-	Config = PortConfig[IPConfigSlot];		// Config fnom bpq32.cfg
+	Config = PortConfig[IPConfigSlot];		/* Config fnom bpq32.cfg */
 
 	if (Config)
 	{
-		// Using config from bpq32.cfg
+		/* Using config from bpq32.cfg */
 
 		ptr1 = Config;
 
@@ -3235,7 +3244,7 @@ static BOOL ReadConfigFile()
 			strlop(buf, ';');
 			strlop(buf, '#');
 
-			strcpy(errbuf,buf);			// save in case of error
+			strcpy(errbuf,buf);			/* save in case of error */
 	
 			if (!ProcessLine(buf))
 			{
@@ -3245,13 +3254,13 @@ static BOOL ReadConfigFile()
 			}
 		}
 
-		// Add an Interface Route to our LAN
+		/* Add an Interface Route to our LAN */
 
 		Route = LookupRoute(OurIPAddr & OurNetMask, OurNetMask, TRUE, &Found);
 
 		if (!Found)
 		{
-			// Add if possible
+			/* Add if possible */
 
 			if (Route != NULL)
 			{
@@ -3279,16 +3288,16 @@ static int ProcessLine(char * buf)
 
 	if(ptr == NULL) return (TRUE);
 
-	if(*ptr =='#') return (TRUE);			// comment
+	if(*ptr =='#') return (TRUE);			/* comment */
 
-	if(*ptr ==';') return (TRUE);			// comment
+	if(*ptr ==';') return (TRUE);			/* comment */
 
 	if(_stricmp(ptr,"ADAPTER") == 0)
 	{
-//#ifndef WIN32
-//		WritetoConsoleLocal("IPGating to Ethernet is not supported in this build\n");
-//		return TRUE;
-//#endif
+/*#ifndef WIN32 */
+/*		WritetoConsoleLocal("IPGating to Ethernet is not supported in this build\n"); */
+/*		return TRUE; */
+/*#endif */
 		strcpy(Adapter,p_value);
 		return (TRUE);
 	}
@@ -3305,7 +3314,7 @@ static int ProcessLine(char * buf)
 		return (TRUE);
 	}
 
-	if (_stricmp(ptr,"44Encap") == 0)			// Enable Net44 IPIP Tunnel
+	if (_stricmp(ptr,"44Encap") == 0)			/* Enable Net44 IPIP Tunnel */
 	{
 		WantEncap = TRUE;
 
@@ -3320,7 +3329,7 @@ static int ProcessLine(char * buf)
 		{
 			int a,b,c,d,e,f,num;
 		
-			// See if MAC Specified
+			/* See if MAC Specified */
 
 			p_value = strtok(NULL, " \t\n\r");
 
@@ -3343,11 +3352,11 @@ static int ProcessLine(char * buf)
 				if (p_value == NULL)
 					return TRUE;
 			}	
-			// see if source addr specified
+			/* see if source addr specified */
 				
 			if (_stricmp(p_value, "RIPSOURCE") == 0)
 			{
-				// Set Source addr of RIP44 packets
+				/* Set Source addr of RIP44 packets */
 			
 				p_value = strtok(NULL, " =\t\n\r");
 				UCSD44 = inet_addr(p_value);
@@ -3360,7 +3369,7 @@ static int ProcessLine(char * buf)
 		{
 			UDPEncap = TRUE;
 
-			// look for options PORT and/or IPv6
+			/* look for options PORT and/or IPv6 */
 
 			p_value = strtok(NULL, " \t\n\r");
 
@@ -3381,7 +3390,7 @@ static int ProcessLine(char * buf)
 
 	if (_stricmp(ptr,"IPAddr") == 0)
 	{
-		//	accept /xx as a netmask
+		/*	accept /xx as a netmask */
 
 		char * 	p_mask = strlop(p_value, '/');
 
@@ -3398,7 +3407,7 @@ static int ProcessLine(char * buf)
 			else
 				IPMask = (0xFFFFFFFF) << (32 - Bits);
 
-			OurNetMask = htonl(IPMask);			// Needs to be Network order
+			OurNetMask = htonl(IPMask);			/* Needs to be Network order */
 		}
 
 		OurIPAddr = inet_addr(p_value);
@@ -3409,16 +3418,16 @@ static int ProcessLine(char * buf)
 		return (TRUE);
 	}
 
-//	if (_stricmp(ptr,"HostIPAddr") == 0)
-//	{
-//		HostIPAddr = inet_addr(p_value);
+/*	if (_stricmp(ptr,"HostIPAddr") == 0) */
+/*	{ */
+/*		HostIPAddr = inet_addr(p_value); */
 
-//		if (HostIPAddr == INADDR_NONE) return (FALSE);
+/*		if (HostIPAddr == INADDR_NONE) return (FALSE); */
 
-//		strcpy(HostIPAddrText, p_value);
+/*		strcpy(HostIPAddrText, p_value); */
 
-//		return (TRUE);
-//	}
+/*		return (TRUE); */
+/*	} */
 
 	if (_stricmp(ptr,"IPNetMask") == 0)
 	{
@@ -3454,16 +3463,16 @@ static int ProcessLine(char * buf)
 		return TRUE;
 	}
 
-	// ARP 44.131.4.18 GM8BPQ-7 1 
+	/* ARP 44.131.4.18 GM8BPQ-7 1  */
 	if (_stricmp(ptr,"ARP") == 0)
 	{
-		p_value[strlen(p_value)] = ' ';		// put back together
+		p_value[strlen(p_value)] = ' ';		/* put back together */
 		return ProcessARPLine(p_value, TRUE);
 	}
 
 	if (_stricmp(ptr,"ROUTE") == 0)
 	{
-		p_value[strlen(p_value)] = ' ';		// put back together
+		p_value[strlen(p_value)] = ' ';		/* put back together */
 		ProcessROUTELine(p_value, TRUE);
 		return TRUE;
 	}
@@ -3497,23 +3506,23 @@ static int ProcessLine(char * buf)
 		if (p_origport && strcmp(p_origport, "TAP") == 0)
 			NATTAP = TRUE;
 
-		//		
-//		//	Default is all ports
-//
-//		if (p_origport)
-//		{
-//			p_port = strtok(NULL, " ,\t\n\r");
-//			if (!p_port) return FALSE;
-//
-//			port = atoi(p_origport);
-//			mappedport=atoi(p_port);
-//		}
-//		else
+		/*		 */
+/*		//	Default is all ports */
+/* */
+/*		if (p_origport) */
+/*		{ */
+/*			p_port = strtok(NULL, " ,\t\n\r"); */
+/*			if (!p_port) return FALSE; */
+/* */
+/*			port = atoi(p_origport); */
+/*			mappedport=atoi(p_port); */
+/*		} */
+/*		else */
 
 		port = mappedport = 0;
 	
 #ifndef WIN32
-		// on Linux, we send stuff for our host to TAP
+		/* on Linux, we send stuff for our host to TAP */
 
 		if (ipad == OurIPAddr || NATTAP)
 			nat_table[nat_table_len].ThisHost = TRUE;
@@ -3523,13 +3532,13 @@ static int ProcessLine(char * buf)
 		nat_table[nat_table_len].mappedipaddr = mappedipad;
 		nat_table[nat_table_len++].mappedport = ntohs(mappedport);
 	
-		//	Add a Host Route
+		/*	Add a Host Route */
 
 		Route = LookupRoute(mappedipad, 0xffffffff, TRUE, &Found);
 
 		if (!Found)
 		{
-			// Add if possible
+			/* Add if possible */
 
 			if (Route != NULL)
 			{
@@ -3548,9 +3557,9 @@ static int ProcessLine(char * buf)
 		BPQSNMP = TRUE;
 		return TRUE;
 	}
-	//
-	//	Bad line
-	//
+	/* */
+	/*	Bad line */
+	/* */
 	return FALSE;
 	
 }
@@ -3570,15 +3579,15 @@ VOID DoARPTimer()
 			
 			if (Arp->ARPTIMER == 0)
 			{
-				// Retry Request
+				/* Retry Request */
 
-//				SendARPMsg(Arp);
+/*				SendARPMsg(Arp); */
 				RemoveARP(Arp);
 			}
 			continue;
 		}
 
-		// Time out active entries
+		/* Time out active entries */
 
 		if (Arp->LOCKED == 0)
 		{
@@ -3586,7 +3595,7 @@ VOID DoARPTimer()
 			
 			if (Arp->ARPTIMER == 0)
 			{
-				// Remove Entry
+				/* Remove Entry */
 				
 				RemoveARP(Arp);
 				SaveARP();
@@ -3609,20 +3618,20 @@ VOID DoRouteTimer()
 
 		if (Route->TYPE == 'T' && Route->RIPTIMOUT == 0 && Route->LOCKED == FALSE)
 		{
-			// Only remove Encap routes if we are still getting RIP44 messages,
-			// so we can keep going if UCSD stops sending updates, but can time 
-			// out entries that are removed
+			/* Only remove Encap routes if we are still getting RIP44 messages, */
+			/* so we can keep going if UCSD stops sending updates, but can time  */
+			/* out entries that are removed */
 
 			if ((NOW - LastRIP44Msg) < 3600)
 			{
 				RemoveRoute(Route);
-				return;					// Will remove all eventually
+				return;					/* Will remove all eventually */
 			}
 		}
 	}
 }
 
-// PCAP Support Code
+/* PCAP Support Code */
 
 
 #ifdef WIN32
@@ -3693,21 +3702,25 @@ int OpenPCAP()
 
 	/* Open the adapter */
 
-	adhandle= pcap_open_livex(Adapter,	// name of the device
-							 65536,			// portion of the packet to capture. 
-											// 65536 grants that the whole packet will be captured on all the MACs.
-							 Promiscuous,	// promiscuous mode (nonzero means promiscuous)
-							 1,				// read timeout
-							 errbuf			// error buffer
+#ifndef NOPCAP
+	adhandle= pcap_open_livex(Adapter,	/* name of the device */
+							 65536,			/* portion of the packet to capture.  */
+											/* 65536 grants that the whole packet will be captured on all the MACs. */
+							 Promiscuous,	/* promiscuous mode (nonzero means promiscuous) */
+							 1,				/* read timeout */
+							 errbuf			/* error buffer */
 							 );
+#endif
 	
 	if (adhandle == NULL)
 		return FALSE;
-
+#ifndef NOPCAP
 	pcap_setnonblockx(adhandle, 1, errbuf);
+#endif
 	
 	/* Check the link layer. We support only Ethernet for simplicity. */
 
+#ifndef NOPCAP
 	if((int)pcap_datalinkx(adhandle) != DLT_EN10MB)
 	{
 		n=sprintf(buf,"\nThis program works only on Ethernet networks.\n");
@@ -3716,17 +3729,19 @@ int OpenPCAP()
 		adhandle = 0;
 		return FALSE;
 	}
-
+#endif
 	netmask=0xffffff; 
 
-//	sprintf(packet_filter,"ether[12:2]=0x0800 or ether[12:2]=0x0806");
+/*	sprintf(packet_filter,"ether[12:2]=0x0800 or ether[12:2]=0x0806"); */
 
 	n = sprintf(packet_filter,"ether broadcast or ether dst %02x:%02x:%02x:%02x:%02x:%02x",
 		ourMACAddr[0], ourMACAddr[1], ourMACAddr[2],
 		ourMACAddr[3], ourMACAddr[4], ourMACAddr[5]);
 		
-	//compile the filter
+	/*compile the filter */
 
+
+#ifndef NOPCAP
 	if (pcap_compilex(adhandle, &fcode, packet_filter, 1, netmask) <0 )
 	{	
 		n=sprintf(buf,"\nUnable to compile the packet filter. Check the syntax.\n");
@@ -3736,7 +3751,7 @@ int OpenPCAP()
 		return FALSE;
 	}
 	
-	//set the filter
+	/*set the filter */
 
 	if (pcap_setfilterx(adhandle, &fcode)<0)
 	{
@@ -3747,6 +3762,7 @@ int OpenPCAP()
 		return FALSE;
 	}
 #endif	
+#endif
 	return TRUE;
 }
 
@@ -3760,7 +3776,7 @@ VOID ReadARP()
 	
 	while(fgets(buf, 255, file) != NULL)
 	{
-		strcpy(errbuf,buf);			// save in case of error
+		strcpy(errbuf,buf);			/* save in case of error */
 	
 		if (!ProcessARPLine(buf, FALSE))
 		{
@@ -3789,9 +3805,9 @@ BOOL ProcessARPLine(char * buf, BOOL Locked)
 	PARPDATA Arp;
 	BOOL Found;
 
-	_strupr(buf);			// calls should be upper case
+	_strupr(buf);			/* calls should be upper case */
 
-//	192.168.0.131 GM8BPQ-13 1 D
+/*	192.168.0.131 GM8BPQ-13 1 D */
 
 	p_ip = strtok(buf, " \t\n\r");
 	p_mac = strtok(NULL, " \t\n\r");
@@ -3800,9 +3816,9 @@ BOOL ProcessARPLine(char * buf, BOOL Locked)
 
 	if(p_ip == NULL) return (TRUE);
 
-	if(*p_ip =='#') return (TRUE);			// comment
+	if(*p_ip =='#') return (TRUE);			/* comment */
 
-	if(*p_ip ==';') return (TRUE);			// comment
+	if(*p_ip ==';') return (TRUE);			/* comment */
 
 	if (p_mac == NULL) return FALSE;
 
@@ -3816,7 +3832,7 @@ BOOL ProcessARPLine(char * buf, BOOL Locked)
 
 	_strupr(p_type);
 
-	// Don't restore Eth addresses from the save file
+	/* Don't restore Eth addresses from the save file */
 
 	if (*p_type == 'E' && Locked == FALSE)
 		return TRUE;
@@ -3847,7 +3863,7 @@ BOOL ProcessARPLine(char * buf, BOOL Locked)
 		if (DecodeCallString(p_mac, &Stay, &Spy, &AXCall[0]) == 0)
 			return FALSE;
 
-		if (Port == 0 && *p_type !='V')		// Port 0 for NETROM
+		if (Port == 0 && *p_type !='V')		/* Port 0 for NETROM */
 			return FALSE;
 	
 		if (Port)
@@ -3863,7 +3879,7 @@ BOOL ProcessARPLine(char * buf, BOOL Locked)
 
 	if (!Found)
 	{
-		// Add if possible
+		/* Add if possible */
 
 		if (Arp != NULL)
 		{
@@ -3884,7 +3900,7 @@ BOOL ProcessARPLine(char * buf, BOOL Locked)
 			Arp->ARPTIMER =  (Arp->ARPTYPE == 'E')? 300 : ARPTIMEOUT;
 			Arp->LOCKED = Locked;
 
-			// Also add to Routes
+			/* Also add to Routes */
 
 			AddToRoutes(Arp, IPAddr, *p_type);
 			Arp->ARPROUTE->LOCKED = Locked;
@@ -3899,35 +3915,35 @@ VOID AddToRoutes(PARPDATA Arp, UINT IPAddr, char Type)
 {
 	PROUTEENTRY Route;
 	BOOL Found;
-	UINT IPMask = 0xffffffff;		// All ARP rerived routes are Host Routes
+	UINT IPMask = 0xffffffff;		/* All ARP rerived routes are Host Routes */
 
 	Route = LookupRoute(Arp->IPADDR, IPMask, TRUE, &Found);
 
 	if (!Found)
 	{
-		// Add if possible
+		/* Add if possible */
 
 		if (Route != NULL)
 		{
 			Route->NETWORK = IPAddr;
 			Route->SUBNET = IPMask;
-			Route->GATEWAY = IPAddr;		// Host Route
+			Route->GATEWAY = IPAddr;		/* Host Route */
 			Route->TYPE = Type;
 		}
 	}
 
 	Arp->ARPROUTE = Route;
-	Route->ARP = Arp;				// Crosslink Arp<>Routee
+	Route->ARP = Arp;				/* Crosslink Arp<>Routee */
 
-	//	Sort into reverse mask order
+	/*	Sort into reverse mask order */
 
 	qsort(RouteRecords, NumberofRoutes, sizeof(void *), CompareMasks);
 }
 
-// ROUTE 44.131.4.18/32 D GM8BPQ-7 1// Datagram?netrom/VC via Call	!!!! No - this sohuld be an ARP entry
+/* ROUTE 44.131.4.18/32 D GM8BPQ-7 1// Datagram?netrom/VC via Call	!!!! No - this sohuld be an ARP entry */
 
-// ROUTE 44.131.4.18/32 T n.n.n.n			// Vis Tunnel Endpoint n.n.n.n
-// ROUTE 44.131.4.18/32 E n.n.n.n			// Via IP address over Ethernet
+/* ROUTE 44.131.4.18/32 T n.n.n.n			// Vis Tunnel Endpoint n.n.n.n */
+/* ROUTE 44.131.4.18/32 E n.n.n.n			// Via IP address over Ethernet */
 
 
 int CountDots(char * Addr)
@@ -3951,8 +3967,8 @@ BOOL ProcessROUTELine(char * buf, BOOL Locked)
 	PROUTEENTRY Route;
 	BOOL Found;
 
-//	 ROUTE 44.131.4.18/31 44.131.4.1	// Normal Route
-//	 ROUTE 44.131.4.18/31 1.2.3.4 T		// Tunnel via 1.2.3.4
+/*	 ROUTE 44.131.4.18/31 44.131.4.1	// Normal Route */
+/*	 ROUTE 44.131.4.18/31 1.2.3.4 T		// Tunnel via 1.2.3.4 */
 
 
 	p_ip = strtok(buf, " \t\n\r");
@@ -3961,7 +3977,7 @@ BOOL ProcessROUTELine(char * buf, BOOL Locked)
 
 	if (_stricmp(p_ip, "addprivate") == 0)
 	{
-		// From Encap.txt file
+		/* From Encap.txt file */
 	
 		p_ip = p_gateway;
 		
@@ -3972,15 +3988,15 @@ BOOL ProcessROUTELine(char * buf, BOOL Locked)
 
 	if(p_ip == NULL) return (TRUE);
 
-	if(*p_ip =='#') return (TRUE);			// comment
+	if(*p_ip =='#') return (TRUE);			/* comment */
 
-	if(*p_ip ==';') return (TRUE);			// comment
+	if(*p_ip ==';') return (TRUE);			/* comment */
 
 	if (p_gateway == NULL) return FALSE;
 
 	if (p_type)
 	{
-		if (_stricmp(p_type, "UDPT") == 0)		// Tunnelling over UDP
+		if (_stricmp(p_type, "UDPT") == 0)		/* Tunnelling over UDP */
 		{
 			p_port = strtok(NULL, " \t\n\r");
 			Type = 'U';
@@ -4012,15 +4028,15 @@ BOOL ProcessROUTELine(char * buf, BOOL Locked)
 		*p_mask = 0;
 	}
 	else
-		IPMask = 32;			// No mask means Host route
+		IPMask = 32;			/* No mask means Host route */
 
-	IPMask = htonl(IPMask);			// Needs to be Network order
+	IPMask = htonl(IPMask);			/* Needs to be Network order */
 
 	IPGateway = inet_addr(p_gateway);
 
 	if (IPGateway == INADDR_NONE) return FALSE;
 
-	// The encap.txt format omits trailing zeros.
+	/* The encap.txt format omits trailing zeros. */
 		
 	n = CountDots(p_ip);
 		
@@ -4040,7 +4056,7 @@ BOOL ProcessROUTELine(char * buf, BOOL Locked)
 
 	if (!Found)
 	{
-		// Add if possible
+		/* Add if possible */
 
 		if (Route != NULL)
 		{
@@ -4061,7 +4077,7 @@ BOOL ProcessROUTELine(char * buf, BOOL Locked)
 			Route->TYPE = Type;
 			Route->LOCKED = Locked;
 
-			// Link to ARP
+			/* Link to ARP */
 
 			Route->ARP = LookupARP(Route->GATEWAY, FALSE, &Found);
 		}
@@ -4104,7 +4120,7 @@ VOID WriteARPLine(PARPDATA ARPRecord, FILE * file)
 
 	sprintf(IP, "%d.%d.%d.%d", work[0], work[1], work[2], work[3]);
 
-	if(ARPRecord->ARPINTERFACE == 255)		// Ethernet
+	if(ARPRecord->ARPINTERFACE == 255)		/* Ethernet */
 	{
 		sprintf(Mac," %02x:%02x:%02x:%02x:%02x:%02x", 
 				ARPRecord->HWADDR[0],
@@ -4155,7 +4171,7 @@ VOID ReadIPRoutes()
 	if ((file = fopen(IPRFN, "r")) == NULL)
 		return;
 
-//	44.0.0.1/32 0.0.0.0 T 1 8 encap 169.228.66.251
+/*	44.0.0.1/32 0.0.0.0 T 1 8 encap 169.228.66.251 */
 
 	while(fgets(Line, 255, file) != NULL)
 	{
@@ -4200,7 +4216,7 @@ VOID ReadIPRoutes()
 			else
 				IPMask = (0xFFFFFFFF) << (32 - Bits);
 
-			IPMask = htonl(IPMask);			// Needs to be Network order
+			IPMask = htonl(IPMask);			/* Needs to be Network order */
 		}
 
 		IPAddr = inet_addr(Net);
@@ -4211,7 +4227,7 @@ VOID ReadIPRoutes()
 
 		if (Type[0] == 'T')
 		{
-			// Skip Metric, Time and "encap", get encap addr
+			/* Skip Metric, Time and "encap", get encap addr */
 
 			Encap = strtok_s(NULL, " \n", &Context);
 			Encap = strtok_s(NULL, " \n", &Context);
@@ -4229,7 +4245,7 @@ VOID ReadIPRoutes()
 
 		if (!Found)
 		{
-			// Add if possible
+			/* Add if possible */
 
 			if (Route != NULL)
 			{
@@ -4244,7 +4260,7 @@ VOID ReadIPRoutes()
 				Route->TYPE = Type[0];
 				Route->RIPTIMOUT = 900;
 
-				// Link to ARP
+				/* Link to ARP */
 
 				if (Type[0] != 'T')
 					Route->ARP = LookupARP(Route->GATEWAY, FALSE, &Found);
@@ -4266,7 +4282,7 @@ VOID SaveIPRoutes ()
 	if ((file = fopen(IPRFN, "w")) == NULL)
 		return;
 
-	// Save Gateway MAC
+	/* Save Gateway MAC */
 
 	sprintf(Line,"ENCAPMAC %02x:%02x:%02x:%02x:%02x:%02x\n", 
 					RouterMac[0],
@@ -4342,11 +4358,11 @@ int CheckSumAndSend(PIPMSG IPptr, PTCPMSG TCPmsg, USHORT Len)
 	TCPmsg->CHECKSUM = ~Generate_CHECKSUM(&PH, 20);
 	TCPmsg->CHECKSUM = Generate_CHECKSUM(TCPmsg, Len);
 
-	// No need to do IP checksum as RouteIPMessage doesit
+	/* No need to do IP checksum as RouteIPMessage doesit */
 	
-//	CHECKSUM IT
+/*	CHECKSUM IT */
 
-//	IPptr->IPCHECKSUM = Generate_CHECKSUM(IPptr, 20);
+/*	IPptr->IPCHECKSUM = Generate_CHECKSUM(IPptr, 20); */
 
 	RouteIPMsg(IPptr);
 	return 0;
@@ -4367,11 +4383,11 @@ int CheckSumAndSendUDP(PIPMSG IPptr, PUDPMSG UDPmsg, USHORT Len)
 
 	UDPmsg->CHECKSUM = Generate_CHECKSUM(UDPmsg, Len);
 
-	// No need to do IP checksum as ROuteIPMessage doesit
+	/* No need to do IP checksum as ROuteIPMessage doesit */
 
-	// CHECKSUM IT
+	/* CHECKSUM IT */
 
-//	IPptr->IPCHECKSUM = Generate_CHECKSUM(IPptr, 20);
+/*	IPptr->IPCHECKSUM = Generate_CHECKSUM(IPptr, 20); */
 
 	RouteIPMsg(IPptr);
 	return 0;
@@ -4415,11 +4431,11 @@ char * __cdecl Cmdprintf(TRANSPORTENTRY * Session, char * Bufferptr, const char 
 
 VOID PING(TRANSPORTENTRY * Session, char * Bufferptr, char * CmdTail, CMDX * CMD)
 {
-	// Send ICMP Echo Request
+	/* Send ICMP Echo Request */
 
 	uint32_t PingAddr;
 	UCHAR Msg[120] = "";
-	PIPMSG IPptr = (PIPMSG)&Msg[40];		// Space for frame header (not used)
+	PIPMSG IPptr = (PIPMSG)&Msg[40];		/* Space for frame header (not used) */
 	PICMPMSG ICMPptr = (PICMPMSG)&IPptr->Data;
 	time_t NOW = time(NULL);
 
@@ -4441,10 +4457,10 @@ VOID PING(TRANSPORTENTRY * Session, char * Bufferptr, char * CmdTail, CMDX * CMD
 		return;
 	}
 
-	// We keep the message pretty short in case running over RF
-	// Send "*BPQPINGID*, then Timestamp (Secs), then padding to 20 bytes
-	// So we can use same address for host we examine ping responses for 
-	// the pattern, and intercept ours
+	/* We keep the message pretty short in case running over RF */
+	/* Send "*BPQPINGID*, then Timestamp (Secs), then padding to 20 bytes */
+	/* So we can use same address for host we examine ping responses for  */
+	/* the pattern, and intercept ours */
 
 	IPptr->VERLEN = 0x45;
 	IPptr->IPDEST.addr = PingAddr;		
@@ -4452,11 +4468,11 @@ VOID PING(TRANSPORTENTRY * Session, char * Bufferptr, char * CmdTail, CMDX * CMD
 	IPptr->IPPROTOCOL = ICMP;
 	IPptr->IPTTL = IPTTL;
 	IPptr->FRAGWORD = 0;
-	IPptr->IPLENGTH = htons(48);			// IP Header ICMP Header 20 Data
+	IPptr->IPLENGTH = htons(48);			/* IP Header ICMP Header 20 Data */
 
 	ICMPptr->ICMPTYPE = 8;
 	ICMPptr->ICMPID = Session->CIRCUITINDEX;
-	strcpy(ICMPptr->ICMPData, "*BPQPINGID*");	// 12 including null
+	strcpy(ICMPptr->ICMPData, "*BPQPINGID*");	/* 12 including null */
 	memcpy(&ICMPptr->ICMPData[12], &NOW, 4);
 
 	ICMPptr->ICMPCHECKSUM = Generate_CHECKSUM(ICMPptr, 28);
@@ -4473,7 +4489,7 @@ VOID PING(TRANSPORTENTRY * Session, char * Bufferptr, char * CmdTail, CMDX * CMD
 
 VOID SHOWARP(TRANSPORTENTRY * Session, char * Bufferptr, char * CmdTail, CMDX * CMD)
 {
-	//	DISPLAY IP Gateway ARP status or Clear
+	/*	DISPLAY IP Gateway ARP status or Clear */
 	
 	int i;
 	PARPDATA ARPRecord, Arp;
@@ -4517,12 +4533,12 @@ VOID SHOWARP(TRANSPORTENTRY * Session, char * Bufferptr, char * CmdTail, CMDX * 
 	{
 		ARPRecord = ARPRecords[i];
 
-//		if (ARPRecord->ARPVALID)
+/*		if (ARPRecord->ARPVALID) */
 		{
 			memcpy(work, &ARPRecord->IPADDR, 4);
 			sprintf(IP, "%d.%d.%d.%d", work[0], work[1], work[2], work[3]);
 
-			if(ARPRecord->ARPINTERFACE == 255)		// Ethernet
+			if(ARPRecord->ARPINTERFACE == 255)		/* Ethernet */
 			{
 				sprintf(Mac," %02x:%02x:%02x:%02x:%02x:%02x", 
 					ARPRecord->HWADDR[0],
@@ -4568,7 +4584,7 @@ VOID SHOWARP(TRANSPORTENTRY * Session, char * Bufferptr, char * CmdTail, CMDX * 
 
 VOID SHOWNAT(TRANSPORTENTRY * Session, char * Bufferptr, char * CmdTail, CMDX * CMD)
 {
-	//	DISPLAY IP Gateway ARP status or Clear
+	/*	DISPLAY IP Gateway ARP status or Clear */
 	
 	struct nat_table_entry * NAT = NULL;
 	int index;
@@ -4627,7 +4643,7 @@ int CountBits(uint32_t in)
 
 VOID SHOWIPROUTE(TRANSPORTENTRY * Session, char * Bufferptr, char * CmdTail, CMDX * CMD)
 {
-	//	DISPLAY IP Gateway ARP status or Clear
+	/*	DISPLAY IP Gateway ARP status or Clear */
 
 	int i;
 	PROUTEENTRY RouteRecord;
@@ -4656,7 +4672,7 @@ VOID SHOWIPROUTE(TRANSPORTENTRY * Session, char * Bufferptr, char * CmdTail, CMD
 	{
 		RouteRecord = RouteRecords[i];
 
-//		if (RouteRecord->ARPVALID)
+/*		if (RouteRecord->ARPVALID) */
 		{
 			memcpy(work, &RouteRecord->NETWORK, 4);
 			sprintf(Net, "%d.%d.%d.%d", work[0], work[1], work[2], work[3]);
@@ -4680,7 +4696,7 @@ VOID SHOWIPROUTE(TRANSPORTENTRY * Session, char * Bufferptr, char * CmdTail, CMD
 					RouteRecord->LOCKED?"Locked":"");
 		}
 
-		// Treat any parameter as a "Find Filter"
+		/* Treat any parameter as a "Find Filter" */
 
 		CmdTail = strtok_s(CmdTail, " ", &Context);
 		strcpy(UCReply, Reply);
@@ -4695,11 +4711,11 @@ VOID SHOWIPROUTE(TRANSPORTENTRY * Session, char * Bufferptr, char * CmdTail, CMD
 	SendCommandReply(Session, REPLYBUFFER, (int)(Bufferptr - (char *)REPLYBUFFER));
 
 	if (NumberofRoutes)
-		qsort(RouteRecords, NumberofRoutes, sizeof(void *), CompareMasks);		// Back to Maks order
+		qsort(RouteRecords, NumberofRoutes, sizeof(void *), CompareMasks);		/* Back to Maks order */
 
 }
 
-// SNMP Support Code. Pretty limited - basically just for MRTG
+/* SNMP Support Code. Pretty limited - basically just for MRTG */
 
 /*
 Primitive ASN.1 Types	Identifier in hex
@@ -4740,8 +4756,8 @@ SNMPv2-Trap-PDU (added in SNMPv 2)	A7
 UCHAR ifInOctets[] = {'+',6,1,2,1,2,2,1,10};
 UCHAR ifOutOctets[] = {'+',6,1,2,1,2,2,1,16};
 
-int ifInOctetsLen = 9;		// Not Inc  Port
-int ifOutOctetsLen = 9;		// Not Inc  Port
+int ifInOctetsLen = 9;		/* Not Inc  Port */
+int ifOutOctetsLen = 9;		/* Not Inc  Port */
 
 UCHAR sysUpTime[] = {'+', 6,1,2,1,1,3,0};
 int sysUpTimeLen = 8;
@@ -4754,9 +4770,9 @@ extern time_t TimeLoaded;
 int InOctets[64] = {0};
 int OutOctets[64] = {0};
 
-//	ASN PDUs have to be constructed backwards, as each header included a length
+/*	ASN PDUs have to be constructed backwards, as each header included a length */
 
-//	This code assumes we have enough space in front of the buffer.
+/*	This code assumes we have enough space in front of the buffer. */
 
 int ASNGetInt(UCHAR * Msg, int Len)
 {
@@ -4776,34 +4792,34 @@ int ASNPutInt(UCHAR * Buffer, int Offset, unsigned int Val, int Type)
 {
 	int Len = 0;
 	
-	// Encode in minimum space. But servers seem to sign-extend top byte, so if top bit set add another zero;
+	/* Encode in minimum space. But servers seem to sign-extend top byte, so if top bit set add another zero; */
 
-	// I think zero is sent as a zero length field
+	/* I think zero is sent as a zero length field */
 
 	if (Val == 0)
 	{
-		// return zero as 01 00, not zero length string
+		/* return zero as 01 00, not zero length string */
 
-		Buffer[--Offset] = 0;				// Val
-		Buffer[--Offset] = 1;				// Len
+		Buffer[--Offset] = 0;				/* Val */
+		Buffer[--Offset] = 1;				/* Len */
 		Buffer[--Offset] = Type;
 		return 3;
 	}
 
 	while(Val)
 	{
-		Buffer[--Offset] = Val & 255;	// Value
+		Buffer[--Offset] = Val & 255;	/* Value */
 		Val = Val >> 8;
 		Len++;
 	}
 
-	if (Len < 4 && (Buffer[Offset] & 0x80))	// Negative
+	if (Len < 4 && (Buffer[Offset] & 0x80))	/* Negative */
 	{
 		Buffer[--Offset] = 0;
 		Len ++;
 	}
 
-	Buffer[--Offset] = Len;				// Len
+	Buffer[--Offset] = Len;				/* Len */
 	Buffer[--Offset] = Type;
 
 	return Len + 2;
@@ -4823,49 +4839,49 @@ int BuildReply(UCHAR * Buffer, int Offset, UCHAR * OID, int OIDLen, UCHAR * Valu
 	int IDLen;
 	int ValLen = Value[1] + 2;
 
-	// Value is pre-encoded = type, len, data
+	/* Value is pre-encoded = type, len, data */
 
-	// Contruct the Varbindings. Sequence OID Value
+	/* Contruct the Varbindings. Sequence OID Value */
 
 	Offset -= ValLen;
 	memcpy(&Buffer[Offset], Value, ValLen);
 	Offset -= OIDLen;
 	memcpy(&Buffer[Offset], OID, OIDLen);
 	Buffer[--Offset] = OIDLen;
-	Buffer[--Offset] = 6;				// OID Type
+	Buffer[--Offset] = 6;				/* OID Type */
 
 	Buffer[--Offset] = OIDLen + ValLen + 2;
-	Buffer[--Offset] = 48;				// Sequence
+	Buffer[--Offset] = 48;				/* Sequence */
 
 	Buffer[--Offset] = OIDLen + ValLen + 4;
-	Buffer[--Offset] = 48;				// Sequence
+	Buffer[--Offset] = 48;				/* Sequence */
 
-	// Add the error fields (two zero ints
+	/* Add the error fields (two zero ints */
 
-	Buffer[--Offset] = 0;				// Value
-	Buffer[--Offset] = 1;				// Len
-	Buffer[--Offset] = 2;				// Int
+	Buffer[--Offset] = 0;				/* Value */
+	Buffer[--Offset] = 1;				/* Len */
+	Buffer[--Offset] = 2;				/* Int */
 
-	Buffer[--Offset] = 0;				// Value
-	Buffer[--Offset] = 1;				// Len
-	Buffer[--Offset] = 2;				// Int
+	Buffer[--Offset] = 0;				/* Value */
+	Buffer[--Offset] = 1;				/* Len */
+	Buffer[--Offset] = 2;				/* Int */
 
-	// ID
+	/* ID */
 
 	IDLen = ASNPutInt(Buffer, Offset, ReqID, 2);
 	Offset -= IDLen;
 
-	// PDU Type
+	/* PDU Type */
 
 	Buffer[--Offset] = OIDLen + ValLen + 12 + IDLen;
-	Buffer[--Offset] = 0xA2;				// Len
+	Buffer[--Offset] = 0xA2;				/* Len */
 
 	return OIDLen + ValLen + 14 + IDLen;
 }
 
 
 
-//   snmpget -v1 -c jnos [ve4klm.ampr.org | www.langelaar.net] 1.3.6.1.2.1.2.2.1.16.5
+/*   snmpget -v1 -c jnos [ve4klm.ampr.org | www.langelaar.net] 1.3.6.1.2.1.2.2.1.16.5 */
 
 
 VOID ProcessSNMPMessage(PIPMSG IPptr)
@@ -4887,22 +4903,22 @@ VOID ProcessSNMPMessage(PIPMSG IPptr)
 
 	Check_Checksum(UDPptr, Len);
 
-	// 4 bytes version
-	// Null Terminated Community
+	/* 4 bytes version */
+	/* Null Terminated Community */
 
 	Msg = (char *) UDPptr;
 
-	Msg += 8;				// Over UDP Header
+	Msg += 8;				/* Over UDP Header */
 	Len -= 8;
 
-	// ASN 1 Encoding - Type, Len, Data
+	/* ASN 1 Encoding - Type, Len, Data */
 
 	while (Len > 0)
 	{
 		Type = *(Msg++);
 		Length = *(Msg++);
 
-		// First should be a Sequence
+		/* First should be a Sequence */
 
 		if (Type != 0x30)
 			return;
@@ -4913,7 +4929,7 @@ VOID ProcessSNMPMessage(PIPMSG IPptr)
 		Length = *(Msg++);
 		IntVal =  *(Msg++);
 
-		// Should be Integer - SNMP Version - We support V1, identified by zero
+		/* Should be Integer - SNMP Version - We support V1, identified by zero */
 
 		if (Type != 2 || Length != 1 || IntVal != 0)
 			return;
@@ -4923,7 +4939,7 @@ VOID ProcessSNMPMessage(PIPMSG IPptr)
 		Type = *(Msg++);
 		ComLen = *(Msg++);
 
-		// Should  Be String (community)
+		/* Should  Be String (community) */
 
 		if (Type != 4)
 			return;
@@ -4931,12 +4947,12 @@ VOID ProcessSNMPMessage(PIPMSG IPptr)
 		memcpy(Community, Msg, ComLen);
 		Community[ComLen] = 0;
 
-		Len -=2;				// Header
+		Len -=2;				/* Header */
 		Len -= ComLen;
 
 		Msg += (ComLen);
 
-		// A Complex Data Types - GetRequest PDU etc
+		/* A Complex Data Types - GetRequest PDU etc */
 
 		RequestType = *(Msg);
 		*(Msg++) = 0xA2;
@@ -4944,9 +4960,9 @@ VOID ProcessSNMPMessage(PIPMSG IPptr)
 
 		Len -= 2; 
 
-		// A 2 byte value requestid
+		/* A 2 byte value requestid */
 
-		// Next is integer requestid
+		/* Next is integer requestid */
 
 		Type = *(Msg++);
 		Length = *(Msg++);
@@ -4959,7 +4975,7 @@ VOID ProcessSNMPMessage(PIPMSG IPptr)
 		Len -= (2 + Length);
 		Msg += Length;
 
-		// Two more Integers - error status, error index
+		/* Two more Integers - error status, error index */
 	
 		Type = *(Msg++);
 		Length = *(Msg++);
@@ -4983,7 +4999,7 @@ VOID ProcessSNMPMessage(PIPMSG IPptr)
 		Len -= (2 + Length);
 		Msg += Length;
 
-		// Two Variable-bindings structs - another Sequence
+		/* Two Variable-bindings structs - another Sequence */
 
 		Type = *(Msg++);
 		Length = *(Msg++);
@@ -5001,12 +5017,12 @@ VOID ProcessSNMPMessage(PIPMSG IPptr)
 		if (Type != 0x30)
 			return;
 
-		// Next is OID 
+		/* Next is OID  */
 
 		Type = *(Msg++);
 		Length = *(Msg++);
 
-		if (Type != 6)				// Object ID
+		if (Type != 6)				/* Object ID */
 			return;
 
 		memcpy(OID, Msg, Length);
@@ -5014,12 +5030,12 @@ VOID ProcessSNMPMessage(PIPMSG IPptr)
 
 		OIDLen = Length;
 
-		Len -=2;				// Header
+		Len -=2;				/* Header */
 		Len -= Length;
 	
 		Msg += Length;
 
-		// Should Just have a null value left
+		/* Should Just have a null value left */
 		
 		Type = *(Msg++);
 		Length = *(Msg++);
@@ -5027,9 +5043,9 @@ VOID ProcessSNMPMessage(PIPMSG IPptr)
 		if (Type != 5 || Length != 0)
 			return;
 
-		Len -=2;				// Header
+		Len -=2;				/* Header */
 
-		// Should be nothing left
+		/* Should be nothing left */
 	}
 
 	if (RequestType = 160)
@@ -5040,12 +5056,12 @@ VOID ProcessSNMPMessage(PIPMSG IPptr)
 		char Value[256];
 		int ValLen;
 		
-		//	Only Support Get
+		/*	Only Support Get */
 
 		if (memcmp(OID, sysName, sysNameLen) == 0)
 		{
 			ValLen = (int)strlen(MYNODECALL);;
-			Value[0] = 4;		// String
+			Value[0] = 4;		/* String */
 			Value[1] = ValLen;
 			memcpy(&Value[2], MYNODECALL, ValLen);  
 			
@@ -5087,7 +5103,7 @@ VOID ProcessSNMPMessage(PIPMSG IPptr)
 		Reply[--Offset] = ComLen;
 		Reply[--Offset] = 4;
 
-		// Version
+		/* Version */
 
 		Reply[--Offset] = 0;
 		Reply[--Offset] = 1;
@@ -5100,7 +5116,7 @@ VOID ProcessSNMPMessage(PIPMSG IPptr)
 
 		memcpy(UDPptr->UDPData, &Reply[Offset], SendLen);
 
-		// Swap Dest to Origin
+		/* Swap Dest to Origin */
 
 		IPptr->IPDEST = IPptr->IPSOURCE;
 
@@ -5108,13 +5124,13 @@ VOID ProcessSNMPMessage(PIPMSG IPptr)
 
 		UDPptr->DESTPORT = UDPptr->SOURCEPORT;
 		UDPptr->SOURCEPORT = htons(161);
-		SendLen += 8;			// UDP Header
+		SendLen += 8;			/* UDP Header */
 		UDPptr->LENGTH = htons(SendLen);
 		IPptr->IPLENGTH = htons(SendLen + 20);
 
 		CheckSumAndSendUDP(IPptr, UDPptr, SendLen);
 	}
 
-	// Ingnore others
+	/* Ingnore others */
 }
 

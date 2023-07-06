@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
+#define WIN32_LEAN_AND_MEAN		/* Exclude rarely-used stuff from Windows headers */
 
 #define _CRT_SECURE_NO_DEPRECATE
 
@@ -72,7 +72,7 @@ LICENCE:        Copyright (c) 2001 Bob Trower, Trantor Standard Systems Inc.
 */
 
 static char mycd64[256] = "";
-static const char cb64[]="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"; // / causes problems with freedata
+static const char cb64[]="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"; /* / causes problems with freedata */
 
 void xencodeblock( unsigned char in[3], unsigned char out[4], int len )
 {

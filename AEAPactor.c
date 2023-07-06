@@ -17,33 +17,33 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-//
-//	DLL to inteface AEA/Timewave TNC in Pactor Mode to BPQ32 switch 
-//
-//	Uses BPQ EXTERNAL interface
-//
+/* */
+/*	DLL to inteface AEA/Timewave TNC in Pactor Mode to BPQ32 switch  */
+/* */
+/*	Uses BPQ EXTERNAL interface */
+/* */
 
-// Version 1.1.1.2 Sept 2010
+/* Version 1.1.1.2 Sept 2010 */
 
-// Fix CTEXT
-// Turn round link when all acked (not all sent)
+/* Fix CTEXT */
+/* Turn round link when all acked (not all sent) */
 
-// Version 1.1.1.3 Sept 2010
+/* Version 1.1.1.3 Sept 2010 */
 
-// Turn round link if too long in receive
+/* Turn round link if too long in receive */
 
-// Version 1.1.1.4 September 2010
+/* Version 1.1.1.4 September 2010 */
 
-// Fix Freq Display after Node reconfig
-// Only use AutoConnect APPL for Pactor Connects
+/* Fix Freq Display after Node reconfig */
+/* Only use AutoConnect APPL for Pactor Connects */
 
 #define _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include "time.h"
 
-//#include <process.h>
-//#include <time.h>
+/*#include <process.h> */
+/*#include <time.h> */
 
 #include "CHeaders.h"
 #include "tncinfo.h"
@@ -56,13 +56,13 @@ static char ClassName[]="AEAPACTORSTATUS";
 static char WindowTitle[] = "AEA Pactor";
 static int RigControlRow = 165;
 
-#define	SOH	0x01	// CONTROL CODES 
+#define	SOH	0x01	/* CONTROL CODES  */
 #define	ETB	0x17
 #define	DLE	0x10
 
 #define MaxStreams 26
 
-#define PTOVER 0x1a					// Pactor Turnround Char
+#define PTOVER 0x1a					/* Pactor Turnround Char */
 
 char OverMsg[3] = " \x1a";
 
@@ -89,7 +89,7 @@ static VOID ProcessAEAPacket(struct TNCINFO * TNC, UCHAR * rxbuffer, size_t Len)
 VOID ProcessKNormCommand(struct TNCINFO * TNC, UCHAR * rxbuffer);
 static VOID ProcessHostFrame(struct TNCINFO * TNC, UCHAR * rxbuffer, size_t Len);
 
-//	Note that AEA host Mode uses SOH/ETB delimiters, with DLE stuffing
+/*	Note that AEA host Mode uses SOH/ETB delimiters, with DLE stuffing */
 
 static VOID EncodeAndSend(struct TNCINFO * TNC, UCHAR * txbuffer, int Len);
 static int	DLEEncode(UCHAR * inbuff, UCHAR * outbuff, size_t len);
@@ -112,27 +112,27 @@ int ProcessLine(char * buf, int Port)
 
 	if(ptr == NULL) return (TRUE);
 
-	if(*ptr =='#') return (TRUE);			// comment
+	if(*ptr =='#') return (TRUE);			/* comment */
 
-	if(*ptr ==';') return (TRUE);			// comment
+	if(*ptr ==';') return (TRUE);			/* comment */
 
 	ptr = strtok(NULL, " \t\n\r");
 
-	if (_stricmp(buf, "ADDR") == 0)			// Winmor Using BPQ32 COnfig
+	if (_stricmp(buf, "ADDR") == 0)			/* Winmor Using BPQ32 COnfig */
 	{
 		BPQport = Port;
 		p_ipad = ptr;
 	}
 	else
-	if (_stricmp(buf, "APPL") == 0)			// Using BPQ32 COnfig
+	if (_stricmp(buf, "APPL") == 0)			/* Using BPQ32 COnfig */
 	{
 		BPQport = Port;
 		p_cmd = ptr;
 	}
 	else
-	if (_stricmp(buf, "PORT") != 0)			// Using Old Config
+	if (_stricmp(buf, "PORT") != 0)			/* Using Old Config */
 	{
-		// New config without a PORT or APPL  - this is a Config Command
+		/* New config without a PORT or APPL  - this is a Config Command */
 
 		strcpy(buf, errbuf);
 		strcat(buf, "\r");
@@ -151,7 +151,7 @@ int ProcessLine(char * buf, int Port)
 
 	{
 
-		// Old Config from file
+		/* Old Config from file */
 
 	BPQport=0;
 	BPQport = atoi(ptr);
@@ -160,7 +160,7 @@ int ProcessLine(char * buf, int Port)
 
 	if (Port && Port != BPQport)
 	{
-		// Want a particular port, and this isn't it
+		/* Want a particular port, and this isn't it */
 
 		while(TRUE)
 		{
@@ -187,7 +187,7 @@ int ProcessLine(char * buf, int Port)
 				TNC->ApplCmd=_strdup(p_cmd);
 		}
 
-		// Read Initialisation lines
+		/* Read Initialisation lines */
 
 		while(TRUE)
 		{
@@ -227,13 +227,13 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 	int Stream;
 
 	if (TNC == NULL || TNC->hDevice == 0)
-		return 0;							// Port not open
+		return 0;							/* Port not open */
 
 	switch (fn)
 	{
-	case 1:				// poll
+	case 1:				/* poll */
 
-		while (TNC->PortRecord->UI_Q)			// Release anything accidentally put on UI_Q
+		while (TNC->PortRecord->UI_Q)			/* Release anything accidentally put on UI_Q */
 		{
 			buffptr = Q_REM(&TNC->PortRecord->UI_Q);
 			ReleaseBuffer(buffptr);
@@ -263,9 +263,9 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 				datalen = buffptr->Len;
 
-				buff->PORT = Stream;						// Compatibility with Kam Driver
+				buff->PORT = Stream;						/* Compatibility with Kam Driver */
 				buff->PID = 0xf0;
-				memcpy(&buff->L2DATA, &buffptr->Data[0], datalen);		// Data goes to + 7, but we have an extra byte
+				memcpy(&buff->L2DATA, &buffptr->Data[0], datalen);		/* Data goes to + 7, but we have an extra byte */
 				datalen += sizeof(void *) + 4;
 
 				PutLengthinBuffer(buff, (int)datalen);
@@ -279,19 +279,19 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 			
 		return 0;
 
-	case 2:				// send
+	case 2:				/* send */
 
 		buffptr = GetBuff();
 
-		if (buffptr == 0) return (0);			// No buffers, so ignore
+		if (buffptr == 0) return (0);			/* No buffers, so ignore */
 
-		// Find TNC Record
+		/* Find TNC Record */
 
 		Stream = buff->PORT;
 		
 		if (!TNC->TNCOK)
 		{
-			// Send Error Response
+			/* Send Error Response */
 
 			buffptr->Len = 36;
 			memcpy(buffptr->Data, "No Connection to PACTOR TNC\r", 36);
@@ -315,23 +315,23 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 		return (0);
 
 
-	case 3:				// CHECK IF OK TO SEND. Also used to check if TNC is responding
+	case 3:				/* CHECK IF OK TO SEND. Also used to check if TNC is responding */
 		
 		Stream = (int)(size_t)buff;
 		STREAM = &TNC->Streams[Stream];
 
 		if (STREAM->FramesQueued  > 4)
-			return 1 | TNC->HostMode << 8 | STREAM->Disconnecting << 15;	// Busy
+			return 1 | TNC->HostMode << 8 | STREAM->Disconnecting << 15;	/* Busy */
 	
-		return TNC->HostMode << 8 | STREAM->Disconnecting << 15;		// OK, but lock attach if disconnecting;		// OK
+		return TNC->HostMode << 8 | STREAM->Disconnecting << 15;		/* OK, but lock attach if disconnecting;		// OK */
 
-	case 4:				// reinit
+	case 4:				/* reinit */
 
 		return (0);
 
-	case 5:				// Close
+	case 5:				/* Close */
 
-		EncodeAndSend(TNC, "OHON", 4);		// HOST N
+		EncodeAndSend(TNC, "OHON", 4);		/* HOST N */
 		Sleep(50);
 
 		SaveWindowPos(port);
@@ -340,9 +340,9 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 		return (0);
 
-	case 6:				// Scan Control
+	case 6:				/* Scan Control */
 
-		return 0;		// None Yet
+		return 0;		/* None Yet */
 
 	}
 	return 0;
@@ -358,10 +358,10 @@ VOID * AEAExtInit(EXTPORTDATA *  PortEntry)
 	char * TempScript;
 	char * ptr;
 
-	//
-	//	Will be called once for each Pactor Port
-	//	The COM port number is in IOBASE
-	//
+	/* */
+	/*	Will be called once for each Pactor Port */
+	/*	The COM port number is in IOBASE */
+	/* */
 
 	sprintf(msg,"AEA Pactor %s", PortEntry->PORTCONTROL.SerialPortName);
 	WritetoConsole(msg);
@@ -374,7 +374,7 @@ VOID * AEAExtInit(EXTPORTDATA *  PortEntry)
 
 	if (TNC == NULL)
 	{
-		// Not defined in Config file
+		/* Not defined in Config file */
 
 		sprintf(msg," ** Error - no info in BPQ32.cfg for this port\n");
 		WritetoConsole(msg);
@@ -388,7 +388,7 @@ VOID * AEAExtInit(EXTPORTDATA *  PortEntry)
 
 	TNC->TEXTMODE = FALSE;
 
-	PortEntry->MAXHOSTMODESESSIONS = 11;		// Default
+	PortEntry->MAXHOSTMODESESSIONS = 11;		/* Default */
 
 	TNC->InitScript = _strupr(TNC->InitScript);
 
@@ -408,15 +408,15 @@ VOID * AEAExtInit(EXTPORTDATA *  PortEntry)
 
 	PortEntry->PORTCONTROL.PROTOCOL = 10;
 	PortEntry->PORTCONTROL.PORTQUALITY = 0;
-	PortEntry->SCANCAPABILITIES = NONE;		// No Scan Interlock 
+	PortEntry->SCANCAPABILITIES = NONE;		/* No Scan Interlock  */
 
 	if (PortEntry->PORTCONTROL.PORTPACLEN == 0)
 		PortEntry->PORTCONTROL.PORTPACLEN = 100;
 
 	ptr=strchr(TNC->NodeCall, ' ');
-	if (ptr) *(ptr) = 0;					// Null Terminate
+	if (ptr) *(ptr) = 0;					/* Null Terminate */
 
-	// Set Essential Params and MYCALL
+	/* Set Essential Params and MYCALL */
 
 	TempScript = malloc(4000);
 
@@ -432,7 +432,7 @@ VOID * AEAExtInit(EXTPORTDATA *  PortEntry)
 	free(TNC->InitScript);
 	TNC->InitScript = TempScript;
 
-	// Others go on end so they can't be overriden
+	/* Others go on end so they can't be overriden */
 
 	strcat(TNC->InitScript, "XMITOK ON\r");
 	strcat(TNC->InitScript, "XFLOW OFF\r");
@@ -449,7 +449,7 @@ VOID * AEAExtInit(EXTPORTDATA *  PortEntry)
 	strcat(TNC->InitScript, "CONMODE TRANS\r");
 	strcat(TNC->InitScript, "PTOVER $1A\r\r");
 
-	// Set the ax.25 MYCALL
+	/* Set the ax.25 MYCALL */
 
 	sprintf(msg, "MYCALL %s\r", TNC->NodeCall);
 	strcat(TNC->InitScript, msg);
@@ -499,7 +499,7 @@ static void CheckRX(struct TNCINFO * TNC)
 {
 	int Length, Len;
 
-	// only try to read number of bytes in queue 
+	/* only try to read number of bytes in queue  */
 
 	if (TNC->RXLen == 500)
 		TNC->RXLen = 0;
@@ -513,19 +513,19 @@ static void CheckRX(struct TNCINFO * TNC)
 
 	Length = TNC->RXLen;
 
-	// AEA uses SOH ETX Framing
+	/* AEA uses SOH ETX Framing */
 
 	if (TNC->RXBuffer[0] != SOH)
 	{
-		// Char Mode Frame I think we need to see cmd: on end
+		/* Char Mode Frame I think we need to see cmd: on end */
 
-		// If we think we are in host mode, then to could be noise - just discard.
+		/* If we think we are in host mode, then to could be noise - just discard. */
 
 		if (TNC->HostMode)
 		{
 			if (TNC->ReinitState == 2)
 			{
-				// Just entered host mode, so could be text command on front
+				/* Just entered host mode, so could be text command on front */
 
 				unsigned char * ptr = strchr(TNC->RXBuffer, SOH);
 				
@@ -546,51 +546,51 @@ static void CheckRX(struct TNCINFO * TNC)
 			}
 
 			Debugprintf("AEA Bad Host Frame");
-			TNC->RXLen = 0;		// Ready for next frame
+			TNC->RXLen = 0;		/* Ready for next frame */
 			return;
 		}
 
 		TNC->RXBuffer[TNC->RXLen] = 0;
 
-//		if (TNC->RXBuffer[TNC->RXLen-2] != ':')
+/*		if (TNC->RXBuffer[TNC->RXLen-2] != ':') */
 		if (strstr(TNC->RXBuffer, "cmd:") == 0)
 		{
 			if (strlen(TNC->RXBuffer) < TNC->RXLen)
-				TNC->RXLen = 0;							// NULL in text mode message
+				TNC->RXLen = 0;							/* NULL in text mode message */
 
-			return;				// Wait for rest of frame
+			return;				/* Wait for rest of frame */
 		}
 
-		// Complete Char Mode Frame
+		/* Complete Char Mode Frame */
 
-		TNC->RXLen = 0;		// Ready for next frame
+		TNC->RXLen = 0;		/* Ready for next frame */
 					
 		ProcessTermModeResponse(TNC);
 		return;
 	}
 
-	// Receiving a Host Mode frame
+	/* Receiving a Host Mode frame */
 
-	if (TNC->HostMode == 0)	// If we are in Term Mode, discard it. Probably in recovery
+	if (TNC->HostMode == 0)	/* If we are in Term Mode, discard it. Probably in recovery */
 	{
-		TNC->RXLen = 0;		// Ready for next frame
+		TNC->RXLen = 0;		/* Ready for next frame */
 		return;
 	}
 
 hostFrame:
 
-	if (Length < 3)				// Minimum Frame Sise
+	if (Length < 3)				/* Minimum Frame Sise */
 		return;
 
 	if (TNC->RXBuffer[Length-1] != ETB)
-		return;					// Wait till we have a full frame
+		return;					/* Wait till we have a full frame */
 
 	if (TNC->RXBuffer[Length-2] == DLE && TNC->RXBuffer[Length-3] != DLE)
-		return;					// ??? DLE ETB isn't end of frame, but DLE DLE ETB is
+		return;					/* ??? DLE ETB isn't end of frame, but DLE DLE ETB is */
 
-	ProcessHostFrame(TNC, TNC->RXBuffer, Length);	// Could have multiple packets in buffer
+	ProcessHostFrame(TNC, TNC->RXBuffer, Length);	/* Could have multiple packets in buffer */
 
-	TNC->RXLen = 0;		// Ready for next frame
+	TNC->RXLen = 0;		/* Ready for next frame */
 
 		
 	return;
@@ -602,8 +602,8 @@ static VOID ProcessHostFrame(struct TNCINFO * TNC, UCHAR * rxbuffer, size_t Len)
 	UCHAR * FendPtr;
 	size_t NewLen;
 
-	//	Split into Packets. By far the most likely is a single packet, so treat as special case
-	//  Beware of DLE ETB and DLE DLE ETB!
+	/*	Split into Packets. By far the most likely is a single packet, so treat as special case */
+	/*  Beware of DLE ETB and DLE DLE ETB! */
 
 	FendPtr = memchr(&rxbuffer[1], ETB, Len-1);
 
@@ -622,13 +622,13 @@ FENDLoop:
 		return;
 	}
 		
-	// Process the first Packet in the buffer
+	/* Process the first Packet in the buffer */
 
 	NewLen =  FendPtr - rxbuffer -1;
 
 	ProcessAEAPacket(TNC, &rxbuffer[1], NewLen);
 	
-	// Loop Back
+	/* Loop Back */
 
 	ProcessHostFrame(TNC, FendPtr+1, Len - NewLen - 2);
 	return;
@@ -654,10 +654,10 @@ VOID AEAPoll(int Port)
 	{
 		TNC->Timeout--;
 		
-		if (TNC->Timeout)			// Still waiting
+		if (TNC->Timeout)			/* Still waiting */
 			return;
 
-		// Timed Out
+		/* Timed Out */
 
 		if (TNC->HostMode == 0)
 		{
@@ -665,7 +665,7 @@ VOID AEAPoll(int Port)
 			return;
 		}
 
-		// Timed out in host mode - Clear any connection and reinit the TNC
+		/* Timed out in host mode - Clear any connection and reinit the TNC */
 
 		TNC->TNCOK = FALSE;
 		TNC->HostMode = 0;
@@ -676,15 +676,15 @@ VOID AEAPoll(int Port)
 
 		for (Stream = 0; Stream <= MaxStreams; Stream++)
 		{
-			if (TNC->PortRecord->ATTACHEDSESSIONS[Stream])		// Connected
+			if (TNC->PortRecord->ATTACHEDSESSIONS[Stream])		/* Connected */
 			{
-				TNC->Streams[Stream].Connected = FALSE;		// Back to Command Mode
-				TNC->Streams[Stream].ReportDISC = TRUE;		// Tell Nod
+				TNC->Streams[Stream].Connected = FALSE;		/* Back to Command Mode */
+				TNC->Streams[Stream].ReportDISC = TRUE;		/* Tell Nod */
 			}
 		}
 	}
 
-	// if we have just restarted or TNC appears to be in terminal mode, run Initialisation Sequence
+	/* if we have just restarted or TNC appears to be in terminal mode, run Initialisation Sequence */
 
 	if (!TNC->HostMode)
 	{
@@ -695,14 +695,14 @@ VOID AEAPoll(int Port)
 	if (TNC->CommandBusy)
 		goto Poll;
 
-	// We don't check for a new attach unless Timeout and CommandBusy are both zero, as we need to send a command.
+	/* We don't check for a new attach unless Timeout and CommandBusy are both zero, as we need to send a command. */
 
-	// If Pactor Session has just been attached, set Pactor Call to the connecting user's callsign
+	/* If Pactor Session has just been attached, set Pactor Call to the connecting user's callsign */
 
 
 	if (TNC->PortRecord->ATTACHEDSESSIONS[0] && TNC->Streams[0].Attached == 0)
 	{
-		// New Attach
+		/* New Attach */
 
 		int calllen;
 		UCHAR TXMsg[1000];
@@ -723,19 +723,19 @@ VOID AEAPoll(int Port)
 		sprintf(Status, "In Use by %s", TNC->Streams[0].MyCall);
 		SetWindowText(TNC->xIDC_TNCSTATE, Status);
 
-		// Stop Scanning
+		/* Stop Scanning */
 
 		sprintf(Msg, "%d SCANSTOP", TNC->Port);
 		
 		Rig_Command( (TRANSPORTENTRY *) -1, Msg);
 
-		// Shouldn't we also take out of standby mode?? PN is Pactor Listen, for monitoring
+		/* Shouldn't we also take out of standby mode?? PN is Pactor Listen, for monitoring */
 
 		return;
 
 	}
 	
-	//If sending internal command list, send next element
+	/*If sending internal command list, send next element */
 
 	if (TNC->CmdSet)
 	{
@@ -744,7 +744,7 @@ VOID AEAPoll(int Port)
 
 		start = TNC->CmdSet;
 		
-		if (*(start) == 0)			// End of Script
+		if (*(start) == 0)			/* End of Script */
 		{
 			free(TNC->CmdSave);
 			TNC->CmdSet = NULL;
@@ -752,7 +752,7 @@ VOID AEAPoll(int Port)
 		else
 		{
 			end = strchr(start, 13);
-			len = ++end - start -1;	// exclude cr
+			len = ++end - start -1;	/* exclude cr */
 			TNC->CmdSet = end;
 		
 			EncodeAndSend(TNC, start, (int)len);
@@ -777,17 +777,17 @@ VOID AEAPoll(int Port)
 
 		if (TNC->NeedPACTOR == 0)
 		{
-			EncodeAndSend(TNC, "OPA", 3);	// ??Return to packet mode??
+			EncodeAndSend(TNC, "OPA", 3);	/* ??Return to packet mode?? */
 			TNC->CommandBusy = TRUE;
 
 			TNC->CmdSet = TNC->CmdSave = malloc(100);
 
-			sprintf(TNC->CmdSet, "OMf%s\rOPt\rOCETRANS\r", TNC->NodeCall);  // Queue Back to Pactor Standby
+			sprintf(TNC->CmdSet, "OMf%s\rOPt\rOCETRANS\r", TNC->NodeCall);  /* Queue Back to Pactor Standby */
 			TNC->InternalCmd = 'T';
 			TNC->TEXTMODE = FALSE;
 			TNC->IntCmdDelay--;
 
-			// Restart Scanning
+			/* Restart Scanning */
 
 			sprintf(Status, "%d SCANSTART 15", TNC->Port);
 		
@@ -811,12 +811,12 @@ VOID AEAPoll(int Port)
 			{
 				if (Stream == 0)
 				{
-					// Limit amount in TX
+					/* Limit amount in TX */
 
 					if (TNC->Streams[0].BytesTXed - TNC->Streams[0].BytesAcked > 200)
 						continue;
 
-					// If in IRS state for too long, force turnround
+					/* If in IRS state for too long, force turnround */
 
 					if (TNC->TXRXState == 'R')
 					{
@@ -840,16 +840,16 @@ VOID AEAPoll(int Port)
 				if (TNC->SwallowSignon)
 				{
 					TNC->SwallowSignon = FALSE;	
-					if (strstr(MsgPtr, "Connected"))	// Discard *** connected
+					if (strstr(MsgPtr, "Connected"))	/* Discard *** connected */
 					{
 						ReleaseBuffer(buffptr);
 						return;
 					}
 				}
 
-				// If in CONV, and data looks binary, switch to TRAN
+				/* If in CONV, and data looks binary, switch to TRAN */
 
-				TNC->NeedTurnRound = TRUE;		// Sending data, so need turnround at end
+				TNC->NeedTurnRound = TRUE;		/* Sending data, so need turnround at end */
 
 				if (TNC->TEXTMODE)
 				{
@@ -897,10 +897,10 @@ VOID AEAPoll(int Port)
 				datalen=buffptr->Len;
 				MsgPtr = buffptr->Data;
 
-				// Command. Do some sanity checking and look for things to process locally
+				/* Command. Do some sanity checking and look for things to process locally */
 
-				datalen--;				// Exclude CR
-				MsgPtr[datalen] = 0;	// Null Terminate
+				datalen--;				/* Exclude CR */
+				MsgPtr[datalen] = 0;	/* Null Terminate */
 				_strupr(MsgPtr);
 
 				if ((Stream == 0) && memcmp(MsgPtr, "RADIO ", 6) == 0)
@@ -942,12 +942,12 @@ VOID AEAPoll(int Port)
 					return;
 				}
 
-				if (MsgPtr[0] == 'C' && MsgPtr[1] == ' ' && datalen > 2)	// Connect
+				if (MsgPtr[0] == 'C' && MsgPtr[1] == ' ' && datalen > 2)	/* Connect */
 				{
 					memcpy(TNC->Streams[Stream].RemoteCall, &MsgPtr[2], 9);
 					TNC->Streams[Stream].Connecting = TRUE;
 
-					// If Stream 0, Convert C CALL to PACTOR CALL
+					/* If Stream 0, Convert C CALL to PACTOR CALL */
 
 					if (Stream == 0)
 					{
@@ -960,18 +960,18 @@ VOID AEAPoll(int Port)
 						datalen = sprintf(TXMsg, "%cCO %s", Stream + '@', TNC->Streams[Stream].RemoteCall);
 
 					EncodeAndSend(TNC, TXMsg, datalen);
-					TNC->InternalCmd = 'C';			// So we dont send the reply to the user.
+					TNC->InternalCmd = 'C';			/* So we dont send the reply to the user. */
 					ReleaseBuffer(buffptr);
 					TNC->Streams[Stream].Connecting = TRUE;
 
 					return;
 				}
 
-				if (memcmp(MsgPtr, "DISCONNECT", datalen) == 0)	// Disconnect
+				if (memcmp(MsgPtr, "DISCONNECT", datalen) == 0)	/* Disconnect */
 				{
 					if (Stream == 0)
 					{
-						EncodeAndSend(TNC, "ODI", 3);			// ??Return to packet mode??
+						EncodeAndSend(TNC, "ODI", 3);			/* ??Return to packet mode?? */
 						TNC->NeedPACTOR = 50;
 						TNC->CommandBusy = TRUE;
 					}
@@ -989,7 +989,7 @@ VOID AEAPoll(int Port)
 					return;
 				}
 	
-				// Other Command ??
+				/* Other Command ?? */
 
 				if (Stream > 0)
 					datalen = sprintf(TXMsg, "C20%s", MsgPtr);
@@ -1007,9 +1007,9 @@ VOID AEAPoll(int Port)
 
 GetStatus:
 
-	// Need to poll data and control channel (for responses to commands)
+	/* Need to poll data and control channel (for responses to commands) */
 
-	// Also check status if we have data buffered (for flow control)
+	/* Also check status if we have data buffered (for flow control) */
 
 	if (TNC->TNCOK)
 	{
@@ -1018,7 +1018,7 @@ GetStatus:
 			EncodeAndSend(TNC, "OOP", 3);
 			TNC->InternalCmd = 'S';
 			TNC->CommandBusy = TRUE;
-			TNC->IntCmdDelay = 9;	// Every second
+			TNC->IntCmdDelay = 9;	/* Every second */
 			return;
 		}
 		else
@@ -1026,7 +1026,7 @@ GetStatus:
 	}
 
 Poll:
-	// Nothing doing - send Poll (but not too often)
+	/* Nothing doing - send Poll (but not too often) */
 
 	TNC->PollDelay++;
 
@@ -1035,7 +1035,7 @@ Poll:
 
 	TNC->PollDelay = 0;
 
-	EncodeAndSend(TNC, "OGG", 3);			// Poll
+	EncodeAndSend(TNC, "OGG", 3);			/* Poll */
 
 	return;
 }
@@ -1044,12 +1044,12 @@ static VOID DoTNCReinit(struct TNCINFO * TNC)
 {
 	UCHAR * Poll = TNC->TXBuffer;
 
-	if (TNC->ReinitState == 1)		// Forcing back to Term
-		TNC->ReinitState = 0;		// Got Response, so must be back in term mode
+	if (TNC->ReinitState == 1)		/* Forcing back to Term */
+		TNC->ReinitState = 0;		/* Got Response, so must be back in term mode */
 
 	if (TNC->ReinitState == 0)
 	{
-		// Just Starting - Send a CR to see if in Terminal or Host Mode
+		/* Just Starting - Send a CR to see if in Terminal or Host Mode */
 
 		char Status[80];
 		
@@ -1065,21 +1065,21 @@ static VOID DoTNCReinit(struct TNCINFO * TNC)
 		return;
 	}
 
-	if (TNC->ReinitState == 2)		// In Term State, Sending Initialisation Commands
+	if (TNC->ReinitState == 2)		/* In Term State, Sending Initialisation Commands */
 	{
 		char * start, * end;
 		size_t len;
 
 		start = TNC->InitPtr;
 		
-		if (*(start) == 0)			// End of Script
+		if (*(start) == 0)			/* End of Script */
 		{
-			// Put into Host Mode
+			/* Put into Host Mode */
 
 
-			Poll[0] = 0x11;		// XON
-			Poll[1] = 0x18;		// CAN
-			Poll[2] = 0x03;		// COM
+			Poll[0] = 0x11;		/* XON */
+			Poll[1] = 0x18;		/* CAN */
+			Poll[2] = 0x03;		/* COM */
 
 			memcpy(&Poll[3], "HOST Y\r", 7);
 
@@ -1089,8 +1089,8 @@ static VOID DoTNCReinit(struct TNCINFO * TNC)
 			TNC->CommandBusy = FALSE;
 			TNC->DataBusy = FALSE;
 
-			TNC->HostMode = TRUE;		// Should now be in Host Mode
-			TNC->NeedPACTOR = 50;		// Need to Send PACTOR command after 5 secs
+			TNC->HostMode = TRUE;		/* Should now be in Host Mode */
+			TNC->NeedPACTOR = 50;		/* Need to Send PACTOR command after 5 secs */
 
 			return;
 		}
@@ -1115,20 +1115,20 @@ static VOID DoTermModeTimeout(struct TNCINFO * TNC)
 
 	if (TNC->ReinitState == 0)
 	{
-		//Checking if in Terminal Mode - Try to set back to Term Mode
+		/*Checking if in Terminal Mode - Try to set back to Term Mode */
 
 		TNC->ReinitState = 1;
 
-		EncodeAndSend(TNC, "OHON", 4);		// HOST N
+		EncodeAndSend(TNC, "OHON", 4);		/* HOST N */
 		TNC->Timeout = 20;
 		return;
 	}
 	if (TNC->ReinitState == 1)
 	{
-		// Forcing back to Term Mode
+		/* Forcing back to Term Mode */
 
 		TNC->ReinitState = 0;
-		DoTNCReinit(TNC);				// See if worked
+		DoTNCReinit(TNC);				/* See if worked */
 		return;
 	}
 }
@@ -1141,18 +1141,18 @@ static VOID ProcessTermModeResponse(struct TNCINFO * TNC)
 
 	if (TNC->ReinitState == 0 || TNC->ReinitState == 1) 
 	{
-		// Testing if in Term Mode. It is, so can now send Init Commands
+		/* Testing if in Term Mode. It is, so can now send Init Commands */
 
 		TNC->InitPtr = TNC->InitScript;
 		TNC->ReinitState = 2;
-		DoTNCReinit(TNC);		// Send First Command
+		DoTNCReinit(TNC);		/* Send First Command */
 		return;
 	}
 	if (TNC->ReinitState == 2)
 	{
-		// Sending Init Commands
+		/* Sending Init Commands */
 
-		DoTNCReinit(TNC);		// Send Next Command
+		DoTNCReinit(TNC);		/* Send Next Command */
 		return;
 	}
 }
@@ -1160,19 +1160,19 @@ static VOID ProcessTermModeResponse(struct TNCINFO * TNC)
 static VOID ProcessAEAPacket(struct TNCINFO * TNC, UCHAR * Msg, size_t Len)
 {
 	PMSGWITHLEN buffptr;
-	char * Buffer = &Msg[1];			// Data portion of frame
+	char * Buffer = &Msg[1];			/* Data portion of frame */
 	char * Call;
 	char Status[80];
 	int Stream = 0;
 	int Opcode;
 	struct STREAMINFO * STREAM;
 
-	// Any valid frame is an ACK
+	/* Any valid frame is an ACK */
 
 	TNC->TNCOK = TRUE;
 	TNC->Timeout = 0;
 
-	Len = DLEDecode(Msg, Msg, Len);		// Remove KISS transparency
+	Len = DLEDecode(Msg, Msg, Len);		/* Remove KISS transparency */
 
 	Stream = Msg[0] & 15;
 	Opcode = Msg[0] >> 4;
@@ -1183,7 +1183,7 @@ static VOID ProcessAEAPacket(struct TNCINFO * TNC, UCHAR * Msg, size_t Len)
 	{
 		if (Msg[3] == 0)
 		{
-			// OK Response
+			/* OK Response */
 
 			sprintf(Status,"%s TNC link OK", TNC->PortRecord->PORTCONTROL.SerialPortName);
 			SetWindowText(TNC->xIDC_COMMSSTATE, Status);
@@ -1192,11 +1192,11 @@ static VOID ProcessAEAPacket(struct TNCINFO * TNC, UCHAR * Msg, size_t Len)
 		}
 	}
 
-	if (Msg[0] == '/')			// 2F
+	if (Msg[0] == '/')			/* 2F */
 	{
 		char * Eptr;
 		
-		// Echoed Data
+		/* Echoed Data */
 
 		Len--;
 
@@ -1210,16 +1210,16 @@ static VOID ProcessAEAPacket(struct TNCINFO * TNC, UCHAR * Msg, size_t Len)
 		Debugprintf("Ack for %d, BytesAcked now %d", Len, TNC->Streams[0].BytesAcked);
 		ShowTraffic(TNC);
 
-		// If nothing more to send, turn round link
+		/* If nothing more to send, turn round link */
 						
 		if ((TNC->Streams[0].BPQtoPACTOR_Q == 0) && TNC->NeedTurnRound &&
-			(TNC->Streams[0].BytesAcked >= TNC->Streams[0].BytesTXed))		// Nothing following and all acked
+			(TNC->Streams[0].BytesAcked >= TNC->Streams[0].BytesTXed))		/* Nothing following and all acked */
 			{
 				Debugprintf("AEA Sent = Acked - sending Turnround");
 						
 				if (TNC->TEXTMODE == 0)
 				{
-					// In Trans - switch back
+					/* In Trans - switch back */
 
 					TNC->TEXTMODE = TRUE;
 					EncodeAndSend(TNC, "OCECONV", 7);
@@ -1231,23 +1231,23 @@ static VOID ProcessAEAPacket(struct TNCINFO * TNC, UCHAR * Msg, size_t Len)
 					
 				TNC->NeedTurnRound = FALSE;
 				EncodeAndSend(TNC, OverMsg, 2);
-				TNC->Timeout = 0;						//  No response to data
+				TNC->Timeout = 0;						/*  No response to data */
 		}
 		return;
 	}
 
 	if (Opcode == 3)
 	{
-		// Received Data
+		/* Received Data */
 
-		// Pass to Appl
+		/* Pass to Appl */
 
 		buffptr = GetBuff();
-		if (buffptr == NULL) return;	// No buffers, so ignore
+		if (buffptr == NULL) return;	/* No buffers, so ignore */
 
-		Len--;							// Remove Header
+		Len--;							/* Remove Header */
 
-		buffptr->Len = Len;				// Length
+		buffptr->Len = Len;				/* Length */
 		TNC->Streams[Stream].BytesRXed += (int)Len;
 		memcpy(&buffptr->Data[0], Buffer, Len);
 		C_Q_ADD(&TNC->Streams[Stream].PACTORtoBPQ_Q, buffptr);
@@ -1261,17 +1261,17 @@ static VOID ProcessAEAPacket(struct TNCINFO * TNC, UCHAR * Msg, size_t Len)
 
 	if (Opcode == 4)
 	{
-		// Link Status or Command Response
+		/* Link Status or Command Response */
 
 		TNC->CommandBusy = FALSE;
 
 		if (TNC->InternalCmd)
 		{
-			// Process it
+			/* Process it */
 
-			if (TNC->InternalCmd == 'S')		// Status
+			if (TNC->InternalCmd == 'S')		/* Status */
 			{
-//				if (Msg[3] == 'P' && Msg[4] == 'G')
+/*				if (Msg[3] == 'P' && Msg[4] == 'G') */
 				{
 					SetWindowText(TNC->xIDC_STATE, status[Msg[5] - 0x30]);
 					
@@ -1285,7 +1285,7 @@ static VOID ProcessAEAPacket(struct TNCINFO * TNC, UCHAR * Msg, size_t Len)
 					Msg[12] = 0;
 					SetWindowText(TNC->xIDC_MODE, Msg);
 
-					// Testing.. I think ZF returns buffers
+					/* Testing.. I think ZF returns buffers */
 
 					EncodeAndSend(TNC, "OZF", 3);
 					TNC->InternalCmd = 'Z';
@@ -1295,7 +1295,7 @@ static VOID ProcessAEAPacket(struct TNCINFO * TNC, UCHAR * Msg, size_t Len)
 				return;
 			}
 
-			if (TNC->InternalCmd == 'Z')		// Buffers?
+			if (TNC->InternalCmd == 'Z')		/* Buffers? */
 			{
 				Msg[Len] = 0;
 				SetWindowText(TNC->xIDC_BUFFERS, &Msg[3]);
@@ -1305,7 +1305,7 @@ static VOID ProcessAEAPacket(struct TNCINFO * TNC, UCHAR * Msg, size_t Len)
 			return;
 		}
 
-		// Reply to Manual command - Pass to Appl
+		/* Reply to Manual command - Pass to Appl */
 
 		Stream = TNC->CmdStream;
 		STREAM = &TNC->Streams[Stream];
@@ -1313,7 +1313,7 @@ static VOID ProcessAEAPacket(struct TNCINFO * TNC, UCHAR * Msg, size_t Len)
 
 		buffptr = GetBuff();
 
-		if (buffptr == NULL) return;			// No buffers, so ignore
+		if (buffptr == NULL) return;			/* No buffers, so ignore */
 
 		Buffer[Len - 1] = 13;
 		Buffer[Len] = 0;
@@ -1328,17 +1328,17 @@ static VOID ProcessAEAPacket(struct TNCINFO * TNC, UCHAR * Msg, size_t Len)
 
 	if (Opcode == 5)
 	{
-		// Link Messages (Connect, etc)
+		/* Link Messages (Connect, etc) */
 
 		if (Stream == 15)
 		{
-			// SOH $5F X X $00 ETB data acknowledgement 
+			/* SOH $5F X X $00 ETB data acknowledgement  */
 
 			if (Msg[1] == 'X' && Msg[2] == 'X' && Msg[3] == 0)
 			{
 				TNC->DataBusy = FALSE;
 
-				if (TNC->NeedTRANS)		// Sent CTRL/Z in conv mode - switch back to trans
+				if (TNC->NeedTRANS)		/* Sent CTRL/Z in conv mode - switch back to trans */
 				{
 					TNC->NeedTRANS = FALSE;
 					TNC->TEXTMODE = FALSE;
@@ -1348,7 +1348,7 @@ static VOID ProcessAEAPacket(struct TNCINFO * TNC, UCHAR * Msg, size_t Len)
 					TNC->InternalCmd = 'A';	
 				}
 				else
-					EncodeAndSend(TNC, "OGG", 3);			// Send another Poll
+					EncodeAndSend(TNC, "OGG", 3);			/* Send another Poll */
 			}
 			return;
 		}
@@ -1357,49 +1357,49 @@ static VOID ProcessAEAPacket(struct TNCINFO * TNC, UCHAR * Msg, size_t Len)
 		{
 			if ((TNC->Streams[Stream].Connecting | TNC->Streams[Stream].Connected) == 0)
 			{
-				// Not connected or Connecting. Probably response to going into Pactor Listen Mode
+				/* Not connected or Connecting. Probably response to going into Pactor Listen Mode */
 
 				return;
 			}
 	
 			if (STREAM->Connecting && STREAM->Disconnecting == FALSE)
 			{
-				// Connect Failed
+				/* Connect Failed */
 			
 				buffptr = GetBuff();
-				if (buffptr == 0) return;			// No buffers, so ignore
+				if (buffptr == 0) return;			/* No buffers, so ignore */
 
 				buffptr->Len = sprintf(&buffptr->Data[0], "*** Failure with %s\r", TNC->Streams[Stream].RemoteCall);
 
 				C_Q_ADD(&TNC->Streams[Stream].PACTORtoBPQ_Q, buffptr);
 	
 				TNC->Streams[Stream].Connecting = FALSE;
-				TNC->Streams[Stream].Connected = FALSE;				// In case!
+				TNC->Streams[Stream].Connected = FALSE;				/* In case! */
 				TNC->Streams[Stream].FramesQueued = 0;
 
 				return;
 			}
 
-			// Connected, or Disconnecting - Release Session
+			/* Connected, or Disconnecting - Release Session */
 
 			TNC->Streams[Stream].Connecting = FALSE;
-			TNC->Streams[Stream].Connected = FALSE;		// Back to Command Mode
+			TNC->Streams[Stream].Connected = FALSE;		/* Back to Command Mode */
 			TNC->Streams[Stream].FramesQueued = 0;
 
 			if (STREAM->Disconnecting == FALSE)
-				STREAM->ReportDISC = TRUE;		// Tell Node
+				STREAM->ReportDISC = TRUE;		/* Tell Node */
 
 			STREAM->Disconnecting = FALSE;
 
-			// Need to reset Pactor Call in case it was changed
+			/* Need to reset Pactor Call in case it was changed */
 
 			TNC->NeedPACTOR = 20;
 
 			if (Stream == 0)
 			{
-				// Claar any data from buffers 
+				/* Claar any data from buffers  */
 
-				EncodeAndSend(TNC, "OTC", 3);			// Clear buffers
+				EncodeAndSend(TNC, "OTC", 3);			/* Clear buffers */
 				TNC->NeedPACTOR = 20;
 				TNC->InternalCmd = 'T';
 				TNC->CommandBusy = TRUE;
@@ -1412,7 +1412,7 @@ static VOID ProcessAEAPacket(struct TNCINFO * TNC, UCHAR * Msg, size_t Len)
 
 		if (Call)
 		{	
-			Call+=11;					// To Callsign
+			Call+=11;					/* To Callsign */
 			
 			if (Stream == 0)
 			{
@@ -1424,7 +1424,7 @@ static VOID ProcessAEAPacket(struct TNCINFO * TNC, UCHAR * Msg, size_t Len)
 
 			if (Stream == 0)
 			{
-				// Stop Scanner
+				/* Stop Scanner */
 
 				char Msg[80];
 				
@@ -1438,24 +1438,24 @@ static VOID ProcessAEAPacket(struct TNCINFO * TNC, UCHAR * Msg, size_t Len)
 
 			if (TNC->PortRecord->ATTACHEDSESSIONS[Stream] == 0)
 			{
-				// Incoming Connect
+				/* Incoming Connect */
 
 				ProcessIncommingConnect(TNC, Call, Stream, TRUE);
 
 				if (Stream == 0)
 				{
 					struct WL2KInfo * WL2K = TNC->WL2K;
-					char FreqAppl[10] = "";				// Frequecy-specific application
+					char FreqAppl[10] = "";				/* Frequecy-specific application */
 	
 					if (TNC->RIG && TNC->RIG != &TNC->DummyRig)
 					{
-						// If Scan Entry has a Appl, save it
+						/* If Scan Entry has a Appl, save it */
 
 						if (TNC->RIG->FreqPtr && TNC->RIG->FreqPtr[0]->APPL[0])
 							strcpy(FreqAppl, &TNC->RIG->FreqPtr[0]->APPL[0]);
 						}
 
-					// We are going to Send something, so turn link round
+					/* We are going to Send something, so turn link round */
 				
 					EncodeAndSend(TNC, "OAG", 3);
 					TNC->InternalCmd = 'A';
@@ -1464,12 +1464,12 @@ static VOID ProcessAEAPacket(struct TNCINFO * TNC, UCHAR * Msg, size_t Len)
 					sprintf(Status, "%s Connected to %s Inbound", TNC->Streams[0].RemoteCall, TNC->NodeCall);
 					SetWindowText(TNC->xIDC_TNCSTATE, Status);
 
-					// If an autoconnect APPL is defined, send it
+					/* If an autoconnect APPL is defined, send it */
 
-					if (FreqAppl[0])				// Frequency specific APPL overrides TNC APPL
+					if (FreqAppl[0])				/* Frequency specific APPL overrides TNC APPL */
 					{
 						buffptr = GetBuff();
-						if (buffptr == 0) return;	// No buffers, so ignore
+						if (buffptr == 0) return;	/* No buffers, so ignore */
 
 						buffptr->Len = sprintf(&buffptr->Data[0], "%s\r", FreqAppl);
 						C_Q_ADD(&TNC->Streams[Stream].PACTORtoBPQ_Q, buffptr);
@@ -1480,7 +1480,7 @@ static VOID ProcessAEAPacket(struct TNCINFO * TNC, UCHAR * Msg, size_t Len)
 					if (TNC->ApplCmd)
 					{
 						buffptr = GetBuff();
-						if (buffptr == 0) return;			// No buffers, so ignore
+						if (buffptr == 0) return;			/* No buffers, so ignore */
 
 						buffptr->Len = sprintf(&buffptr->Data[0], "%s\r", TNC->ApplCmd);
 						C_Q_ADD(&TNC->Streams[Stream].PACTORtoBPQ_Q, buffptr);
@@ -1499,7 +1499,7 @@ static VOID ProcessAEAPacket(struct TNCINFO * TNC, UCHAR * Msg, size_t Len)
 
 					CTBuff[0] = Stream + ' ';
 
-					while (Len > CTPaclen)		// CTEXT Paclen
+					while (Len > CTPaclen)		/* CTEXT Paclen */
 					{
 						memcpy(&CTBuff[1], &CTEXTMSG[Next], CTPaclen);
 						EncodeAndSend(TNC, CTBuff, CTPaclen + 1);
@@ -1515,17 +1515,17 @@ static VOID ProcessAEAPacket(struct TNCINFO * TNC, UCHAR * Msg, size_t Len)
 			}
 			else
 			{
-				// Connect Complete
+				/* Connect Complete */
 			
 				buffptr = GetBuff();
-				if (buffptr == 0) return;			// No buffers, so ignore
+				if (buffptr == 0) return;			/* No buffers, so ignore */
 
 				buffptr->Len  = sprintf(&buffptr->Data[0], "*** Connected to %s\r", Call);;
 
 				C_Q_ADD(&TNC->Streams[Stream].PACTORtoBPQ_Q, buffptr);
 	
 				TNC->Streams[Stream].Connecting = FALSE;
-				TNC->Streams[Stream].Connected = TRUE;			// Subsequent data to data channel
+				TNC->Streams[Stream].Connected = TRUE;			/* Subsequent data to data channel */
 	
 				if (Stream == 0)
 				{
@@ -1562,7 +1562,7 @@ int	DLEDecode(UCHAR * inbuff, UCHAR * outbuff, size_t len)
 
 static VOID EncodeAndSend(struct TNCINFO * TNC, UCHAR * txbuffer, int Len)
 {
-	// Send A Packet With DLE Encoding Encoding
+	/* Send A Packet With DLE Encoding Encoding */
 
 	TNC->TXLen = DLEEncode(txbuffer, TNC->TXBuffer, Len);
 
@@ -1588,7 +1588,7 @@ static int DLEEncode(UCHAR * inbuff, UCHAR * outbuff, size_t len)
 		case ETB:
 
 			outbuff[txptr++] = DLE;
-//			Debugprintf("Escaping %x", c);
+/*			Debugprintf("Escaping %x", c); */
 		}
 		
 		outbuff[txptr++] = c;
@@ -1603,9 +1603,9 @@ static int DLEEncode(UCHAR * inbuff, UCHAR * outbuff, size_t len)
 
 VOID TidyClose(struct TNCINFO * TNC, int Stream)
 {
-	if (Stream == 0)					// Pactor Stream
+	if (Stream == 0)					/* Pactor Stream */
 	{
-		EncodeAndSend(TNC, "ODI", 3);	// Disconnect
+		EncodeAndSend(TNC, "ODI", 3);	/* Disconnect */
 
 		TNC->InternalCmd = 'P';
 		TNC->CommandBusy = TRUE;
@@ -1615,13 +1615,13 @@ VOID TidyClose(struct TNCINFO * TNC, int Stream)
 		UCHAR TXMsg[10];
 
 		sprintf(TXMsg, "%cDI", Stream + '@');
-		EncodeAndSend(TNC, TXMsg, 4);		// Send twice - must force a disconnect
+		EncodeAndSend(TNC, TXMsg, 4);		/* Send twice - must force a disconnect */
 	}
 }
 
 VOID ForcedClose(struct TNCINFO * TNC, int Stream)
 {
-	TidyClose(TNC, Stream);			// Send DI again - can't do much else
+	TidyClose(TNC, Stream);			/* Send DI again - can't do much else */
 }
 
 VOID CloseComplete(struct TNCINFO * TNC, int Stream)

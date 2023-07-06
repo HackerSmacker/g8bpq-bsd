@@ -1,6 +1,6 @@
 
-//
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
+/* */
+#define WIN32_LEAN_AND_MEAN		/* Exclude rarely-used stuff from Windows headers */
 #define _CRT_SECURE_NO_DEPRECATE
 
 
@@ -24,7 +24,7 @@ char * PlaybackDevices = NULL;
 int CaptureCount = 0;
 int PlaybackCount = 0;
 
-int CaptureIndex = -1;		// Card number
+int CaptureIndex = -1;		/* Card number */
 int PlayBackIndex = -1;
 
 HWAVEOUT hWaveOut = 0;
@@ -54,7 +54,7 @@ void main(int argc, char * argv[])
 
 	for (i = 0; i < CaptureCount; i++)
 	{
-		waveInOpen(&hWaveIn, i, &wfx, 0, 0, CALLBACK_NULL); //WAVE_MAPPER
+		waveInOpen(&hWaveIn, i, &wfx, 0, 0, CALLBACK_NULL); /*WAVE_MAPPER */
 		waveInGetDevCaps((UINT_PTR)hWaveIn, &pwic, sizeof(WAVEINCAPS));
 
 		if (CaptureDevices)
@@ -76,7 +76,7 @@ void main(int argc, char * argv[])
 
 	for (i = 0; i < PlaybackCount; i++)
 	{
-		waveOutOpen(&hWaveOut, i, &wfx, 0, 0, CALLBACK_NULL); //WAVE_MAPPER
+		waveOutOpen(&hWaveOut, i, &wfx, 0, 0, CALLBACK_NULL); /*WAVE_MAPPER */
 		waveOutGetDevCaps((UINT_PTR)hWaveOut, &pwoc, sizeof(WAVEOUTCAPS));
 
 		if (PlaybackDevices[0])

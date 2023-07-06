@@ -19,9 +19,9 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 
 
 
-// Monitor Code - from moncode.asm
+/* Monitor Code - from moncode.asm */
 
-// Modified for AGW form monitor
+/* Modified for AGW form monitor */
 
 #pragma data_seg("_BPQDATA")
 
@@ -36,11 +36,11 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 #include "CHeaders.h"
 #include "tncinfo.h"
 
-//	MSGFLAG contains CMD/RESPONSE BITS
+/*	MSGFLAG contains CMD/RESPONSE BITS */
 
-#define	CMDBIT	4		// CURRENT MESSAGE IS A COMMAND
-#define	RESP 2		// CURRENT MSG IS RESPONSE
-#define	VER1 1 		// CURRENT MSG IS VERSION 1
+#define	CMDBIT	4		/* CURRENT MESSAGE IS A COMMAND */
+#define	RESP 2		/* CURRENT MSG IS RESPONSE */
+#define	VER1 1 		/* CURRENT MSG IS VERSION 1 */
 
 
 #define	UI	3
@@ -53,7 +53,7 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 #define	RNR	5
 #define	REJ	9
 
-#define	PFBIT 0x10		// POLL/FINAL BIT IN CONTROL BYTE
+#define	PFBIT 0x10		/* POLL/FINAL BIT IN CONTROL BYTE */
 
 #define	NETROM_PID 0xCF
 #define	IP_PID 0xCC
@@ -79,7 +79,7 @@ int InternalAGWDecodeFrame(MESSAGE * msg, char * buffer, int Stamp, int * FrameT
 	BOOL PF = 0;
 	char CRCHAR[3] = "  ";
 	char PFCHAR[3] = "  ";
-	int MSGFLAG = 0;		//CR and V1 flags
+	int MSGFLAG = 0;		/*CR and V1 flags */
 	char * Output = buffer;
 	int HH, MM, SS;
 	char From[10], To[10];
@@ -89,31 +89,31 @@ int InternalAGWDecodeFrame(MESSAGE * msg, char * buffer, int Stamp, int * FrameT
 	BOOL TESTFLAG = 0;
 	size_t MsgLen = msg->LENGTH;
 
-	//	GET THE CONTROL BYTE, TO SEE IF THIS FRAME IS TO BE DISPLAYED
+	/*	GET THE CONTROL BYTE, TO SEE IF THIS FRAME IS TO BE DISPLAYED */
 
-	n = 8;						// MAX DIGIS
-	ptr = &msg->ORIGIN[6];	// End of Address bit
+	n = 8;						/* MAX DIGIS */
+	ptr = &msg->ORIGIN[6];	/* End of Address bit */
 
 	while ((*ptr & 1) == 0)
 	{
-		//	MORE TO COME
+		/*	MORE TO COME */
 	
 		ptr += 7;
 		n--;
 
 		if (n == 0)
 		{
-			return 0;						// Corrupt - no end of address bit
+			return 0;						/* Corrupt - no end of address bit */
 		}
 	}
 
-	// Reached End of digis
+	/* Reached End of digis */
 
-	Work = ptr - &msg->ORIGIN[6];			// Work is length of digis
+	Work = ptr - &msg->ORIGIN[6];			/* Work is length of digis */
 
 	MsgLen -= Work;
 
-	ADJBUFFER = (MESSAGE *)((UCHAR *)msg + Work);			// ADJBUFFER points to CTL, etc. allowing for digis
+	ADJBUFFER = (MESSAGE *)((UCHAR *)msg + Work);			/* ADJBUFFER points to CTL, etc. allowing for digis */
 
 	CTL = ADJBUFFER->CTL;
 
@@ -124,7 +124,7 @@ int InternalAGWDecodeFrame(MESSAGE * msg, char * buffer, int Stamp, int * FrameT
 
 	*FrameType = CTL;
 
-	Stamp = Stamp % 86400;		// Secs
+	Stamp = Stamp % 86400;		/* Secs */
 	HH = Stamp / 3600;
 
 	Stamp -= HH * 3600;
@@ -132,26 +132,26 @@ int InternalAGWDecodeFrame(MESSAGE * msg, char * buffer, int Stamp, int * FrameT
 
 	SS = Stamp - MM * 60;
 
-	Output += sprintf((char *)Output, " %d:Fm ", msg->PORT & 0x7f);		// Mask TX bit
+	Output += sprintf((char *)Output, " %d:Fm ", msg->PORT & 0x7f);		/* Mask TX bit */
 
 	From[ConvFromAX25(msg->ORIGIN, From)] = 0;
 	To[ConvFromAX25(msg->DEST, To)] = 0;
 
 	Output += sprintf((char *)Output, "%s To %s", From, To);
 
-	//	Display any Digi-Peaters   
+	/*	Display any Digi-Peaters    */
 
-	n = 8;					// Max number of digi-peaters
-	ptr = &msg->ORIGIN[6];	// End of Address bit
+	n = 8;					/* Max number of digi-peaters */
+	ptr = &msg->ORIGIN[6];	/* End of Address bit */
 
 	while ((*ptr & 1) == 0)
 	{
-		//	MORE TO COME
+		/*	MORE TO COME */
 
 		From[ConvFromAX25(ptr + 1, From)] = 0;
 
 		if (n == 8)
-			Output += sprintf((char *)Output, " Via %s", From);	// Send via on first
+			Output += sprintf((char *)Output, " Via %s", From);	/* Send via on first */
 		else
 			Output += sprintf((char *)Output, ",%s", From);
 	
@@ -161,35 +161,35 @@ int InternalAGWDecodeFrame(MESSAGE * msg, char * buffer, int Stamp, int * FrameT
 		if (n == 0)
 			break;
 
-		// See if digi actioned - put a * on last actioned
+		/* See if digi actioned - put a * on last actioned */
 
 		if (*ptr & 0x80)
 		{
-			if (*ptr & 1)						// if last address, must need *
+			if (*ptr & 1)						/* if last address, must need * */
 				*(Output++) = '*';
 			else
-				if ((ptr[7] & 0x80) == 0)		// Repeased by next?
-					*(Output++) = '*';			// No, so need *
+				if ((ptr[7] & 0x80) == 0)		/* Repeased by next? */
+					*(Output++) = '*';			/* No, so need * */
 		}
 	}		
 	
 	*(Output++) = ' ';
 	
-	// Set up CR and PF
+	/* Set up CR and PF */
 
 	CRCHAR[0] = 0;
 	PFCHAR[0] = 0;
 
 	if (msg->DEST[6] & 0x80)
 	{
-		if (msg->ORIGIN[6] & 0x80)			//	Both set, assume V1
+		if (msg->ORIGIN[6] & 0x80)			/*	Both set, assume V1 */
 			MSGFLAG |= VER1;
 		else
 		{
 			MSGFLAG |= CMDBIT;
 			CRCHAR[0] = ' ';
 			CRCHAR[1] = 'C';
-			if (PF)							// If FP set
+			if (PF)							/* If FP set */
 			{
 				PFCHAR[0] = ' ';
 				PFCHAR[1] = 'P';
@@ -198,24 +198,24 @@ int InternalAGWDecodeFrame(MESSAGE * msg, char * buffer, int Stamp, int * FrameT
 	}
 	else
 	{
-		if (msg->ORIGIN[6] & 0x80)			//	Only Origin Set
+		if (msg->ORIGIN[6] & 0x80)			/*	Only Origin Set */
 		{
 			MSGFLAG |= RESP;
 			CRCHAR[0] = ' ';
 			CRCHAR[1] = 'R';
-			if (PF)							// If FP set
+			if (PF)							/* If FP set */
 			{
 				PFCHAR[0] = ' ';
 				PFCHAR[1] = 'F';
 			}
 		}
 		else
-			MSGFLAG |= VER1;				// Neither, assume V1
+			MSGFLAG |= VER1;				/* Neither, assume V1 */
 	}
 
-	if ((CTL & 1) == 0)						// I frame
+	if ((CTL & 1) == 0)						/* I frame */
 	{
-		int NS = (CTL >> 1) & 7;			// ISOLATE RECEIVED N(S)
+		int NS = (CTL >> 1) & 7;			/* ISOLATE RECEIVED N(S) */
 		int NR = (CTL >> 5) & 7;
 
 		Info = 1;
@@ -224,15 +224,15 @@ int InternalAGWDecodeFrame(MESSAGE * msg, char * buffer, int Stamp, int * FrameT
 	}
 	else if (CTL == 3)
 	{
-		//	Un-numbered Information Frame 
-		//UI pid=F0 Len=20 >
+		/*	Un-numbered Information Frame  */
+		/*UI pid=F0 Len=20 > */
 
 		Output += sprintf((char *)Output, "<UI pid=%02X Len=%d>", ADJBUFFER->PID, (int)MsgLen - 23);
 		Info = 1;
 	}
 	else if (CTL & 2)
 	{
-		// UN Numbered
+		/* UN Numbered */
 				
 		char SUP[5] = "??";
 
@@ -270,7 +270,7 @@ int InternalAGWDecodeFrame(MESSAGE * msg, char * buffer, int Stamp, int * FrameT
 	}
 	else
 	{
-		// Super
+		/* Super */
 
 		int NR = (CTL >> 5) & 7;
 		char SUP[4] = "??";
@@ -305,11 +305,11 @@ int InternalAGWDecodeFrame(MESSAGE * msg, char * buffer, int Stamp, int * FrameT
 
 	if (Info)
 	{
-		// We have an info frame
+		/* We have an info frame */
 
 		switch (ADJBUFFER->PID)
 		{
-		case 0xF0:		// Normal Data
+		case 0xF0:		/* Normal Data */
 		{
 			char Infofield[257];
 			char * ptr1 = Infofield;
@@ -320,13 +320,13 @@ int InternalAGWDecodeFrame(MESSAGE * msg, char * buffer, int Stamp, int * FrameT
 			MsgLen = MsgLen - 23;
 
 			if (MsgLen < 0 || MsgLen > 257)
-				return 0;				// Duff
+				return 0;				/* Duff */
 
 			while (MsgLen--)
 			{
 				C = *(ptr2++);
 
-				// Convert to printable
+				/* Convert to printable */
 
 				C &= 0x7F;
 
@@ -336,7 +336,7 @@ int InternalAGWDecodeFrame(MESSAGE * msg, char * buffer, int Stamp, int * FrameT
 
 			len = ptr1 - Infofield;
 	
-//			Output[0] = ':';
+/*			Output[0] = ':'; */
 			Output[0] = 13;
 			memcpy(&Output[1], Infofield, len);
 			Output += (len + 1);
@@ -359,7 +359,7 @@ int InternalAGWDecodeFrame(MESSAGE * msg, char * buffer, int Stamp, int * FrameT
 			Output = DISPLAYARPDATAGRAM(&ADJBUFFER->L2DATA[0], Output);
 			break;
 
-		case 8:					// Fragmented IP
+		case 8:					/* Fragmented IP */
 
 			Output += sprintf((char *)Output, "<Fragmented IP>");
 			break;	
@@ -372,7 +372,7 @@ int InternalAGWDecodeFrame(MESSAGE * msg, char * buffer, int Stamp, int * FrameT
 	return (int)(Output - buffer);
 
 }
-//      Display NET/ROM data                                                 
+/*      Display NET/ROM data                                                  */
 
 UCHAR * DISPLAY_NETROM(MESSAGE * ADJBUFFER, UCHAR * Output, int MsgLen)
 {
@@ -384,12 +384,12 @@ UCHAR * DISPLAY_NETROM(MESSAGE * ADJBUFFER, UCHAR * Output, int MsgLen)
 
  	if (ADJBUFFER->L2DATA[0] == NODES_SIG)
 	{
-		// Display NODES
+		/* Display NODES */
 
 
-		// If an INP3 RIF (type <> UI) decode as such
+		/* If an INP3 RIF (type <> UI) decode as such */
 	
-		if (ADJBUFFER->CTL != 3)		// UI
+		if (ADJBUFFER->CTL != 3)		/* UI */
 			return DisplayINP3RIF(&ADJBUFFER->L2DATA[1], Output, MsgLen - 24);
 
 		memcpy(Alias, ++ptr, 6);
@@ -398,9 +398,9 @@ UCHAR * DISPLAY_NETROM(MESSAGE * ADJBUFFER, UCHAR * Output, int MsgLen)
 	
 		Output += sprintf((char *)Output, "\rFF %s (NetRom Routing)\r", Alias);
 
-		MsgLen -= 30;					//Header, mnemonic and signature length
+		MsgLen -= 30;					/*Header, mnemonic and signature length */
 
-		while(MsgLen > 20)				// Entries are 21 bytes
+		while(MsgLen > 20)				/* Entries are 21 bytes */
 		{
 			Dest[ConvFromAX25(ptr, Dest)] = 0;
 			ptr +=7;
@@ -417,7 +417,7 @@ UCHAR * DISPLAY_NETROM(MESSAGE * ADJBUFFER, UCHAR * Output, int MsgLen)
 		return Output;
 	}
 
-	//	Display normal NET/ROM transmissions 
+	/*	Display normal NET/ROM transmissions  */
 
 	Output += sprintf((char *)Output, " NET/ROM\r  ");
 
@@ -433,7 +433,7 @@ UCHAR * DISPLAY_NETROM(MESSAGE * ADJBUFFER, UCHAR * Output, int MsgLen)
 	RXNO = *(ptr++);
 	OpCode = Flags = *(ptr++);
 
-	OpCode &= 15;				// Remove Flags
+	OpCode &= 15;				/* Remove Flags */
 
 	Output += sprintf((char *)Output, "%s to %s ttl %d cct=%02X%02X ", Dest, Node, TTL, Index, ID );
 	MsgLen -= 20;
@@ -450,7 +450,7 @@ UCHAR * DISPLAY_NETROM(MESSAGE * ADJBUFFER, UCHAR * Output, int MsgLen)
 
 		Output += sprintf((char *)Output, "<CON REQ> w=%d %s at %s", Window, Dest, Node);
 
-		if (MsgLen > 38)				// BPQ Extended Params
+		if (MsgLen > 38)				/* BPQ Extended Params */
 		{
 			short Timeout = (SHORT)*ptr;
 			Output += sprintf((char *)Output, " t/o %d", Timeout);
@@ -460,7 +460,7 @@ UCHAR * DISPLAY_NETROM(MESSAGE * ADJBUFFER, UCHAR * Output, int MsgLen)
 
 	case L4CACK:
 
-		if (Flags & L4BUSY)				// BUSY RETURNED
+		if (Flags & L4BUSY)				/* BUSY RETURNED */
 			return Output + sprintf((char *)Output, " <CON NAK> - BUSY");
 
 		return Output + sprintf((char *)Output, " <CON ACK> w=%d my cct=%02X%02X", ptr[1], TXNO, RXNO);
@@ -494,13 +494,13 @@ UCHAR * DISPLAY_NETROM(MESSAGE * ADJBUFFER, UCHAR * Output, int MsgLen)
 			MsgLen = MsgLen - 23;
 
 			if (MsgLen < 0 || MsgLen > 257)
-				return Output;				// Duff
+				return Output;				/* Duff */
 
 			while (MsgLen--)
 			{
 				C = *(ptr++);
 
-				// Convert to printable
+				/* Convert to printable */
 
 				C &= 0x7F;
 
@@ -536,15 +536,15 @@ UCHAR * DISPLAY_NETROM(MESSAGE * ADJBUFFER, UCHAR * Output, int MsgLen)
 
 	case 0:
 
-		//	OPcode zero is used for several things
+		/*	OPcode zero is used for several things */
 
-		if (Index == 0x0c && ID == 0x0c)	// IP	
+		if (Index == 0x0c && ID == 0x0c)	/* IP	 */
 		{
-//			Output =  L3IP(Output);
+/*			Output =  L3IP(Output); */
 			return Output;
 		}
 	
-		if (Index == 0 && ID == 1)			// NRR	
+		if (Index == 0 && ID == 1)			/* NRR	 */
 		{
 			Output += sprintf((char *)Output, " <Record Route>\r");
 
@@ -638,11 +638,11 @@ UCHAR * DISPLAYARPDATAGRAM(UCHAR * Datagram, UCHAR * Output)
 	UCHAR * ptr = Datagram;
 	UCHAR Dest[10];
 	
-	if (ptr[7] == 1)		// Request
+	if (ptr[7] == 1)		/* Request */
 		return Output + sprintf((char *)Output, " < ARP Request who has %d.%d.%d.%d? Tell %d.%d.%d.%d",
 			ptr[26], ptr[27], ptr[28], ptr[29], ptr[15], ptr[16], ptr[17], ptr[18]);
 
-	// Response
+	/* Response */
 
 	Dest[ConvFromAX25(&ptr[8], Dest)] = 0;
 

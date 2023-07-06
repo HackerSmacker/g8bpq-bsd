@@ -81,9 +81,9 @@ struct WL2KInfo * WL2KReports;
 
 int WL2KTimer = 0;
 
-int ModetoBaud[31] = {0,0,0,0,0,0,0,0,0,0,0,			// 0 = 10
-					  200,600,3200,600,3200,3200,		// 11 - 16
-					  0,0,0,0,0,0,0,0,0,0,0,0,0,600};	// 17 - 30
+int ModetoBaud[31] = {0,0,0,0,0,0,0,0,0,0,0,			/* 0 = 10 */
+					  200,600,3200,600,3200,3200,		/* 11 - 16 */
+					  0,0,0,0,0,0,0,0,0,0,0,0,0,600};	/* 17 - 30 */
 
 extern char HFCTEXT[];
 extern int HFCTEXTLEN;
@@ -147,13 +147,13 @@ LRESULT CALLBACK PacWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
 	case WM_PAINT:
 
-//			hdc = BeginPaint (hWnd, &ps);
+/*			hdc = BeginPaint (hWnd, &ps); */
 			
-//			SelectObject( hdc, hFont) ;
+/*			SelectObject( hdc, hFont) ; */
 			
-//			EndPaint (hWnd, &ps);
-//
-//			wParam = hdc;
+/*			EndPaint (hWnd, &ps); */
+/* */
+/*			wParam = hdc; */
 	
 			break;        
 
@@ -175,11 +175,11 @@ LRESULT CALLBACK PacWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 	case WM_MDIACTIVATE:
 	{
 			 
-		// Set the system info menu when getting activated
+		/* Set the system info menu when getting activated */
 			 
 		if (lParam == (LPARAM) hWnd)
 		{
-			// Activate
+			/* Activate */
 
 			RemoveMenu(hBaseMenu, 1, MF_BYPOSITION);
 
@@ -188,16 +188,16 @@ LRESULT CALLBACK PacWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 			
 			SendMessage(ClientWnd, WM_MDISETMENU, (WPARAM) hBaseMenu, (LPARAM) hWndMenu);
 
-//			SendMessage(ClientWnd, WM_MDISETMENU, (WPARAM) TNC->hMenu, (LPARAM) TNC->hWndMenu);
+/*			SendMessage(ClientWnd, WM_MDISETMENU, (WPARAM) TNC->hMenu, (LPARAM) TNC->hWndMenu); */
 		}
 		else
 		{
-			 // Deactivate
+			 /* Deactivate */
 	
 			SendMessage(ClientWnd, WM_MDISETMENU, (WPARAM) hMainFrameMenu, (LPARAM) NULL);
 		 }
 			 
-		// call DrawMenuBar after the menu items are set
+		/* call DrawMenuBar after the menu items are set */
 		DrawMenuBar(FrameWnd);
 
 		return DefMDIChildProc(hWnd, message, wParam, lParam);
@@ -357,7 +357,7 @@ BOOL CreatePactorWindow(struct TNCINFO * TNC, char * ClassName, char * WindowTit
 	{
 		ShowWindow(TNC->hDlg, SW_SHOWNORMAL);
 		SetForegroundWindow(TNC->hDlg);
-		return FALSE;							// Already open
+		return FALSE;							/* Already open */
 	}
 
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_NOCLOSE;
@@ -373,8 +373,8 @@ BOOL CreatePactorWindow(struct TNCINFO * TNC, char * ClassName, char * WindowTit
 
 	RegisterClass(&wc);
 
-//	if (TNC->Hardware == H_WINMOR || TNC->Hardware == H_TELNET ||TNC->Hardware == H_ARDOP ||
-//			TNC->Hardware == H_V4 || TNC->Hardware == H_FLDIGI || TNC->Hardware == H_UIARQ || TNC->Hardware == H_VARA)
+/*	if (TNC->Hardware == H_WINMOR || TNC->Hardware == H_TELNET ||TNC->Hardware == H_ARDOP || */
+/*			TNC->Hardware == H_V4 || TNC->Hardware == H_FLDIGI || TNC->Hardware == H_UIARQ || TNC->Hardware == H_VARA) */
 	if (TNC->PortRecord)
 		sprintf(Title, "%s Status - Port %d %s", WindowTitle, TNC->Port, TNC->PortRecord->PORTCONTROL.PORTDESCRIPTION);
 	else
@@ -386,7 +386,7 @@ BOOL CreatePactorWindow(struct TNCINFO * TNC, char * ClassName, char * WindowTit
 	TNC->hDlg = hDlg =  CreateMDIWindow(ClassName, Title, 0,
 		  0, 0, Width, Height, ClientWnd, hInstance, ++LP);
 	
-	//	CreateDialog(hInstance,ClassName,0,NULL);
+	/*	CreateDialog(hInstance,ClassName,0,NULL); */
 	
 	Rect.top = 100;
 	Rect.left = 20;
@@ -435,7 +435,7 @@ BOOL CreatePactorWindow(struct TNCINFO * TNC, char * ClassName, char * WindowTit
 	Top = Rect.top;
 	Left = Rect.left;
 
-//	GetWindowRect(hDlg, &Rect);	// Get the real size
+/*	GetWindowRect(hDlg, &Rect);	// Get the real size */
 
 	MoveWindow(hDlg, Left - (OffsetW /2), Top - OffsetH, Rect.right - Rect.left, Rect.bottom - Rect.top, TRUE);
 	
@@ -455,7 +455,7 @@ BOOL CreatePactorWindow(struct TNCINFO * TNC, char * ClassName, char * WindowTit
 }
 
 
-// WL2K Reporting Code.
+/* WL2K Reporting Code. */
 
 static SOCKADDR_IN sinx; 
 
@@ -466,7 +466,7 @@ VOID SendHTTPReporttoWL2KThread(void * unused);
 VOID CheckWL2KReportTimer()
 {
 	if (WL2KReports == NULL)
-		return;					// Shouldn't happen!
+		return;					/* Shouldn't happen! */
 
 	WL2KTimer--;
 
@@ -474,9 +474,9 @@ VOID CheckWL2KReportTimer()
 		return;
 
 #ifdef WIN32
-	WL2KTimer = 2 * 32910;			// Every 2 Hours - PC Tick is a bit slow 
+	WL2KTimer = 2 * 32910;			/* Every 2 Hours - PC Tick is a bit slow  */
 #else
-	WL2KTimer = 2 * 36000;			// Every 2 Hours 
+	WL2KTimer = 2 * 36000;			/* Every 2 Hours  */
 #endif
 
 	if (CheckAppl(NULL, "RMS         ") == NULL)
@@ -490,12 +490,12 @@ VOID CheckWL2KReportTimer()
 
 static char HeaderTemplate[] = "POST %s HTTP/1.1\r\n"
 	"Accept: application/json\r\n"
-//	"Accept-Encoding: gzip,deflate,gzip, deflate\r\n"
+/*	"Accept-Encoding: gzip,deflate,gzip, deflate\r\n" */
 	"Content-Type: application/json\r\n"
 	"Host: %s:%d\r\n"
 	"Content-Length: %d\r\n"
-	//r\nUser-Agent: BPQ32(G8BPQ)\r\n"
-//	"Expect: 100-continue\r\n"
+	/*r\nUser-Agent: BPQ32(G8BPQ)\r\n" */
+/*	"Expect: 100-continue\r\n" */
 	"\r\n{%s}";
 
 char Missing[] = "** Missing **";
@@ -526,7 +526,7 @@ VOID GetJSONValue(char * _REPLYBUFFER, char * Name, char * Value)
 }
 
 
-// Send Winlink Session Record
+/* Send Winlink Session Record */
 
 extern char LOC[7];
 extern char TextVerstring[50];
@@ -580,10 +580,10 @@ struct WL2KMode WL2KModeList[] =
 
 char WL2KModes [55][18] = {
 	"Packet 1200", "Packet 2400", "Packet 4800", "Packet 9600", "Packet 19200", "Packet 38400", "High Speed Packet", "", "", "", "",
-	"Pactor 1", "Pactor", "Pactor", "Pactor 2", "Pactor", "Pactor 3", "Pactor", "Pactor", "Pactor", "Pactor 4", // 11 - 20
-	"Winmor 500", "Winmor 1600", "", "", "", "", "", "", "",				// 21 - 29
-	"Robust Packet", "", "", "", "", "", "", "", "", "",					// 30 - 39
-	"ARDOP 200", "ARDOP 500", "ARDOP 1000", "ARDOP 2000", "ARDOP 2000 FM", "", "", "", "", "",	// 40 - 49
+	"Pactor 1", "Pactor", "Pactor", "Pactor 2", "Pactor", "Pactor 3", "Pactor", "Pactor", "Pactor", "Pactor 4", /* 11 - 20 */
+	"Winmor 500", "Winmor 1600", "", "", "", "", "", "", "",				/* 21 - 29 */
+	"Robust Packet", "", "", "", "", "", "", "", "", "",					/* 30 - 39 */
+	"ARDOP 200", "ARDOP 500", "ARDOP 1000", "ARDOP 2000", "ARDOP 2000 FM", "", "", "", "", "",	/* 40 - 49 */
 	"VARA", "VARA FM", "VARA FM WIDE", "VARA 500", "VARA 2750"};
 
 
@@ -648,13 +648,13 @@ VOID SendWL2KRegisterHybrid(struct TNCINFO * TNC)
 	T = time(NULL);
 	tm = gmtime(&T);
 
-	//2021-10-31-14=35=29
+	/*2021-10-31-14=35=29 */
 
 	sprintf(Date, "%04d-%02d-%02d-%02d:%02d:%02d",
 		tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday,
 		tm->tm_hour, tm->tm_min, tm->tm_sec);
 	
-// "Callsign":"String","Password":"String","Param":"String","Value":"String","Key":"String"
+/* "Callsign":"String","Password":"String","Param":"String","Value":"String","Key":"String" */
 
 	Len = sprintf(Message, "\"Callsign\":\"%s\",\"Password\":\"%s\",\"Param\":\"RMSRelayVersion\",\"Value\":\"%s|%s|*HARMNNNN|%s|%s|\"",
 		Call, TCP->SecureCMSPassword, Date, "3.1.11.2",
@@ -734,14 +734,14 @@ IdTag (random alphanumeric, 12 chars)
 	char Response[1024];
 	int Len;
 
-	// Only report if the CMSCall has a WL2KAccount
+	/* Only report if the CMSCall has a WL2KAccount */
 
 	if (NoSessionAccount)
 		return TRUE;
 
 	if (!SessionAccountChecked)
 	{
-		// only check once
+		/* only check once */
 
 		sock = OpenWL2KHTTPSock();
 
@@ -774,13 +774,13 @@ IdTag (random alphanumeric, 12 chars)
 
 	T = time(NULL);
 
-	// Extract Info we need
+	/* Extract Info we need */
 
-	// Distance and Bearing
+	/* Distance and Bearing */
 
 	if (LOC[0] && ADIF->LOC[0])
 	{
-		if (FromLOC(LOC, &myLat, &myLon) == 0)  	// Basic checks on LOCs
+		if (FromLOC(LOC, &myLat, &myLon) == 0)  	/* Basic checks on LOCs */
 			return TRUE;
 		if (FromLOC(ADIF->LOC, &Lat, &Lon) == 0)
 			return TRUE;
@@ -852,8 +852,8 @@ VOID SendHTTPRequest(SOCKET sock, char * Request, char * Params, int Len, char *
 			return;
 		}
 
-		//	As we are using a persistant connection, can't look for close. Check
-		//	for complete message
+		/*	As we are using a persistant connection, can't look for close. Check */
+		/*	for complete message */
 
 		inptr += InputLen;
 
@@ -863,7 +863,7 @@ VOID SendHTTPRequest(SOCKET sock, char * Request, char * Params, int Len, char *
 
 		if (ptr)
 		{
-			// got header
+			/* got header */
 
 			int Hddrlen = (int)(ptr - Buffer);
 					
@@ -871,13 +871,13 @@ VOID SendHTTPRequest(SOCKET sock, char * Request, char * Params, int Len, char *
 
 			if (ptr1)
 			{
-				// Have content length
+				/* Have content length */
 
 				int ContentLen = atoi(ptr1 + 16);
 
 				if (ContentLen + Hddrlen + 4 == inptr)
 				{
-					// got whole response
+					/* got whole response */
 
 					if (strstr(Buffer, " 200 OK"))
 					{
@@ -905,7 +905,7 @@ VOID SendHTTPRequest(SOCKET sock, char * Request, char * Params, int Len, char *
 				
 				if (ptr1)
 				{
-					// Just accept anything until I've sorted things with Lee
+					/* Just accept anything until I've sorted things with Lee */
 					Debugprintf("%s", ptr1);
 					Debugprintf("WL2K Database update ok");
 					return;
@@ -920,7 +920,7 @@ BOOL NoWL2KAccount = FALSE;
 
 VOID SendHTTPReporttoWL2KThread(void * unused)
 {
-	// Uses HTTP/JSON Interface
+	/* Uses HTTP/JSON Interface */
 
 	struct WL2KInfo * WL2KReport = WL2KReports;
 	char * LastHost = NULL;
@@ -936,18 +936,18 @@ VOID SendHTTPReporttoWL2KThread(void * unused)
 	BOOL bcopt=TRUE;
 	int Len;
 
-	// Send all reports in list
+	/* Send all reports in list */
 
 	char Response[1024];
 
-	// Only report if the CMSCall has a WL2KAccount
+	/* Only report if the CMSCall has a WL2KAccount */
 
 	if (NoWL2KAccount)
 		return;
 
 	if (!WL2KAccountChecked)
 	{
-		// only check once
+		/* only check once */
 
 		sock = OpenWL2KHTTPSock();
 
@@ -974,12 +974,12 @@ VOID SendHTTPReporttoWL2KThread(void * unused)
 
 	while (WL2KReport)
 	{
-		// Resolve Name if needed
+		/* Resolve Name if needed */
 
-		if (LastHost && strcmp(LastHost, WL2KReport->Host) == 0)		// Same host?
+		if (LastHost && strcmp(LastHost, WL2KReport->Host) == 0)		/* Same host? */
 			goto SameHost;
 
-		// New Host - Connect to it
+		/* New Host - Connect to it */
 	
 		LastHost = WL2KReport->Host;
 	
@@ -989,7 +989,7 @@ VOID SendHTTPReporttoWL2KThread(void * unused)
 
 		if (destaddr.sin_addr.s_addr == INADDR_NONE)
 		{
-			//	Resolve name to address
+			/*	Resolve name to address */
 
 			Debugprintf("Resolving %s", WL2KReport->Host);
 			HostEnt = gethostbyname (WL2KReport->Host);
@@ -999,13 +999,13 @@ VOID SendHTTPReporttoWL2KThread(void * unused)
 				err = WSAGetLastError();
 
 				Debugprintf("Resolve Failed for %s %d %x", WL2KReport->Host, err, err);
-				return;			// Resolve failed
+				return;			/* Resolve failed */
 			}
 	
 			memcpy(&destaddr.sin_addr.s_addr,HostEnt->h_addr,4);	
 		}
 
-		//   Allocate a Socket entry
+		/*   Allocate a Socket entry */
 
 		if (sock)
 			closesocket(sock);
@@ -1015,7 +1015,7 @@ VOID SendHTTPReporttoWL2KThread(void * unused)
 		if (sock == INVALID_SOCKET)
   	 		return; 
 
-//		ioctlsocket(sock, FIONBIO, &param);
+/*		ioctlsocket(sock, FIONBIO, &param); */
  
 		setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (const char FAR *)&bcopt, 4);
 
@@ -1029,15 +1029,15 @@ VOID SendHTTPReporttoWL2KThread(void * unused)
 
 		setsockopt (sock, SOL_SOCKET, SO_REUSEADDR, (const char FAR *)&bcopt,4);
 
-		// Connect to Host
+		/* Connect to Host */
 
 		if (connect(sock,(LPSOCKADDR) &destaddr, sizeof(destaddr)) != 0)
 		{
 			err=WSAGetLastError();
 
-			//
-			//	Connect failed
-			//
+			/* */
+			/*	Connect failed */
+			/* */
 
 			Debugprintf("Connect Failed");
 			closesocket(sock);
@@ -1071,7 +1071,7 @@ VOID SendHTTPReporttoWL2KThread(void * unused)
 		SendHTTPRequest(sock, "/channel/add", Message, Len, NULL);
 	
 		
-		//	Send Version Message
+		/*	Send Version Message */
 
 
 		if (LastRMSCall == NULL || strcmp(WL2KReport->RMSCall, LastRMSCall) != 0)
@@ -1080,7 +1080,7 @@ VOID SendHTTPReporttoWL2KThread(void * unused)
 			
 			LastRMSCall = WL2KReport->RMSCall;
 
-	//	"Callsign":"String","Program":"String","Version":"String","Comments":"String"
+	/*	"Callsign":"String","Program":"String","Version":"String","Comments":"String" */
 		
 			Len = sprintf(Message, "\"Callsign\":\"%s\",\"Program\":\"BPQ32\","
 				"\"Version\":\"%d.%d.%d.%d\",\"Comments\":\"Test Comment\"",
@@ -1102,10 +1102,10 @@ VOID SendHTTPReporttoWL2KThread(void * unused)
 
 struct WL2KInfo * DecodeWL2KReportLine(char *  buf)
 {
-	//06'<callsign>', '<base callsign>', '<grid square>', <frequency>, <mode>, <baud>, <power>,
-	// <antenna height>, <antenna gain>, <antenna direction>, '<hours>', <group reference>, '<service code>'
+	/*06'<callsign>', '<base callsign>', '<grid square>', <frequency>, <mode>, <baud>, <power>, */
+	/* <antenna height>, <antenna gain>, <antenna direction>, '<hours>', <group reference>, '<service code>' */
 
-	 // WL2KREPORT  service, api.winlink.org, 80, GM8BPQ, IO68VL, 00-23, 144800000, PKT1200, 10, 20, 5, 0, BPQTEST
+	 /* WL2KREPORT  service, api.winlink.org, 80, GM8BPQ, IO68VL, 00-23, 144800000, PKT1200, 10, 20, 5, 0, BPQTEST */
 	
 	char * Context;
 	char * p_cmd;
@@ -1126,7 +1126,7 @@ struct WL2KInfo * DecodeWL2KReportLine(char *  buf)
 	
 	strcpy(WL2KReport->ServiceCode, p_cmd);
 
-	// Can default Host and Port, so cant use strtok for them
+	/* Can default Host and Port, so cant use strtok for them */
 	
 	ptr1 = Context;
 
@@ -1148,7 +1148,7 @@ struct WL2KInfo * DecodeWL2KReportLine(char *  buf)
 		goto BadLine;
 
 	if (Param[1][0] == 0)
-		WL2KReport->WL2KPort = 80;			// HTTP Interface
+		WL2KReport->WL2KPort = 80;			/* HTTP Interface */
 	else
 		WL2KReport->WL2KPort = atoi(&Param[1][0]);
 
@@ -1160,7 +1160,7 @@ struct WL2KInfo * DecodeWL2KReportLine(char *  buf)
 
 		if (strstr(&Param[0][0], "winlink.org"))
 		{
-			WL2KReport->WL2KPort = 80;		// HTTP Interface
+			WL2KReport->WL2KPort = 80;		/* HTTP Interface */
 			WL2KReport->Host = _strdup("api.winlink.org");
 		}
 		else
@@ -1176,9 +1176,9 @@ struct WL2KInfo * DecodeWL2KReportLine(char *  buf)
 
 	strcpy(WL2KReport->RMSCall, p_cmd);
 	strcpy(WL2KReport->BaseCall, p_cmd);
-	strlop(WL2KReport->BaseCall, '-');					// Remove any SSID
+	strlop(WL2KReport->BaseCall, '-');					/* Remove any SSID */
 	
-	strcpy(WL2KCall, WL2KReport->BaseCall);				// For SYSOP Update
+	strcpy(WL2KCall, WL2KReport->BaseCall);				/* For SYSOP Update */
 
 	p_cmd = strtok_s(NULL, " ,\t\n\r", &Context);		
 	if (p_cmd == NULL) goto BadLine;
@@ -1191,7 +1191,7 @@ struct WL2KInfo * DecodeWL2KReportLine(char *  buf)
 	if (p_cmd == NULL) goto BadLine;
 	if (strlen(p_cmd) > 79) goto BadLine;
 	
-	// Convert any : in times to comma
+	/* Convert any : in times to comma */
 
 	ptr = strchr(p_cmd, ':');
 
@@ -1208,18 +1208,18 @@ struct WL2KInfo * DecodeWL2KReportLine(char *  buf)
 
 	WL2KReport->Freq = strtoll(p_cmd, NULL, 10);
 
-	if (WL2KReport->Freq == 0)	// Invalid
+	if (WL2KReport->Freq == 0)	/* Invalid */
 		goto BadLine;					
 
 	param = strtok_s(NULL, " ,\t\n\r", &Context);
 
-	// Mode Designator - one of
+	/* Mode Designator - one of */
 
-	// PKTnnnnnn
-	// WINMOR500
-	// WINMOR1600
-	// ROBUST
-	// P1 P12 P123 P1234 etc
+	/* PKTnnnnnn */
+	/* WINMOR500 */
+	/* WINMOR1600 */
+	/* ROBUST */
+	/* P1 P12 P123 P1234 etc */
 
 	if (memcmp(param, "PKT", 3) == 0)
 	{
@@ -1230,19 +1230,19 @@ struct WL2KInfo * DecodeWL2KReportLine(char *  buf)
 		 WL2KReport->baud = Speed;
 			
 		 if (Speed <= 1200)
-			 Mode = 0;					// 1200
+			 Mode = 0;					/* 1200 */
 		 else if (Speed <= 2400)
-			 Mode = 1;					// 2400
+			 Mode = 1;					/* 2400 */
 		 else if (Speed <= 4800)
-			 Mode = 2;					// 4800
+			 Mode = 2;					/* 4800 */
 		 else if (Speed <= 9600)
-			 Mode = 3;					// 9600
+			 Mode = 3;					/* 9600 */
 		 else if (Speed <= 19200)
-			 Mode = 4;					// 19200
+			 Mode = 4;					/* 19200 */
 		 else if (Speed <= 38400)
-			 Mode = 5;					// 38400
+			 Mode = 5;					/* 38400 */
 		 else
-			 Mode = 6;					// >38400
+			 Mode = 6;					/* >38400 */
 
 		WL2KReport->mode = Mode;
 	}
@@ -1304,7 +1304,7 @@ struct WL2KInfo * DecodeWL2KReportLine(char *  buf)
 	
 	param = strtok_s(NULL, " ,\t\n\r", &Context);
 
-	// Optional Params
+	/* Optional Params */
 
 	WL2KReport->power = (param)? atoi(param) : 0;
 	param = strtok_s(NULL, " ,\t\n\r", &Context);
@@ -1364,30 +1364,30 @@ VOID UpdateMHSupport(struct TNCINFO * TNC, UCHAR * Call, char Mode, char Directi
 
 	if (Digis)
 	{
-		// Call is an ax.25 digi string not a text call
+		/* Call is an ax.25 digi string not a text call */
 
 		memcpy(AXCall, Call, 7 * 9);
 		ReportCall[ConvFromAX25(Call, ReportCall)] = 0;
 
-		// if this is a UI frame with a locator or APRS position
-		// we could derive a position from it
+		/* if this is a UI frame with a locator or APRS position */
+		/* we could derive a position from it */
 
 	}
 	else
 	{
 		strcpy(ReportCall, Call);
 		ConvToAX25(Call, AXCall);
-		AXCall[6] |= 1;					// Set End of address
+		AXCall[6] |= 1;					/* Set End of address */
 	}
 
-	// Adjust freq to centre
+	/* Adjust freq to centre */
 
-//	if (Mode != ' ' && TNC->RIG->Valchar[0])
+/*	if (Mode != ' ' && TNC->RIG->Valchar[0]) */
 	if (TNC->RIG->Valchar[0])
 	{
 		if (TNC->Hardware == H_UZ7HO)	
 		{
-			// See if we have Center Freq Info
+			/* See if we have Center Freq Info */
 			if (TNC->AGWInfo->CenterFreq)
 			{
 				Freq = atof(TNC->RIG->Valchar) + ((TNC->AGWInfo->CenterFreq * 1.0) / 1000000.0);
@@ -1406,11 +1406,11 @@ VOID UpdateMHSupport(struct TNCINFO * TNC, UCHAR * Call, char Mode, char Directi
 			}
 #endif	
 			else
-				Freq = atof(TNC->RIG->Valchar) + 0.0015;		// Assume 1500
+				Freq = atof(TNC->RIG->Valchar) + 0.0015;		/* Assume 1500 */
 		}
 		else
 
-			// Not UZ7HO or Linux
+			/* Not UZ7HO or Linux */
 		
 			Freq = atof(TNC->RIG->Valchar) + 0.0015;
 
@@ -1440,7 +1440,7 @@ VOID UpdateMHSupport(struct TNCINFO * TNC, UCHAR * Call, char Mode, char Directi
 		}
 	}
 
-	else if (TNC->Hardware != H_WINMOR)			// Only WINMOR has a locator
+	else if (TNC->Hardware != H_WINMOR)			/* Only WINMOR has a locator */
 	{
 		LOC = NoLOC;
 		goto NOLOC;
@@ -1470,13 +1470,13 @@ VOID UpdateMHSupport(struct TNCINFO * TNC, UCHAR * Call, char Mode, char Directi
 NOLOC:
 
 	if (Loc)
-		LOC = Loc;		// Supplied Locator overrides
+		LOC = Loc;		/* Supplied Locator overrides */
 
 	for (i = 0; i < MHENTRIES; i++)
 	{
-		if (Mode == ' ' || Mode == '*')			// Packet
+		if (Mode == ' ' || Mode == '*')			/* Packet */
 		{
-			if ((MH->MHCALL[0] == 0) || ((memcmp(AXCall, MH->MHCALL, 7) == 0) && MH->MHDIGI == Mode)) // Spare or our entry
+			if ((MH->MHCALL[0] == 0) || ((memcmp(AXCall, MH->MHCALL, 7) == 0) && MH->MHDIGI == Mode)) /* Spare or our entry */
 			{
 				OldCount = MH->MHCOUNT;
 				goto DoMove;
@@ -1485,7 +1485,7 @@ NOLOC:
 		else
 		{
 			if ((MH->MHCALL[0] == 0) || ((memcmp(AXCall, MH->MHCALL, 7) == 0) &&
-				MH->MHDIGI == Mode && strcmp(MH->MHFreq, ReportFreq) == 0)) // Spare or our entry
+				MH->MHDIGI == Mode && strcmp(MH->MHFreq, ReportFreq) == 0)) /* Spare or our entry */
 			{
 				OldCount = MH->MHCOUNT;
 				goto DoMove;
@@ -1494,18 +1494,18 @@ NOLOC:
 		MH++;
 	}
 
-	//	TABLE FULL AND ENTRY NOT FOUND - MOVE DOWN ONE, AND ADD TO TOP
+	/*	TABLE FULL AND ENTRY NOT FOUND - MOVE DOWN ONE, AND ADD TO TOP */
 
 	i = MHENTRIES - 1;
 		
-	// Move others down and add at front
+	/* Move others down and add at front */
 DoMove:
 
-	if (i != 0)				// First
+	if (i != 0)				/* First */
 		memmove(MHBASE + 1, MHBASE, i * sizeof(MHSTRUC));
 
-//	memcpy (MHBASE->MHCALL, Buffer->ORIGIN, 7 * 9);	
-	memcpy (MHBASE->MHCALL, AXCall, 7 * 9);	// Save Digis
+/*	memcpy (MHBASE->MHCALL, Buffer->ORIGIN, 7 * 9);	 */
+	memcpy (MHBASE->MHCALL, AXCall, 7 * 9);	/* Save Digis */
 	MHBASE->MHDIGI = Mode;
 	MHBASE->MHTIME = time(NULL);
 	MHBASE->MHCOUNT = ++OldCount;
@@ -1513,15 +1513,15 @@ DoMove:
 	memcpy(MHBASE->MHLocator, LOC, 6);
 	strcpy(MHBASE->MHFreq, ReportFreq);
 
-	// Report to NodeMap
+	/* Report to NodeMap */
 
 	if (Report == FALSE)
 		return;
 
 	if (Mode == '*')
-		return;							// Digi'ed Packet
+		return;							/* Digi'ed Packet */
 	
-	if (Mode == ' ') 					// Packet Data
+	if (Mode == ' ') 					/* Packet Data */
 	{
 		if (TNC->PktUpdateMap == 1)
 			Mode = '!';
@@ -1538,7 +1538,7 @@ DoMove:
 	ReportMode[3] = Direction;
 	ReportMode[4] = 0;
 
-	// If no position see if we have an APRS posn
+	/* If no position see if we have an APRS posn */
 
 	if (LOC[0] == 0)
 	{
@@ -1569,7 +1569,7 @@ VOID CloseDriverWindow(int port)
 		return;
 
 	PostMessage(TNC->hDlg, WM_CLOSE,0,0);
-//	DestroyWindow(TNC->hDlg);
+/*	DestroyWindow(TNC->hDlg); */
 
 	TNC->hDlg = NULL;
 #endif
@@ -1612,7 +1612,7 @@ VOID ShowTraffic(struct TNCINFO * TNC)
 
 BOOL InterlockedCheckBusy(struct TNCINFO * ThisTNC)
 {
-	// See if this port, or any interlocked ports are reporting channel busy
+	/* See if this port, or any interlocked ports are reporting channel busy */
 
 	struct TNCINFO * TNC;
 	int i;
@@ -1620,10 +1620,10 @@ BOOL InterlockedCheckBusy(struct TNCINFO * ThisTNC)
 	int txInterlock = ThisTNC->TXRadio;
 
 	if (ThisTNC->Busy)
-		return TRUE;				// Our port is busy
+		return TRUE;				/* Our port is busy */
 		
 	if (rxInterlock == 0 && txInterlock == 0)
-		return ThisTNC->Busy;		// No Interlock
+		return ThisTNC->Busy;		/* No Interlock */
 
 	for (i=1; i <= MAXBPQPORTS; i++)
 	{
@@ -1635,19 +1635,19 @@ BOOL InterlockedCheckBusy(struct TNCINFO * ThisTNC)
 		if (TNC == ThisTNC)
 			continue;
 
-		if (rxInterlock == TNC->RXRadio || txInterlock == TNC->TXRadio)	// Same Group	
+		if (rxInterlock == TNC->RXRadio || txInterlock == TNC->TXRadio)	/* Same Group	 */
 			if (TNC->Busy)
-				return TRUE;				// Interlocked port is busy
+				return TRUE;				/* Interlocked port is busy */
 
 	}
-	return FALSE;					// None Busy
+	return FALSE;					/* None Busy */
 }
 
 char ChallengeResponse[13];
 
 char * GetChallengeResponse(char * Call, char *  ChallengeString)
 {
-	// Generates a response to the CMS challenge string...
+	/* Generates a response to the CMS challenge string... */
 
 	long long Challenge = _atoi64(ChallengeString);
 	long long CallSum = 0;
@@ -1662,7 +1662,7 @@ char * GetChallengeResponse(char * Call, char *  ChallengeString)
 	if (Challenge == 0)
 		return "000000000000";
 
-// Calculate Mask from Callsign
+/* Calculate Mask from Callsign */
 
 	memcpy(CallCopy, Call, 10);
 	strlop(CallCopy, '-');
@@ -1697,7 +1697,7 @@ SOCKET OpenWL2KHTTPSock()
 	destaddr.sin_family = AF_INET; 
 	destaddr.sin_port = htons(80);
 
-	//	Resolve name to address
+	/*	Resolve name to address */
 
 	HostEnt = gethostbyname ("api.winlink.org");
 		 
@@ -1706,12 +1706,12 @@ SOCKET OpenWL2KHTTPSock()
 		err = WSAGetLastError();
 
 		Debugprintf("Resolve Failed for %s %d %x", "api.winlink.org", err, err);
-		return 0 ;			// Resolve failed
+		return 0 ;			/* Resolve failed */
 	}
 	
 	memcpy(&destaddr.sin_addr.s_addr,HostEnt->h_addr,4);	
 	
-	//   Allocate a Socket entry
+	/*   Allocate a Socket entry */
 
 	sock = socket(AF_INET,SOCK_STREAM,0);
 
@@ -1748,7 +1748,7 @@ BOOL GetWL2KSYSOPInfo(char * Call, char * _REPLYBUFFER)
 	if (sock == 0)
 		return 0;
 	
-	// {"Callsign":"String"}
+	/* {"Callsign":"String"} */
 			
 	Len = sprintf(Message, "\"Callsign\":\"%s\"", Call);
 		
@@ -1784,12 +1784,12 @@ BOOL UpdateWL2KSYSOPInfo(char * Call, char * SQL)
 		err = WSAGetLastError();
 
 		Debugprintf("Resolve Failed for %s %d %x", "api.winlink.org", err, err);
-		return 0 ;			// Resolve failed
+		return 0 ;			/* Resolve failed */
 	}
 	
 	memcpy(&destaddr.sin_addr.s_addr,HostEnt->h_addr,4);	
 
-	//   Allocate a Socket entry
+	/*   Allocate a Socket entry */
 
 	sock = socket(AF_INET,SOCK_STREAM,0);
 
@@ -1830,9 +1830,9 @@ BOOL UpdateWL2KSYSOPInfo(char * Call, char * SQL)
 	return TRUE;
 
 }
-// http://server.winlink.org:8085/csv/reply/ChannelList?Modes=40,41,42,43,44&ServiceCodes=BPQTEST,PUBLIC
+/* http://server.winlink.org:8085/csv/reply/ChannelList?Modes=40,41,42,43,44&ServiceCodes=BPQTEST,PUBLIC */
 
-// Process config lines that are common to a number of HF modes
+/* Process config lines that are common to a number of HF modes */
 
 static char ** SeparateMultiString(char * MultiString)
 {
@@ -1840,9 +1840,9 @@ static char ** SeparateMultiString(char * MultiString)
 	int Count = 0;
 	char * ptr, * ptr1;
 
-	// Convert to string array
+	/* Convert to string array */
 
-	Value = zalloc(sizeof(void *));				// always NULL entry on end even if no values
+	Value = zalloc(sizeof(void *));				/* always NULL entry on end even if no values */
 	Value[0] = NULL;
 
 	strlop(MultiString, 13);
@@ -1878,11 +1878,11 @@ int standardParams(struct TNCINFO * TNC, char * buf)
 		TNC->WL2K = DecodeWL2KReportLine(buf);
 	else if (_memicmp(buf, "SESSIONTIMELIMIT", 16) == 0)
 		TNC->SessionTimeLimit = TNC->DefaultSessionTimeLimit = atoi(&buf[17]) * 60;
-	else if (_memicmp(buf, "BUSYHOLD", 8) == 0)		// Hold Time for Busy Detect
+	else if (_memicmp(buf, "BUSYHOLD", 8) == 0)		/* Hold Time for Busy Detect */
 		TNC->BusyHold = atoi(&buf[8]);
-	else if (_memicmp(buf, "BUSYWAIT", 8) == 0)		// Wait time before failing connect if busy
+	else if (_memicmp(buf, "BUSYWAIT", 8) == 0)		/* Wait time before failing connect if busy */
 		TNC->BusyWait = atoi(&buf[8]);
-	else if (_memicmp(buf, "AUTOSTARTDELAY", 14) == 0) // Time to wait for TNC to start
+	else if (_memicmp(buf, "AUTOSTARTDELAY", 14) == 0) /* Time to wait for TNC to start */
 		TNC->AutoStartDelay = atoi(&buf[15]);
 	else if (_memicmp(buf, "DEFAULTRADIOCOMMAND", 19) == 0)
 		TNC->DefaultRadioCmd = _strdup(&buf[20]);
@@ -1893,34 +1893,34 @@ int standardParams(struct TNCINFO * TNC, char * buf)
 	}
 	else if (_memicmp(buf, "NRNEIGHBOUR", 11) == 0)
 		TNC->NRNeighbour = _strdup(&buf[12]);
-	else if (_memicmp(buf, "MAXCONREQ", 9) == 0)		// Hold Time for Busy Detect
+	else if (_memicmp(buf, "MAXCONREQ", 9) == 0)		/* Hold Time for Busy Detect */
 		TNC->MaxConReq = atoi(&buf[9]);
 
 	else if (_memicmp(buf, "FREQUENCY", 9) == 0)
 		TNC->Frequency = _strdup(&buf[10]);
 	else if (_memicmp(buf, "SendTandRtoRelay", 16) == 0)
 		TNC->SendTandRtoRelay = atoi(&buf[17]);
-	else if (_memicmp(buf, "Radio", 5) == 0)		// Rig Control RADIO for TX amd RX (Equiv to INTERLOCK)
+	else if (_memicmp(buf, "Radio", 5) == 0)		/* Rig Control RADIO for TX amd RX (Equiv to INTERLOCK) */
 		TNC->RXRadio = TNC->TXRadio = atoi(&buf[6]);
-	else if (_memicmp(buf, "TXRadio", 7) == 0)		// Rig Control RADIO for TX
+	else if (_memicmp(buf, "TXRadio", 7) == 0)		/* Rig Control RADIO for TX */
 		TNC->TXRadio = atoi(&buf[8]);
-	else if (_memicmp(buf, "RXRadio", 7) == 0)		// Rig Control RADIO for RXFRETRIES
+	else if (_memicmp(buf, "RXRadio", 7) == 0)		/* Rig Control RADIO for RXFRETRIES */
 		TNC->RXRadio = atoi(&buf[8]);
-	else if (_memicmp(buf, "TXFreq", 6) == 0)		// For PTT Sets Freq mode
+	else if (_memicmp(buf, "TXFreq", 6) == 0)		/* For PTT Sets Freq mode */
 		TNC->TXFreq = strtoll(&buf[7], NULL, 10);
-	else if (_memicmp(buf, "DefaultTXFreq", 13) == 0)	// Set at end of session
+	else if (_memicmp(buf, "DefaultTXFreq", 13) == 0)	/* Set at end of session */
 		TNC->DefaultTXFreq = atof(&buf[14]);
-	else if (_memicmp(buf, "DefaultRXFreq", 13) == 0)	// Set at end of session
+	else if (_memicmp(buf, "DefaultRXFreq", 13) == 0)	/* Set at end of session */
 		TNC->DefaultRXFreq = atof(&buf[14]);
-	else if (_memicmp(buf, "ActiveTXFreq", 12) == 0)	// Set at start of session
+	else if (_memicmp(buf, "ActiveTXFreq", 12) == 0)	/* Set at start of session */
 		TNC->ActiveTXFreq = atof(&buf[13]);
-	else if (_memicmp(buf, "ActiveRXFreq", 12) == 0)	// Set at start of session
+	else if (_memicmp(buf, "ActiveRXFreq", 12) == 0)	/* Set at start of session */
 		TNC->ActiveRXFreq = atof(&buf[13]);
-	else if (_memicmp(buf, "DisconnectScript", 16) == 0)	// Set at start of session
+	else if (_memicmp(buf, "DisconnectScript", 16) == 0)	/* Set at start of session */
 		TNC->DisconnectScript = SeparateMultiString(&buf[17]);
 	else if (_memicmp(buf, "PTTONHEX", 8) == 0)
 	{
-		// Hex String to use for PTT on for this port
+		/* Hex String to use for PTT on for this port */
 
 		char * ptr1 = &buf[9];
 		char * ptr2 = TNC->PTTOn;
@@ -1952,7 +1952,7 @@ int standardParams(struct TNCINFO * TNC, char * buf)
 	}
 	else if (_memicmp(buf, "PTTOFFHEX", 9) == 0)
 	{
-		// Hex String to use for PTT off
+		/* Hex String to use for PTT off */
 
 		char * ptr = &buf[10];
 		char * ptr2 = TNC->PTTOff;
@@ -2012,7 +2012,7 @@ extern SOCKET ReportSocket;
 extern char LOCATOR[80];
 extern char ReportDest[7];
 extern int NumberofPorts;
-extern struct RIGPORTINFO * PORTInfo[34];		// Records are Malloc'd
+extern struct RIGPORTINFO * PORTInfo[34];		/* Records are Malloc'd */
 
 time_t LastModeReportTime;
 time_t LastFreqReportTime;
@@ -2021,10 +2021,10 @@ VOID SendReportMsg(char * buff, int txlen);
 
 void sendModeReport()
 {
-	// if TNC is connected send mode and frequencies to Node Map as a MODE record
-	// Are we better sending scan info as a separate record ??
+	/* if TNC is connected send mode and frequencies to Node Map as a MODE record */
+	/* Are we better sending scan info as a separate record ?? */
 
-	// MODE Port, HWType, Interlock 
+	/* MODE Port, HWType, Interlock  */
 
 	struct PORTCONTROL * PORT = PORTTABLE;
 
@@ -2034,7 +2034,7 @@ void sendModeReport()
 	char Msg[300] = "MODE ";
 	int i, Len = 5;
 
-	if ((CurrentSecs - LastModeReportTime) < 900)	// Every 15 Mins
+	if ((CurrentSecs - LastModeReportTime) < 900)	/* Every 15 Mins */
 		return;
 
 	LastModeReportTime = CurrentSecs;
@@ -2069,17 +2069,17 @@ void sendModeReport()
 	}
 
 	if (Len == 5)
-		return;			// Nothing to send
+		return;			/* Nothing to send */
 	
-	// Block includes the Msg Header (7 bytes), Len Does not!
+	/* Block includes the Msg Header (7 bytes), Len Does not! */
 
 	memcpy(AXPTR->DEST, ReportDest, 7);
 	memcpy(AXPTR->ORIGIN, MYCALL, 7);
-	AXPTR->DEST[6] &= 0x7e;			// Clear End of Call
-	AXPTR->DEST[6] |= 0x80;			// set Command Bit
+	AXPTR->DEST[6] &= 0x7e;			/* Clear End of Call */
+	AXPTR->DEST[6] |= 0x80;			/* set Command Bit */
 
-	AXPTR->ORIGIN[6] |= 1;			// Set End of Call
-	AXPTR->CTL = 3;		//UI
+	AXPTR->ORIGIN[6] |= 1;			/* Set End of Call */
+	AXPTR->CTL = 3;		/*UI */
 	AXPTR->PID = 0xf0;
 	memcpy(AXPTR->L2DATA, Msg, Len);
 
@@ -2088,7 +2088,7 @@ void sendModeReport()
 
 void sendFreqReport(char * From)
 {
-	// Send info from rig control or Port Frequency info to Node Map for Mode page.
+	/* Send info from rig control or Port Frequency info to Node Map for Mode page. */
 
 	MESSAGE AXMSG;
 	PMESSAGE AXPTR = &AXMSG;
@@ -2101,7 +2101,7 @@ void sendFreqReport(char * From)
 	struct PORTCONTROL * PORT = PORTTABLE;
 	struct TNCINFO * TNC;
 
-	if ((CurrentSecs - LastFreqReportTime) < 7200)	// Every 2 Hours
+	if ((CurrentSecs - LastFreqReportTime) < 7200)	/* Every 2 Hours */
 		return;
 
 	LastFreqReportTime = CurrentSecs;
@@ -2149,7 +2149,7 @@ void sendFreqReport(char * From)
 		}
 	}
 
-	// Look for Port freq info
+	/* Look for Port freq info */
 
 	for (i = 0; i < NUMBEROFPORTS; i++)
 	{	
@@ -2166,12 +2166,12 @@ void sendFreqReport(char * From)
 				continue;
 
 			if (TNC->RIG->TimeBands && TNC->RIG->TimeBands[1]->Scanlist)
-				continue;					// Have freq info from Rigcontrol
+				continue;					/* Have freq info from Rigcontrol */
 			
-			if (TNC->RXRadio == 0)		// Replace with dummy
+			if (TNC->RXRadio == 0)		/* Replace with dummy */
 				TNC->RXRadio = nextDummyInterlock++;
 
-			// Use negative port no instead of interlock group
+			/* Use negative port no instead of interlock group */
 
 			Len += sprintf(&Msg[Len], "%d/00:00/%.0f|", TNC->RXRadio, atof(TNC->Frequency) * 1000000.0);
 		}
@@ -2180,17 +2180,17 @@ void sendFreqReport(char * From)
 	}
 
 	if (Len == 5)
-		return;			// Nothing to send
+		return;			/* Nothing to send */
 
-	// Block includes the Msg Header (7 bytes), Len Does not!
+	/* Block includes the Msg Header (7 bytes), Len Does not! */
 
 	memcpy(AXPTR->DEST, ReportDest, 7);
 	memcpy(AXPTR->ORIGIN, MYCALL, 7);
-	AXPTR->DEST[6] &= 0x7e;			// Clear End of Call
-	AXPTR->DEST[6] |= 0x80;			// set Command Bit
+	AXPTR->DEST[6] &= 0x7e;			/* Clear End of Call */
+	AXPTR->DEST[6] |= 0x80;			/* set Command Bit */
 
-	AXPTR->ORIGIN[6] |= 1;			// Set End of Call
-	AXPTR->CTL = 3;		//UI
+	AXPTR->ORIGIN[6] |= 1;			/* Set End of Call */
+	AXPTR->CTL = 3;		/*UI */
 	AXPTR->PID = 0xf0;
 	memcpy(AXPTR->L2DATA, Msg, Len);
 

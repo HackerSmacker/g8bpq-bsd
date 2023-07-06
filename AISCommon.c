@@ -8,9 +8,9 @@
 #include <math.h>
 #include "time.h"
 #include "CHeaders.h"
-//#include "tncinfo.h"
-//#include "adif.h"
-//#include "telnetserver.h"
+/*#include "tncinfo.h" */
+/*#include "adif.h" */
+/*#include "telnetserver.h" */
 
 VOID __cdecl Debugprintf(const char * format, ...);
 
@@ -36,20 +36,20 @@ typedef struct TARGETRECORD
     double Heading;
     int NavStatus;
     UINT TCA;
-    UINT BCA;							// Bearing at closest
+    UINT BCA;							/* Bearing at closest */
     UINT TimeAdded;
     UINT TimeLastUpdated;
 	char Type;
 	char Class;
 
-	// Fields for Intellegent TrackLog
+	/* Fields for Intellegent TrackLog */
 
-	double LatTrack[TRACKPOINTS];	// Cyclic Tracklog
+	double LatTrack[TRACKPOINTS];	/* Cyclic Tracklog */
 	double LonTrack[TRACKPOINTS];
 	time_t TrackTime[TRACKPOINTS];
-	int Trackptr;					// Next record in Tracklog
+	int Trackptr;					/* Next record in Tracklog */
 
-	// info about last track point written
+	/* info about last track point written */
 
 	double Lastlat;
     double LastLong;
@@ -58,7 +58,7 @@ typedef struct TARGETRECORD
 
  	time_t LastTime;
 
-	int Alt;							// For SAR Aircraft
+	int Alt;							/* For SAR Aircraft */
 
      
 } TargetRecord;
@@ -136,20 +136,20 @@ typedef struct SARRECORD
     double Heading;
     int NavStatus;
     UINT TCA;
-    UINT BCA;							// Bearing at closest
+    UINT BCA;							/* Bearing at closest */
     time_t TimeAdded;
     time_t TimeLastUpdated;
 	char Type;
 	char Class;
 
-	// Fields for Intellegent TrackLog
+	/* Fields for Intellegent TrackLog */
 
-	double LatTrack[TRACKPOINTS];	// Cyclic Tracklog
+	double LatTrack[TRACKPOINTS];	/* Cyclic Tracklog */
 	double LonTrack[TRACKPOINTS];
 	time_t TrackTime[TRACKPOINTS];
-	int Trackptr;					// Next record in Tracklog
+	int Trackptr;					/* Next record in Tracklog */
 
-	// info about last track point written
+	/* info about last track point written */
 
 	double Lastlat;
     double LastLong;
@@ -158,7 +158,7 @@ typedef struct SARRECORD
 
  	time_t LastTime;
 
-	int Alt;							// For SAR Aircraft
+	int Alt;							/* For SAR Aircraft */
 
        
 } SARRecord;
@@ -166,33 +166,33 @@ typedef struct SARRECORD
 
 typedef struct ADSBRECORD
 {
-	char hex[8];		//the 24-bit ICAO identifier of the aircraft, as 6 hex digits. The identifier may
-						//start with '~', this means that the address is a non-ICAO address (e.g. from TIS-B).
-	char squawk[5];		// the 4-digit squawk (octal representation)
-	char flight[32];	// the flight name / callsign
+	char hex[8];		/*the 24-bit ICAO identifier of the aircraft, as 6 hex digits. The identifier may */
+						/*start with '~', this means that the address is a non-ICAO address (e.g. from TIS-B). */
+	char squawk[5];		/* the 4-digit squawk (octal representation) */
+	char flight[32];	/* the flight name / callsign */
 	double lat;
-	double lon;			// the aircraft position in decimal degrees
-	// nucp: the NUCp (navigational uncertainty category) reported for the position
-	int seen_pos;		// how long ago (in seconds before "now") the position was last updated
-	int altitude;		// the aircraft altitude in feet, or "ground" if it is reporting it is on the ground
-	int vert_rate;		// vertical rate in feet/minute
-	int track;			// true track over ground in degrees (0-359)
-	int speed;			// reported speed in kt. This is usually speed over ground, but might be IAS - you can't tell the difference here, sorry!
-	int messages;		// total number of Mode S messages received from this aircraft
-	int seen;			// how long ago (in seconds before "now") a message was last received from this aircraft
-	int rssi;			// recent average RSSI (signal power), in dbFS; this will always be negative.
+	double lon;			/* the aircraft position in decimal degrees */
+	/* nucp: the NUCp (navigational uncertainty category) reported for the position */
+	int seen_pos;		/* how long ago (in seconds before "now") the position was last updated */
+	int altitude;		/* the aircraft altitude in feet, or "ground" if it is reporting it is on the ground */
+	int vert_rate;		/* vertical rate in feet/minute */
+	int track;			/* true track over ground in degrees (0-359) */
+	int speed;			/* reported speed in kt. This is usually speed over ground, but might be IAS - you can't tell the difference here, sorry! */
+	int messages;		/* total number of Mode S messages received from this aircraft */
+	int seen;			/* how long ago (in seconds before "now") a message was last received from this aircraft */
+	int rssi;			/* recent average RSSI (signal power), in dbFS; this will always be negative. */
 
 	time_t TimeAdded;
 	time_t TimeLastUpdated;
 
-	// Fields for Intellegent TrackLog
+	/* Fields for Intellegent TrackLog */
 
-	double LatTrack[TRACKPOINTS];	// Cyclic Tracklog
+	double LatTrack[TRACKPOINTS];	/* Cyclic Tracklog */
 	double LonTrack[TRACKPOINTS];
 	time_t TrackTime[TRACKPOINTS];
-	int Trackptr;					// Next record in Tracklog
+	int Trackptr;					/* Next record in Tracklog */
 
-	// info about last track point written
+	/* info about last track point written */
 
 	double Lastlat;
     double LastLong;
@@ -208,10 +208,10 @@ extern BOOL NoAlarms;
 
 
 UINT PaintColour;
-//char Msg[1000];
-//UINT Colour;
+/*char Msg[1000]; */
+/*UINT Colour; */
 char CloseString[100];
-//extern int ListItem;
+/*extern int ListItem; */
 
 
 SOCKET udpsock;
@@ -240,7 +240,7 @@ int SyncState, SlotTO, SubMsg;
 
 int GpsOK;
 int DecayTimer;
-static int MaxAge = 7200;		// 2 Hours
+static int MaxAge = 7200;		/* 2 Hours */
 
 int VessselDBChanged = 0;
 int NavAidDBChanged = 0;
@@ -279,15 +279,15 @@ int ADSBCount = 0;
 
 struct ADSBRECORD ** ADSBRecords;
 
-UCHAR conv[256]={99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99,	// 00
+UCHAR conv[256]={99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99,	/* 00 */
 				 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99,
 				 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63,
-				  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15,	// 30
+				  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15,	/* 30 */
 
-				 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,	// 40 @
-				 32, 33, 34, 35, 36, 37, 38, 39, 40, 33, 34, 35, 36, 37, 38, 39,	// 50 P
-				 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55,	// 60
-				 56, 57, 58, 59, 60, 61, 62, 63,  0,  1,  2,  3,  4,  5,  6,  7,	// 77 = 
+				 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,	/* 40 @ */
+				 32, 33, 34, 35, 36, 37, 38, 39, 40, 33, 34, 35, 36, 37, 38, 39,	/* 50 P */
+				 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55,	/* 60 */
+				 56, 57, 58, 59, 60, 61, 62, 63,  0,  1,  2,  3,  4,  5,  6,  7,	/* 77 =  */
 
 				 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99,
 				 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99,
@@ -362,11 +362,11 @@ char * NavStatusString[] = {
 	"reserved",
 	"Not defined"};
 
-char * VesselType[] = {	// First Digit
+char * VesselType[] = {	/* First Digit */
 	"Undefined",
 	"Reserved for future use",
-	"WIG",						// 2 
-	"",							// 3
+	"WIG",						/* 2  */
+	"",							/* 3 */
 	"HSC",
 	"",
 	"Passenger ship",
@@ -402,7 +402,7 @@ extern struct SHIPDATABASERECORD * ShipDataRec;
 
 int ACount = 0, BCount = 0;
 
-char ADSBHost[64] = ""; //"10.8.0.50";
+char ADSBHost[64] = ""; /*"10.8.0.50"; */
 int ADSBPort = 30003;
 int ADSBConnected = 0;
 
@@ -410,7 +410,7 @@ extern double Lat;
 extern double Lon;
 
 
-// Forward declarations of functions included in this code module:
+/* Forward declarations of functions included in this code module: */
 
 
 double radians(double Degrees);
@@ -454,20 +454,20 @@ struct SHIPDATABASERECORD * ShipDataRec;
 
 void SaveTrackPoint(struct TARGETRECORD * ptr)
 {
-	// If course and speed have changed, and distance travelled or time is significant, add a track point to log
+	/* If course and speed have changed, and distance travelled or time is significant, add a track point to log */
 
-	if ((NOW - ptr->LastTime) < 15)	// Not More that once per 15 secs
+	if ((NOW - ptr->LastTime) < 15)	/* Not More that once per 15 secs */
 		return;
 
-	if (fabs(ptr->LastCourse - ptr->course) < 1.0  &&  fabs(ptr->LastSpeed - ptr->speed) < 0.2 && ptr->speed > 0.2) // if very slow, COG may be random
+	if (fabs(ptr->LastCourse - ptr->course) < 1.0  &&  fabs(ptr->LastSpeed - ptr->speed) < 0.2 && ptr->speed > 0.2) /* if very slow, COG may be random */
 	{
-		// Steady Course - update once per 5 minutes if moving
+		/* Steady Course - update once per 5 minutes if moving */
 		
 		if ((NOW - ptr->LastTime) > 600 && ptr->speed != 0) 
 			goto writeRec;
 	}
 
-	if (fabs(ptr->Lastlat - ptr->lat) < 0.01  &&  fabs(ptr->LastLong - ptr->Long) < 0.01) // Not moved much
+	if (fabs(ptr->Lastlat - ptr->lat) < 0.01  &&  fabs(ptr->LastLong - ptr->Long) < 0.01) /* Not moved much */
 		return;
 
 writeRec:
@@ -492,20 +492,20 @@ writeRec:
 
 void SaveSARTrackPoint(struct SARRECORD * ptr)
 {
-	// If course and speed have changed, and distance travelled or time is significant, add a track point to log
+	/* If course and speed have changed, and distance travelled or time is significant, add a track point to log */
 
-	if ((NOW - ptr->LastTime) < 15)	// Not More that once per 15 secs
+	if ((NOW - ptr->LastTime) < 15)	/* Not More that once per 15 secs */
 		return;
 
-	if (fabs(ptr->LastCourse - ptr->course) < 1.0  &&  fabs(ptr->LastSpeed - ptr->speed) < 0.2 && ptr->speed > 0.2) // if very slow, COG may be random
+	if (fabs(ptr->LastCourse - ptr->course) < 1.0  &&  fabs(ptr->LastSpeed - ptr->speed) < 0.2 && ptr->speed > 0.2) /* if very slow, COG may be random */
 	{
-		// Steady Course - update once per 5 minutes if moving
+		/* Steady Course - update once per 5 minutes if moving */
 		
 		if ((NOW - ptr->LastTime) > 600 && ptr->speed != 0) 
 			goto writeRec;
 	}
 
-	if (fabs(ptr->Lastlat - ptr->lat) < 0.01  &&  fabs(ptr->LastLong - ptr->Long) < 0.01) // Not moved much
+	if (fabs(ptr->Lastlat - ptr->lat) < 0.01  &&  fabs(ptr->LastLong - ptr->Long) < 0.01) /* Not moved much */
 		return;
 
 writeRec:
@@ -531,9 +531,9 @@ writeRec:
 
 void MaintainVesselDatabase(UINT UserID, char Type)
 {
-	LookupVessel(UserID);								// Find Vessel - if not present, add it
+	LookupVessel(UserID);								/* Find Vessel - if not present, add it */
 
-	if (ShipDataRec == NULL) return;					// Malloc failed!!
+	if (ShipDataRec == NULL) return;					/* Malloc failed!! */
 
 	if (Type == 'A') ShipDataRec->Class='A'; else ShipDataRec->Class='B';
 	
@@ -548,7 +548,7 @@ void MaintainVesselDatabase(UINT UserID, char Type)
 		ShipDataRec->WidthD = V_WidthD;
 	}
 
-	if (Type == 'B')					// Type 19 Class B Details
+	if (Type == 'B')					/* Type 19 Class B Details */
 	{
 		memcpy(ShipDataRec->name, V_Name, 21);
 		ShipDataRec->Type = V_Type;
@@ -558,12 +558,12 @@ void MaintainVesselDatabase(UINT UserID, char Type)
 		ShipDataRec->WidthD = V_WidthD;
 	}
 
-	if (Type == '0')				// Class B record 24A
+	if (Type == '0')				/* Class B record 24A */
 	{
 		memcpy(ShipDataRec->name, V_Name, 21);
 	}
 
-	if (Type == '1')				// Class B record 24B
+	if (Type == '1')				/* Class B record 24B */
 	{
 		memcpy(ShipDataRec->Callsign,V_Callsign,8);
 		ShipDataRec->Type = V_Type;
@@ -575,7 +575,7 @@ void MaintainVesselDatabase(UINT UserID, char Type)
 		
 	ShipDataRec->TimeLastUpdated = NOW;
 
-	VessselDBChanged = 1;					// Save on next timer tick
+	VessselDBChanged = 1;					/* Save on next timer tick */
 	return;
 
 } 
@@ -591,7 +591,7 @@ void LookupVessel(UINT UserID)
 	    if (ShipDataRec->ID == UserID) return;
 	}
  
-//   Not found
+/*   Not found */
 
 	if (ShipDatabaseCount == 0)
 		ShipDatabaseRecords=(struct SHIPDATABASERECORD **)malloc(sizeof(void *));
@@ -723,7 +723,7 @@ void SaveVesselDataBase()
 
 	for (i = 0; i < ShipDatabaseCount; i++)
 	{
-		if (ShipDatabaseRecords[i]->Callsign[0] > 32)	// Count those with details
+		if (ShipDatabaseRecords[i]->Callsign[0] > 32)	/* Count those with details */
 			n++;
 	}
 
@@ -734,7 +734,7 @@ void SaveVesselDataBase()
 	{
 		ShipDataRec = ShipDatabaseRecords[i];
 
-		if (ShipDataRec->Callsign[0] > 32)			// No point in saving if no vessel details
+		if (ShipDataRec->Callsign[0] > 32)			/* No point in saving if no vessel details */
 		{
 			sprintf(buf,"%d|%s|%s|%d|%d|%d|%d|%d|%d|%d|%d|%d\n",
 			ShipDataRec->ID,
@@ -886,19 +886,19 @@ int ProcessAISMessage(char * msg, int len)
 
 	ptr1 = &msg[7];
 
-	//'   Looks like first is no of fragments in message, 2nd fragment seq no, 3rd msg seq, 4th port
-	//'!AIVDM,2,1,7,2,502He5h000030000000AD8hTr10u9B1IA<0000000000040000<000000000,0*54
-	//'!AIVDM,2,2,7,2,00000000008,2*58
+	/*'   Looks like first is no of fragments in message, 2nd fragment seq no, 3rd msg seq, 4th port */
+	/*'!AIVDM,2,1,7,2,502He5h000030000000AD8hTr10u9B1IA<0000000000040000<000000000,0*54 */
+	/*'!AIVDM,2,2,7,2,00000000008,2*58 */
 
 	if (memcmp(&msg[1],"AIVDM",5) == 0)
 	{
-		if (memchr(msg,'*',len) == 0) return 0; // No Checksum
+		if (memchr(msg,'*',len) == 0) return 0; /* No Checksum */
 
 		len-=7;
 
 		ptr2=(char *)memchr(ptr1,',',8);
 
-		if (ptr2 == 0) return 0;	// Duff
+		if (ptr2 == 0) return 0;	/* Duff */
 
 		*(ptr2++)=0;
 		strcpy(X1,ptr1);
@@ -906,7 +906,7 @@ int ProcessAISMessage(char * msg, int len)
 
 		ptr2=(char *)memchr(ptr1,',',8);
 
-		if (ptr2 == 0) return 0;	// Duff
+		if (ptr2 == 0) return 0;	/* Duff */
 
 		*(ptr2++)=0;
 		strcpy(X2,ptr1);
@@ -914,7 +914,7 @@ int ProcessAISMessage(char * msg, int len)
 
 		ptr2=(char *)memchr(ptr1,',',8);
 
-		if (ptr2 == 0) return 0;	// Duff
+		if (ptr2 == 0) return 0;	/* Duff */
 
 		*(ptr2++)=0;
 		strcpy(X3,ptr1);
@@ -927,7 +927,7 @@ int ProcessAISMessage(char * msg, int len)
 
 		ptr2=(char *)memchr(ptr1,',',8);
 
-		if (ptr2 == 0) return 0;	// Duff
+		if (ptr2 == 0) return 0;	/* Duff */
 
 		*(ptr2++)=0;
 		strcpy(X4,ptr1);
@@ -935,36 +935,36 @@ int ProcessAISMessage(char * msg, int len)
 
 		ptr2=(char *)memchr(ptr1,',',78);
 
-		if (ptr2 == 0) return 0;	// Duff
+		if (ptr2 == 0) return 0;	/* Duff */
 
 		*(ptr2++)=0;
 		strcpy(Data,ptr1);
 
 		if (X1[0] == '1')
 		{
-			//  Single fragment
+			/*  Single fragment */
 
 			DecodeVDM (Data);
 			return 0;
 		}
 
-		// Multipart. 
+		/* Multipart.  */
 
 		if (X2[0] == '1')
 		{
-			//   First of Multipart
+			/*   First of Multipart */
 
 			strcpy(Stack,Data);			
-			return 0;				// ' this needs generalising
+			return 0;				/* ' this needs generalising */
 		}
 
-		//   Subsequent part of Multipart
+		/*   Subsequent part of Multipart */
 
 		strcat(Stack, Data);
 
 		if (X1[0] == X2[0])
 		{
-			// Last Part
+			/* Last Part */
 
 			DecodeVDM (Stack);
 			return 0;
@@ -984,15 +984,15 @@ int DecodeVDM(char *msg)
 
 	UCHAR val[500];
 
-	// Start value at offet 1 for compatiblilty woth Basic Code
+	/* Start value at offet 1 for compatiblilty woth Basic Code */
 
-	ConvertAsciito6Bit(msg, (char *)&val[1], strlen(msg));       // Convert ascii chars to 6-bit values
+	ConvertAsciito6Bit(msg, (char *)&val[1], strlen(msg));       /* Convert ascii chars to 6-bit values */
 
 	Msg_Type = val[1];
 
 	UserID = ((val[2] & 15) << 26) + (val[3] << 20)+ (val[4] << 14)+ (val[5] << 8)+ (val[6] << 2) + (val[7] >>4); ;
 
-	//	if (UserID == 0 ) UserID = 99998888;
+	/*	if (UserID == 0 ) UserID = 99998888; */
 
 	bits=strlen(msg)*6;
 
@@ -1002,7 +1002,7 @@ int DecodeVDM(char *msg)
 
 		NavStatus = val[7] & 15;
 
-		//'Rate of turn           8   50  Char 8 Char 9 bits 0-1±127 (–128 (80 hex) indicates not available, which should be the
+		/*'Rate of turn           8   50  Char 8 Char 9 bits 0-1±127 (–128 (80 hex) indicates not available, which should be the */
 
 		V_ROT = (val[8] << 2)  + (val[9] >> 4);
 
@@ -1026,7 +1026,7 @@ int DecodeVDM(char *msg)
 
 		else if (V_ROT == 127)
 
-			V_ROT = 3;        // 5 deg / 30 secs or more
+			V_ROT = 3;        /* 5 deg / 30 secs or more */
 
 		else if (V_ROT == -127) 
 
@@ -1039,21 +1039,21 @@ int DecodeVDM(char *msg)
 
 		} 
 
-		//'SOG                 10     60  Char 9 bits 2-5 char 10 Speed over ground in 1/10 knot steps (0-102.2 knots)
+		/*'SOG                 10     60  Char 9 bits 2-5 char 10 Speed over ground in 1/10 knot steps (0-102.2 knots) */
 
 		V_SOG = (((val[9] & 15) << 6) + val[10]); 
 
-		if (V_SOG == 1023.0)			// Unknown
+		if (V_SOG == 1023.0)			/* Unknown */
 			V_SOG = 0.0;
 
 		V_SOG = V_SOG/10;
 
 
-		//'Accuracy            1      61  Char 11 bit 0
+		/*'Accuracy            1      61  Char 11 bit 0 */
 
 		Accuracy = val[11] >> 5;
 
-		//'Long                28     89  char 11 bits 1-5 char 12 13 14 char 15 bita 0-4
+		/*'Long                28     89  char 11 bits 1-5 char 12 13 14 char 15 bita 0-4 */
 
 
 		Conv = ((val[11] & 31) << 23) + (val[12] << 17) + (val[13] << 11) + (val[14] << 5) + (val[15] >>1); 
@@ -1068,7 +1068,7 @@ int DecodeVDM(char *msg)
 			return 0;
 
 
-		//Lat                27      116 Char 15 bit 5 16 17 18 19 20 bits 0-1
+		/*Lat                27      116 Char 15 bit 5 16 17 18 19 20 bits 0-1 */
 
 		Conv = ((val[15] & 1) << 26) + (val[16]<< 20) + (val[17]<< 14) + (val[18]<< 8) + (val[19]<< 2) + (val[20] >>4);
 
@@ -1080,13 +1080,13 @@ int DecodeVDM(char *msg)
 		V_Lat/= 600000;
 
 
-		//COG                12      128 char 20 bits 2-5 21 22 bit 0-1
+		/*COG                12      128 char 20 bits 2-5 21 22 bit 0-1 */
 
 		V_COG = ((val[20] & 15) << 8) + (val[21]<< 2) + (val[22] >>4);
 
 		V_COG /= 10;
 
-		//True Heading       9       137 char 22 bits 2-5 char 23 bits 0-4
+		/*True Heading       9       137 char 22 bits 2-5 char 23 bits 0-4 */
 
 		V_Heading = ((val[22] & 15) << 5) + (val[23] >>1);
 
@@ -1121,55 +1121,55 @@ int DecodeVDM(char *msg)
 	}
 
 
-	//	if (Msg_Type == 4  || Msg_Type == 11)		// 11 are probably ships responding to Tamestamp requests
+	/*	if (Msg_Type == 4  || Msg_Type == 11)		// 11 are probably ships responding to Tamestamp requests */
 	if (Msg_Type == 4)
 	{
 		if (bits == 168) nasa4++; else mm4++;
 
 
-		//       Base Station
+		/*       Base Station */
 
-		//'Message ID             6       Char 1           Identifier for this message 1, 2 or 3
-		//'Repeat Indicator       2   8   Char 2 bits 0-1 Used by the repeater to indicate how many times a message has been
-		//'                                             repeated. Refer to § 4.6.1; 0 - 3; default = 0; 3 = do not repeat any more.
-		//'User ID                30  38  Char 2 bits 2-5, Chars 3 4 5 6  Char 7 bits 0-1 MMSI number
+		/*'Message ID             6       Char 1           Identifier for this message 1, 2 or 3 */
+		/*'Repeat Indicator       2   8   Char 2 bits 0-1 Used by the repeater to indicate how many times a message has been */
+		/*'                                             repeated. Refer to § 4.6.1; 0 - 3; default = 0; 3 = do not repeat any more. */
+		/*'User ID                30  38  Char 2 bits 2-5, Chars 3 4 5 6  Char 7 bits 0-1 MMSI number */
 
-		//'UTC year               14  52    Char 7 bits 2-5, char 8, char 9 bits 0-3  1 - 9999; 0 = UTC year not available = default.
+		/*'UTC year               14  52    Char 7 bits 2-5, char 8, char 9 bits 0-3  1 - 9999; 0 = UTC year not available = default. */
 
 		UTCyear = ((val[7] & 15) << 10) + (val[8] << 4) + (val[9] >> 2);
 
-		//'UTC month              4   56    Char 9 bits 4-5, char 10 bits 0-1  1 - 12; 0 = UTC month not available = default; 13 - 15 not used
+		/*'UTC month              4   56    Char 9 bits 4-5, char 10 bits 0-1  1 - 12; 0 = UTC month not available = default; 13 - 15 not used */
 
 		UTCMonth = ((val[9] & 3) << 2) + (val[10] >> 4);
 
-		//'UTC day                5   61  Char 10 bits 2-5, chr 11 bit 0  1 - 31; 0 = UTC day not available = default.
+		/*'UTC day                5   61  Char 10 bits 2-5, chr 11 bit 0  1 - 31; 0 = UTC day not available = default. */
 
 		UTCDay = ((val[10] & 15) << 1) + (val[11] >> 5);
 
-		//'UTC hour               5   66  Char 11 bits 2-5  0 - 23; 24 = UTC hour not available = default;
+		/*'UTC hour               5   66  Char 11 bits 2-5  0 - 23; 24 = UTC hour not available = default; */
 
 		UTCHour = val[11] & 31;
 
 
-		//'UTC minute             6   72    Char 12      0 - 59; 60 = UTC minute not available = default;
+		/*'UTC minute             6   72    Char 12      0 - 59; 60 = UTC minute not available = default; */
 
 		UTCMinute = val[12];
 
-		//'UTC second             6   78    Char 13     0 - 59; 60 = UTC second not available = default;
+		/*'UTC second             6   78    Char 13     0 - 59; 60 = UTC second not available = default; */
 
 		UTCSecond = val[13];
 
 
-		//'Position accuracy      1   79     Char 14 bit 0        1 = high (< 10 m; Differential Mode of e.g. DGNSS receiver) 0 = low
-		//'(> 10 m; Autonomous Mode of e.g. GNSS receiver, or of other Electronic
-		//'Position Fixing Device), default = 0
+		/*'Position accuracy      1   79     Char 14 bit 0        1 = high (< 10 m; Differential Mode of e.g. DGNSS receiver) 0 = low */
+		/*'(> 10 m; Autonomous Mode of e.g. GNSS receiver, or of other Electronic */
+		/*'Position Fixing Device), default = 0 */
 
 		Accuracy = val[14] >> 5;
 
-		//'Long                28     107  char 14 bits 1-5 char 15 16 17 char 18 bitS 0-4
-		//'Longitude 28 Longitude in 1/10 000 minute (±180 degrees, East = positive (as per 2´s
-		//'complement), West = negative(as per 2´s complement);
-		//'181 degrees (6791AC0 hex) = not available = default)
+		/*'Long                28     107  char 14 bits 1-5 char 15 16 17 char 18 bitS 0-4 */
+		/*'Longitude 28 Longitude in 1/10 000 minute (±180 degrees, East = positive (as per 2´s */
+		/*'complement), West = negative(as per 2´s complement); */
+		/*'181 degrees (6791AC0 hex) = not available = default) */
 
 
 		Conv = ((val[14] & 31) << 23) + (val[15] << 17) + (val[16] << 11) + (val[17] << 5) + (val[18] >>1); 
@@ -1180,12 +1180,12 @@ int DecodeVDM(char *msg)
 		V_Lon = Conv;
 		V_Lon/= 600000;
 
-		//'Latitude 27 Latitude in 1/10 000 minute (±90 degrees, North = positive (as per 2´s
-		//'complement), South = negative (as per 2´s complement);
-		//'91 degrees (3412140 hex) = not available = default)
+		/*'Latitude 27 Latitude in 1/10 000 minute (±90 degrees, North = positive (as per 2´s */
+		/*'complement), South = negative (as per 2´s complement); */
+		/*'91 degrees (3412140 hex) = not available = default) */
 
 
-		//'Lat                27      134 Char 18 bit 5 19 20 21 22 23 bits 0-1
+		/*'Lat                27      134 Char 18 bit 5 19 20 21 22 23 bits 0-1 */
 
 		Conv = ((val[18] & 1) << 26) + (val[19]<< 20) + (val[20]<< 14) + (val[21]<< 8) + (val[22]<< 2) + (val[23] >>4);
 
@@ -1237,15 +1237,15 @@ int DecodeVDM(char *msg)
 		*/
 		SyncState = ((val[25] & 1) << 1) + (val[26] >> 5); 
 
-		//'    Debug.Print "Sync State "; SyncState;
+		/*'    Debug.Print "Sync State "; SyncState; */
 
 		SlotTO = (val[26] >>2) & 7;
 
-		//'    Debug.Print "Slot TO "; SlotTO;
+		/*'    Debug.Print "Slot TO "; SlotTO; */
 
 		SubMsg = ((val[26] & 3) << 12) + (val[27] << 6) + val[28];
 
-		//'Total number of bits 168
+		/*'Total number of bits 168 */
 
 		ProcessBaseStationMessage();
 		return 0;
@@ -1254,11 +1254,11 @@ int DecodeVDM(char *msg)
 	if (Msg_Type == 5)
 	{
 
-		//'IMO No                 30  70  char 7 4-5, 8 9 10 11, char 12 0-3
+		/*'IMO No                 30  70  char 7 4-5, 8 9 10 11, char 12 0-3 */
 
 		V_IMO = ((val[7] & 3) << 28) + (val[8]<< 22) + (val[9]<< 16) + (val[10]<< 10) + (val[11]<< 4) + (val[12] >>2);
 
-		//'Callsign               42  112 char 12 4-5, 13 14 15 16 17 18 19 bits 0-3
+		/*'Callsign               42  112 char 12 4-5, 13 14 15 16 17 18 19 bits 0-3 */
 
 
 		for (i = 0; i <= 6; i++)
@@ -1270,7 +1270,7 @@ int DecodeVDM(char *msg)
 			V_Callsign[i] = Conv;
 		}
 
-		//Name                   120 232 char 19 bits 4-5 20-38 39 bits 0-3
+		/*Name                   120 232 char 19 bits 4-5 20-38 39 bits 0-3 */
 
 		for (i = 0; i <= 19; i++)
 		{
@@ -1281,17 +1281,17 @@ int DecodeVDM(char *msg)
 			V_Name[i] = Conv;
 		}
 
-		//'Type of Ship           8   240 char 39 bits 4-5 40
+		/*'Type of Ship           8   240 char 39 bits 4-5 40 */
 
 		V_Type=((val[39] & 3) << 6) + val[40];  
 
 
-		//'Dimensions             30  270 char 41 42 43 44 45
+		/*'Dimensions             30  270 char 41 42 43 44 45 */
 
-		//'A Bit 21 – Bit 29 0 – 511 9
-		//'B Bit 12 – Bit 20 0 – 511 9
-		//'C Bit 6 – Bit 11 0 - 63 ; 6
-		//'D Bit 0 – Bit 5 0 - 63 ;  6
+		/*'A Bit 21 – Bit 29 0 – 511 9 */
+		/*'B Bit 12 – Bit 20 0 – 511 9 */
+		/*'C Bit 6 – Bit 11 0 - 63 ; 6 */
+		/*'D Bit 0 – Bit 5 0 - 63 ;  6 */
 
 
 		V_LenA = (val[41] << 3) + (val[42] >> 3);
@@ -1299,22 +1299,22 @@ int DecodeVDM(char *msg)
 		V_WidthC = val[44];
 		V_WidthD = val[45];
 
-		//		sprintf(TraceMsg,"%s  %d %d %d %d %d  LenA %d LenB %d\n", V_Name, val[41], val[42], val[43], val[44], val[45], V_LenA, V_LenB);
-		//		OutputDebugString(TraceMsg);
+		/*		sprintf(TraceMsg,"%s  %d %d %d %d %d  LenA %d LenB %d\n", V_Name, val[41], val[42], val[43], val[44], val[45], V_LenA, V_LenB); */
+		/*		OutputDebugString(TraceMsg); */
 
-		//'    Type of Fix            4   274 char 46 bits 0-3
+		/*'    Type of Fix            4   274 char 46 bits 0-3 */
 
 		FixType = val[46] >>2;
 
-		//'ETA                    20  294     char 46 bits 4-5, 47,48,49
+		/*'ETA                    20  294     char 46 bits 4-5, 47,48,49 */
 
 		ETA =((val[46] & 3) << 18) + (val[47]<< 12) + (val[48]<< 6) + val[49];
 
-		//'Draught                8   302     char 50, char 51 bits 0-1
+		/*'Draught                8   302     char 50, char 51 bits 0-1 */
 
 		V_Draught = (val[50] << 2) + (val[51] >>4);
 
-		//'Destination            120 422     char 51 bits 2-5,  52-70 71 bits 0-1
+		/*'Destination            120 422     char 51 bits 2-5,  52-70 71 bits 0-1 */
 
 		for (i = 0; i <= 19; i++)
 		{
@@ -1325,8 +1325,8 @@ int DecodeVDM(char *msg)
 			V_Dest[i] = Conv;
 		}
 
-		//'DTE                    1   423     char 71 bit 2
-		//'Spare                  1   424     char 71 bit 3
+		/*'DTE                    1   423     char 71 bit 2 */
+		/*'Spare                  1   424     char 71 bit 3 */
 
 		ProcessAISVesselDetails('A');
 
@@ -1376,7 +1376,7 @@ int DecodeVDM(char *msg)
 	*/
 
 
-	if (Msg_Type == 18)				// Class B Position
+	if (Msg_Type == 18)				/* Class B Position */
 	{
 
 
@@ -1401,13 +1401,13 @@ int DecodeVDM(char *msg)
 		V_SOG = V_SOG/10;
 
 
-		//	Position accuracy								1	1 = high (<10 m) 0 = low (>10 m)
-		//		Char 10 bit 2
+		/*	Position accuracy								1	1 = high (<10 m) 0 = low (>10 m) */
+		/*		Char 10 bit 2 */
 
 		Accuracy = ((val[10] & 8) >> 3);
 
-		//Longitude										28	Longitude in 1/10 000 min (±180°, East = positive (as per 2's complement), West = negative (as per 2's complement), 181° (6791AC0 hex) = not available = default)
-		//		Char 10 bits 3-5, 11, 12, 13, 14, 15 bit 0 		
+		/*Longitude										28	Longitude in 1/10 000 min (±180°, East = positive (as per 2's complement), West = negative (as per 2's complement), 181° (6791AC0 hex) = not available = default) */
+		/*		Char 10 bits 3-5, 11, 12, 13, 14, 15 bit 0 		 */
 
 		Conv = ((val[10] & 7) << 25) + (val[11] << 19) + (val[12] << 13) + (val[13] << 7) + (val[14] << 1) + (val[15] >>5); 
 
@@ -1418,8 +1418,8 @@ int DecodeVDM(char *msg)
 		V_Lon/= 600000;
 
 
-		//Latitude										27	Latitude in 1/10 000 min (±90°, North = positive (as per 2's complement), South = negative (as per 2's complement), 91° (3412140 hex) = not available = default)
-		//		 Char 15 bits 1-5 16 17 18 19 bits 0-3
+		/*Latitude										27	Latitude in 1/10 000 min (±90°, North = positive (as per 2's complement), South = negative (as per 2's complement), 91° (3412140 hex) = not available = default) */
+		/*		 Char 15 bits 1-5 16 17 18 19 bits 0-3 */
 
 		Conv = ((val[15] & 31) << 22) + (val[16]<< 16) + (val[17]<< 10) + (val[18]<< 4) + (val[19] >>2);
 
@@ -1431,54 +1431,54 @@ int DecodeVDM(char *msg)
 		V_Lat/= 600000;
 
 
-		//COG												12	Course over ground in 1/10° (0-3 599). 3 600 (E10h) = not available = default; 3 601-4 095 shall not be used
-		//		 Char 19 bits 4-5 20 21 bit 0-3
+		/*COG												12	Course over ground in 1/10° (0-3 599). 3 600 (E10h) = not available = default; 3 601-4 095 shall not be used */
+		/*		 Char 19 bits 4-5 20 21 bit 0-3 */
 
 		V_COG = ((val[19] & 3) << 10) + (val[20]<< 4) + (val[21] >>2);
 
 		V_COG /= 10;
 
-		//True heading									9	Degrees (0-359) (511 indicates not available = default)
-		//		char 21 bits 4-5 char 22 char 23 bit 0
+		/*True heading									9	Degrees (0-359) (511 indicates not available = default) */
+		/*		char 21 bits 4-5 char 22 char 23 bit 0 */
 
 		V_Heading = ((val[21] & 3) << 7) + (val[22]<< 1) + (val[23] >>5);
 
-		//Time stamp										6	UTC second when the report was generated by the EPFS (0-59); 60 if time stamp is not available, which shall also be the default value 61, 62 and 63 are not used by the Class B “CS” AIS
-		//		Char 23 bits 1-5, 24 bit 0
+		/*Time stamp										6	UTC second when the report was generated by the EPFS (0-59); 60 if time stamp is not available, which shall also be the default value 61, 62 and 63 are not used by the Class B “CS” AIS */
+		/*		Char 23 bits 1-5, 24 bit 0 */
 
 
-		//Reserved for regional applications				2	Reserved for definition by a competent regional authority. Shall be set to zero, if not used for any regional application. Regional applications should not use zero
-		//		24 bit 1-2
+		/*Reserved for regional applications				2	Reserved for definition by a competent regional authority. Shall be set to zero, if not used for any regional application. Regional applications should not use zero */
+		/*		24 bit 1-2 */
 
 
-		//Class B unit flag								1	0 = Class B SOTDMA unit 1 = Class B “CS” unit
-		//		24 bit 3
+		/*Class B unit flag								1	0 = Class B SOTDMA unit 1 = Class B “CS” unit */
+		/*		24 bit 3 */
 
-		//Class B display flag							1	0 = No display available; not capable of displaying Message 12 and 14 1 = Equipped with integrated display displaying Message 12 and 14
-		//		24 bit 4
+		/*Class B display flag							1	0 = No display available; not capable of displaying Message 12 and 14 1 = Equipped with integrated display displaying Message 12 and 14 */
+		/*		24 bit 4 */
 
-		//Class B DSC flag								1	0 = Not equipped with DSC function 1 = Equipped with DSC function (dedicated or time-shared)
-		//		24 bit 5
+		/*Class B DSC flag								1	0 = Not equipped with DSC function 1 = Equipped with DSC function (dedicated or time-shared) */
+		/*		24 bit 5 */
 
-		//Class B band flag								1	0 = Capable of operating over the upper 525 kHz band of the marine band 1 = Capable of operating over the whole marine band (irrelevant if “Class B Msg22 flag” is 0)
-		//		25 bit 0
+		/*Class B band flag								1	0 = Capable of operating over the upper 525 kHz band of the marine band 1 = Capable of operating over the whole marine band (irrelevant if “Class B Msg22 flag” is 0) */
+		/*		25 bit 0 */
 
-		//Class B Message 22 flag							1	0 = No frequency management via Message 22 , operating on AIS1, AIS2 only 1 = Frequency management via Message 22
-		//		25 bit 1
+		/*Class B Message 22 flag							1	0 = No frequency management via Message 22 , operating on AIS1, AIS2 only 1 = Frequency management via Message 22 */
+		/*		25 bit 1 */
 
-		//Mode flag										1	0 = Station operating in autonomous mode = default 1 = Station operating in assigned mode
-		//		25 bit 2
+		/*Mode flag										1	0 = Station operating in autonomous mode = default 1 = Station operating in assigned mode */
+		/*		25 bit 2 */
 
-		//RAIM-flag										1	RAIM flag of electronic position fixing device, optional; 0 = RAIM not in use = default; 1 = RAIM in use (valid data for expected position error)
-		//		25 bit 3
+		/*RAIM-flag										1	RAIM flag of electronic position fixing device, optional; 0 = RAIM not in use = default; 1 = RAIM in use (valid data for expected position error) */
+		/*		25 bit 3 */
 
-		//Communication state selector flag				1	1 = ITDMA communication state follows
-		//		25 bit 4
+		/*Communication state selector flag				1	1 = ITDMA communication state follows */
+		/*		25 bit 4 */
 
-		//Communication state								19	ITDMA communication state; refer to § 4.3.3.5
-		//		25 bit  5, 26, 27. 28
+		/*Communication state								19	ITDMA communication state; refer to § 4.3.3.5 */
+		/*		25 bit  5, 26, 27. 28 */
 
-		//Total number of bits 168 Occupies one-time period (28 chars)
+		/*Total number of bits 168 Occupies one-time period (28 chars) */
 
 		ProcessAISVesselMessage();
 
@@ -1489,7 +1489,7 @@ int DecodeVDM(char *msg)
 
 
 
-	if (Msg_Type == 19)				// Class B Extended Position
+	if (Msg_Type == 19)				/* Class B Extended Position */
 	{
 
 
@@ -1514,13 +1514,13 @@ int DecodeVDM(char *msg)
 		V_SOG = V_SOG/10;
 
 
-		//	Position accuracy								1	1 = high (<10 m) 0 = low (>10 m)
-		//		Char 10 bit 2
+		/*	Position accuracy								1	1 = high (<10 m) 0 = low (>10 m) */
+		/*		Char 10 bit 2 */
 
 		Accuracy = ((val[10] & 8) >> 3);
 
-		//Longitude										28	Longitude in 1/10 000 min (±180°, East = positive (as per 2's complement), West = negative (as per 2's complement), 181° (6791AC0 hex) = not available = default)
-		//		Char 10 bits 3-5, 11, 12, 13, 14, 15 bit 0 		
+		/*Longitude										28	Longitude in 1/10 000 min (±180°, East = positive (as per 2's complement), West = negative (as per 2's complement), 181° (6791AC0 hex) = not available = default) */
+		/*		Char 10 bits 3-5, 11, 12, 13, 14, 15 bit 0 		 */
 
 		Conv = ((val[10] & 7) << 25) + (val[11] << 19) + (val[12] << 13) + (val[13] << 7) + (val[14] << 1) + (val[15] >>5); 
 
@@ -1531,8 +1531,8 @@ int DecodeVDM(char *msg)
 		V_Lon/= 600000;
 
 
-		//Latitude										27	Latitude in 1/10 000 min (±90°, North = positive (as per 2's complement), South = negative (as per 2's complement), 91° (3412140 hex) = not available = default)
-		//		 Char 15 bits 1-5 16 17 18 19 bits 0-3
+		/*Latitude										27	Latitude in 1/10 000 min (±90°, North = positive (as per 2's complement), South = negative (as per 2's complement), 91° (3412140 hex) = not available = default) */
+		/*		 Char 15 bits 1-5 16 17 18 19 bits 0-3 */
 
 		Conv = ((val[15] & 31) << 22) + (val[16]<< 16) + (val[17]<< 10) + (val[18]<< 4) + (val[19] >>2);
 
@@ -1544,29 +1544,29 @@ int DecodeVDM(char *msg)
 		V_Lat/= 600000;
 
 
-		//COG												12	Course over ground in 1/10° (0-3 599). 3 600 (E10h) = not available = default; 3 601-4 095 shall not be used
-		//		 Char 19 bits 4-5 20 21 bit 0-3
+		/*COG												12	Course over ground in 1/10° (0-3 599). 3 600 (E10h) = not available = default; 3 601-4 095 shall not be used */
+		/*		 Char 19 bits 4-5 20 21 bit 0-3 */
 
 		V_COG = ((val[19] & 3) << 10) + (val[20]<< 4) + (val[21] >>2);
 
 		V_COG /= 10;
 
-		//True heading									9	Degrees (0-359) (511 indicates not available = default)
-		//		char 21 bits 4-5 char 22 char 23 bit 0
+		/*True heading									9	Degrees (0-359) (511 indicates not available = default) */
+		/*		char 21 bits 4-5 char 22 char 23 bit 0 */
 
 		V_Heading = ((val[21] & 3) << 7) + (val[22]<< 1) + (val[23] >>5);
 
-		//Time stamp										6	UTC second when the report was generated by the EPFS (0-59); 60 if time stamp is not available, which shall also be the default value 61, 62 and 63 are not used by the Class B “CS” AIS
-		//		Char 23 bits 1-5, 24 bit 0
+		/*Time stamp										6	UTC second when the report was generated by the EPFS (0-59); 60 if time stamp is not available, which shall also be the default value 61, 62 and 63 are not used by the Class B “CS” AIS */
+		/*		Char 23 bits 1-5, 24 bit 0 */
 
 
-		//Reserved for regional applications				4	Reserved for definition by a competent regional authority. Shall be set to zero, if not used for any regional application. Regional applications should not use zero
-		//		24 bit 1-4
+		/*Reserved for regional applications				4	Reserved for definition by a competent regional authority. Shall be set to zero, if not used for any regional application. Regional applications should not use zero */
+		/*		24 bit 1-4 */
 
 
 
-		//Name								120	Maximum 20 characters 6-bit ASCII, @@@@@@@@@@@@@@@@@@@@ = not available = default
-		//		24 bit 5 - 44 bits 0-4
+		/*Name								120	Maximum 20 characters 6-bit ASCII, @@@@@@@@@@@@@@@@@@@@ = not available = default */
+		/*		24 bit 5 - 44 bits 0-4 */
 
 
 		for (i = 0; i <= 19; i++)
@@ -1580,17 +1580,17 @@ int DecodeVDM(char *msg)
 
 
 
-		//Type of ship and cargo type			8	0 = not available or no ship = default
-		//										1-99 = as defined in § 3.3.8.2.3.2
-		//										100-199 = preserved, for regional use
-		//										200-255 = preserved, for future use
-		//		44 bit 5 45 46 bit 0
+		/*Type of ship and cargo type			8	0 = not available or no ship = default */
+		/*										1-99 = as defined in § 3.3.8.2.3.2 */
+		/*										100-199 = preserved, for regional use */
+		/*										200-255 = preserved, for future use */
+		/*		44 bit 5 45 46 bit 0 */
 
 		V_Type=((val[44] & 1) << 5) + (val[45] << 1) + (val[46] >> 5);  
 
-		//Dimension of ship/reference for position	30	Dimensions of ship in metres and reference point for reported position (see Fig. 17 and § 3.3.8.2.3.3)
-		//		46 bit 1-5 47 48 49 50 51 bit 0	
-		//		46 bit 1-5, 47 bits 0-3 - 47 bits 4,5 48, 49 bit bit 0 - 49 bits 1-5, 50 bit 0 - 50 1-5, 51 bit 0
+		/*Dimension of ship/reference for position	30	Dimensions of ship in metres and reference point for reported position (see Fig. 17 and § 3.3.8.2.3.3) */
+		/*		46 bit 1-5 47 48 49 50 51 bit 0	 */
+		/*		46 bit 1-5, 47 bits 0-3 - 47 bits 4,5 48, 49 bit bit 0 - 49 bits 1-5, 50 bit 0 - 50 1-5, 51 bit 0 */
 
 		V_LenA = ((val[46] & 31) << 5) + (val[47] >> 2);
 		V_LenB = ((val[47] & 3) << 7) + (val[48] << 1) + (val[49] >> 5);
@@ -1598,17 +1598,17 @@ int DecodeVDM(char *msg)
 		V_WidthD = ((val[50] & 31) << 1) + (val[51] >> 5);
 
 
-		//Type of electronic position fixing device	4	0 = Undefined (default); 1 = GPS, 2 = GLONASS, 3 = combined GPS/GLONASS, 4 = Loran-C, 5 = Chayka, 6 = integrated navigation system, 7 = surveyed; 8-15 = not used
-		//		51 bits 1-4
+		/*Type of electronic position fixing device	4	0 = Undefined (default); 1 = GPS, 2 = GLONASS, 3 = combined GPS/GLONASS, 4 = Loran-C, 5 = Chayka, 6 = integrated navigation system, 7 = surveyed; 8-15 = not used */
+		/*		51 bits 1-4 */
 
-		//RAIM-flag									1	RAIM flag of electronic position fixing device; 0 = RAIM not in use = default; 1 = RAIM in use
-		//		51 bit 5
+		/*RAIM-flag									1	RAIM flag of electronic position fixing device; 0 = RAIM not in use = default; 1 = RAIM in use */
+		/*		51 bit 5 */
 
-		//DTE											1	Data terminal ready (0 = available 1 = not available = default) (see § 3.3.8.2.3.1)
-		//		52 bit 0
-		//Spare										5	Not used. Should be set to zero 
-		//		52 bits 1-5
-		// Total number of bits 312 (52 chars) Occupies two slots
+		/*DTE											1	Data terminal ready (0 = available 1 = not available = default) (see § 3.3.8.2.3.1) */
+		/*		52 bit 0 */
+		/*Spare										5	Not used. Should be set to zero  */
+		/*		52 bits 1-5 */
+		/* Total number of bits 312 (52 chars) Occupies two slots */
 
 		ProcessAISVesselMessage();
 		ProcessAISVesselDetails('B');
@@ -1619,31 +1619,31 @@ int DecodeVDM(char *msg)
 	}
 
 
-	// Navaid
+	/* Navaid */
 
 	if (Msg_Type == 21)
 	{
 
-		//'Message ID             6       Char 1           Identifier for this message 21
-		//'Repeat Indicator       2   8   Char 2 bits 0-1 Used by the repeater to indicate how many times a message has been
-		//'                                             repeated. Refer to § 4.6.1; 0 - 3; default = 0; 3 = do not repeat any more.
-		//'User ID                30  38  Char 2 bits 2-5, Chars 3 4 5 6  Char 7 bits 0-1 MMSI number
+		/*'Message ID             6       Char 1           Identifier for this message 21 */
+		/*'Repeat Indicator       2   8   Char 2 bits 0-1 Used by the repeater to indicate how many times a message has been */
+		/*'                                             repeated. Refer to § 4.6.1; 0 - 3; default = 0; 3 = do not repeat any more. */
+		/*'User ID                30  38  Char 2 bits 2-5, Chars 3 4 5 6  Char 7 bits 0-1 MMSI number */
 
 
-		//'Type of Aids-to- Navigation   5 43      Char 7 bits 2-5   Char 8 bit 0  0 = not available = default; 1 – 15 = Fixed Aid-to-Navigation; 16 - 31 =
-		//'                                               Floating Aid-to-Navigation; refer to appropriate definition set up by IALA;
-		//'                                                refer to Table 34bis.
+		/*'Type of Aids-to- Navigation   5 43      Char 7 bits 2-5   Char 8 bit 0  0 = not available = default; 1 – 15 = Fixed Aid-to-Navigation; 16 - 31 = */
+		/*'                                               Floating Aid-to-Navigation; refer to appropriate definition set up by IALA; */
+		/*'                                                refer to Table 34bis. */
 
 		NavAidType = ((val[7] & 15) << 1) + (val[8] >>5);
 
-		//'Name of Aid s-to-Navigation
-		//'                                           120 Maximum 20 characters 6 bit ASCII,
-		//'                                           "@@@@@@@@@@@@@@@@@@@@" = not available = default.
-		//'                                           Navigation "@@@@@@@@@@@@@@@@@@@@" = not available = default.
-		//'The name of the Aid-to-Navigation may be extended by the parameter
-		//'"Name of Aid-to-Navigation Extension" below.
+		/*'Name of Aid s-to-Navigation */
+		/*'                                           120 Maximum 20 characters 6 bit ASCII, */
+		/*'                                           "@@@@@@@@@@@@@@@@@@@@" = not available = default. */
+		/*'                                           Navigation "@@@@@@@@@@@@@@@@@@@@" = not available = default. */
+		/*'The name of the Aid-to-Navigation may be extended by the parameter */
+		/*'"Name of Aid-to-Navigation Extension" below. */
 
-		//'Name                   120 163          char 8 bits 1-5 9-27 28 bits 0
+		/*'Name                   120 163          char 8 bits 1-5 9-27 28 bits 0 */
 
 		for (i = 0; i <= 19; i++)
 		{
@@ -1656,18 +1656,18 @@ int DecodeVDM(char *msg)
 
 		V_Name[20]=0;
 
-		//'Position accuracy                  1   164     28 bit 1   1 = high (< 10 m; Differential Mode of e.g. DGNSS receiver) 0 = low
+		/*'Position accuracy                  1   164     28 bit 1   1 = high (< 10 m; Differential Mode of e.g. DGNSS receiver) 0 = low */
 
-		//'(> 10 m; Autonomous Mode of e.g. GNSS receiver or of other Electronic
-		//'Position Fixing Device) ; Default = 0
+		/*'(> 10 m; Autonomous Mode of e.g. GNSS receiver or of other Electronic */
+		/*'Position Fixing Device) ; Default = 0 */
 
 		Accuracy = ((val[28] & 16) >> 4);
 
 
-		//'Long                               28  192     char 28 bits 2-5 char 29 30 31 32
-		//'Longitude 28 Longitude in 1/10 000 minute (±180 degrees, East = positive (as per 2´s
-		//'complement), West = negative(as per 2´s complement);
-		//'181 degrees (6791AC0 hex) = not available = default)
+		/*'Long                               28  192     char 28 bits 2-5 char 29 30 31 32 */
+		/*'Longitude 28 Longitude in 1/10 000 minute (±180 degrees, East = positive (as per 2´s */
+		/*'complement), West = negative(as per 2´s complement); */
+		/*'181 degrees (6791AC0 hex) = not available = default) */
 
 		Conv = ((val[28] & 15) << 24) + (val[29] << 18) + (val[30] << 12) + (val[31] << 6) + val[32]; 
 
@@ -1677,11 +1677,11 @@ int DecodeVDM(char *msg)
 		V_Lon = Conv;
 		V_Lon/= 600000;
 
-		//'Latitude 27 Latitude in 1/10 000 minute (±90 degrees, North = positive (as per 2´s
-		//'complement), South = negative (as per 2´s complement);
-		//'91 degrees (3412140 hex) = not available = default)
+		/*'Latitude 27 Latitude in 1/10 000 minute (±90 degrees, North = positive (as per 2´s */
+		/*'complement), South = negative (as per 2´s complement); */
+		/*'91 degrees (3412140 hex) = not available = default) */
 
-		//'Lat                27      219  Char 33 34 35 36 37 bits 0-2
+		/*'Lat                27      219  Char 33 34 35 36 37 bits 0-2 */
 
 		Conv = (val[33] << 21) + (val[34]<< 15) + (val[35]<< 9) + (val[36]<< 3) + (val[37] >> 3);
 
@@ -1693,14 +1693,14 @@ int DecodeVDM(char *msg)
 
 
 
-		//'Dimension/Reference for Position    30 249   37 bits 3-5 38 39 40 41 42 bits  0-2   Reference point for reported position; also indicates the dimension of an
-		//'Aid-to-Navigation in metres (see Fig. 18 and § 3.3.8.2.3.3), if relevant. (1)
-		//'Type of Electronic
+		/*'Dimension/Reference for Position    30 249   37 bits 3-5 38 39 40 41 42 bits  0-2   Reference point for reported position; also indicates the dimension of an */
+		/*'Aid-to-Navigation in metres (see Fig. 18 and § 3.3.8.2.3.3), if relevant. (1) */
+		/*'Type of Electronic */
 
-		//'A Bit 21 – Bit 29 0 – 511 9
-		//'B Bit 12 – Bit 20 0 – 511 9
-		//'C Bit 6 – Bit 11 0 - 63 ; 6
-		//'D Bit 0 – Bit 5 0 - 63 ;  6
+		/*'A Bit 21 – Bit 29 0 – 511 9 */
+		/*'B Bit 12 – Bit 20 0 – 511 9 */
+		/*'C Bit 6 – Bit 11 0 - 63 ; 6 */
+		/*'D Bit 0 – Bit 5 0 - 63 ;  6 */
 
 
 		V_LenA = ((val[37] & 7) << 3) + val[38];
@@ -1796,15 +1796,15 @@ int DecodeVDM(char *msg)
 	}
 
 
-	if (Msg_Type == 24)					// Class B Details
+	if (Msg_Type == 24)					/* Class B Details */
 	{
-		//Message ID		6 Identifier for Message 24; always 24
-		//Repeat indicator	2 Used by the repeater to indicate how many times a message has been repeated. 0 = default; 3 = do not repeat any more
-		//User ID				30 MMSI number
-		//	char 2 bits 2-5, 3 4, 5, 6, 7 bits 0,1
+		/*Message ID		6 Identifier for Message 24; always 24 */
+		/*Repeat indicator	2 Used by the repeater to indicate how many times a message has been repeated. 0 = default; 3 = do not repeat any more */
+		/*User ID				30 MMSI number */
+		/*	char 2 bits 2-5, 3 4, 5, 6, 7 bits 0,1 */
 
-		//Part number			2 Identifier for the message part number; always 0 for Part A
-		//	char 7 bits 2,3
+		/*Part number			2 Identifier for the message part number; always 0 for Part A */
+		/*	char 7 bits 2,3 */
 
 		B_PartNo=(val[7] & 15) >> 2;
 
@@ -1812,8 +1812,8 @@ int DecodeVDM(char *msg)
 		if (B_PartNo == 0)
 		{
 
-			//Name				120 Name of the MMSI-registered vessel. Maximum 20 characters 6-bit ASCII, @@@@@@@@@@@@@@@@@@@@ = not available = default
-			//	char 7 bits 4,5 - char 26 bits 0-3
+			/*Name				120 Name of the MMSI-registered vessel. Maximum 20 characters 6-bit ASCII, @@@@@@@@@@@@@@@@@@@@ = not available = default */
+			/*	char 7 bits 4,5 - char 26 bits 0-3 */
 
 			for (i = 0; i <= 19; i++)
 			{
@@ -1825,7 +1825,7 @@ int DecodeVDM(char *msg)
 			}
 
 
-			//Total number of bits 160 = 26 chars 4 bits Occupies one-time period
+			/*Total number of bits 160 = 26 chars 4 bits Occupies one-time period */
 
 			ProcessAISVesselDetails('0');
 
@@ -1834,15 +1834,15 @@ int DecodeVDM(char *msg)
 
 		if (B_PartNo == 1)
 		{
-			//Type of ship and cargo type	8 0 = not available or no ship = default
-			//									1-99 = as defined in § 3.3.8.2.3.2 of Annex 2
-			//									100-199 = preserved, for regional use
-			//									200-255 = preserved, for future use
-			//	char 7 bits 4-5, char 8
+			/*Type of ship and cargo type	8 0 = not available or no ship = default */
+			/*									1-99 = as defined in § 3.3.8.2.3.2 of Annex 2 */
+			/*									100-199 = preserved, for regional use */
+			/*									200-255 = preserved, for future use */
+			/*	char 7 bits 4-5, char 8 */
 
 			V_Type=((val[7] & 3) << 2) + val[8];  
 
-			//Vendor ID						42	Unique identification of the Unit by a number as defined by the manufacturer (option; “@@@@@@@“ = not available = default)//	char 9-15
+			/*Vendor ID						42	Unique identification of the Unit by a number as defined by the manufacturer (option; “@@@@@@@“ = not available = default)//	char 9-15 */
 
 			for (i = 0; i <= 6; i++)
 			{
@@ -1854,8 +1854,8 @@ int DecodeVDM(char *msg)
 			}
 
 
-			//Call sign						42 Call sign of the MMSI-registered vessel. 7 X 6-bit ASCII characters, “@@@@@@@“ = not available = default
-			//	char 16-22
+			/*Call sign						42 Call sign of the MMSI-registered vessel. 7 X 6-bit ASCII characters, “@@@@@@@“ = not available = default */
+			/*	char 16-22 */
 
 			for (i = 0; i <= 6; i++)
 			{
@@ -1866,9 +1866,9 @@ int DecodeVDM(char *msg)
 				V_Callsign[i] = Conv;
 			}
 
-			//Dimension of ship/reference for position. Or, for unregistered daughter vessels, use the MMSI of the mother ship
-			//								30 Dimensions of ship in meters and reference point for reported position (see Annex 2 Fig. 17 and § 3.3.8.2.3.3). Or, for an unregistered daughter vessel, use the MMSI of the associated mother ship in this data field
-			//	char 23-27
+			/*Dimension of ship/reference for position. Or, for unregistered daughter vessels, use the MMSI of the mother ship */
+			/*								30 Dimensions of ship in meters and reference point for reported position (see Annex 2 Fig. 17 and § 3.3.8.2.3.3). Or, for an unregistered daughter vessel, use the MMSI of the associated mother ship in this data field */
+			/*	char 23-27 */
 
 			V_LenA = (val[23] << 3) + (val[24] >> 3);
 			V_LenB = ((val[24] & 7) << 3) + val[25];
@@ -1876,8 +1876,8 @@ int DecodeVDM(char *msg)
 			V_WidthD = val[27];
 
 
-			//	Spare 6
-			//	Total number of bits 168 (28 chars) Occupies one-time period
+			/*	Spare 6 */
+			/*	Total number of bits 168 (28 chars) Occupies one-time period */
 
 
 			ProcessAISVesselDetails('1');
@@ -1888,30 +1888,30 @@ int DecodeVDM(char *msg)
 
 	if (Msg_Type == 9)
 	{
-		//	Msg_Type = val[1];
-		//Message ID 6 Identifier for message 9; always 9
-		//Repeat Indicator 2 Used by the repeater to indicate how many times a message has beenrepeated. Refer to § 4.6.1; 0 - 3; default = 0; 3 = do not repeat any more.
+		/*	Msg_Type = val[1]; */
+		/*Message ID 6 Identifier for message 9; always 9 */
+		/*Repeat Indicator 2 Used by the repeater to indicate how many times a message has beenrepeated. Refer to § 4.6.1; 0 - 3; default = 0; 3 = do not repeat any more. */
 
-		//	char 2 bits 2-5, 3 4, 5, 6, 7 bits 0,1
-		//	UserID = ((val[2] & 15) << 26) + (val[3] << 20)+ (val[4] << 14)+ (val[5] << 8)+ (val[6] << 2) + (val[7] >>4); ;
+		/*	char 2 bits 2-5, 3 4, 5, 6, 7 bits 0,1 */
+		/*	UserID = ((val[2] & 15) << 26) + (val[3] << 20)+ (val[4] << 14)+ (val[5] << 8)+ (val[6] << 2) + (val[7] >>4); ; */
 
-		//Part number			2 Identifier for the message part number; always 0 for Part A
-		//	char 7 bits 2,3
+		/*Part number			2 Identifier for the message part number; always 0 for Part A */
+		/*	char 7 bits 2,3 */
 
-		//Altitude (GNSS) 12 Altitude 7 bits 2-5 8 9 bits 0, 1
+		/*Altitude (GNSS) 12 Altitude 7 bits 2-5 8 9 bits 0, 1 */
 
 		Alt = ((val[7] & 15) << 8) + (val[8] <<  2) + (val[9] >> 4);
 
-		//'SOG   10     60  Char 9 bits 2-5 char 10 Speed over ground in knot steps (0-1022 knots)
+		/*'SOG   10     60  Char 9 bits 2-5 char 10 Speed over ground in knot steps (0-1022 knots) */
 
 		V_SOG = (((val[9] & 15) <<6) + val[10]); 
 
 
-		//Position accuracy 1 Char 11 bit 0 1 = high (< 10 m; Differential Mode of e.g. DGNSS receiver) 0 = low(> 10 m; Autonomous Mode of e.g. GNSS receiver or of other ElectronicPosition Fixing Device) ; default = 0
+		/*Position accuracy 1 Char 11 bit 0 1 = high (< 10 m; Differential Mode of e.g. DGNSS receiver) 0 = low(> 10 m; Autonomous Mode of e.g. GNSS receiver or of other ElectronicPosition Fixing Device) ; default = 0 */
 
 
-		//Longitude										28	Longitude in 1/10 000 min (±180°, East = positive (as per 2's complement), West = negative (as per 2's complement), 181° (6791AC0 hex) = not available = default)
-		//		Char 11 bits 1-5, 12, 13, 14, 15 0-4 		
+		/*Longitude										28	Longitude in 1/10 000 min (±180°, East = positive (as per 2's complement), West = negative (as per 2's complement), 181° (6791AC0 hex) = not available = default) */
+		/*		Char 11 bits 1-5, 12, 13, 14, 15 0-4 		 */
 
 		Conv = ((val[11] & 31) << 23) + (val[12] << 17) + (val[13] << 11) + (val[14] << 5) + (val[15] >> 1);
 
@@ -1922,8 +1922,8 @@ int DecodeVDM(char *msg)
 		V_Lon/= 600000;
 
 
-		//Latitude										27	Latitude in 1/10 000 min (±90°, North = positive (as per 2's complement), South = negative (as per 2's complement), 91° (3412140 hex) = not available = default)
-		//		 Char 15 bit 5 16 17 18 19 20 bits 0-1
+		/*Latitude										27	Latitude in 1/10 000 min (±90°, North = positive (as per 2's complement), South = negative (as per 2's complement), 91° (3412140 hex) = not available = default) */
+		/*		 Char 15 bit 5 16 17 18 19 20 bits 0-1 */
 
 		Conv = ((val[15] & 1) << 26) + (val[16]<< 20) + (val[17]<< 14) + (val[18]<< 8) + (val[19]<< 2) + (val[20] >> 4);
 
@@ -1934,21 +1934,21 @@ int DecodeVDM(char *msg)
 		V_Lat = Conv;
 		V_Lat/= 600000;
 
-		//COG                12      128 char 20 bits 2-5 21 22 bit 0-1
+		/*COG                12      128 char 20 bits 2-5 21 22 bit 0-1 */
 
 		V_COG = ((val[20] & 15) << 8) + (val[21]<< 2) + (val[22] >>4);
 
 		V_COG /= 10;
 
-		//Time stamp 6 UTC second when the report was generated by the EPFS (0-59,or 60 if time stamp is not available, which should also be the defaultvalue,or 62 if Electronic Position Fixing System operates in estimated (deadreckoning) mode,or 61 if positioning system is in manual input modeor 63 if the positioning system is inoperative)
-		//Reserved forregionalapplications 8 Reserved for definition by a competent regional authority. Should be setto zero, if not used for any regional application. Regional applicationsshould not use zero.
-		//DTE 1 Data terminal ready (0 = available 1 = not available = default) (refer to§ 3.3.8.2.3.1).
-		//Spare 5 3 Not used. Should be set to zero
-		//Assigned ModeFlag1 0 = Station operating in autonomous and continous mode =default1 = Station operating in assigned mode
-		//RAIM-Flag 1 RAIM (Receiver Autonomous Integrity Monitoring) flag of ElectronicPosition Fixing Device; 0 = RAIM not in use = default; 1 = RAIM in use)Communication
-		//State SelectorFlag1 0 = SOTDMA Communication State follows;1 = ITDMA Communication State follows.
-		//Communication State 19 SOTDMA (refer to § 3.3.7.2.2).
-		//Total number of bits168
+		/*Time stamp 6 UTC second when the report was generated by the EPFS (0-59,or 60 if time stamp is not available, which should also be the defaultvalue,or 62 if Electronic Position Fixing System operates in estimated (deadreckoning) mode,or 61 if positioning system is in manual input modeor 63 if the positioning system is inoperative) */
+		/*Reserved forregionalapplications 8 Reserved for definition by a competent regional authority. Should be setto zero, if not used for any regional application. Regional applicationsshould not use zero. */
+		/*DTE 1 Data terminal ready (0 = available 1 = not available = default) (refer to§ 3.3.8.2.3.1). */
+		/*Spare 5 3 Not used. Should be set to zero */
+		/*Assigned ModeFlag1 0 = Station operating in autonomous and continous mode =default1 = Station operating in assigned mode */
+		/*RAIM-Flag 1 RAIM (Receiver Autonomous Integrity Monitoring) flag of ElectronicPosition Fixing Device; 0 = RAIM not in use = default; 1 = RAIM in use)Communication */
+		/*State SelectorFlag1 0 = SOTDMA Communication State follows;1 = ITDMA Communication State follows. */
+		/*Communication State 19 SOTDMA (refer to § 3.3.7.2.2). */
+		/*Total number of bits168 */
 
 		ProcessSARMessage();
 
@@ -2090,7 +2090,7 @@ void ProcessAISVesselMessage()
             ptr->lat = V_Lat;
             ptr->Long = V_Lon;
             ptr->course = V_COG;
-            if (V_COG == 360)  ptr->course = V_Heading; //' 360 means not available
+            if (V_COG == 360)  ptr->course = V_Heading; /*' 360 means not available */
             ptr->speed = V_SOG;
             ptr->NavStatus = NavStatus;
             ptr->ROT = V_ROT;
@@ -2105,7 +2105,7 @@ void ProcessAISVesselMessage()
 		}
 	}
 
-//   Not found - add on end
+/*   Not found - add on end */
 
 	if (TargetCount == 0)
 
@@ -2125,11 +2125,11 @@ void ProcessAISVesselMessage()
 
 	TargetCount++;
 
-	// See if vessel is in database - if not, add
+	/* See if vessel is in database - if not, add */
 
-	LookupVessel(UserID);								// Find Vessel - if not present, add it
+	LookupVessel(UserID);								/* Find Vessel - if not present, add it */
 
-	if (ShipDataRec != NULL)					// Malloc failed!!
+	if (ShipDataRec != NULL)					/* Malloc failed!! */
 	{
 		memcpy(ptr->name,ShipDataRec->name, 21);
 		memcpy(ptr->Callsign, ShipDataRec->Callsign, 8);
@@ -2243,7 +2243,7 @@ void ProcessAISVesselDetails(char Type)
 				ptr->Class='A';
 			}
 
-			if (Type == 'B')					// Type 19 Class B Details
+			if (Type == 'B')					/* Type 19 Class B Details */
 			{
 				memcpy(ptr->name, V_Name, 21);
 				ptr->Type = V_Type;
@@ -2253,12 +2253,12 @@ void ProcessAISVesselDetails(char Type)
 				ptr->WidthD = V_WidthD;
 			}
 
-			if (Type == '0')				// Class B record 24A
+			if (Type == '0')				/* Class B record 24A */
 			{
 				memcpy(ptr->name, V_Name, 21);
 			}
 
-			if (Type == '1')				// Class B record 24B
+			if (Type == '1')				/* Class B record 24B */
 			{
 				memcpy(ptr->Callsign,V_Callsign,8);
 				ptr->Type = V_Type;
@@ -2292,7 +2292,7 @@ void ProcessAISVesselDetails(char Type)
 		}
 	}
  
-//   Not found
+/*   Not found */
 
 	if (TargetCount == 0)
 		TargetRecords=(struct TARGETRECORD **)malloc(sizeof(void *));
@@ -2353,7 +2353,7 @@ void ProcessAISNavAidMessage()
 		}
 	}
 
-	// Not found, so add
+	/* Not found, so add */
 
 	if (NavAidCount == 0)
 		NavRecords=(struct NAVAIDRECORD **)malloc(sizeof(void *));
@@ -2380,7 +2380,7 @@ void ProcessAISNavAidMessage()
 static double Distance(double lah, double loh, double laa, double loa)
 {
 
-	//'   Our Lat, Long other Lat,Long
+	/*'   Our Lat, Long other Lat,Long */
 
 /*
 
@@ -2412,7 +2412,7 @@ return 60*degrees(acos(sin(lah) * sin(laa) + cos(lah) * cos(laa) * cos(loa-loh))
 static double Bearing(double lat1, double lon1, double lat2, double lon2)
 {
 
-//' Our Lat, Long other Lat,Long
+/*' Our Lat, Long other Lat,Long */
  
 	double dlat, dlon, TC1;
 
@@ -2441,7 +2441,7 @@ static double Bearing(double lat1, double lon1, double lat2, double lon2)
 	if (dlat < 0)
 	{
 		if (dlon > 0) return TC1 = 180 - TC1;
-		if (dlon < 0) return TC1 = 180 - TC1; // 'ok?
+		if (dlon < 0) return TC1 = 180 - TC1; /* 'ok? */
 		return 180;
 	}
 
@@ -2451,7 +2451,7 @@ static double Bearing(double lat1, double lon1, double lat2, double lon2)
 
 void AISTimer()
 {
-	// Entered every minute
+	/* Entered every minute */
 
 	NOW = time(NULL);
 
@@ -2472,17 +2472,17 @@ void AISTimer()
 
 void ADSBTimer()
 {
-	// Entered every minute
+	/* Entered every minute */
 
 	NOW = time(NULL);
 	CheckAgeofPlanes(300);
 	ProcessADSBJSON(ADSBFN);
 
-//	WriteMiniDump();
+/*	WriteMiniDump(); */
 
 	if (ADSBHost[0])
 	{
-		if (ADSBConnected == 0)		// Try to connect again
+		if (ADSBConnected == 0)		/* Try to connect again */
 			_beginthread(ADSBConnect, 0, 0);
 	}
 }
@@ -2498,9 +2498,9 @@ void CheckAgeofTargets(UINT MaxAge)
 		
 		if (NOW - ptr->TimeLastUpdated > MaxAge)
 		{       
-			free(ptr);						// Release Memory Block
+			free(ptr);						/* Release Memory Block */
     
-			//   Delete Current, and move all others down
+			/*   Delete Current, and move all others down */
                   
 			TargetCount--;
 
@@ -2510,7 +2510,7 @@ void CheckAgeofTargets(UINT MaxAge)
 				  i++;
 			}
 
-			return;				// Test rest on next pass
+			return;				/* Test rest on next pass */
 		}
 	}
 }
@@ -2527,7 +2527,7 @@ void CheckAgeofPlanes(UINT MaxAge)
 		ptr = ADSBRecords[i];
 
 		if (ptr->hex[0] && NOW - ptr->seen_pos > MaxAge)
-			memset(ptr, 0, sizeof(struct ADSBRECORD));		// Zap the record						// Release Memory Block
+			memset(ptr, 0, sizeof(struct ADSBRECORD));		/* Zap the record						// Release Memory Block */
     }
 }
 
@@ -2579,7 +2579,7 @@ int GetAISPageInfo(char * Buffer, int ais, int adsb)
 				navptr->lat, navptr->Long, navptr->name, TimeAdded, TimeHeard);
 		}
 
-		// Vessels
+		/* Vessels */
 
 		for (i = 0; i < TargetCount; i++)
 		{
@@ -2606,7 +2606,7 @@ int GetAISPageInfo(char * Buffer, int ais, int adsb)
 				Name = nameString;
 			}
 
-			// Dest may contain comma
+			/* Dest may contain comma */
 
 			strcpy(DestBuffer, ptr->Dest);
 
@@ -2624,12 +2624,12 @@ int GetAISPageInfo(char * Buffer, int ais, int adsb)
 			Len += sprintf(&Buffer[Len],"V,%.4f,%.4f,%s,%.0f,%.1f,%d\r\n|",
 				ptr->lat, ptr->Long, Line, ptr->course, ptr->speed, Age);
 
-			if (ptr->TrackTime[0])	// Have trackpoints
+			if (ptr->TrackTime[0])	/* Have trackpoints */
 			{
 				int n = ptr->Trackptr;
 				int i;
 
-				// We read from next track point (oldest) for TRACKPOINT records, ignoring zeros
+				/* We read from next track point (oldest) for TRACKPOINT records, ignoring zeros */
 
 				Len += sprintf(&Buffer[Len],"T,");
 
@@ -2644,11 +2644,11 @@ int GetAISPageInfo(char * Buffer, int ais, int adsb)
 					if (n == TRACKPOINTS)
 						n = 0;
 				}
-				Len += sprintf(&Buffer[Len],"%.4f,%.4f,\r\n|", ptr->lat, ptr->Long);		//Add current position to end of track
+				Len += sprintf(&Buffer[Len],"%.4f,%.4f,\r\n|", ptr->lat, ptr->Long);		/*Add current position to end of track */
 			}
 		}
 
-		// SAR Vessels
+		/* SAR Vessels */
 
 		for (i = 0; i < SARCount; i++)
 		{
@@ -2673,12 +2673,12 @@ int GetAISPageInfo(char * Buffer, int ais, int adsb)
 			Len += sprintf(&Buffer[Len],"S,%.4f,%.4f,%s,%.0f,%.0f,%d\r\n|",
 				ptr->lat, ptr->Long, Line, ptr->course, ptr->speed, Age);
 
-			if (ptr->TrackTime[0])	// Have trackpoints
+			if (ptr->TrackTime[0])	/* Have trackpoints */
 			{
 				int n = ptr->Trackptr;
 				int i;
 
-				// We read from next track point (oldest) for TRACKPOINT records, ignoring zeros
+				/* We read from next track point (oldest) for TRACKPOINT records, ignoring zeros */
 
 				Len += sprintf(&Buffer[Len],"T,");
 
@@ -2693,7 +2693,7 @@ int GetAISPageInfo(char * Buffer, int ais, int adsb)
 					if (n == TRACKPOINTS)
 						n = 0;
 				}
-				Len += sprintf(&Buffer[Len],"%.4f,%.4f,\r\n|", ptr->lat, ptr->Long);		//Add current position to end of track
+				Len += sprintf(&Buffer[Len],"%.4f,%.4f,\r\n|", ptr->lat, ptr->Long);		/*Add current position to end of track */
 			}
 		}
 
@@ -2701,7 +2701,7 @@ int GetAISPageInfo(char * Buffer, int ais, int adsb)
 
 	if (adsb)
 	{
-		// Aircraft
+		/* Aircraft */
 
 
 		for (i = 0; i < ADSBCount; i++)
@@ -2722,12 +2722,12 @@ int GetAISPageInfo(char * Buffer, int ais, int adsb)
 			Len += sprintf(&Buffer[Len],"P,%.4f,%.4f,%s,%s,%d,%d,%d\r\n|",
 				ptr->lat, ptr->lon, Line, ptr->flight, ptr->track, ptr->speed, Age);
 
-			if (ptr->TrackTime[0])	// Have trackpoints
+			if (ptr->TrackTime[0])	/* Have trackpoints */
 			{
 				int n = ptr->Trackptr;
 				int i;
 
-				// We read from next track point (oldest) for TRACKPOINT records, ignoring zeros
+				/* We read from next track point (oldest) for TRACKPOINT records, ignoring zeros */
 
 				Len += sprintf(&Buffer[Len],"T,");
 
@@ -2742,7 +2742,7 @@ int GetAISPageInfo(char * Buffer, int ais, int adsb)
 					if (n == TRACKPOINTS)
 						n = 0;
 				}
-				Len += sprintf(&Buffer[Len],"%.4f,%.4f,\r\n|", ptr->lat, ptr->lon);		//Add current position to end of track
+				Len += sprintf(&Buffer[Len],"%.4f,%.4f,\r\n|", ptr->lat, ptr->lon);		/*Add current position to end of track */
 			}
 		}
 	}
@@ -2771,17 +2771,17 @@ void ProcessADSBJSON(char * FN)
 	struct ADSBRECORD plane;
 	time_t ReportTime;
 
-	// Testing, read dump1090 file
+	/* Testing, read dump1090 file */
 
 	if (ADSBHost[0])
-		return;						// Using TCP 
+		return;						/* Using TCP  */
 	
 	if ((file = fopen(FN,"r")) == NULL) return;
 	
-	fgets(buf, 2048, file);		// now
+	fgets(buf, 2048, file);		/* now */
 	ReportTime = atoi(&buf[9]);
-	fgets(buf, 2048, file);		// messages
-	fgets(buf, 2048, file);		// aircraft
+	fgets(buf, 2048, file);		/* messages */
+	fgets(buf, 2048, file);		/* aircraft */
 
 	while (1)
 	{
@@ -2873,7 +2873,7 @@ void ProcessADSBMessage(struct ADSBRECORD * plane)
 {
 	int i;
 	struct ADSBRECORD * ptr;
-	struct ADSBRECORD * spare = 0;		// Pointer to a cleared record
+	struct ADSBRECORD * spare = 0;		/* Pointer to a cleared record */
 
 	for (i = 0; i < ADSBCount; i++)
 	{
@@ -2922,9 +2922,9 @@ void ProcessADSBMessage(struct ADSBRECORD * plane)
 			if (ptr->lat == 0.0)
 				return;
 
-			// Save Track Point
+			/* Save Track Point */
 
-			if ((NOW - ptr->LastTime) < 15)	// Not More that once per 15 secs
+			if ((NOW - ptr->LastTime) < 15)	/* Not More that once per 15 secs */
 				return;
 
 			ptr->LastCourse = ptr->track;
@@ -2945,11 +2945,11 @@ void ProcessADSBMessage(struct ADSBRECORD * plane)
 			return;
 		}
 
-		if (ptr->hex[0] == 0 && spare == 0)			//Zapped record
+		if (ptr->hex[0] == 0 && spare == 0)			/*Zapped record */
 			spare = ptr;
 	}
 
-	// Not found, if got a freed entry use it, elsee add new one
+	/* Not found, if got a freed entry use it, elsee add new one */
 
 	if (spare)
 		ptr = spare;
@@ -2971,31 +2971,31 @@ void ProcessADSBMessage(struct ADSBRECORD * plane)
 	strcpy(ptr->hex, plane->hex);
 	ptr->TimeAdded = NOW;
 
-	ProcessADSBMessage(plane);			// Reenter to save details
+	ProcessADSBMessage(plane);			/* Reenter to save details */
 	return;
 }
 
 
-// Thread to process ADS-B messages from dump1090
+/* Thread to process ADS-B messages from dump1090 */
 
 
 void ProcessADSBLine(char * Msg, int Len)
 {
 	int i;
 	struct ADSBRECORD * rec;
-	struct ADSBRECORD * spare = 0;		// Pointer to a cleared record
+	struct ADSBRECORD * spare = 0;		/* Pointer to a cleared record */
 
 	char * p[22] = {0};
 	char * ptr;
 	char Type;
 	char hex[10];
 
-//MSG,3,111,11111,394A05,111111,2021/10/13,07:56:46.075,2021/10/13,07:56:46.128,,37000,,,59.11278,-6.53052,,,,,,0
+/*MSG,3,111,11111,394A05,111111,2021/10/13,07:56:46.075,2021/10/13,07:56:46.128,,37000,,,59.11278,-6.53052,,,,,,0 */
 
 	if (memcmp(Msg, "MSG,", 4) != 0)
 		return;
 
-	// Simplest way to process comma separated with null fields is strlop;
+	/* Simplest way to process comma separated with null fields is strlop; */
 
 	ptr = &Msg[4];
 
@@ -3006,9 +3006,9 @@ void ProcessADSBLine(char * Msg, int Len)
 	}
 	
 	if (p[20] == 0)
-		return;		// Should have 21 params
+		return;		/* Should have 21 params */
 
-	strcpy(hex, p[3]);				// identifier
+	strcpy(hex, p[3]);				/* identifier */
 
 	for (i = 0; i < ADSBCount; i++)
 	{
@@ -3017,7 +3017,7 @@ void ProcessADSBLine(char * Msg, int Len)
 	    if (strcmp(rec->hex, hex) == 0)
 			goto Found;
 
-		if (rec->hex[0] == 0 && spare == 0)			//Zapped record
+		if (rec->hex[0] == 0 && spare == 0)			/*Zapped record */
 			spare = rec;
 	}
 	
@@ -3025,7 +3025,7 @@ void ProcessADSBLine(char * Msg, int Len)
 		rec = spare;
 	else
 	{
-		// Not found, so add
+		/* Not found, so add */
 
 		if (ADSBCount == 0)
 			ADSBRecords = (struct ADSBRECORD **)malloc(sizeof(void *));
@@ -3069,7 +3069,7 @@ Found:
 
 	case 3:
 
-		// Position
+		/* Position */
 
 		rec->altitude = atoi(p[10]);
 		rec->lat = atof(p[13]);
@@ -3097,15 +3097,15 @@ Found:
 		return;
 	}
 
-	// Recs with position get here
+	/* Recs with position get here */
 
 	if (rec->lat == 0.0)
 		return;
 
-	// Save Track Point
+	/* Save Track Point */
 
-//	if ((NOW - rec->LastTime) < 15)	// Not More that once per 15 secs
-//		return;
+/*	if ((NOW - rec->LastTime) < 15)	// Not More that once per 15 secs */
+/*		return; */
 
 	rec->LastCourse = rec->track;
 	rec->LastSpeed = rec->speed;
@@ -3133,8 +3133,8 @@ static VOID ProcessADSBData(SOCKET TCPSock)
 	char * ptr;
 	char * Lastptr;
 
-	// Although it is possible that a packet will be split by a partial read.
-	// it is so unlikely with a 65536 buffer that I'll just accept the loss
+	/* Although it is possible that a packet will be split by a partial read. */
+	/* it is so unlikely with a 65536 buffer that I'll just accept the loss */
 
 	len = recv(TCPSock, Buffer, 65536, 0);
 
@@ -3203,12 +3203,12 @@ static VOID ADSBConnect(void * unused)
 
 	if (destaddr.sin_addr.s_addr == INADDR_NONE)
 	{
-		//	Resolve name to address
+		/*	Resolve name to address */
 
 		struct hostent * HostEnt = gethostbyname(ADSBHost);
 		 
 		if (!HostEnt)
-			return;			// Resolve failed
+			return;			/* Resolve failed */
 
 		memcpy(&destaddr.sin_addr.s_addr,HostEnt->h_addr,4);
 	}
@@ -3223,13 +3223,13 @@ static VOID ADSBConnect(void * unused)
  
 	setsockopt (TCPSock, SOL_SOCKET, SO_REUSEADDR, (const char FAR *)&bcopt, 4);
 
-	ADSBConnected = TRUE;			// So we don't try to reconnect while waiting		
+	ADSBConnected = TRUE;			/* So we don't try to reconnect while waiting		 */
 
 	if (connect(TCPSock,(LPSOCKADDR) &destaddr, sizeof(destaddr)) == 0)
 	{
-		//
-		//	Connected successful
-		//
+		/* */
+		/*	Connected successful */
+		/* */
 
 		ioctl(TCPSock, FIONBIO, &param);
 	}
@@ -3258,7 +3258,7 @@ static VOID ADSBConnect(void * unused)
 		FD_SET(TCPSock,&errorfs);
 
 		timeout.tv_sec = 60;
-		timeout.tv_usec = 0;				// We should get messages more frequently that this
+		timeout.tv_usec = 0;				/* We should get messages more frequently that this */
 
 		ret = select((int)TCPSock + 1, &readfs, NULL, &errorfs, &timeout);
 		
@@ -3268,7 +3268,7 @@ static VOID ADSBConnect(void * unused)
 		}
 		if (ret > 0)
 		{
-			//	See what happened
+			/*	See what happened */
 
 			if (FD_ISSET(TCPSock, &readfs))
 			{
@@ -3288,7 +3288,7 @@ Lost:
 		}
 		else
 		{
-			// 60 secs without data. Shouldn't happen
+			/* 60 secs without data. Shouldn't happen */
 
 			shutdown(TCPSock, SD_BOTH);
 			Sleep(100);
@@ -3300,5 +3300,3 @@ Lost:
 	}
 }
 
-//http://fr24.com/+selected.flight
-//http://www.flightstats.com/go/FlightStatus/flightStatusByFlight.do?flightNumber='+selected.flight

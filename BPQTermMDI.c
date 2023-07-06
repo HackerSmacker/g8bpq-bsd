@@ -1,67 +1,67 @@
 
-// Version 2.0.1 November 2007
+/* Version 2.0.1 November 2007 */
 
-// Change resizing algorithm
-
-
-// Version 2.0.2 January 2008
-
-// Restore Checked state of Bells and AutoConnect Flags
-// Call CheckTimer on startup (for new Initialisation Scheme for perl)
-
-// Version 2.0.3 July 2008
-
-// Display lines received without a terminaing CR
+/* Change resizing algorithm */
 
 
-// Version 2.0.4 November 2008
+/* Version 2.0.2 January 2008 */
 
-// Add option to remove a Line Feed following a CR
-// Add Logging Option
+/* Restore Checked state of Bells and AutoConnect Flags */
+/* Call CheckTimer on startup (for new Initialisation Scheme for perl) */
 
-// Version 2.0.5 January 2009
+/* Version 2.0.3 July 2008 */
 
-// Add Start Minimized Option
+/* Display lines received without a terminaing CR */
 
-// Version 2.0.6 June 2009
 
-// Add Option to send *** Disconnnected on disconnect
-// Add line wrap code
-// Add option not to monitor NODES broadcasts
+/* Version 2.0.4 November 2008 */
 
-// Version 2.0.7 October 2009
+/* Add option to remove a Line Feed following a CR */
+/* Add Logging Option */
 
-// Add input buffer scrollback.
-// Fix monitoring when PORTNUM specified
+/* Version 2.0.5 January 2009 */
 
-// Version 2.0.8 December 2009
+/* Add Start Minimized Option */
 
-// Fix use of numeric keypad 2 and 8 (were treated as up and down)
+/* Version 2.0.6 June 2009 */
 
-// Version 2.0.9 March 2010
+/* Add Option to send *** Disconnnected on disconnect */
+/* Add line wrap code */
+/* Add option not to monitor NODES broadcasts */
 
-// Add colour for monitor and BPQ Chat
+/* Version 2.0.7 October 2009 */
 
-// Version 2.0.0 October 2010
+/* Add input buffer scrollback. */
+/* Fix monitoring when PORTNUM specified */
 
-// Add Chat Terminal Mode (sends keepalives)
+/* Version 2.0.8 December 2009 */
 
-// Version 2.1.0 August 2011
+/* Fix use of numeric keypad 2 and 8 (were treated as up and down) */
 
-//		Add Copy/Paste capability to output window.
-//		Add Font Selection
-//		Get Registry Tree from BPQ32.dll
-//		Add Command to reset Monitor/Output window split
+/* Version 2.0.9 March 2010 */
 
-// Version 2.1.1 October 2011
+/* Add colour for monitor and BPQ Chat */
 
-//		Wrap overlong lines
+/* Version 2.0.0 October 2010 */
 
-// Version 2.1.2 Jan 2012
+/* Add Chat Terminal Mode (sends keepalives) */
 
-//		Call CloseBPQ32 on exit
-//		Fix ClearOutputWindow
-//		Save MonitorNodes flag
+/* Version 2.1.0 August 2011 */
+
+/*		Add Copy/Paste capability to output window. */
+/*		Add Font Selection */
+/*		Get Registry Tree from BPQ32.dll */
+/*		Add Command to reset Monitor/Output window split */
+
+/* Version 2.1.1 October 2011 */
+
+/*		Wrap overlong lines */
+
+/* Version 2.1.2 Jan 2012 */
+
+/*		Call CloseBPQ32 on exit */
+/*		Fix ClearOutputWindow */
+/*		Save MonitorNodes flag */
 
 #define _CRT_SECURE_NO_DEPRECATE
 
@@ -72,7 +72,7 @@
 #include <commctrl.h>
 #define DllImport __declspec(dllimport)
 
-#include "bpq32.h"	// BPQ32 API Defines
+#include "bpq32.h"	/* BPQ32 API Defines */
 #define BPQTermMDI
 
 #ifndef MDIKERNEL
@@ -98,7 +98,7 @@ struct ConsoleInfo * ConsHeader = NULL;
 
 struct ConsoleInfo MonWindow;
 
-struct ConsoleInfo InitHeader;			// Dummy for before window is created
+struct ConsoleInfo InitHeader;			/* Dummy for before window is created */
 
 HKEY FAR WINAPI GetRegistryKey();
 char * FAR WINAPI GetRegistryKeyText();
@@ -107,7 +107,7 @@ VOID __cdecl Debugprintf(const char * format, ...);
 
 #ifndef MDIKERNEL
 
-HKEY REGTREE = HKEY_LOCAL_MACHINE;		// Default
+HKEY REGTREE = HKEY_LOCAL_MACHINE;		/* Default */
 
 VOID __cdecl Debugprintf(const char * format, ...)
 {
@@ -131,7 +131,7 @@ HINSTANCE hInst;
 char ClassName[] = "BPQMAINWINDOW";
 char Title[80];
 
-// Foward declarations of functions included in this code module:
+/* Foward declarations of functions included in this code module: */
 
 ATOM MyRegisterClass(CONST WNDCLASS*);
 BOOL InitApplication(HINSTANCE);
@@ -140,7 +140,7 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK FrameWndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK About(HWND, UINT, WPARAM, LPARAM);
 
-extern RECT FRect;	// Frame 
+extern RECT FRect;	/* Frame  */
 
 int NewLine();
 
@@ -177,31 +177,31 @@ int ToggleMON_UI_ONLY(HWND hWnd);
 IntSetTraceOptionsEx(portmask,mtxparam,mcomparam, monUI);
 
 COLORREF Colours[256] = {0,
-		RGB(0,0,0), RGB(0,0,128), RGB(0,0,192), RGB(0,0,255),				// 1 - 4
-		RGB(0,64,0), RGB(0,64,128), RGB(0,64,192), RGB(0,64,255),			// 5 - 8
-		RGB(0,128,0), RGB(0,128,128), RGB(0,128,192), RGB(0,128,255),		// 9 - 12
-		RGB(0,192,0), RGB(0,192,128), RGB(0,192,192), RGB(0,192,255),		// 13 - 16
-		RGB(0,255,0), RGB(0,255,128), RGB(0,255,192), RGB(0,255,255),		// 17 - 20
+		RGB(0,0,0), RGB(0,0,128), RGB(0,0,192), RGB(0,0,255),				/* 1 - 4 */
+		RGB(0,64,0), RGB(0,64,128), RGB(0,64,192), RGB(0,64,255),			/* 5 - 8 */
+		RGB(0,128,0), RGB(0,128,128), RGB(0,128,192), RGB(0,128,255),		/* 9 - 12 */
+		RGB(0,192,0), RGB(0,192,128), RGB(0,192,192), RGB(0,192,255),		/* 13 - 16 */
+		RGB(0,255,0), RGB(0,255,128), RGB(0,255,192), RGB(0,255,255),		/* 17 - 20 */
 
-		RGB(64,0,0), RGB(64,0,128), RGB(64,0,192), RGB(0,0,255),				// 21 
+		RGB(64,0,0), RGB(64,0,128), RGB(64,0,192), RGB(0,0,255),				/* 21  */
 		RGB(64,64,0), RGB(64,64,128), RGB(64,64,192), RGB(64,64,255),
 		RGB(64,128,0), RGB(64,128,128), RGB(64,128,192), RGB(64,128,255),
 		RGB(64,192,0), RGB(64,192,128), RGB(64,192,192), RGB(64,192,255),
 		RGB(64,255,0), RGB(64,255,128), RGB(64,255,192), RGB(64,255,255),
 
-		RGB(128,0,0), RGB(128,0,128), RGB(128,0,192), RGB(128,0,255),				// 41
+		RGB(128,0,0), RGB(128,0,128), RGB(128,0,192), RGB(128,0,255),				/* 41 */
 		RGB(128,64,0), RGB(128,64,128), RGB(128,64,192), RGB(128,64,255),
 		RGB(128,128,0), RGB(128,128,128), RGB(128,128,192), RGB(128,128,255),
 		RGB(128,192,0), RGB(128,192,128), RGB(128,192,192), RGB(128,192,255),
 		RGB(128,255,0), RGB(128,255,128), RGB(128,255,192), RGB(128,255,255),
 
-		RGB(192,0,0), RGB(192,0,128), RGB(192,0,192), RGB(192,0,255),				// 61
+		RGB(192,0,0), RGB(192,0,128), RGB(192,0,192), RGB(192,0,255),				/* 61 */
 		RGB(192,64,0), RGB(192,64,128), RGB(192,64,192), RGB(192,64,255),
 		RGB(192,128,0), RGB(192,128,128), RGB(192,128,192), RGB(192,128,255),
 		RGB(192,192,0), RGB(192,192,128), RGB(192,192,192), RGB(192,192,255),
 		RGB(192,255,0), RGB(192,255,128), RGB(192,255,192), RGB(192,255,255),
 
-		RGB(255,0,0), RGB(255,0,128), RGB(255,0,192), RGB(255,0,255),				// 81
+		RGB(255,0,0), RGB(255,0,128), RGB(255,0,192), RGB(255,0,255),				/* 81 */
 		RGB(255,64,0), RGB(255,64,128), RGB(255,64,192), RGB(255,64,255),
 		RGB(255,128,0), RGB(255,128,128), RGB(255,128,192), RGB(255,128,255),
 		RGB(255,192,0), RGB(255,192,128), RGB(255,192,192), RGB(255,192,255),
@@ -219,7 +219,7 @@ extern int APPL1;
 
 static HMENU trayMenu;
 
-int xsize,ysize;		// Screen size at startup
+int xsize,ysize;		/* Screen size at startup */
 
 double Split=0.5;
 int SplitPos=300;
@@ -262,20 +262,20 @@ int monUI=0;
 
 char kbbuf[160];
 int kbptr=0;
-char readbuff[100000];				// for stupid bbs programs
+char readbuff[100000];				/* for stupid bbs programs */
 
 int ptr=0;
 
-int Stream, Stream2;				// Stream2 for SYSOP Chat session
+int Stream, Stream2;				/* Stream2 for SYSOP Chat session */
 int len,count;
 
 
 static UINT APPLMASK = 0x80000000;
-int applflags = 2;				// Message to Uset and Application
+int applflags = 2;				/* Message to Uset and Application */
 int Sessno = 0;
 
 int PartLinePtr=0;
-int PartLineIndex=0;		// Listbox index of (last) incomplete line
+int PartLineIndex=0;		/* Listbox index of (last) incomplete line */
 
 BOOL Bells = FALSE;
 BOOL StripLF = FALSE;
@@ -316,7 +316,7 @@ int tTimerHandle = 0;
 BOOL WINE;
 
 
-// HMENU hTermMenu;		// handle of menu 
+/* HMENU hTermMenu;		// handle of menu  */
 extern HMENU hTermActMenu, hTermCfgMenu, hTermEdtMenu, hTermHlpMenu;
 extern HMENU hMonActMenu, hMonCfgMenu, hMonEdtMenu, hMonHlpMenu;
 
@@ -337,7 +337,7 @@ HMENU hPopMenu1;
 #define CP1251 1251
 #define CP1252 1252
 
-int RXMode = AUTO; //CP1252;
+int RXMode = AUTO; /*CP1252; */
 int TXMode = CP_UTF8;
 
 int APRSWriteLog(char * msg);
@@ -360,7 +360,7 @@ VOID MonitorAPRSIS(char * Msg, int MsgLen, BOOL TX)
 	NOW = _time32(NULL);
 	TM = gmtime(&NOW);
 
-	// Mustn't change Msg
+	/* Mustn't change Msg */
 
 	memcpy(Copy, Msg, MsgLen);
 	Copy[MsgLen] = 0;
@@ -384,7 +384,7 @@ VOID MonitorAPRSIS(char * Msg, int MsgLen, BOOL TX)
 
 VOID CALLBACK tTimerProc(HWND  hwnd, UINT  uMsg, UINT  idEvent, DWORD dwTime)
 {
-	// entered every 1 sec
+	/* entered every 1 sec */
 
 	struct ConsoleInfo * Cinfo = &MonWindow;
 
@@ -401,7 +401,7 @@ VOID CALLBACK tTimerProc(HWND  hwnd, UINT  uMsg, UINT  idEvent, DWORD dwTime)
 		{
 			Cinfo->SlowTimer++;
 
-			if (Cinfo->SlowTimer > 500)				// About 9 mins
+			if (Cinfo->SlowTimer > 500)				/* About 9 mins */
 			{
 				Cinfo->SlowTimer = 0;
 				SendMsg(Cinfo->BPQStream, "\0", 1);
@@ -410,16 +410,16 @@ VOID CALLBACK tTimerProc(HWND  hwnd, UINT  uMsg, UINT  idEvent, DWORD dwTime)
 	}
 }
 
-//
-//  FUNCTION: WinMain(HANDLE, HANDLE, LPSTR, int)
-//
-//  PURPOSE: Entry point for the application.
-//
-//  COMMENTS:
-//
-//	This function initializes the application and processes the
-//	message loop.
-//
+/* */
+/*  FUNCTION: WinMain(HANDLE, HANDLE, LPSTR, int) */
+/* */
+/*  PURPOSE: Entry point for the application. */
+/* */
+/*  COMMENTS: */
+/* */
+/*	This function initializes the application and processes the */
+/*	message loop. */
+/* */
 
 VOID SetupRTFHddr()
 {
@@ -427,7 +427,7 @@ VOID SetupRTFHddr()
 	char RTFColours[3000];
 	char Temp[1000];
 
-	// Set up RTF Header, including Colours String;
+	/* Set up RTF Header, including Colours String; */
 
 	memcpy(RTFColours, "{\\colortbl ;", 12);
 	n = 12;
@@ -441,7 +441,7 @@ VOID SetupRTFHddr()
 	RTFColours[n++] = '}';
 	RTFColours[n] = 0;
 
-//	strcpy(RTFHeader, "{\\rtf1\\deff0{\\fonttbl{\\f0\\fmodern\\fprq1\\fcharset204 ;}}");
+/*	strcpy(RTFHeader, "{\\rtf1\\deff0{\\fonttbl{\\f0\\fmodern\\fprq1\\fcharset204 ;}}"); */
 	sprintf(RTFHeader, "{\\rtf1\\deff0{\\fonttbl{\\f0\\fprq1\\cpg%d\\fcharset%d %s;}}", CodePage, CharSet, FontName);
 	strcat(RTFHeader, RTFColours);
 	sprintf(Temp, "\\viewkind4\\uc1\\pard\\f0\\fs%d", FontSize);
@@ -470,7 +470,7 @@ VOID CALLBACK SetupTermSessions(HWND hwnd, UINT  uMsg, UINT  idEvent,  DWORD  dw
 	tTimerHandle = SetTimer(NULL, 0, 1000, tTimerFunc);
 
 
-	// See if running under WINE
+	/* See if running under WINE */
 
 	retCode = RegOpenKeyEx (HKEY_LOCAL_MACHINE, "SOFTWARE\\Wine",  0, KEY_QUERY_VALUE, &hKey);
 
@@ -487,7 +487,7 @@ VOID CALLBACK SetupTermSessions(HWND hwnd, UINT  uMsg, UINT  idEvent,  DWORD  dw
 	trayMenu = CreatePopupMenu();
 	AppendMenu(trayMenu, MF_STRING, RTFCOPY, "Copy");
 
-	Stream = FindFreeStream();		// For Monitoring /Inbound
+	Stream = FindFreeStream();		/* For Monitoring /Inbound */
 	
 	if (Stream == 255)
 	{
@@ -497,7 +497,7 @@ VOID CALLBACK SetupTermSessions(HWND hwnd, UINT  uMsg, UINT  idEvent,  DWORD  dw
 
 	BPQSetHandle(Stream, FrameWnd);
 
-	// Get config from Registry 
+	/* Get config from Registry  */
 
 	sprintf(Key, "SOFTWARE\\G8BPQ\\BPQ32\\BPQTermMDI");
 
@@ -596,7 +596,7 @@ VOID CALLBACK SetupTermSessions(HWND hwnd, UINT  uMsg, UINT  idEvent,  DWORD  dw
 		RegQueryValueEx(hKey, "MonSize", 0 , &Type, &Size[0], &Vallen);
 	}
 
-//	hPopMenu1 = GetSubMenu(hMonCfgMenu, 1);
+/*	hPopMenu1 = GetSubMenu(hMonCfgMenu, 1); */
 
 	portmask = tempmask;
 
@@ -674,7 +674,7 @@ VOID CALLBACK SetupTermSessions(HWND hwnd, UINT  uMsg, UINT  idEvent,  DWORD  dw
 	MMASK = portmask;
 	MUIONLY = monUI;
 
-	if (COMMANDS[APPL1 + 31].String[0] == '*')		// No Host App
+	if (COMMANDS[APPL1 + 31].String[0] == '*')		/* No Host App */
 	{
 		SetAppl(Stream, 0x80, 0);
 	}
@@ -682,7 +682,7 @@ VOID CALLBACK SetupTermSessions(HWND hwnd, UINT  uMsg, UINT  idEvent,  DWORD  dw
 	{
 		SetAppl(Stream, applflags, APPLMASK);
 
-		// Allocate another incoming stream
+		/* Allocate another incoming stream */
 	
 		Stream2 = FindFreeStream();;
 
@@ -690,7 +690,7 @@ VOID CALLBACK SetupTermSessions(HWND hwnd, UINT  uMsg, UINT  idEvent,  DWORD  dw
 		SetAppl(Stream2, 2, APPLMASK);
 	}
 
-//	CreateMonitorWindow(Size);
+/*	CreateMonitorWindow(Size); */
 
 	if (RestoreWindows)
 	{
@@ -713,7 +713,7 @@ SaveHostSessions()
 	BOOL NeedPause = FALSE;
 	HKEY hKey;
 
-	// Save config
+	/* Save config */
 	
 	RegCreateKeyEx(REGTREE, Key, 0, 0, 0, KEY_ALL_ACCESS,  NULL, &hKey, &disp);
 
@@ -733,7 +733,7 @@ SaveHostSessions()
 	RegSetValueEx(hKey,"WrapInput",0,REG_DWORD,(BYTE *)&WrapInput,4);
 	RegSetValueEx(hKey,"FlashOnBell",0,REG_DWORD,(BYTE *)&FlashOnBell,4);
 
-	// Close any sessions
+	/* Close any sessions */
 
 	i = 0;
 
@@ -786,7 +786,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	if (!InitInstance(hInstance, nCmdShow))
 		return (FALSE);
 
-	// Main message loop:
+	/* Main message loop: */
 	while (GetMessage(&msg, NULL, 0, 0)) 
 	{
 		TranslateMessage(&msg);
@@ -795,33 +795,33 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	KillTimer(NULL, tTimerHandle);
 
-	CloseBPQ32();				// Close Ext Drivers if last bpq32 process
+	CloseBPQ32();				/* Close Ext Drivers if last bpq32 process */
 
 	return (msg.wParam);
 }
 
-//
+/* */
 
-//
-//  FUNCTION: InitApplication(HANDLE)
-//
-//  PURPOSE: Initializes window data and registers window class 
-//
-//  COMMENTS:
-//
-//       In this function, we initialize a window class by filling out a data
-//       structure of type WNDCLASS and calling either RegisterClass or 
-//       the internal MyRegisterClass.
-//
+/* */
+/*  FUNCTION: InitApplication(HANDLE) */
+/* */
+/*  PURPOSE: Initializes window data and registers window class  */
+/* */
+/*  COMMENTS: */
+/* */
+/*       In this function, we initialize a window class by filling out a data */
+/*       structure of type WNDCLASS and calling either RegisterClass or  */
+/*       the internal MyRegisterClass. */
+/* */
 
-HMENU hTermCfgMenu, hMonMenu, hPopMenu1, hPopMenu2, hPopMenu3;		// handle of menu 
+HMENU hTermCfgMenu, hMonMenu, hPopMenu1, hPopMenu2, hPopMenu3;		/* handle of menu  */
 
 HINSTANCE	hInstance					= NULL;
 TCHAR		gszSigmaFrameClassName[]	= TEXT("SigmaMdiFrame");
 TCHAR		gszAppName[]				= TEXT("Sigma");
-HWND		ghMDIClientArea				= NULL; //This stores the MDI client area window handle
+HWND		ghMDIClientArea				= NULL; /*This stores the MDI client area window handle */
 
-HWND		FrameWnd				= NULL; // This will hold the main frame window handle
+HWND		FrameWnd				= NULL; /* This will hold the main frame window handle */
 HMENU		ghMainFrameMenu				= NULL;
 
 HANDLE		ghSystemInfoMutex			= NULL;
@@ -842,9 +842,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	int Sessions = 0;
 
 	hInstance = hInstance;
-	hInst = hInstance; // Store instance handle in our global variable
+	hInst = hInstance; /* Store instance handle in our global variable */
 
-	// See if running under WINE
+	/* See if running under WINE */
 
 	retCode = RegOpenKeyEx (HKEY_LOCAL_MACHINE, "SOFTWARE\\Wine",  0, KEY_QUERY_VALUE, &hKey);
 
@@ -862,7 +862,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	dICC.dwSize = sizeof(INITCOMMONCONTROLSEX);
 	dICC.dwICC = ICC_TREEVIEW_CLASSES | ICC_BAR_CLASSES;
 
-	// Initialize common control library
+	/* Initialize common control library */
 	
 	bInitCommonControlLib = InitCommonControlsEx(&dICC);
 	
@@ -888,7 +888,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	wndclassMainFrame.lpszClassName	= gszSigmaFrameClassName;
 	wndclassMainFrame.hIconSm		= NULL;
 	
-	//Register MainFrame window
+	/*Register MainFrame window */
 	if(!RegisterClassEx(&wndclassMainFrame))
 	{
 		DWORD derror = GetLastError();
@@ -900,23 +900,23 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	hTermCfgMenu = LoadMenu(hInstance, MAKEINTRESOURCE(TERM_MENU));
 	hMonMenu = LoadMenu(hInstance, MAKEINTRESOURCE(MON_MENU));
 
-	//Create the main MDI frame window
+	/*Create the main MDI frame window */
 
 	FrameWnd = CreateWindow(gszSigmaFrameClassName, 
 								gszAppName, 
 								WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
-								CW_USEDEFAULT,	// allows system choose an x position
-								CW_USEDEFAULT,	// allows system choose a y position
-								CW_USEDEFAULT,	// width, CW_USEDEFAULT allows system to choose height and width
-								CW_USEDEFAULT,	// height, CW_USEDEFAULT ignores heights as this is set by setting
-												// CW_USEDEFAULT in width above.
-								NULL,			// handle to parent window
-								ghMainFrameMenu, // handle to menu
-								hInstance,	// handle to the instance of module
-								NULL);		// Long pointer to a value to be passed to the window through the 
-											// CREATESTRUCT structure passed in the lParam parameter the WM_CREATE message
+								CW_USEDEFAULT,	/* allows system choose an x position */
+								CW_USEDEFAULT,	/* allows system choose a y position */
+								CW_USEDEFAULT,	/* width, CW_USEDEFAULT allows system to choose height and width */
+								CW_USEDEFAULT,	/* height, CW_USEDEFAULT ignores heights as this is set by setting */
+												/* CW_USEDEFAULT in width above. */
+								NULL,			/* handle to parent window */
+								ghMainFrameMenu, /* handle to menu */
+								hInstance,	/* handle to the instance of module */
+								NULL);		/* Long pointer to a value to be passed to the window through the  */
+											/* CREATESTRUCT structure passed in the lParam parameter the WM_CREATE message */
 
-	nCmdShow = SW_SHOW; // To show the window
+	nCmdShow = SW_SHOW; /* To show the window */
 	
 	ShowWindow(FrameWnd,  nCmdShow);
 	UpdateWindow(FrameWnd);
@@ -924,7 +924,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	trayMenu = CreatePopupMenu();
 	AppendMenu(trayMenu, MF_STRING, RTFCOPY, "Copy");
 
-	// Create font for input line
+	/* Create font for input line */
 
 	LF.lfHeight = 12;
 	LF.lfWidth = 8;
@@ -948,15 +948,15 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 		return (FALSE);
 	}
 
-	//
-	//	Register message for posting by BPQDLL
-	//
+	/* */
+	/*	Register message for posting by BPQDLL */
+	/* */
 
 	BPQMsg = RegisterWindowMessage(BPQWinMsg);
 
-	//
-	//	Enable Async notification
-	//
+	/* */
+	/*	Enable Async notification */
+	/* */
 	
 	BPQSetHandle(Stream, FrameWnd);
 
@@ -966,7 +966,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	SetWindowText(FrameWnd, Title);
 		
-	// Get config from Registry 
+	/* Get config from Registry  */
 
 	sprintf(Key, "SOFTWARE\\G8BPQ\\BPQ32\\BPQTermMDI");
 
@@ -1047,7 +1047,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	}
 
-//	OutputData.CharWidth = FontWidth;
+/*	OutputData.CharWidth = FontWidth; */
 
 	if (Rect.right < 100 || Rect.bottom < 100)
 	{
@@ -1123,7 +1123,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	if (MinimizetoTray)
 	{
-		//	Set up Tray ICON
+		/*	Set up Tray ICON */
 	
 		sprintf(Title, "BPQTermMDI");
 		AddTrayMenuItem(FrameWnd, Title);
@@ -1139,7 +1139,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	UpdateWindow(FrameWnd);
 
-	// Allocate another incoming stream
+	/* Allocate another incoming stream */
 
 	Stream2 = FindFreeStream();
 	
@@ -1182,7 +1182,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 				if (Cinfo->Height < 30)
 				{
-					//Was probably minimized. Set to a sensible size and minimize it
+					/*Was probably minimized. Set to a sensible size and minimize it */
 					
 					MoveWindow(Cinfo->hConsole,  i * 50 , i * 50, (Rect.right * 2)/3, (Rect.bottom * 2 /3), TRUE);
 					ShowWindow(Cinfo->hConsole, SW_SHOWMINIMIZED);
@@ -1534,11 +1534,11 @@ BOOL InitInstancex(HINSTANCE hInstance, int nCmdShow)
 	return (TRUE);
 }
 */
-//
-//  FUNCTION: WndProc(HWND, unsigned, WORD, LONG)
-//
-//  PURPOSE:  Processes messages for the main window.
-//
+/* */
+/*  FUNCTION: WndProc(HWND, unsigned, WORD, LONG) */
+/* */
+/*  PURPOSE:  Processes messages for the main window. */
+/* */
 
 
 LRESULT CALLBACK MonWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -1567,10 +1567,10 @@ LRESULT CALLBACK MonWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 		{
 			if(pF->msg == WM_VSCROLL)
 			{
-//				int Command = LOWORD(pF->wParam);
-//				int Pos = HIWORD(pF->wParam);
+/*				int Command = LOWORD(pF->wParam); */
+/*				int Pos = HIWORD(pF->wParam); */
 				
-//				Cinfo->Thumb = SendMessage(Cinfo->hwndOutput, EM_GETTHUMB, 0, 0);
+/*				Cinfo->Thumb = SendMessage(Cinfo->hwndOutput, EM_GETTHUMB, 0, 0); */
 
 				DoRefresh(Cinfo);
 				break;		
@@ -1580,14 +1580,14 @@ LRESULT CALLBACK MonWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 			{
 				if (pF->wParam == VK_PRIOR || pF->wParam == VK_NEXT)
 				{
-//					Cinfo->Thumb = SendMessage(Cinfo->hwndOutput, EM_GETTHUMB, 0, 0);
+/*					Cinfo->Thumb = SendMessage(Cinfo->hwndOutput, EM_GETTHUMB, 0, 0); */
 					DoRefresh(Cinfo);
 				}
 			}
 			
 			if(pF->msg == WM_RBUTTONDOWN)
 			{
-				// Only allow popup if something is selected
+				/* Only allow popup if something is selected */
 
 				SendMessage(Cinfo->hwndOutput, EM_EXGETSEL , 0, (WPARAM)&Range);
 				if (Range.cpMin == Range.cpMax)
@@ -1612,7 +1612,7 @@ LRESULT CALLBACK MonWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
 			SendMessage(ClientWnd, WM_MDISETMENU, (WPARAM) hBaseMenu, (LPARAM)hWndMenu);
 
-			// Check Window is visible
+			/* Check Window is visible */
 
 			GetWindowRect(FrameWnd, &FRect);
 
@@ -1630,7 +1630,7 @@ LRESULT CALLBACK MonWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 		}
 		DrawMenuBar(FrameWnd);
 	 
-		return TRUE; //DefMDIChildProc(hWnd, message, wParam, lParam);
+		return TRUE; /*DefMDIChildProc(hWnd, message, wParam, lParam); */
 
 	
 
@@ -1651,7 +1651,7 @@ LRESULT CALLBACK MonWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
 		MoveWindows(Cinfo);		
 
-		// Drop through to Move
+		/* Drop through to Move */
 
 
 	case WM_MOVE:
@@ -1663,7 +1663,7 @@ LRESULT CALLBACK MonWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 		Cinfo->Top = Rect.top;
 		Cinfo->Left = Rect.left;
 
-		// Male relative to Frame
+		/* Male relative to Frame */
 
 		GetWindowRect(FrameWnd, &Rect);
 
@@ -1674,8 +1674,8 @@ LRESULT CALLBACK MonWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
 	case WM_COMMAND:
 
-		wmId    = LOWORD(wParam); // Remember, these are...
-		wmEvent = HIWORD(wParam); // ...different for Win32!
+		wmId    = LOWORD(wParam); /* Remember, these are... */
+		wmEvent = HIWORD(wParam); /* ...different for Win32! */
 
 		
 		if (wmId > BPQBASE && wmId < BPQBASE + 64)
@@ -1706,7 +1706,7 @@ LRESULT CALLBACK MonWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 			char * ptr;
 			CHARRANGE Range;
 
-			// Copy Rich Text Selection to Clipboard
+			/* Copy Rich Text Selection to Clipboard */
 	
 			SendMessage(Cinfo->hwndOutput, EM_EXGETSEL , 0, (WPARAM)&Range);
 	
@@ -1817,7 +1817,7 @@ LRESULT CALLBACK MonWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 		return DefMDIChildProc(hWnd, message, wParam, lParam);
 
 	}
-	return DefMDIChildProc(hWnd, message, wParam, lParam); //Frame window calls DefFrameProc rather than DefWindowProc
+	return DefMDIChildProc(hWnd, message, wParam, lParam); /*Frame window calls DefFrameProc rather than DefWindowProc */
 }
 
 struct ConsoleInfo * FontCinfo;
@@ -1832,7 +1832,7 @@ LRESULT CALLBACK ChildWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 	int wmId, wmEvent;
 	int i;
 	RECT Rect;
-//	MINMAXINFO * mmi;
+/*	MINMAXINFO * mmi; */
 
 	for (Cinfo = ConsHeader; Cinfo; Cinfo = Cinfo->next)
 	{
@@ -1880,10 +1880,10 @@ LRESULT CALLBACK ChildWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 		{
 			if(pF->msg == WM_VSCROLL)
 			{
-//				int Command = LOWORD(pF->wParam);
-//				int Pos = HIWORD(pF->wParam);
+/*				int Command = LOWORD(pF->wParam); */
+/*				int Pos = HIWORD(pF->wParam); */
 				
-//				Cinfo->Thumb = SendMessage(Cinfo->hwndOutput, EM_GETTHUMB, 0, 0);
+/*				Cinfo->Thumb = SendMessage(Cinfo->hwndOutput, EM_GETTHUMB, 0, 0); */
 
 				DoRefresh(Cinfo);
 				break;		
@@ -1893,14 +1893,14 @@ LRESULT CALLBACK ChildWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 			{
 				if (pF->wParam == VK_PRIOR || pF->wParam == VK_NEXT)
 				{
-//					Cinfo->Thumb = SendMessage(Cinfo->hwndOutput, EM_GETTHUMB, 0, 0);
+/*					Cinfo->Thumb = SendMessage(Cinfo->hwndOutput, EM_GETTHUMB, 0, 0); */
 					DoRefresh(Cinfo);
 				}
 			}
 			
 			if(pF->msg == WM_RBUTTONDOWN)
 			{
-				// Only allow popup if something is selected
+				/* Only allow popup if something is selected */
 
 				SendMessage(Cinfo->hwndOutput, EM_EXGETSEL , 0, (WPARAM)&Range);
 				if (Range.cpMin == Range.cpMax)
@@ -1917,11 +1917,11 @@ LRESULT CALLBACK ChildWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 
     case WM_MDIACTIVATE:
 	
-		// Set the system info menu when getting activated
+		/* Set the system info menu when getting activated */
 			
 			if (lParam == (LPARAM) hWnd)
 			{
-				 // Activate
+				 /* Activate */
 
 				 Cinfo->Active = TRUE;
 
@@ -1947,7 +1947,7 @@ LRESULT CALLBACK ChildWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 			 }
 			 else
 			 {
-			 	 // Deactivate
+			 	 /* Deactivate */
 				 
 				 Cinfo->Active = FALSE;
 				 RemoveMenu(hBaseMenu, 4, MF_BYPOSITION);
@@ -1960,7 +1960,7 @@ LRESULT CALLBACK ChildWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 			 DrawMenuBar(FrameWnd);
 			 
 	
-		return TRUE; //DefMDIChildProc(hWnd, message, wParam, lParam);
+		return TRUE; /*DefMDIChildProc(hWnd, message, wParam, lParam); */
 		 	
 	case WM_SIZING:
 
@@ -1980,7 +1980,7 @@ LRESULT CALLBACK ChildWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 
 		MoveWindows(Cinfo);		
 
-		// Drop through to Move
+		/* Drop through to Move */
 
 
 	case WM_MOVE:
@@ -1992,7 +1992,7 @@ LRESULT CALLBACK ChildWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 		Cinfo->Top = Rect.top;
 		Cinfo->Left = Rect.left;
 
-		// Male relative to Frame
+		/* Male relative to Frame */
 
 		GetWindowRect(FrameWnd, &Rect);
 
@@ -2003,8 +2003,8 @@ LRESULT CALLBACK ChildWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 
 	case WM_COMMAND:
 
-		wmId    = LOWORD(wParam); // Remember, these are...
-		wmEvent = HIWORD(wParam); // ...different for Win32!
+		wmId    = LOWORD(wParam); /* Remember, these are... */
+		wmEvent = HIWORD(wParam); /* ...different for Win32! */
 
 		switch (wmId)
 		{
@@ -2015,7 +2015,7 @@ LRESULT CALLBACK ChildWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 			char * ptr;
 			CHARRANGE Range;
 
-			// Copy Rich Text Selection to Clipboard
+			/* Copy Rich Text Selection to Clipboard */
 	
 			SendMessage(Cinfo->hwndOutput, EM_EXGETSEL , 0, (WPARAM)&Range);
 	
@@ -2160,11 +2160,11 @@ LRESULT CALLBACK ChildWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 
 
 	case WM_CLOSE:
-		break; // Go on to call DefMDIChildProc
+		break; /* Go on to call DefMDIChildProc */
 
 	case WM_DESTROY:
 
-		// Close session and release stream
+		/* Close session and release stream */
 
 #define GWL_WNDPROC         (-4)
 
@@ -2175,7 +2175,7 @@ LRESULT CALLBACK ChildWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 		if (Cinfo->Incoming == FALSE)
 			DeallocateStream(Cinfo->BPQStream);
 
-		// Free Scrollback
+		/* Free Scrollback */
 
 		for (i = 0; i < MAXSTACK ; i++)
 		{
@@ -2191,7 +2191,7 @@ LRESULT CALLBACK ChildWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 		if (Cinfo->readbuff)
 			free(Cinfo->readbuff);
 
-		// Remove from List
+		/* Remove from List */
 
 
 		for (Cinfo = ConsHeader; Cinfo; last = Cinfo, Cinfo = Cinfo->next)
@@ -2206,7 +2206,7 @@ LRESULT CALLBACK ChildWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 					}
 					else
 					{
-						// First in list
+						/* First in list */
 				
 						ConsHeader = Cinfo->next;
 						free(Cinfo);
@@ -2228,7 +2228,7 @@ LRESULT CALLBACK FrameWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 	int wmId, wmEvent;
 	UCHAR Buffer[1000];
 	UCHAR * buf = Buffer; 
-	CLIENTCREATESTRUCT MDIClientCreateStruct; // Structure to be used for MDI client area
+	CLIENTCREATESTRUCT MDIClientCreateStruct; /* Structure to be used for MDI client area */
 	HWND m_hwndSystemInformation = 0;
 	struct ConsoleInfo * Cinfo;
 	int i, disp;
@@ -2252,16 +2252,16 @@ LRESULT CALLBACK FrameWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 	switch (message) { 
 
 		case WM_CREATE:
-		// On creation of main frame, create the MDI client area
+		/* On creation of main frame, create the MDI client area */
 		MDIClientCreateStruct.hWindowMenu	= NULL;
 		MDIClientCreateStruct.idFirstChild	= IDM_FIRSTCHILD;
 		
-		ghMDIClientArea = CreateWindow(TEXT("MDICLIENT"), // predefined value for MDI client area
-									NULL, // no caption required
+		ghMDIClientArea = CreateWindow(TEXT("MDICLIENT"), /* predefined value for MDI client area */
+									NULL, /* no caption required */
 									WS_CHILD | WS_CLIPCHILDREN | WS_VISIBLE,
-									0, // No need to give any x/y or height/width since this client
-									   // will just be used to get client windows created, effectively
-									   // in the main window we will be seeing the mainframe window client area itself.
+									0, /* No need to give any x/y or height/width since this client */
+									   /* will just be used to get client windows created, effectively */
+									   /* in the main window we will be seeing the mainframe window client area itself. */
 									0, 
 									0,
 									0,
@@ -2297,7 +2297,7 @@ LRESULT CALLBACK FrameWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 			return 0;
 
  
-        // Handle MDI Window commands
+        /* Handle MDI Window commands */
             
 		default:
         {
@@ -2319,8 +2319,8 @@ LRESULT CALLBACK FrameWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 
 	case WM_SYSCOMMAND:
 
-		wmId    = LOWORD(wParam); // Remember, these are...
-		wmEvent = HIWORD(wParam); // ...different for Win32!
+		wmId    = LOWORD(wParam); /* Remember, these are... */
+		wmEvent = HIWORD(wParam); /* ...different for Win32! */
 
 		switch (wmId)
 		{ 
@@ -2337,14 +2337,14 @@ LRESULT CALLBACK FrameWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 
 		case WM_DESTROY:
 		
-			GetWindowRect(hWnd,	&Rect);	// For save soutine
+			GetWindowRect(hWnd,	&Rect);	/* For save soutine */
 
   			PostQuitMessage(0);
 
 			if (MinimizetoTray) 
 				DeleteTrayMenuItem(hWnd);
 
-			// Save config
+			/* Save config */
 	
 			RegCreateKeyEx(REGTREE, Key, 0, 0, 0, KEY_ALL_ACCESS,  NULL, &hKey, &disp);
 
@@ -2362,7 +2362,7 @@ LRESULT CALLBACK FrameWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 			sprintf(Size,"%d,%d,%d,%d",Rect.left,Rect.right,Rect.top,Rect.bottom);
 			RegSetValueEx(hKey,"Size",0,REG_SZ,(BYTE *)&Size, strlen(Size));
 
-			// Close any sessions
+			/* Close any sessions */
 
 			i = 0;
 
@@ -2804,9 +2804,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 */
 
-//static char * KbdStack[20];
+/*static char * KbdStack[20]; */
 
-//int StackIndex=0;
+/*int StackIndex=0; */
 
 LRESULT APIENTRY InputProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 { 
@@ -2827,11 +2827,11 @@ LRESULT APIENTRY InputProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	if (uMsg == WM_KEYUP)
 	{
 		unsigned int i;
-//		Debugprintf("5%x", LOBYTE(HIWORD(lParam)));
+/*		Debugprintf("5%x", LOBYTE(HIWORD(lParam))); */
 
 		if (LOBYTE(HIWORD(lParam)) == 0x48 && wParam == 0x26)
 		{
-			// Scroll up
+			/* Scroll up */
 
 			if (Cinfo->KbdStack[Cinfo->StackIndex] == NULL)
 				return TRUE;
@@ -2853,7 +2853,7 @@ LRESULT APIENTRY InputProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		if (LOBYTE(HIWORD(lParam)) == 0x50 && wParam == 0x28)
 		{
-			// Scroll up
+			/* Scroll up */
 
 			Cinfo->StackIndex--;
 			if (Cinfo->StackIndex < 0)
@@ -2890,18 +2890,18 @@ LRESULT APIENTRY InputProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 			if (WrapInput)
 				if ((wParam == 0x20) && (TextLen > Cinfo->WrapLen))
-					wParam = 13;		// Replace space with Enter
+					wParam = 13;		/* Replace space with Enter */
 
 		}
 
 		if (wParam == 13)
 		{
-			//	if not connected, and autoconnect is
-			//	enabled, connect now
+			/*	if not connected, and autoconnect is */
+			/*	enabled, connect now */
 			
 			if (!Cinfo->CONNECTED)
 			{
-				if (Cinfo->Incoming)		// Incoming call window
+				if (Cinfo->Incoming)		/* Incoming call window */
 					MessageBox(NULL, "Session is for Incoming Calls", "BPQTerm", MB_OK);
 				else
 					SessionControl(Cinfo->BPQStream, 1, 0);
@@ -2912,7 +2912,7 @@ LRESULT APIENTRY InputProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 			Cinfo->StackIndex = 0;
 
-			// Stack it
+			/* Stack it */
 
 			if (Cinfo->KbdStack[19])
 				free(Cinfo->KbdStack[19]);
@@ -2926,7 +2926,7 @@ LRESULT APIENTRY InputProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 			Cinfo->kbbuf[Cinfo->kbptr]=13;
 
-			// Echo
+			/* Echo */
 
 			Cinfo->CurrentColour = 64;
 			WritetoOutputWindow(Cinfo, Cinfo->kbbuf, Cinfo->kbptr+1, TRUE);
@@ -2936,7 +2936,7 @@ LRESULT APIENTRY InputProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
 				POINT Point;
 				Point.x = 0;
-				Point.y = 25000;					// Should be plenty for any font
+				Point.y = 25000;					/* Should be plenty for any font */
 
 				SendMessage(Cinfo->hwndOutput, EM_SETSCROLLPOS, 0, (LPARAM) &Point);
 				Cinfo->Scrolled = FALSE;
@@ -2944,20 +2944,20 @@ LRESULT APIENTRY InputProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 
 			DoRefresh(Cinfo);
-//			ProcessLine(Cinfo, &Cinfo->kbbuf[0], Cinfo->kbptr+1);
+/*			ProcessLine(Cinfo, &Cinfo->kbbuf[0], Cinfo->kbptr+1); */
 			SendMsg(Cinfo->BPQStream, &Cinfo->kbbuf[0], Cinfo->kbptr+1);
 
 			SendMessage(Cinfo->hwndInput,WM_SETTEXT,0,(LPARAM)(LPCSTR) "");
 
 			return 0; 
 		}
-		if (wParam == 0x1a)  // Ctrl/Z
+		if (wParam == 0x1a)  /* Ctrl/Z */
 		{
 	
 			Cinfo->kbbuf[0]=0x1a;
 			Cinfo->kbbuf[1]=13;
 
-//			ProcessLine(Cinfo, &Cinfo->kbbuf[0], 2);
+/*			ProcessLine(Cinfo, &Cinfo->kbbuf[0], 2); */
 			SendMsg(Cinfo->BPQStream, &Cinfo->kbbuf[0], 2);
 
 			SendMessage(Cinfo->hwndInput,WM_SETTEXT,0,(LPARAM)(LPCSTR) "");
@@ -3152,8 +3152,8 @@ DoStateChange(int Stream)
 			break;
 	}
 
-	//	Get current Session State. Any state changed is ACK'ed
-	//	automatically. See BPQHOST functions 4 and 5.
+	/*	Get current Session State. Any state changed is ACK'ed */
+	/*	automatically. See BPQHOST functions 4 and 5. */
 	
 	SessionState(Stream, &state, &change);
 		
@@ -3161,11 +3161,11 @@ DoStateChange(int Stream)
 	{
 		if (state == 1)
 		{
-			// Connected
+			/* Connected */
 
 			if (Cinfo == NULL)
 			{
-				// Incoming connect. Create a window for it
+				/* Incoming connect. Create a window for it */
 		
 				Cinfo = CreateChildWindow(Stream, FALSE);
 				Cinfo->Incoming = TRUE;
@@ -3252,9 +3252,9 @@ DoReceivedData(int Stream)
 			if (len == 1 && Msg[0] == 0)
 				continue;
 
-			if (GetApplNum(Cinfo->BPQStream) == 32)			// Host Appl
+			if (GetApplNum(Cinfo->BPQStream) == 32)			/* Host Appl */
 			{
-				// Check for ^D to disconnect
+				/* Check for ^D to disconnect */
 
 				if (_memicmp(Msg, "^d\r", 3) == 0)
 				{
@@ -3268,7 +3268,7 @@ DoReceivedData(int Stream)
 		
 			if (Cinfo->Active == FALSE)
 				FlashWindow(Cinfo->hConsole, TRUE);
-//				Beep(440,250);
+/*				Beep(440,250); */
 
 		} while (count > 0);
 		
@@ -3286,7 +3286,7 @@ VOID wcstoRTF(char * out, WCHAR * in)
 
 	while (val)
 	{
-		// May be Code Page or Unicode
+		/* May be Code Page or Unicode */
 		{
 			if (val > 255 || val < -255 )
 				ptr2 += sprintf(ptr2, "\\u%d ", val);
@@ -3311,12 +3311,12 @@ DWORD CALLBACK EditStreamCallback(struct ConsoleInfo * Cinfo, LPBYTE lpBuff, LON
 	char LineB[12048];
 	WCHAR LineW[12048];
 
-//	if (cb != 4092)
-//		return 0;
+/*	if (cb != 4092) */
+/*		return 0; */
 
 	if (Cinfo->SendHeader)
 	{
-		// Return header
+		/* Return header */
 
 		memcpy(lpBuff, RTFHeader, RTFHddrLen);
 		*pcb = RTFHddrLen;
@@ -3347,7 +3347,7 @@ DWORD CALLBACK EditStreamCallback(struct ConsoleInfo * Cinfo, LPBYTE lpBuff, LON
     *pcb = BufferLen;
 */
 
-	// Return 10 line at a time
+	/* Return 10 line at a time */
 
 	for (i = 0; i < 10; i++);
 	{
@@ -3358,7 +3358,7 @@ DWORD CALLBACK EditStreamCallback(struct ConsoleInfo * Cinfo, LPBYTE lpBuff, LON
 
 		sprintf(lpBuff, "\\cf%d ", Cinfo->Colourvalue[Line]);
 	
-		// Handle UTF-8
+		/* Handle UTF-8 */
 
 		NewLen = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, Cinfo->OutputScreen[Line], -1, LineW, 2000); 
 
@@ -3366,7 +3366,7 @@ DWORD CALLBACK EditStreamCallback(struct ConsoleInfo * Cinfo, LPBYTE lpBuff, LON
 
 		if (err == ERROR_NO_UNICODE_TRANSLATION)
 		{
-			// Input isn't UTF 8. Juat use default 8 bit set#
+			/* Input isn't UTF 8. Juat use default 8 bit set# */
 
 			strcat(lpBuff, Cinfo->OutputScreen[Line]);
 		}
@@ -3409,7 +3409,7 @@ VOID DoRefresh(struct ConsoleInfo * Cinfo)
 
 	Pos = Cinfo->Thumb + Cinfo->ClientHeight;
 
-	if ((Cinfo->Thumb + Cinfo->ClientHeight) > Cinfo->RTFHeight - 10)		// Don't bother writing to screen if scrolled back
+	if ((Cinfo->Thumb + Cinfo->ClientHeight) > Cinfo->RTFHeight - 10)		/* Don't bother writing to screen if scrolled back */
 	{
 		es.pfnCallback = (EDITSTREAMCALLBACK)EditStreamCallback;
 		es.dwCookie = (DWORD_PTR)Cinfo;
@@ -3423,22 +3423,22 @@ VOID DoRefresh(struct ConsoleInfo * Cinfo)
 
 	GetScrollInfo(hwndOutput, SB_VERT, &ScrollInfo);
 
-//	Debugprintf("Pos %d Max %d Min %d nMax %d ClientH %d", Pos, Min, Max, ScrollInfo.nMax, Cinfo->ClientHeight);
+/*	Debugprintf("Pos %d Max %d Min %d nMax %d ClientH %d", Pos, Min, Max, ScrollInfo.nMax, Cinfo->ClientHeight); */
 
 	if (Cinfo->FirstTime == FALSE)
 	{
-		// RTF Controls don't immediately scroll to end - don't know why.
+		/* RTF Controls don't immediately scroll to end - don't know why. */
 		
 		Cinfo->FirstTime = TRUE;
 		Point.x = 0;
-		Point.y = 25000;					// Should be plenty for any font
+		Point.y = 25000;					/* Should be plenty for any font */
 
 		while (LoopTrap++ < 20)
 		{
 			SendMessage(hwndOutput, EM_SETSCROLLPOS, 0, (LPARAM) &Point);
 		}
 
-		GetScrollRange(hwndOutput, SB_VERT, &Min, &Max);	// Get Actual Height
+		GetScrollRange(hwndOutput, SB_VERT, &Min, &Max);	/* Get Actual Height */
 		Cinfo->RTFHeight = Max;
 		Point.x = 0;
 		Point.y = Cinfo->RTFHeight - ScrollInfo.nPage;
@@ -3449,7 +3449,7 @@ VOID DoRefresh(struct ConsoleInfo * Cinfo)
 	Point.x = 0;
 	Point.y = Cinfo->RTFHeight - ScrollInfo.nPage;
 
-	if (Cinfo->Thumb > (Point.y - 10))		// Don't Scroll if user has scrolled back 
+	if (Cinfo->Thumb > (Point.y - 10))		/* Don't Scroll if user has scrolled back  */
 	{
 		SendMessage(hwndOutput, EM_SETSCROLLPOS, 0, (LPARAM) &Point);
 
@@ -3563,7 +3563,7 @@ VOID AddLinetoWindow(struct ConsoleInfo * Cinfo, char * Line)
 
 	if (Line[0] ==  0x1b && Len > 1)
 	{
-		// Save Colour Char
+		/* Save Colour Char */
 		
 		Cinfo->CurrentColour = Line[1] - 10;
 		ptr1 +=2;
@@ -3572,25 +3572,25 @@ VOID AddLinetoWindow(struct ConsoleInfo * Cinfo, char * Line)
 
 	strcpy(Cinfo->OutputScreen[Cinfo->CurrentLine], ptr1);
 
-	// Look for chars we need to escape (\  { })
+	/* Look for chars we need to escape (\  { }) */
 
 	ptr1 = Cinfo->OutputScreen[Cinfo->CurrentLine];
 	Index = 0;
-	ptr2 = strchr(ptr1, '\\');				// Look for Backslash first, as we may add some later
+	ptr2 = strchr(ptr1, '\\');				/* Look for Backslash first, as we may add some later */
 
 	if (ptr2)
 	{
 		while (ptr2)
 		{
 			l = ++ptr2 - ptr1;
-			memcpy(&LineCopy[Index], ptr1, l);	// Copy Including found char
+			memcpy(&LineCopy[Index], ptr1, l);	/* Copy Including found char */
 			Index += l;
 			LineCopy[Index++] = '\\';
 			Len++;
 			ptr1 = ptr2;
 			ptr2 = strchr(ptr1, '\\');
 		}
-		strcpy(&LineCopy[Index], ptr1);			// Copy in rest
+		strcpy(&LineCopy[Index], ptr1);			/* Copy in rest */
 		strcpy(Cinfo->OutputScreen[Cinfo->CurrentLine], LineCopy);
 	}
 
@@ -3611,20 +3611,20 @@ VOID AddLinetoWindow(struct ConsoleInfo * Cinfo, char * Line)
 			ptr1 = ++ptr2;
 			ptr2 = strchr(ptr1, '{');
 		}
-		strcpy(&LineCopy[Index], ptr1);			// Copy in rest
+		strcpy(&LineCopy[Index], ptr1);			/* Copy in rest */
 		strcpy(Cinfo->OutputScreen[Cinfo->CurrentLine], LineCopy);
 	}
 
 	ptr1 = Cinfo->OutputScreen[Cinfo->CurrentLine];
 	Index = 0;
-	ptr2 = strchr(ptr1, '}');				// Look for Backslash first, as we may add some later
+	ptr2 = strchr(ptr1, '}');				/* Look for Backslash first, as we may add some later */
 
 	if (ptr2)
 	{
 		while (ptr2)
 		{
 			l = ptr2 - ptr1;
-			memcpy(&LineCopy[Index], ptr1, l);	// Copy 
+			memcpy(&LineCopy[Index], ptr1, l);	/* Copy  */
 			Index += l;
 			LineCopy[Index++] = '\\';
 			LineCopy[Index++] = '}';
@@ -3632,7 +3632,7 @@ VOID AddLinetoWindow(struct ConsoleInfo * Cinfo, char * Line)
 			ptr1 = ++ptr2;
 			ptr2 = strchr(ptr1, '}');
 		}
-		strcpy(&LineCopy[Index], ptr1);			// Copy in rest
+		strcpy(&LineCopy[Index], ptr1);			/* Copy in rest */
 		strcpy(Cinfo->OutputScreen[Cinfo->CurrentLine], LineCopy);
 	}
 
@@ -3673,14 +3673,14 @@ int WritetoConsoleWindowSupport(struct ConsoleInfo * Cinfo, char * Msg, int len)
 
 	if (Cinfo->PartLinePtr != 0)
 	{
-		Cinfo->CurrentLine--;				// Overwrite part line in buffer
+		Cinfo->CurrentLine--;				/* Overwrite part line in buffer */
 		if (Cinfo->CurrentLine < 0)
 			Cinfo->CurrentLine = MAXLINES - 1;
 		
 
 		if (Msg[0] == 0x1b && len > 1) 
 		{
-			Msg += 2;		// Remove Colour Escape
+			Msg += 2;		/* Remove Colour Escape */
 			len -= 2;
 		}
 	}
@@ -3715,25 +3715,25 @@ lineloop:
 
 	if (len > 0)
 	{
-		//	copy text to control a line at a time	
+		/*	copy text to control a line at a time	 */
 					
 		ptr2=memchr(ptr1,13,len);
 
 		if (ptr2 == 0)
 		{
-			// no newline. Move data to start of buffer and Save pointer
+			/* no newline. Move data to start of buffer and Save pointer */
 
 			Cinfo->PartLinePtr=len;
 			memmove(Cinfo->readbuff,ptr1,len);
 			AddLinetoWindow(Cinfo, ptr1);
-//			InvalidateRect(Cinfo->hwndOutput, NULL, FALSE);
+/*			InvalidateRect(Cinfo->hwndOutput, NULL, FALSE); */
 
 			return (0);
 		}
 
 		*(ptr2++)=0;
 						
-		// If len is greater that screen with, fold
+		/* If len is greater that screen with, fold */
 
 		if (Cinfo == &MonWindow)
 		{
@@ -3765,7 +3765,7 @@ lineloop:
 
 			if (foldlen == 0)
 			{
-				// No space before, so split at width
+				/* No space before, so split at width */
 
 				foldlen = Cinfo->maxlinelen;
 				ptr3 = ptr1 + Cinfo->maxlinelen;
@@ -3773,7 +3773,7 @@ lineloop:
 			}
 			else
 			{
-				ptr3++ ; // Omit space
+				ptr3++ ; /* Omit space */
 				linelen--;
 			}
 			save = ptr1[foldlen];
@@ -3801,7 +3801,7 @@ lineloop:
 
 		if ((len > 0) && Cinfo->StripLF)
 		{
-			if (*ptr1 == 0x0a)					// Line Feed
+			if (*ptr1 == 0x0a)					/* Line Feed */
 			{
 				ptr1++;
 				len--;
@@ -4049,7 +4049,7 @@ DoMonData(int Stream)
 	unsigned char buffer[1024] = "\x1b\xb", monbuff[512];
 	struct ConsoleInfo * Cinfo;
 
-	// Monitor data uses the first stream
+	/* Monitor data uses the first stream */
 
 	Cinfo = &MonWindow;
 
@@ -4061,13 +4061,13 @@ DoMonData(int Stream)
 
 			if (MonitorColour)
 			{
-				if (monbuff[4] & 0x80)		// TX
+				if (monbuff[4] & 0x80)		/* TX */
 					buffer[1] = 91;
 				else
 					buffer[1] = 17;
 			}
 
-			// See if a NODES
+			/* See if a NODES */
 
 			if (!MonitorNODES && monbuff[21] == 3 && monbuff[22] == 0xcf && monbuff[23] == 0xff)
 				len = 0;
@@ -4083,13 +4083,13 @@ DoMonData(int Stream)
 
 			if (len > 0)
 			{
-				//	copy text to control a line at a time	
+				/*	copy text to control a line at a time	 */
 
 				ptr2=memchr(ptr1,13,len);
 				
 				if (ptr2 == 0)
 				{
-					// no newline. Move data to start of buffer and Save pointer
+					/* no newline. Move data to start of buffer and Save pointer */
 
 					memmove(buffer,ptr1,len);
 
@@ -4123,7 +4123,7 @@ DoMonData(int Stream)
 
 int DisableConnectMenu(HWND hWnd)
 {
-	HMENU hMenu;	// handle of menu 
+	HMENU hMenu;	/* handle of menu  */
 
 	hMenu=GetMenu(FrameWnd);
 	 
@@ -4133,7 +4133,7 @@ int DisableConnectMenu(HWND hWnd)
 }	
 int DisableDisconnectMenu(HWND hWnd)
 {
-	HMENU hMenu;	// handle of menu 
+	HMENU hMenu;	/* handle of menu  */
 
 	hMenu=GetMenu(FrameWnd);
 	 
@@ -4143,7 +4143,7 @@ int DisableDisconnectMenu(HWND hWnd)
 
 int	EnableConnectMenu(HWND hWnd)
 {
-	HMENU hMenu;	// handle of menu 
+	HMENU hMenu;	/* handle of menu  */
 
 	hMenu=GetMenu(FrameWnd);
 	 
@@ -4153,7 +4153,7 @@ int	EnableConnectMenu(HWND hWnd)
 
 int EnableDisconnectMenu(HWND hWnd)
 {
-	HMENU hMenu;	// handle of menu 
+	HMENU hMenu;	/* handle of menu  */
 
 	hMenu=GetMenu(FrameWnd);
 	 
@@ -4371,7 +4371,7 @@ static void MoveWindows(struct ConsoleInfo * Cinfo)
 
 	GetClientRect(Cinfo->hConsole, &rcClient); 
 
-	if (rcClient.bottom == 0)		// Minimised
+	if (rcClient.bottom == 0)		/* Minimised */
 		return;
 
 	Cinfo->ClientHeight = rcClient.bottom;
@@ -4402,7 +4402,7 @@ void CopyRichTextToClipboard(HWND hWnd)
 	HGLOBAL	hMem;
 	char * ptr;
 
-	// Copy Rich Text to Clipboard
+	/* Copy Rich Text to Clipboard */
 	
 	len = SendMessage(hWnd, WM_GETTEXTLENGTH, 0, 0);
 	
@@ -4506,22 +4506,22 @@ INT_PTR CALLBACK FontConfigWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			FontSize = GetDlgItemInt(hDlg, IDC_FONTSIZE, NULL, FALSE);
 			FontWidth = GetDlgItemInt(hDlg, IDC_FONTWIDTH, NULL, FALSE);
 
-//			SaveStringValue("FontName", FontName);
-//			SaveIntValue("CharSet", CharSet);
-//			SaveIntValue("CodePage", CodePage);
-//			SaveIntValue("FontSize", FontSize);
-//			SaveIntValue("FontWidth", FontWidth);
+/*			SaveStringValue("FontName", FontName); */
+/*			SaveIntValue("CharSet", CharSet); */
+/*			SaveIntValue("CodePage", CodePage); */
+/*			SaveIntValue("FontSize", FontSize); */
+/*			SaveIntValue("FontWidth", FontWidth); */
 
 			
-			// Save Config
+			/* Save Config */
 	
 			retCode = RegCreateKeyEx(REGTREE,
                               Key,
-                              0,	// Reserved
-							  0,	// Class
-							  0,	// Options
+                              0,	/* Reserved */
+							  0,	/* Class */
+							  0,	/* Options */
                               KEY_ALL_ACCESS,
-							  NULL,	// Security Attrs
+							  NULL,	/* Security Attrs */
                               &hKey,
 							  &disp);
 
@@ -4542,12 +4542,12 @@ INT_PTR CALLBACK FontConfigWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			SetupRTFHddr();
 
 			Point.x = 0;
-			Point.y = 25000;					// Should be plenty for any font
+			Point.y = 25000;					/* Should be plenty for any font */
 
 			SendMessage(FontCinfo->hwndOutput, EM_SETSCROLLPOS, 0, (LPARAM) &Point);
 			FontCinfo->Scrolled = FALSE;
 
-			GetScrollRange(FontCinfo->hwndOutput, SB_VERT, &Min, &Max);	// Get Actual Height
+			GetScrollRange(FontCinfo->hwndOutput, SB_VERT, &Min, &Max);	/* Get Actual Height */
 			FontCinfo->RTFHeight = Max;
 
 			DoRefresh(FontCinfo);
@@ -4589,7 +4589,7 @@ struct ConsoleInfo * CreateChildWindow(int Stream, BOOL DuringInit)
 		return (FALSE);
 	}
 
-	// Find end of session chain
+	/* Find end of session chain */
 
 	for (Cinfo = ConsHeader; Cinfo; last = Cinfo, i++, Cinfo = Cinfo->next);
 
@@ -4605,7 +4605,7 @@ struct ConsoleInfo * CreateChildWindow(int Stream, BOOL DuringInit)
 	Cinfo->BPQStream = Stream;
 	BPQSetHandle(Cinfo->BPQStream, FrameWnd);
 
-//	BPQMsg = RegisterWindowMessage(BPQWinMsg);
+/*	BPQMsg = RegisterWindowMessage(BPQWinMsg); */
 
 	sprintf(Title, "Stream %d", Cinfo->BPQStream);
 
@@ -4622,14 +4622,14 @@ struct ConsoleInfo * CreateChildWindow(int Stream, BOOL DuringInit)
 
 	if(!RegisterClass(&wc))
 	{
-		// return if RegisterClassEx fails
+		/* return if RegisterClassEx fails */
 		DWORD dw_LastError = GetLastError();
 		if(ERROR_CLASS_ALREADY_EXISTS != dw_LastError)
 		{
-			// return if the error is other than "error class already exists" 
+			/* return if the error is other than "error class already exists"  */
 			
 			Debugprintf("Reg Class Failed %d", dw_LastError);
-//			return NULL;
+/*			return NULL; */
 		}
 	}
 
@@ -4638,7 +4638,7 @@ struct ConsoleInfo * CreateChildWindow(int Stream, BOOL DuringInit)
 
 	Cinfo->hConsole = ChildWnd;
 
-	// return if its not possible to create the child window
+	/* return if its not possible to create the child window */
 
 	if(NULL == ChildWnd)
 	{
@@ -4651,14 +4651,14 @@ struct ConsoleInfo * CreateChildWindow(int Stream, BOOL DuringInit)
 	Cinfo->Finished = TRUE;
 	Cinfo->CurrentColour = 1;
 
-	Cinfo->WarnLen = Cinfo->WrapLen = Cinfo->maxlinelen = 100; // In case doesn't get set up
+	Cinfo->WarnLen = Cinfo->WrapLen = Cinfo->maxlinelen = 100; /* In case doesn't get set up */
 
 
 	Cinfo->hwndOutput = CreateWindowEx(WS_EX_CLIENTEDGE, RICHEDIT_CLASS, "",
 		WS_CHILD |  WS_VISIBLE | ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_NOHIDESEL | WS_VSCROLL | ES_READONLY,
 		2,2,500,300, ChildWnd, NULL, hInstance, NULL);
 
-	// Register for Mouse Events for Copy/Paste
+	/* Register for Mouse Events for Copy/Paste */
 	
 	SendMessage(Cinfo->hwndOutput, EM_SETEVENTMASK, (WPARAM)0, (LPARAM)ENM_MOUSEEVENTS | ENM_SCROLLEVENTS | ENM_KEYEVENTS);
 	SendMessage(Cinfo->hwndOutput, EM_EXLIMITTEXT, 0, MAXLINES * LINELEN);
@@ -4669,7 +4669,7 @@ struct ConsoleInfo * CreateChildWindow(int Stream, BOOL DuringInit)
 
 	SendMessage(Cinfo->hwndInput, WM_SETFONT, (WPARAM)hFont, 0);
 
-	// Set our own WndProcs for the controls. 
+	/* Set our own WndProcs for the controls.  */
 
 	Cinfo->wpOrigInputProc = (WNDPROC) SetWindowLong(Cinfo->hwndInput, GWL_WNDPROC, (LONG) InputProc); 
 
@@ -4690,7 +4690,7 @@ struct ConsoleInfo * CreateChildWindow(int Stream, BOOL DuringInit)
 		Rect.bottom = 400;
 	}
 
-	if (Rect.top < OffsetH)			// Make sure not off top of MDI frame
+	if (Rect.top < OffsetH)			/* Make sure not off top of MDI frame */
 	{
 		int Error = OffsetH - Rect.top;
 		Rect.top += Error;
@@ -4725,7 +4725,7 @@ BOOL CreateMonitorWindow(char * MonSize)
 
 	memset(Cinfo, 0, sizeof(struct ConsoleInfo));
 
-	Cinfo->WarnLen = Cinfo->WrapLen = Cinfo->maxlinelen = 100; // In case doesn't get set up
+	Cinfo->WarnLen = Cinfo->WrapLen = Cinfo->maxlinelen = 100; /* In case doesn't get set up */
 	Cinfo->StripLF = TRUE;
 
 	wndclassMainFrame.cbSize		= sizeof(WNDCLASSEX);
@@ -4743,16 +4743,16 @@ BOOL CreateMonitorWindow(char * MonSize)
 	
 	if(!RegisterClassEx(&wndclassMainFrame))
 	{
-		// return if RegisterClassEx fails
+		/* return if RegisterClassEx fails */
 		DWORD dw_LastError = GetLastError();
 		if(ERROR_CLASS_ALREADY_EXISTS != dw_LastError)
 		{
-			// return if the error is other than "error class already exists" 
+			/* return if the error is other than "error class already exists"  */
 			return 0;
 		}
 	}
 
-	// Create Window
+	/* Create Window */
 
 	if(NULL != ChildWnd)
 	{
@@ -4774,7 +4774,7 @@ BOOL CreateMonitorWindow(char * MonSize)
 		Rect.bottom = 400;
 	}
 
-	if (Rect.top < OffsetH)			// Make sure not off top of MDI frame
+	if (Rect.top < OffsetH)			/* Make sure not off top of MDI frame */
 	{
 		int Error = OffsetH - Rect.top;
 		Rect.top += Error;
@@ -4789,7 +4789,7 @@ BOOL CreateMonitorWindow(char * MonSize)
 
 	Cinfo->hConsole = ChildWnd;
 
-	// return if its not possible to create the child window
+	/* return if its not possible to create the child window */
 	if(NULL == ChildWnd)
 	{
 		return 0;
@@ -4805,15 +4805,15 @@ BOOL CreateMonitorWindow(char * MonSize)
 		WS_CHILD |  WS_VISIBLE | ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_NOHIDESEL | WS_VSCROLL | ES_READONLY,
 		2,2,500,300, ChildWnd, NULL, hInstance, NULL);
 
-	// Register for Mouse Events for Copy/Paste
+	/* Register for Mouse Events for Copy/Paste */
 	
 	SendMessage(Cinfo->hwndOutput, EM_SETEVENTMASK, (WPARAM)0, (LPARAM)ENM_MOUSEEVENTS | ENM_SCROLLEVENTS | ENM_KEYEVENTS);
 	SendMessage(Cinfo->hwndOutput, EM_EXLIMITTEXT, 0, MAXLINES * LINELEN);
 
 	Cinfo = &MonWindow;
 	
-//	MoveWindow(Cinfo->hConsole, Rect.left - (OffsetW /2), Rect.top - OffsetH,
-//		Rect.right-Rect.left, Rect.bottom-Rect.top, TRUE);
+/*	MoveWindow(Cinfo->hConsole, Rect.left - (OffsetW /2), Rect.top - OffsetH, */
+/*		Rect.right-Rect.left, Rect.bottom-Rect.top, TRUE); */
 
  	MoveWindows(Cinfo);
 

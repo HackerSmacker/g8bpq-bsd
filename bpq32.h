@@ -17,41 +17,41 @@ count on BPQ32.dll gets messed up, and the code will not unload cleanly.
 
 #ifndef DYNLOADBPQ
 
-// Definitions for Statically Linked DLL
+/* Definitions for Statically Linked DLL */
 
 struct PORTCONTROL * APIENTRY GetPortTableEntryFromPortNum(int portslot);
 struct PORTCONTROL * APIENTRY GetPortTableEntryFromSlot(int portslot);
 
 
-//	Returns number of free buffers
-//	(BPQHOST function 7 (part)).
+/*	Returns number of free buffers */
+/*	(BPQHOST function 7 (part)). */
 
 int APIENTRY GetFreeBuffs();
 
-//	Returns count of packets waiting on stream
-//	 (BPQHOST function 7 (part)).
+/*	Returns count of packets waiting on stream */
+/*	 (BPQHOST function 7 (part)). */
 
 int APIENTRY RXCount(int Stream);
 
 
-//	Returns number of packets on TX queue for stream
-//	 (BPQHOST function 7 (part)).
+/*	Returns number of packets on TX queue for stream */
+/*	 (BPQHOST function 7 (part)). */
 
 int APIENTRY TXCount(int Stream);
 
 
-//	Returns number of monitor frames available
-//	 (BPQHOST function 7 (part)).
+/*	Returns number of monitor frames available */
+/*	 (BPQHOST function 7 (part)). */
 
 int APIENTRY MONCount(int Stream);
 
 
-//	Returns call connecten on stream (BPQHOST function 8 (part)).
+/*	Returns call connecten on stream (BPQHOST function 8 (part)). */
 
 int APIENTRY GetCallsign(int stream, char * callsign);
 
 
-//	Returns connection info for stream (BPQHOST function 8).
+/*	Returns connection info for stream (BPQHOST function 8). */
 
 int APIENTRY GetConnectionInfo(int stream, char * callsign,
 										 int * port, int * sesstype, int * paclen,
@@ -60,7 +60,7 @@ int APIENTRY GetConnectionInfo(int stream, char * callsign,
 
 int APIENTRY GetStreamPID(int Stream);
 
-// Returns Path of BPQDirectroy
+/* Returns Path of BPQDirectroy */
 
 char * APIENTRY GetBPQDirectory();
 char * APIENTRY GetProgramDirectory();
@@ -74,23 +74,23 @@ char * APIENTRY GetSignOnMsg();
 char * APIENTRY GetVersionString();
 
 
-// Returns number of prcess attached to BPQ32
+/* Returns number of prcess attached to BPQ32 */
 
 int APIENTRY GetAttachedProcesses();
 
 
-//	Send Session Control command (BPQHOST function 6)
-//	Command = 0 Connect using APPL MASK IN param
-//	Command = 1 Connect
-//	Command = 2 Disconect
-//	Command = 3 Return to Node
+/*	Send Session Control command (BPQHOST function 6) */
+/*	Command = 0 Connect using APPL MASK IN param */
+/*	Command = 1 Connect */
+/*	Command = 2 Disconect */
+/*	Command = 3 Return to Node */
 
 int APIENTRY SessionControl(int stream, int command, int param);
 
 
 
-//	Sets Application Flags and Mask for stream. (BPQHOST function 1)
-//	Top bit of flags enables monitoring
+/*	Sets Application Flags and Mask for stream. (BPQHOST function 1) */
+/*	Top bit of flags enables monitoring */
 
 int APIENTRY SetAppl(int stream, int flags, int mask);
 
@@ -103,94 +103,94 @@ int APIENTRY GetApplFlags(int Stream);
 BOOL APIENTRY GetAllocationState(int Stream);
 
 
-//	Get current Session State. Any state changed is ACK'ed
-//	automatically. See BPQHOST functions 4 and 5.
+/*	Get current Session State. Any state changed is ACK'ed */
+/*	automatically. See BPQHOST functions 4 and 5. */
 
 int APIENTRY SessionState(int stream, int * state, int * change);
 
-//	Get current Session State. Dont Ack state change
-//	See BPQHOST function 4.
+/*	Get current Session State. Dont Ack state change */
+/*	See BPQHOST function 4. */
 
 int APIENTRY SessionStateNoAck(int stream, int * state);
 
 
 
-//	Send message to stream (BPQHOST Function 2)
+/*	Send message to stream (BPQHOST Function 2) */
 
 int APIENTRY SendMsg(int stream, char * msg, int len);
 
 
 
-//	Send Raw (KISS mode) frame to port (BPQHOST function 10)
+/*	Send Raw (KISS mode) frame to port (BPQHOST function 10) */
 
 int APIENTRY SendRaw(int port, char * msg, int len);
 
 
 
-//	Get message from stream. Returns length, and count of frames
-//	still waiting to be collected. (BPQHOST function 3)
+/*	Get message from stream. Returns length, and count of frames */
+/*	still waiting to be collected. (BPQHOST function 3) */
 
 int APIENTRY GetMsg(int stream, char * msg, int * len, int * count );
 
 
-// Perl Version - I couldn't get bpq32.pm to call GetMsg. Returns Lenth
+/* Perl Version - I couldn't get bpq32.pm to call GetMsg. Returns Lenth */
 
 int APIENTRY GetMsgPerl(int stream, char * msg);
 
 
-//	Get Raw (Trace) data (BPQHOST function 11)
+/*	Get Raw (Trace) data (BPQHOST function 11) */
 
 int APIENTRY GetRaw(int stream, char * msg, int * len, int * count );
 
 
 
-//	This is not an API function. It is a utility to decode a received
-//	monitor frame into ascii text.
+/*	This is not an API function. It is a utility to decode a received */
+/*	monitor frame into ascii text. */
 
 int APIENTRY DecodeFrame(char * msg, char * buffer, time_t Stamp);
 
 
 
-//	Sets the tracing options for DecodeFrame. Mask is a bit
-//	mask of ports to monitor (ie 101 binary will monitor ports
-//	1 and 3). MTX enables monitoring on transmitted frames. MCOM
-//	enables monitoring of protocol control frames (eg SABM, UA, RR),
-//	as well as info frames.
+/*	Sets the tracing options for DecodeFrame. Mask is a bit */
+/*	mask of ports to monitor (ie 101 binary will monitor ports */
+/*	1 and 3). MTX enables monitoring on transmitted frames. MCOM */
+/*	enables monitoring of protocol control frames (eg SABM, UA, RR), */
+/*	as well as info frames. */
 
 int APIENTRY SetTraceOptions(long mask, int mtxparam, int mcomparam);
 int APIENTRY SetTraceOptionsEx(uint64_t mask, int mtxparam, int mcomparam, int monUIOnly);
 int APIENTRY SetTraceOptions64(uint64_t mask, int mtxparam, int mcomparam, int monUIOnly);
 
-//	Returns number of first unused BPQHOST stream. If none available,
-//	returns 255. See API function 13.
+/*	Returns number of first unused BPQHOST stream. If none available, */
+/*	returns 255. See API function 13. */
 
 int APIENTRY FindFreeStream();
 
 
 
-//	Allocate stream. If stream is already allocated, return nonzero.
-//	Otherwise allocate stream, and return zero
+/*	Allocate stream. If stream is already allocated, return nonzero. */
+/*	Otherwise allocate stream, and return zero */
 
 int APIENTRY AllocateStream(int stream);
 
 
 
-//	Release stream.
+/*	Release stream. */
 
 int APIENTRY DeallocateStream(int stream);
 
-//	Get number of ports configured
+/*	Get number of ports configured */
 
 int APIENTRY GetNumberofPorts();
 
 
-//	Get port number (ports aren't necessarily numbered 1 to n)
+/*	Get port number (ports aren't necessarily numbered 1 to n) */
 
 int APIENTRY GetPortNumber(int portslot);
 
 UCHAR * APIENTRY GetPortDescription(int portslot, char * Desc);
 
-//	Enable async operation - new to Win32 version of API
+/*	Enable async operation - new to Win32 version of API */
 
 int APIENTRY BPQSetHandle(int Stream, HWND hWnd);
 
@@ -218,7 +218,7 @@ BOOL APIENTRY SetApplAlias(int Appl, char * NewCall);
 BOOL APIENTRY SetApplQual(int Appl, int NewQual);
 
 
-// Routines to support "Minimize to Tray"
+/* Routines to support "Minimize to Tray" */
 
 BOOL APIENTRY GetMinimizetoTrayFlag();
 
@@ -228,16 +228,16 @@ int APIENTRY DeleteTrayMenuItem(HWND hWnd);
 
 BOOL APIENTRY StartMinimizedFlag();
 
-// Log a message to the bpq32 console.
+/* Log a message to the bpq32 console. */
  
 int APIENTRY WritetoConsole(char * buff);
 
-// CheckTimer should be called regularly to ensure BPQ32 detects if an application crashes
+/* CheckTimer should be called regularly to ensure BPQ32 detects if an application crashes */
 
 int APIENTRY CheckTimer();
 
-// CloseBPQ32 is used if you want to close and restart BPQ32 while your application is
-// running. This is only relevant of you have Dynamically linked BPQ32
+/* CloseBPQ32 is used if you want to close and restart BPQ32 while your application is */
+/* running. This is only relevant of you have Dynamically linked BPQ32 */
 
 int APIENTRY CloseBPQ32();
 
@@ -246,7 +246,7 @@ int APIENTRY GETBPQAPI();
 UINT APIENTRY GETMONDECODE();
 
 VOID APIENTRY RelBuff(VOID * Msg);
-//VOID *APIENTRY GetBuff();
+/*VOID *APIENTRY GetBuff(); */
 
 VOID APIENTRY CreateOneTimePassword(char * Password, char * KeyPhrase, int TimeOffset); 
 
@@ -269,7 +269,7 @@ char * APIENTRY GetLOC();
 struct PORTCONTROL * (FAR WINAPI *  GetPortTableEntryFromPortNum) (int portnum);
 struct PORTCONTROL * (FAR WINAPI *  GetPortTableEntryFromSlot) (int portslot);
 
-//	API Definitions for Dynamic Load of BPQ32.dll
+/*	API Definitions for Dynamic Load of BPQ32.dll */
 
 ULONG (FAR WINAPI * GETBPQAPI)();
 
@@ -283,33 +283,33 @@ HKEY (FAR WINAPI * GetRegistryKey)();
 UCHAR * (FAR WINAPI * GetSignOnMsg)();
 UCHAR * (FAR WINAPI * GetVersionString)();
 
-//	Returns number of free buffers
-//	(BPQHOST function 7 (part)).
+/*	Returns number of free buffers */
+/*	(BPQHOST function 7 (part)). */
 
 int (FAR WINAPI * GetFreeBuffs)();
 
 
-//	Returns count of packets waiting on stream
-//	 (BPQHOST function 7 (part)).
+/*	Returns count of packets waiting on stream */
+/*	 (BPQHOST function 7 (part)). */
 
 int (FAR WINAPI *  RXCount) (int Stream);
 
-//	Returns number of packets on TX queue for stream
-//	 (BPQHOST function 7 (part)).
+/*	Returns number of packets on TX queue for stream */
+/*	 (BPQHOST function 7 (part)). */
 
 int (FAR WINAPI * TXCount)(int Stream);
 
 
-//	Returns number of monitor frames available
-//	 (BPQHOST function 7 (part)).
+/*	Returns number of monitor frames available */
+/*	 (BPQHOST function 7 (part)). */
 
 int (FAR WINAPI * MONCount) (int Stream);
 
-//	Returns call connecten on stream (BPQHOST function 8 (part)).
+/*	Returns call connecten on stream (BPQHOST function 8 (part)). */
 
 int (FAR WINAPI * GetCallsign)(int stream, char * callsign);
 
-//	Returns connection info for stream (BPQHOST function 8).
+/*	Returns connection info for stream (BPQHOST function 8). */
 
 int (FAR WINAPI * GetConnectionInfo) (int stream, char * callsign,
 										 int * port, int * sesstype, int * paclen,
@@ -318,26 +318,26 @@ int (FAR WINAPI * GetConnectionInfo) (int stream, char * callsign,
 
 int (FAR WINAPI * GetStreamPID) (int Stream);
 
-// Returns Path of BPQDirectroy
+/* Returns Path of BPQDirectroy */
 
 UCHAR * (FAR WINAPI * GetBPQDirectory)();
 
-// Returns number of prcess attached to BPQ32
+/* Returns number of prcess attached to BPQ32 */
 
 int (FAR WINAPI * GetAttachedProcesses) ();
 
 
-//	Send Session Control command (BPQHOST function 6)
-//	Command = 0 Connect using APPL MASK IN param
-//	Command = 1 Connect
-//	Command = 2 Disconect
-//	Command = 3 Return to Node
+/*	Send Session Control command (BPQHOST function 6) */
+/*	Command = 0 Connect using APPL MASK IN param */
+/*	Command = 1 Connect */
+/*	Command = 2 Disconect */
+/*	Command = 3 Return to Node */
 
 int (FAR WINAPI * SessionControl) (int stream, int command, int param);
 
 
-//	Sets Application Flags and Mask for stream. (BPQHOST function 1)
-//	Top bit of flags enables monitoring
+/*	Sets Application Flags and Mask for stream. (BPQHOST function 1) */
+/*	Top bit of flags enables monitoring */
 
 int (FAR WINAPI * SetAppl) (int stream, int flags, int mask);
 
@@ -349,86 +349,86 @@ BOOL (FAR WINAPI * GetAllocationState) (int Stream);
 
 
 
-//	Get current Session State. Any state changed is ACK'ed
-//	automatically. See BPQHOST functions 4 and 5.
+/*	Get current Session State. Any state changed is ACK'ed */
+/*	automatically. See BPQHOST functions 4 and 5. */
 
 int (FAR WINAPI * SessionState) (int stream, int * state, int * change);
 
-//	Get current Session State. Dont Ack state change
-//	See BPQHOST function 4.
+/*	Get current Session State. Dont Ack state change */
+/*	See BPQHOST function 4. */
 
 int (FAR WINAPI * SessionStateNoAck) (int stream, int * state);
 
 
-//	Send message to stream (BPQHOST Function 2)
+/*	Send message to stream (BPQHOST Function 2) */
 
 int (FAR WINAPI * SendMsg) (int stream, char * msg, int len);
 
 
-//	Send Raw (KISS mode) frame to port (BPQHOST function 10)
+/*	Send Raw (KISS mode) frame to port (BPQHOST function 10) */
 
 int (FAR WINAPI * SendRaw) (int port, char * msg, int len);
 
 
-//	Get message from stream. Returns length, and count of frames
-//	still waiting to be collected. (BPQHOST function 3)
+/*	Get message from stream. Returns length, and count of frames */
+/*	still waiting to be collected. (BPQHOST function 3) */
 
 int (FAR WINAPI * GetMsg) (int stream, char * msg, int * len, int * count );
 
 
-// Perl Version - I couldn't get bpq32.pm to call GetMsg. Returns Lenth
+/* Perl Version - I couldn't get bpq32.pm to call GetMsg. Returns Lenth */
 
 int (FAR WINAPI * GetMsgPerl) (int stream, char * msg);
 
 
-//	Get Raw (Trace) data (BPQHOST function 11)
+/*	Get Raw (Trace) data (BPQHOST function 11) */
 
 int (FAR WINAPI * GetRaw) (int stream, char * msg, int * len, int * count );
 
 
 
-//	This is not an API function. It is a utility to decode a received
-//	monitor frame into ascii text.
+/*	This is not an API function. It is a utility to decode a received */
+/*	monitor frame into ascii text. */
 
 int (FAR WINAPI * DecodeFrame) (char * msg, char * buffer, int Stamp);
 
 
-//	Sets the tracing options for DecodeFrame. Mask is a bit
-//	mask of ports to monitor (ie 101 binary will monitor ports
-//	1 and 3). MTX enables monitoring on transmitted frames. MCOM
-//	enables monitoring of protocol control frames (eg SABM, UA, RR),
-//	as well as info frames.
+/*	Sets the tracing options for DecodeFrame. Mask is a bit */
+/*	mask of ports to monitor (ie 101 binary will monitor ports */
+/*	1 and 3). MTX enables monitoring on transmitted frames. MCOM */
+/*	enables monitoring of protocol control frames (eg SABM, UA, RR), */
+/*	as well as info frames. */
 
 int (FAR WINAPI * SetTraceOptions) (long mask, int mtxparam, int mcomparam);
 
 
-//	Returns number of first unused BPQHOST stream. If none available,
-//	returns 255. See API function 13.
+/*	Returns number of first unused BPQHOST stream. If none available, */
+/*	returns 255. See API function 13. */
 
 int (FAR WINAPI * FindFreeStream) ();
 
 
-//	Allocate stream. If stream is already allocated, return nonzero.
-//	Otherwise allocate stream, and return zero
+/*	Allocate stream. If stream is already allocated, return nonzero. */
+/*	Otherwise allocate stream, and return zero */
 
 int (FAR WINAPI * AllocateStream) (int stream);
 
 
-//	Release stream.
+/*	Release stream. */
 
 int (FAR WINAPI * DeallocateStream) (int stream);
 
-//	Get number of ports configured
+/*	Get number of ports configured */
 
 int (FAR WINAPI * GetNumberofPorts) ();
 
 
-//	Get port number (ports aren't necessarily numbered 1 to n)
+/*	Get port number (ports aren't necessarily numbered 1 to n) */
 
 int (FAR WINAPI * GetPortNumber) (int portslot);
 
 
-//	Enable async operation - new to Win32 version of API
+/*	Enable async operation - new to Win32 version of API */
 
 int (FAR WINAPI * BPQSetHandle) (int Stream, HWND hWnd);
 
@@ -455,23 +455,23 @@ BOOL (FAR WINAPI * SetApplAlias) (int Appl, char * NewCall);
 BOOL (FAR WINAPI * SetApplQual) (int Appl, int NewQual);
 
 
-// Routines to support "Minimize to Tray"
+/* Routines to support "Minimize to Tray" */
 
 BOOL (FAR WINAPI * GetMinimizetoTrayFlag)();
 
-//int APIENTRY AddTrayMenuItem();
+/*int APIENTRY AddTrayMenuItem(); */
 int (FAR WINAPI * AddTrayMenuItem)(HWND hWnd, char * Label);
 
-//int APIENTRY DeleteTrayMenuItem();
+/*int APIENTRY DeleteTrayMenuItem(); */
 int (FAR WINAPI * DeleteTrayMenuItem)(HWND hWnd);
 
 int (FAR WINAPI * SetupTrayIcon)();
 
 BOOL (FAR WINAPI * GetStartMinimizedFlag)();
 
-// Log a message to the bpq32 console.
+/* Log a message to the bpq32 console. */
  
-//int APIENTRY WritetoConsole();
+/*int APIENTRY WritetoConsole(); */
 int (FAR WINAPI * WritetoConsole)(char * buff);
 
 int (FAR WINAPI * CheckTimer)();
@@ -484,8 +484,8 @@ HMODULE ExtDriver;
 
 BOOL GetAPI()
 {
-	// This procedure must be called if you are using Dynamic Linking. It loads BPQ32
-	//	if necessary, and get the addresses of the API routines
+	/* This procedure must be called if you are using Dynamic Linking. It loads BPQ32 */
+	/*	if necessary, and get the addresses of the API routines */
 
 	int err;
 	char Msg[256];
@@ -579,9 +579,9 @@ BOOL GetAPI()
 
 #endif
 
-//
-//	Constants and equates for async operation
-//
+/* */
+/*	Constants and equates for async operation */
+/* */
 
 #ifndef BPQWINMSG
 #define BPQWINMSG
@@ -589,9 +589,9 @@ BOOL GetAPI()
 static char BPQWinMsg[] = "BPQWindowMessage";
 extern UINT BPQMsg;
 
-//
-//	Values returned in lParam of Windows Message
-//
+/* */
+/*	Values returned in lParam of Windows Message */
+/* */
 #define BPQMonitorAvail 1
 #define BPQDataAvail 2
 #define BPQStateChange 4

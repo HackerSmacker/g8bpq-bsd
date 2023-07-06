@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
+#define WIN32_LEAN_AND_MEAN		/* Exclude rarely-used stuff from Windows headers */
 
 #define _CRT_SECURE_NO_DEPRECATE
 
@@ -38,7 +38,7 @@ VOID __cdecl Debugprintf(const char * format, ...);
 
 extern BOOL EventsEnabled;
 
-// Runs use specified routine on certain event
+/* Runs use specified routine on certain event */
 #ifndef WIN32
 
 void RunEventProgram(char * Program, char * Param)
@@ -49,14 +49,14 @@ void RunEventProgram(char * Program, char * Param)
 	if (EventsEnabled == 0)
 		return;
 
-	signal(SIGCHLD, SIG_IGN); // Silently (and portably) reap children. 
+	signal(SIGCHLD, SIG_IGN); /* Silently (and portably) reap children.  */
 
 	if (Param && Param[0])
 		arg_list[1] = Param;
 
-	//	Fork and Exec Specified program
+	/*	Fork and Exec Specified program */
 
-	// Duplicate this process.
+	/* Duplicate this process. */
 
 	child_pid = fork (); 
 
@@ -70,10 +70,10 @@ void RunEventProgram(char * Program, char * Param)
 	{    				
 		execvp (arg_list[0], arg_list); 
 
-		// The execvp  function returns only if an error occurs.  
+		/* The execvp  function returns only if an error occurs.   */
 
 		printf ("Failed to run %s\n", arg_list[0]); 
-		exit(0);			// Kill the new process
+		exit(0);			/* Kill the new process */
 	}
 								 
 #else
@@ -83,8 +83,8 @@ DllExport void APIENTRY RunEventProgram(char * Program, char * Param)
 	int n = 0;
 	char cmdLine[256];
 
-	STARTUPINFO  SInfo;			// pointer to STARTUPINFO 
-	PROCESS_INFORMATION PInfo; 	// pointer to PROCESS_INFORMATION 
+	STARTUPINFO  SInfo;			/* pointer to STARTUPINFO  */
+	PROCESS_INFORMATION PInfo; 	/* pointer to PROCESS_INFORMATION  */
 
 	if (EventsEnabled == 0)
 		return;

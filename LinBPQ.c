@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-// Control Routine for LinBPQ 
+/* Control Routine for LinBPQ  */
 
 #define _CRT_SECURE_NO_DEPRECATE
 
@@ -25,7 +25,7 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 #include "bpqmail.h"
 #ifdef WIN32
 #include <Iphlpapi.h>
-//#include "C:\Program Files (x86)\GnuWin32\include\iconv.h"
+/*#include "C:\Program Files (x86)\GnuWin32\include\iconv.h" */
 #else
 #include <iconv.h>
 #endif
@@ -95,9 +95,9 @@ extern char Verstring[];
 
 extern char SignoffMsg[];
 extern char AbortedMsg[];
-extern char InfoBoxText[];			// Text to display in Config Info Popup
+extern char InfoBoxText[];			/* Text to display in Config Info Popup */
 
-extern int LastVer[4];				// In case we need to do somthing the first time a version is run
+extern int LastVer[4];				/* In case we need to do somthing the first time a version is run */
 
 extern HWND MainWnd;
 extern char BaseDir[];
@@ -146,7 +146,7 @@ extern int MaintTime;
 
 int _MYTIMEZONE = 0;
 
-// flags equates
+/* flags equates */
 
 #define F_Excluded   0x0001
 #define F_LOC        0x0002
@@ -205,12 +205,12 @@ char * UIDigi[33];
 extern struct UserInfo ** UserRecPtr;
 extern int NumberofUsers;
 
-extern struct UserInfo * BBSChain;					// Chain of users that are BBSes
+extern struct UserInfo * BBSChain;					/* Chain of users that are BBSes */
 
 extern struct MsgInfo ** MsgHddrPtr;
 extern int NumberofMessages;
 
-extern int FirstMessageIndextoForward;					// Lowest Message wirh a forward bit set - limits search
+extern int FirstMessageIndextoForward;					/* Lowest Message wirh a forward bit set - limits search */
 
 extern char UserDatabaseName[MAX_PATH];
 extern char UserDatabasePath[MAX_PATH];
@@ -231,17 +231,17 @@ extern char NTSAliasesPath[MAX_PATH];
 extern char NTSAliasesName[MAX_PATH];
 
 extern char BaseDir[MAX_PATH];
-extern char BaseDirRaw[MAX_PATH];			// As set in registry - may contain %NAME%
-extern char ProperBaseDir[MAX_PATH];		// BPQ Directory/BPQMailChat
+extern char BaseDirRaw[MAX_PATH];			/* As set in registry - may contain %NAME% */
+extern char ProperBaseDir[MAX_PATH];		/* BPQ Directory/BPQMailChat */
 
 extern char MailDir[MAX_PATH];
 
-extern time_t MaintClock;						// Time to run housekeeping
+extern time_t MaintClock;						/* Time to run housekeeping */
 
 #ifdef WIN32
-BOOL KEEPGOING = 30;					// 5 secs to shut down
+BOOL KEEPGOING = 30;					/* 5 secs to shut down */
 #else
-BOOL KEEPGOING = 50;					// 5 secs to shut down
+BOOL KEEPGOING = 50;					/* 5 secs to shut down */
 #endif
 BOOL Restarting = FALSE;
 BOOL CLOSING = FALSE;
@@ -249,10 +249,10 @@ BOOL CLOSING = FALSE;
 int ProgramErrors;
 int Slowtimer = 0;
 
-#define REPORTINTERVAL 15 * 549;	// Magic Ticks Per Minute for PC's nominal 100 ms timer
+#define REPORTINTERVAL 15 * 549;	/* Magic Ticks Per Minute for PC's nominal 100 ms timer */
 int ReportTimer = 0;
 
-// Console Terminal Support
+/* Console Terminal Support */
 
 struct ConTermS 
 {
@@ -276,7 +276,7 @@ struct ConTermS ConTerm = {0, 0};
 VOID CheckProgramErrors()
 {
 	if (Restarting)
-		exit(0);				// Make sure can't loop in restarting
+		exit(0);				/* Make sure can't loop in restarting */
 
 	ProgramErrors++;
 
@@ -311,14 +311,14 @@ BOOL CtrlHandler(DWORD fdwCtrlType)
 {
   switch( fdwCtrlType )
   {
-    // Handle the CTRL-C signal.
+    /* Handle the CTRL-C signal. */
     case CTRL_C_EVENT:
       printf( "Ctrl-C event\n\n" );
 	  CLOSING = TRUE;
       Beep( 750, 300 );
       return( TRUE );
 
-    // CTRL-CLOSE: confirm that the user wants to exit.
+    /* CTRL-CLOSE: confirm that the user wants to exit. */
     case CTRL_CLOSE_EVENT:
 
 	  CLOSING = TRUE;
@@ -327,7 +327,7 @@ BOOL CtrlHandler(DWORD fdwCtrlType)
        Beep( 750, 300 );
 	   return( TRUE );
 
-    // Pass other signals to the next handler.
+    /* Pass other signals to the next handler. */
     case CTRL_BREAK_EVENT:
       Beep( 900, 200 );
       printf( "Ctrl-Break event\n\n" );
@@ -354,7 +354,7 @@ BOOL CtrlHandler(DWORD fdwCtrlType)
 
 #else
 
-// Linux Signal Handlers
+/* Linux Signal Handlers */
 
 static void sigterm_handler(int sig)
 {
@@ -436,13 +436,13 @@ extern int SemHeldByAPI;
 
 VOID MonitorThread(void * x)
 {
-	// Thread to detect stuck semaphore
+	/* Thread to detect stuck semaphore */
 
 	do
 	{
 		if ((Semaphore.Gets == LastSemGets) && Semaphore.Flag)
 		{
-			// It is stuck - try to release
+			/* It is stuck - try to release */
 
 			Debugprintf ("Semaphore locked - Process ID = %d, Held By %d",
 				Semaphore.SemProcessID, SemHeldByAPI);
@@ -453,7 +453,7 @@ VOID MonitorThread(void * x)
 		LastSemGets = Semaphore.Gets;
 
 		Sleep(30000);
-//		Debugprintf("Monitor Thread Still going %d %d %d %x %d", LastSemGets, Semaphore.Gets, Semaphore.Flag, Semaphore.SemThreadID, SemHeldByAPI);
+/*		Debugprintf("Monitor Thread Still going %d %d %d %x %d", LastSemGets, Semaphore.Gets, Semaphore.Flag, Semaphore.SemThreadID, SemHeldByAPI); */
 
 	} 
 	while (TRUE);
@@ -496,7 +496,7 @@ char SESSIONHDDR[80] = "";
 int SESSHDDRLEN = 0;
 
 
-// Next 3 should be uninitialised so they are local to each process
+/* Next 3 should be uninitialised so they are local to each process */
 
 UCHAR MCOM;
 UCHAR MUIONLY;
@@ -504,7 +504,7 @@ UCHAR MTX;
 uint64_t MMASK;
 
 
-UCHAR AuthorisedProgram;			// Local Variable. Set if Program is on secure list
+UCHAR AuthorisedProgram;			/* Local Variable. Set if Program is on secure list */
 
 int SAVEPORT = 0;
 
@@ -533,7 +533,7 @@ UCHAR * GetLogDirectory()
 }
 extern int POP3Timer;
 
-// Console Terminal Stuff
+/* Console Terminal Stuff */
 
 #ifndef WIN32
 
@@ -553,7 +553,7 @@ int _kbhit() {
     static int initialized = 0;
 
     if (! initialized) {
-        // Use termios to turn off line buffering
+        /* Use termios to turn off line buffering */
         struct termios term;
         tcgetattr(STDIN, &term);
         term.c_lflag &= ~ICANON;
@@ -591,7 +591,7 @@ void ConTermInput(char * Msg)
 
 	ConTerm.StackIndex = 0;
 
-	// Stack it
+	/* Stack it */
 
 	if (ConTerm.KbdStack[19])
 		free(ConTerm.KbdStack[19]);
@@ -615,8 +615,8 @@ void ConTermPoll()
 	char callsign[11] = "";
 	char Msg[300];
 
-	//	Get current Session State. Any state changed is ACK'ed
-	//	automatically. See BPQHOST functions 4 and 5.
+	/*	Get current Session State. Any state changed is ACK'ed */
+	/*	automatically. See BPQHOST functions 4 and 5. */
 	
 	SessionState(ConTerm.BPQStream, &state, &change);
 		
@@ -624,7 +624,7 @@ void ConTermPoll()
 	{
 		if (state == 1)
 		{
-			// Connected
+			/* Connected */
 
 			ConTerm.CONNECTED = TRUE;
 			ConTerm.SlowTimer = 0;
@@ -648,7 +648,7 @@ void ConTermPoll()
 		{
 			ptr2 = strlop(ptr, 13);
 
-		// Replace CR with CRLF
+		/* Replace CR with CRLF */
 
 			printf(ptr);
 
@@ -665,11 +665,11 @@ void ConTermPoll()
 
 		if (c == 0xe0)
 		{
-			// Cursor control 
+			/* Cursor control  */
 
 			c = _getch();
 
-			if (c == 75)		// cursor left
+			if (c == 75)		/* cursor left */
 				c = 8;
 		}
 
@@ -680,7 +680,7 @@ void ConTermPoll()
 		{
 			if (ConTerm.kbptr)
 				ConTerm.kbptr--;
-			printf(" \b");		// Already echoed bs - clear typed char from screen
+			printf(" \b");		/* Already echoed bs - clear typed char from screen */
 			return;
 		}
 
@@ -714,13 +714,13 @@ int main(int argc, char * argv[])
 
 #ifdef WIN32
 
-	WSADATA       WsaData;            // receives data from WSAStartup
+	WSADATA       WsaData;            /* receives data from WSAStartup */
 	HWND hWnd = GetForegroundWindow();
 
 	WSAStartup(MAKEWORD(2, 0), &WsaData);
 	SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE);
 
-	// disable the [x] button.
+	/* disable the [x] button. */
 
 	if (hWnd != NULL)
 	{
@@ -739,7 +739,7 @@ int main(int argc, char * argv[])
 #ifndef MACBPQ
 #endif
 
-	// Disable Console Terminal if stdout redirected
+	/* Disable Console Terminal if stdout redirected */
 
 	if (!isatty(STDOUT_FILENO))
 		Redirected = 1;
@@ -783,7 +783,7 @@ int main(int argc, char * argv[])
 	}
 
 
-	// Make sure logs directory exists
+	/* Make sure logs directory exists */
 
 	sprintf(LogDir, "%s/logs", LogDirectory);
 
@@ -818,7 +818,7 @@ int main(int argc, char * argv[])
 		return (0);
 	}
 
-	for (i=0;PWTEXT[i] > 0x20;i++); //Scan for cr or null
+	for (i=0;PWTEXT[i] > 0x20;i++); /*Scan for cr or null */
 
 	PWLen=i;
 
@@ -923,7 +923,7 @@ int main(int argc, char * argv[])
 		CopyConfigFile(ChatConfigName);
 	}
 
-	// Start Mail if requested by command line or config
+	/* Start Mail if requested by command line or config */
 
 	for (i = 1; i < argc; i++)
 	{
@@ -962,12 +962,12 @@ int main(int argc, char * argv[])
 
 		BBSApplMask = 1<<(BBSApplNum-1);
 
-	// See if we need to warn of possible problem with BaseDir moved by installer
+	/* See if we need to warn of possible problem with BaseDir moved by installer */
 
 	sprintf(BaseDir, "%s", BPQDirectory);
 
 
-	// Set up file and directory names
+	/* Set up file and directory names */
 
 	strcpy(UserDatabasePath, BaseDir);
 	strcat(UserDatabasePath, "/");
@@ -998,15 +998,15 @@ int main(int argc, char * argv[])
 	strcat(MailDir, "Mail");
 
 #ifdef WIN32
-	CreateDirectory(MailDir, NULL);		// Just in case
+	CreateDirectory(MailDir, NULL);		/* Just in case */
 #else
 	mkdir(MailDir, S_IRWXU | S_IRWXG | S_IRWXO);
 	chmod(MailDir, S_IRWXU | S_IRWXG | S_IRWXO);
 #endif
 
-	// Make backup copies of Databases
+	/* Make backup copies of Databases */
 
-//	CopyConfigFile(ConfigName);
+/*	CopyConfigFile(ConfigName); */
 
 	CopyBIDDatabase();
 	CopyMessageDatabase();
@@ -1025,7 +1025,7 @@ int main(int argc, char * argv[])
 	GetBadWordFile();
 	GetHTMLForms();
 
-	// Make sure there is a user record for the BBS, with BBS bit set.
+	/* Make sure there is a user record for the BBS, with BBS bit set. */
 
 	user = LookupCall(BBSName);
 
@@ -1037,13 +1037,13 @@ int main(int argc, char * argv[])
 
 	if ((user->flags & F_BBS) == 0)
 	{
-		// Not Defined as a BBS
+		/* Not Defined as a BBS */
 
 		if(SetupNewBBS(user))
 			user->flags |= F_BBS;
 	}
 
-	// if forwarding AMPR mail make sure User/BBS AMPR exists
+	/* if forwarding AMPR mail make sure User/BBS AMPR exists */
 
 	if (SendAMPRDirect)
 	{
@@ -1060,7 +1060,7 @@ int main(int argc, char * argv[])
 
 		if ((user->flags & F_BBS) == 0)
 		{
-			// Not Defined as a BBS
+			/* Not Defined as a BBS */
 
 			if (SetupNewBBS(user))
 				user->flags |= F_BBS;
@@ -1072,12 +1072,12 @@ int main(int argc, char * argv[])
 	}
 
 
-	// Make sure SYSOPCALL is set
+	/* Make sure SYSOPCALL is set */
 
 	if (SYSOPCall[0] == 0)
 		strcpy(SYSOPCall, BBSName);
 
-	// See if just want to add user (mainly for setup scripts)
+	/* See if just want to add user (mainly for setup scripts) */
 
 	if (argc == 5 && _stricmp(argv[1], "--adduser") == 0)
 	{
@@ -1092,7 +1092,7 @@ int main(int argc, char * argv[])
 		printf("%s", response);
 		exit(0);
 	}
-	// Allocate Streams
+	/* Allocate Streams */
 
 	strcpy(pgm, "BBS");
 
@@ -1105,7 +1105,7 @@ int main(int argc, char * argv[])
 
 		NumberofStreams++;
 
-//		BPQSetHandle(conn->BPQStream, hWnd);
+/*		BPQSetHandle(conn->BPQStream, hWnd); */
 
 		SetAppl(conn->BPQStream, (i == 0 && EnableUI) ? 0x82 : 2, BBSApplMask);
 		Disconnect(conn->BPQStream);
@@ -1119,7 +1119,7 @@ int main(int argc, char * argv[])
 	Debugprintf("POP3 Debug Before Init NNTP Timer = %d", POP3Timer);
 	InitialiseNNTP();
 
-	SetupListenSet();		// Master set of listening sockets
+	SetupListenSet();		/* Master set of listening sockets */
 
 	if (EnableUI || MailForInterval)
 		SetupUIInterface();
@@ -1128,7 +1128,7 @@ int main(int argc, char * argv[])
 		_beginthread(SendMailForThread, 0, 0);
 
 
-	// Calulate time to run Housekeeping
+	/* Calulate time to run Housekeeping */
 	{
 		struct tm *tm;
 		time_t now;
@@ -1184,7 +1184,7 @@ int main(int argc, char * argv[])
 		if (_stricmp(argv[i], "daemon") == 0)
 		{
 	
-			// Convert to daemon
+			/* Convert to daemon */
 	
 			pid_t pid, sid;
 
@@ -1263,13 +1263,13 @@ int main(int argc, char * argv[])
 					}
 				}
 
-//				SaveUserDatabase();
+/*				SaveUserDatabase(); */
 				SaveMessageDatabase();
 				SaveBIDDatabase();
 				SaveConfig(ConfigName);
 			}
 
-			KEEPGOING--;					// Give time for links to close
+			KEEPGOING--;					/* Give time for links to close */
 			setbuf(stdout, NULL);
 			printf("Closing... %d  \r", KEEPGOING);
 		}
@@ -1279,7 +1279,7 @@ int main(int argc, char * argv[])
 		{
 			RigReconfigFlag = FALSE;
 			Rig_Close();
-			Sleep(2000);				// Allow CATPTT threads to close
+			Sleep(2000);				/* Allow CATPTT threads to close */
 			RigActive = Rig_Init();
 
 			Consoleprintf("Rigcontrol Reconfiguration Complete");	
@@ -1302,7 +1302,7 @@ int main(int argc, char * argv[])
 
 			ReconfigFlag = FALSE;
 
-//			SetupBPQDirectory();
+/*			SetupBPQDirectory(); */
 
 			WritetoConsoleLocal("Reconfiguring ...\n\n");
 			OutputDebugString("BPQ32 Reconfiguring ...\n");
@@ -1310,14 +1310,14 @@ int main(int argc, char * argv[])
 
 			for (i=0;i<NUMBEROFPORTS;i++)
 			{
-				if (PORTVEC->PORTCONTROL.PORTTYPE == 0x10)			// External
+				if (PORTVEC->PORTCONTROL.PORTTYPE == 0x10)			/* External */
 				{
 					if (PORTVEC->PORT_EXT_ADDR)
 					{
-//						SaveWindowPos(PORTVEC->PORTCONTROL.PORTNUMBER);
-//						SaveAXIPWindowPos(PORTVEC->PORTCONTROL.PORTNUMBER);
-//						CloseDriverWindow(PORTVEC->PORTCONTROL.PORTNUMBER);
-						PORTVEC->PORT_EXT_ADDR(5,PORTVEC->PORTCONTROL.PORTNUMBER, NULL);	// Close External Ports
+/*						SaveWindowPos(PORTVEC->PORTCONTROL.PORTNUMBER); */
+/*						SaveAXIPWindowPos(PORTVEC->PORTCONTROL.PORTNUMBER); */
+/*						CloseDriverWindow(PORTVEC->PORTCONTROL.PORTNUMBER); */
+						PORTVEC->PORT_EXT_ADDR(5,PORTVEC->PORTCONTROL.PORTNUMBER, NULL);	/* Close External Ports */
 					}
 				}
 				PORTVEC->PORTCONTROL.PORTCLOSECODE(&PORTVEC->PORTCONTROL);
@@ -1334,7 +1334,7 @@ int main(int argc, char * argv[])
 
 			WL2KReports = NULL;
 
-//			Sleep(2000);
+/*			Sleep(2000); */
 
 			Consoleprintf("G8BPQ AX25 Packet Switch System Version %s %s", TextVerstring, Datestring);
 			Consoleprintf(VerCopyright);
@@ -1349,7 +1349,7 @@ int main(int argc, char * argv[])
 
 			FreeConfig();
 
-			for (i=1; i<68; i++)			// Include Telnet, APRS, IP Vec
+			for (i=1; i<68; i++)			/* Include Telnet, APRS, IP Vec */
 			{
 				HOSTVEC=&BPQHOSTVECTOR[i-1];
 
@@ -1357,12 +1357,12 @@ int main(int argc, char * argv[])
 
 				if (HOSTVEC->HOSTSESSION !=0)
 				{
-					// Had a connection
+					/* Had a connection */
 
 					HOSTVEC->HOSTSESSION=0;
-					HOSTVEC->HOSTFLAGS |=3;	// Disconnected
+					HOSTVEC->HOSTFLAGS |=3;	/* Disconnected */
 
-//					PostMessage(HOSTVEC->HOSTHANDLE, BPQMsg, i, 4);
+/*					PostMessage(HOSTVEC->HOSTHANDLE, BPQMsg, i, 4); */
 				}
 			}
 
@@ -1433,7 +1433,7 @@ int main(int argc, char * argv[])
 			ChatPollStreams();
 			ChatTrytoSend();
 
-			if (Slowtimer > 100)		// 10 secs
+			if (Slowtimer > 100)		/* 10 secs */
 			{
 				ChatTimer();
 			}
@@ -1443,7 +1443,7 @@ int main(int argc, char * argv[])
 		{
 			PollStreams();
 
-			if (Slowtimer > 100)		// 10 secs
+			if (Slowtimer > 100)		/* 10 secs */
 			{
 				time_t NOW = time(NULL);
 				struct tm * tm;
@@ -1454,7 +1454,7 @@ int main(int argc, char * argv[])
 
 				if (MaintClock < NOW)
 				{
-					while (MaintClock < NOW)		// in case large time step
+					while (MaintClock < NOW)		/* in case large time step */
 						MaintClock += MaintInterval * 3600;
 
 					Debugprintf("|Enter HouseKeeping");
@@ -1463,7 +1463,7 @@ int main(int argc, char * argv[])
 
 				tm = gmtime(&NOW);
 
-				if (tm->tm_wday == 0)		// Sunday
+				if (tm->tm_wday == 0)		/* Sunday */
 				{
 					if (GenerateTrafficReport && (LastTrafficTime + 86400) < NOW)
 					{
@@ -1490,13 +1490,13 @@ int main(int argc, char * argv[])
 	if (needAIS)
 		SaveAIS();
 
-	// Close Ports
+	/* Close Ports */
 
 	PORTVEC=(PEXTPORTDATA)PORTTABLE;
 
 	for (i=0;i<NUMBEROFPORTS;i++)
 	{
-		if (PORTVEC->PORTCONTROL.PORTTYPE == 0x10)			// External
+		if (PORTVEC->PORTCONTROL.PORTTYPE == 0x10)			/* External */
 		{
 			if (PORTVEC->PORT_EXT_ADDR)
 			{
@@ -1520,7 +1520,7 @@ int main(int argc, char * argv[])
 
 	upnpClose();
 
-	// Close any open logs
+	/* Close any open logs */
 
 	for (i = 0; i < 4; i++)
 	{
@@ -1545,8 +1545,8 @@ int WritetoConsoleLocal(char * buff)
 void * VCOMExtInit(struct PORTCONTROL *  PortEntry);
 void * V4ExtInit(EXTPORTDATA * PortEntry);
 #endif
-//UINT SoundModemExtInit(EXTPORTDATA * PortEntry);
-//UINT BaycomExtInit(EXTPORTDATA * PortEntry);
+/*UINT SoundModemExtInit(EXTPORTDATA * PortEntry); */
+/*UINT BaycomExtInit(EXTPORTDATA * PortEntry); */
 
 void * AEAExtInit(struct PORTCONTROL *  PortEntry);
 void * MPSKExtInit(EXTPORTDATA * PortEntry);
@@ -1574,7 +1574,7 @@ void * KISSHFExtInit(EXTPORTDATA * PortEntry);
 
 void * InitializeExtDriver(PEXTPORTDATA PORTVEC)
 {
-	// Only works with built in drivers
+	/* Only works with built in drivers */
 
 	UCHAR Value[20];
 
@@ -1669,7 +1669,7 @@ int APIENTRY Restart()
 
 int APIENTRY Reboot()
 {
-	// Run sudo shutdown -r -f
+	/* Run sudo shutdown -r -f */
 #ifdef WIN32
 	STARTUPINFO  SInfo;
     PROCESS_INFORMATION PInfo;
@@ -1691,16 +1691,16 @@ int APIENTRY Reboot()
 	char * arg_list[] = {NULL, NULL, NULL, NULL, NULL};
 	pid_t child_pid;
 	char * Context;
-	signal(SIGCHLD, SIG_IGN); // Silently (and portably) reap children. 
+	signal(SIGCHLD, SIG_IGN); /* Silently (and portably) reap children.  */
 
 	arg_list[0] = "sudo";
 	arg_list[1] = "shutdown";
 	arg_list[2] = "now";
 	arg_list[3] = "-r";
 
-	//	Fork and Exec shutdown
+	/*	Fork and Exec shutdown */
 
-	// Duplicate this process.  
+	/* Duplicate this process.   */
 
 	child_pid = fork(); 
 
@@ -1717,7 +1717,7 @@ int APIENTRY Reboot()
 		/* The execvp  function returns only if an error occurs.  */ 
 
 		printf ("Failed to run shutdown\n"); 
-		exit(0);			// Kill the new process
+		exit(0);			/* Kill the new process */
 	}
 	return TRUE;								 
 #endif
@@ -1753,7 +1753,7 @@ VOID MonitorAPRSIS(char * Msg, size_t MsgLen, BOOL TX)
 	if (MsgLen > 250)
 		return;
 
-	// Mustn't change Msg
+	/* Mustn't change Msg */
 
 	memcpy(Copy, Msg, MsgLen);
 	Copy[MsgLen] = 0;
@@ -1804,9 +1804,9 @@ int GetListeningPortsPID(int Port)
 	int dwSize = 0;
 	unsigned int n;
 
-	// Get PID of process for this TCP Port
+	/* Get PID of process for this TCP Port */
 
-	// Get Length of table
+	/* Get Length of table */
 	
 	GetExtendedTcpTable(TcpTable, &dwSize, TRUE, AF_INET, TCP_TABLE_OWNER_PID_LISTENER, 0);
 
@@ -1824,7 +1824,7 @@ int GetListeningPortsPID(int Port)
 		}
 	}
 #endif
-	return 0;			// Not found
+	return 0;			/* Not found */
 }
 
 
@@ -1836,31 +1836,31 @@ VOID Check_Timer()
 VOID POSTDATAAVAIL(){};
 
 COLORREF Colours[256] = {0,
-		RGB(0,0,0), RGB(0,0,128), RGB(0,0,192), RGB(0,0,255),				// 1 - 4
-		RGB(0,64,0), RGB(0,64,128), RGB(0,64,192), RGB(0,64,255),			// 5 - 8
-		RGB(0,128,0), RGB(0,128,128), RGB(0,128,192), RGB(0,128,255),		// 9 - 12
-		RGB(0,192,0), RGB(0,192,128), RGB(0,192,192), RGB(0,192,255),		// 13 - 16
-		RGB(0,255,0), RGB(0,255,128), RGB(0,255,192), RGB(0,255,255),		// 17 - 20
+		RGB(0,0,0), RGB(0,0,128), RGB(0,0,192), RGB(0,0,255),				/* 1 - 4 */
+		RGB(0,64,0), RGB(0,64,128), RGB(0,64,192), RGB(0,64,255),			/* 5 - 8 */
+		RGB(0,128,0), RGB(0,128,128), RGB(0,128,192), RGB(0,128,255),		/* 9 - 12 */
+		RGB(0,192,0), RGB(0,192,128), RGB(0,192,192), RGB(0,192,255),		/* 13 - 16 */
+		RGB(0,255,0), RGB(0,255,128), RGB(0,255,192), RGB(0,255,255),		/* 17 - 20 */
 
-		RGB(6425,0,0), RGB(64,0,128), RGB(64,0,192), RGB(0,0,255),				// 21
+		RGB(6425,0,0), RGB(64,0,128), RGB(64,0,192), RGB(0,0,255),				/* 21 */
 		RGB(64,64,0), RGB(64,64,128), RGB(64,64,192), RGB(64,64,255),
 		RGB(64,128,0), RGB(64,128,128), RGB(64,128,192), RGB(64,128,255),
 		RGB(64,192,0), RGB(64,192,128), RGB(64,192,192), RGB(64,192,255),
 		RGB(64,255,0), RGB(64,255,128), RGB(64,255,192), RGB(64,255,255),
 
-		RGB(128,0,0), RGB(128,0,128), RGB(128,0,192), RGB(128,0,255),				// 41
+		RGB(128,0,0), RGB(128,0,128), RGB(128,0,192), RGB(128,0,255),				/* 41 */
 		RGB(128,64,0), RGB(128,64,128), RGB(128,64,192), RGB(128,64,255),
 		RGB(128,128,0), RGB(128,128,128), RGB(128,128,192), RGB(128,128,255),
 		RGB(128,192,0), RGB(128,192,128), RGB(128,192,192), RGB(128,192,255),
 		RGB(128,255,0), RGB(128,255,128), RGB(128,255,192), RGB(128,255,255),
 
-		RGB(192,0,0), RGB(192,0,128), RGB(192,0,192), RGB(192,0,255),				// 61
+		RGB(192,0,0), RGB(192,0,128), RGB(192,0,192), RGB(192,0,255),				/* 61 */
 		RGB(192,64,0), RGB(192,64,128), RGB(192,64,192), RGB(192,64,255),
 		RGB(192,128,0), RGB(192,128,128), RGB(192,128,192), RGB(192,128,255),
 		RGB(192,192,0), RGB(192,192,128), RGB(192,192,192), RGB(192,192,255),
 		RGB(192,255,0), RGB(192,255,128), RGB(192,255,192), RGB(192,255,255),
 
-		RGB(255,0,0), RGB(255,0,128), RGB(255,0,192), RGB(255,0,255),				// 81
+		RGB(255,0,0), RGB(255,0,128), RGB(255,0,192), RGB(255,0,255),				/* 81 */
 		RGB(255,64,0), RGB(255,64,128), RGB(255,64,192), RGB(255,64,255),
 		RGB(255,128,0), RGB(255,128,128), RGB(255,128,192), RGB(255,128,255),
 		RGB(255,192,0), RGB(255,192,128), RGB(255,192,192), RGB(255,192,255),
@@ -1868,9 +1868,9 @@ COLORREF Colours[256] = {0,
 };
 
 
-//VOID SendRPBeacon(struct TNCINFO * TNC)
-//{
-//}
+/*VOID SendRPBeacon(struct TNCINFO * TNC) */
+/*{ */
+/*} */
 
 int PollStreams()
 {
@@ -1891,7 +1891,7 @@ int PollStreams()
 
 		if (change == 1)
 		{
-			if (state == 1) // Connected
+			if (state == 1) /* Connected */
 			{
 				GetSemaphore(&ConSemaphore, 0);
 				Connected(conn->BPQStream);

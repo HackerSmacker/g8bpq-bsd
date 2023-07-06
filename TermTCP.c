@@ -102,31 +102,31 @@ int SendMsg(const char * msg, int len);
 
 
 COLORREF Colours[256] = {0,
-		RGB(0,0,0), RGB(0,0,128), RGB(0,0,192), RGB(0,0,255),				// 1 - 4
-		RGB(0,64,0), RGB(0,64,128), RGB(0,64,192), RGB(0,64,255),			// 5 - 8
-		RGB(0,128,0), RGB(0,128,128), RGB(0,128,192), RGB(0,128,255),		// 9 - 12
-		RGB(0,192,0), RGB(0,192,128), RGB(0,192,192), RGB(0,192,255),		// 13 - 16
-		RGB(0,255,0), RGB(0,255,128), RGB(0,255,192), RGB(0,255,255),		// 17 - 20
+		RGB(0,0,0), RGB(0,0,128), RGB(0,0,192), RGB(0,0,255),				/* 1 - 4 */
+		RGB(0,64,0), RGB(0,64,128), RGB(0,64,192), RGB(0,64,255),			/* 5 - 8 */
+		RGB(0,128,0), RGB(0,128,128), RGB(0,128,192), RGB(0,128,255),		/* 9 - 12 */
+		RGB(0,192,0), RGB(0,192,128), RGB(0,192,192), RGB(0,192,255),		/* 13 - 16 */
+		RGB(0,255,0), RGB(0,255,128), RGB(0,255,192), RGB(0,255,255),		/* 17 - 20 */
 
-		RGB(64,0,0), RGB(64,0,128), RGB(64,0,192), RGB(0,0,255),				// 21
+		RGB(64,0,0), RGB(64,0,128), RGB(64,0,192), RGB(0,0,255),				/* 21 */
 		RGB(64,64,0), RGB(64,64,128), RGB(64,64,192), RGB(64,64,255),
 		RGB(64,128,0), RGB(64,128,128), RGB(64,128,192), RGB(64,128,255),
 		RGB(64,192,0), RGB(64,192,128), RGB(64,192,192), RGB(64,192,255),
 		RGB(64,255,0), RGB(64,255,128), RGB(64,255,192), RGB(64,255,255),
 
-		RGB(128,0,0), RGB(128,0,128), RGB(128,0,192), RGB(128,0,255),				// 41
+		RGB(128,0,0), RGB(128,0,128), RGB(128,0,192), RGB(128,0,255),				/* 41 */
 		RGB(128,64,0), RGB(128,64,128), RGB(128,64,192), RGB(128,64,255),
 		RGB(128,128,0), RGB(128,128,128), RGB(128,128,192), RGB(128,128,255),
 		RGB(128,192,0), RGB(128,192,128), RGB(128,192,192), RGB(128,192,255),
 		RGB(128,255,0), RGB(128,255,128), RGB(128,255,192), RGB(128,255,255),
 
-		RGB(192,0,0), RGB(192,0,128), RGB(192,0,192), RGB(192,0,255),				// 61
+		RGB(192,0,0), RGB(192,0,128), RGB(192,0,192), RGB(192,0,255),				/* 61 */
 		RGB(192,64,0), RGB(192,64,128), RGB(192,64,192), RGB(192,64,255),
 		RGB(192,128,0), RGB(192,128,128), RGB(192,128,192), RGB(192,128,255),
 		RGB(192,192,0), RGB(192,192,128), RGB(192,192,192), RGB(192,192,255),
 		RGB(192,255,0), RGB(192,255,128), RGB(192,255,192), RGB(192,2552,255),
 
-		RGB(255,0,0), RGB(255,0,128), RGB(255,0,192), RGB(255,0,255),				// 81
+		RGB(255,0,0), RGB(255,0,128), RGB(255,0,192), RGB(255,0,255),				/* 81 */
 		RGB(255,64,0), RGB(255,64,128), RGB(255,64,192), RGB(255,64,255),
 		RGB(255,128,0), RGB(255,128,128), RGB(255,128,192), RGB(255,128,255),
 		RGB(255,192,0), RGB(255,192,128), RGB(255,192,192), RGB(255,192,255),
@@ -353,20 +353,20 @@ static void Connect( GtkWidget *w, gpointer  data )
 }
 
 
-    // Port Line Callback. data Param is Port Number
+    /* Port Line Callback. data Param is Port Number */
 static void PToggled( GtkWidget *w, int  data )
 {
-      // Create Port Mask bit from Port Number
+      /* Create Port Mask bit from Port Number */
       int Mask = 1 << data;
 
-      // Get current state of Item
+      /* Get current state of Item */
       int NewVal = gtk_check_menu_item_get_active((GtkCheckMenuItem *)w);
-      PortMask &= ~Mask;            // Clear portmask bit for this port
+      PortMask &= ~Mask;            /* Clear portmask bit for this port */
 
-      // Shift the new bit to the right place in the mask
+      /* Shift the new bit to the right place in the mask */
       NewVal = NewVal << data;
 
-      // OR into Mask
+      /* OR into Mask */
       PortMask |= NewVal;
 
       SendTraceOptions();
@@ -382,7 +382,7 @@ static void AddPortItem( GtkWidget *w, int * data )
       mon[MonPorts] = gtk_check_menu_item_new_with_label (Port);
       gtk_check_menu_item_set_active((GtkCheckMenuItem *)mon[MonPorts], (PortMask >> MonPorts) & MonPorts);
 
-      // Set Callback to PToggled. Parameter is Port Number
+      /* Set Callback to PToggled. Parameter is Port Number */
       g_signal_connect (mon[MonPorts], "toggled", G_CALLBACK (PToggled), (void *) MonPorts);
       gtk_menu_shell_append ((GtkMenuShell *)monmenu, mon[MonPorts]);
 
@@ -456,7 +456,7 @@ GtkWidget *get_menubar_menu(GtkWidget  *window)
 
      propitem = gtk_menu_item_new_with_label ("Properties");
      g_signal_connect(propitem, "activate", G_CALLBACK (open_font_select_dlg), (void*) &font);
-     //gtk_menu_item_set_submenu (GTK_MENU_ITEM (propitem), propmenu);
+     /*gtk_menu_item_set_submenu (GTK_MENU_ITEM (propitem), propmenu); */
 
 
     tcp_item = gtk_menu_item_new_with_label ("TCP Hosts");
@@ -516,10 +516,10 @@ GtkWidget *get_menubar_menu(GtkWidget  *window)
             sprintf(Port, "Port %d", i + 1);
             mon[i] = gtk_check_menu_item_new_with_label (Port);
 
-            // Set the Checked flag from the corresponding bit of PortMask
+            /* Set the Checked flag from the corresponding bit of PortMask */
             gtk_check_menu_item_set_active((GtkCheckMenuItem *)mon[i], (PortMask >> i) & 1);
 
-            // Call PToggled() when menu is selected. Data to PToggled is Port Number
+            /* Call PToggled() when menu is selected. Data to PToggled is Port Number */
             g_signal_connect (mon[i], "toggled", G_CALLBACK (PToggled), (void *) i);
             gtk_menu_shell_append ((GtkMenuShell *)monmenu, mon[i]);
 
@@ -560,10 +560,10 @@ static struct timeval timeout;
 int MonData = FALSE;
 
 
-//int Connecting = FALSE;
-//int Disconnecting = FALSE;
-//int Connected = FALSE;
-//int SocketActive = FALSE;
+/*int Connecting = FALSE; */
+/*int Disconnecting = FALSE; */
+/*int Connected = FALSE; */
+/*int SocketActive = FALSE; */
 
 int ProcessReceivedData();
 
@@ -580,7 +580,7 @@ gint PollTimer(gpointer data)
 
 	FD_ZERO(&writefs);
 
-	if (Connecting) FD_SET(sock,&writefs);	// Need notification of Connect
+	if (Connecting) FD_SET(sock,&writefs);	/* Need notification of Connect */
 
 	FD_ZERO(&errorfs);
 
@@ -588,11 +588,11 @@ gint PollTimer(gpointer data)
 
 	if (select(sock + 1, &readfs, &writefs, &errorfs, &timeout) > 0)
 	{
-		//	See what happened
+		/*	See what happened */
 
 		if (FD_ISSET(sock, &readfs))
 		{
-			// data available
+			/* data available */
 
 			ProcessReceivedData();
 
@@ -600,7 +600,7 @@ gint PollTimer(gpointer data)
 
 		if (FD_ISSET(sock, &writefs))
 		{
-			//	Connect success
+			/*	Connect success */
 
 			Connecting = FALSE;
 			Connected = TRUE;
@@ -609,11 +609,11 @@ gint PollTimer(gpointer data)
 
 		if (FD_ISSET(sock, &errorfs))
 		{
-			//	if connecting, then failed, if connected then has just disconnected
+			/*	if connecting, then failed, if connected then has just disconnected */
 
 			if (Connecting)
 			{
-				// Falied
+				/* Falied */
 
 				Connecting = FALSE;
 				Connected = FALSE;
@@ -649,7 +649,7 @@ gint PollTimer(gpointer data)
 		
 	SlowTimer++;
 	
-	if (SlowTimer > 5 * 60 * 9)				// About 9 mins
+	if (SlowTimer > 5 * 60 * 9)				/* About 9 mins */
 	{
 		SlowTimer = 0;
 		SendMsg("\0", 1);
@@ -709,8 +709,8 @@ gint delete_event( GtkWidget *widget,
 	gtk_window_get_position(GTK_WINDOW(widget), &x, &y);
 	vhandle = gtk_paned_get_position((GtkPaned *)vpaned);
 	printf("%d %d %d %d %d\n", x, y, width, height, vhandle);
-    //printf("%s\n", Font);
-    //gtk_widget_get_style(GtkWidget* window);
+    /*printf("%s\n", Font); */
+    /*gtk_widget_get_style(GtkWidget* window); */
     /* Change TRUE to FALSE and the main window will be destroyed with
      * a "delete_event". */
 
@@ -741,14 +741,14 @@ int main(int argc, char *argv[])
 	gtk_window_set_title (GTK_WINDOW (window), "TermTCP");
 	gtk_container_set_border_width (GTK_CONTAINER (window), 0);
     gtk_window_set_icon(GTK_WINDOW(window), create_pixbuf("/usr/share/pixmaps/bpqicon.png"));
-    //gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
-    //gtk_window_get_frame_dimensions(GTK_WINDOW(window),&left,&top,&right,&bottom);
+    /*gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER); */
+    /*gtk_window_get_frame_dimensions(GTK_WINDOW(window),&left,&top,&right,&bottom); */
 
 
     gtk_signal_connect (GTK_OBJECT (window), "delete_event",
                         GTK_SIGNAL_FUNC (delete_event), NULL);
 
-	// Create a box for the menu
+	/* Create a box for the menu */
 
 	box1 = gtk_vbox_new (FALSE, 0);
 	gtk_container_add (GTK_CONTAINER (window), box1);
@@ -776,17 +776,17 @@ int main(int argc, char *argv[])
     gtk_widget_show (frame2);
 
     /* Separator */
-//	separator = gtk_hseparator_new ();
-//	gtk_box_pack_start (GTK_BOX (box1), separator, FALSE, TRUE, 0);
+/*	separator = gtk_hseparator_new (); */
+/*	gtk_box_pack_start (GTK_BOX (box1), separator, FALSE, TRUE, 0); */
 
 	box2 = gtk_vbox_new  (FALSE, 10);
 	gtk_container_set_border_width (GTK_CONTAINER (box2), 1);
 	gtk_box_pack_start (GTK_BOX (box10), box2, FALSE, FALSE, 0);
 
-	// set up the text entry line
+	/* set up the text entry line */
 
 	entry = gtk_entry_new();
-	//gtk_entry_new_with_buffer(text);
+	/*gtk_entry_new_with_buffer(text); */
 	gtk_entry_set_max_length (GTK_ENTRY (entry), width);
 	gtk_entry_set_activates_default(GTK_ENTRY (entry), TRUE);
 	g_signal_connect (G_OBJECT (entry), "activate", G_CALLBACK (enter_callback), (gpointer) entry);
@@ -801,9 +801,9 @@ int main(int argc, char *argv[])
     gtk_widget_modify_font (entry, font_desc);
 	gtk_widget_modify_font (view, font_desc);
 	gtk_widget_modify_font (view2, font_desc);
-//  gtk_entry_new_with_buffer();
-    //gtk_signal_connect(G_OBJECT(window), "configure-event",
-    //                G_CALLBACK(frame_callback), NULL);
+/*  gtk_entry_new_with_buffer(); */
+    /*gtk_signal_connect(G_OBJECT(window), "configure-event", */
+    /*                G_CALLBACK(frame_callback), NULL); */
 
 	rtag = gtk_text_buffer_create_tag (text, NULL, "foreground", "red", NULL);
 	btag = gtk_text_buffer_create_tag (text, NULL, "foreground", "blue", NULL);
@@ -844,7 +844,7 @@ int main(int argc, char *argv[])
 		g_key_file_load_from_file(KF, path, 0, NULL);
 
 
-        //printf("%d %d\n", width, height);
+        /*printf("%d %d\n", width, height); */
 
         g_key_file_set_integer(KF, "Session 1", "MTX", mtxparam);
 		g_key_file_set_integer(KF, "Session 1", "MCOM", MCOM);
@@ -857,15 +857,15 @@ int main(int argc, char *argv[])
         g_key_file_set_integer(KF, "Session 1", "PortMask", PortMask);
         g_key_file_set_integer(KF, "Session 1", "MUIONLY", muionly);
 
-        //sprintf(Font, "%s", Font);
-        //g_key_file_set_string(KF, "Session 1", "Font", Font);
+        /*sprintf(Font, "%s", Font); */
+        /*g_key_file_set_string(KF, "Session 1", "Font", Font); */
 
 
         sprintf(Position, "%d,%d,%d,%d,%d", x, y, width, height, vhandle);
         g_key_file_set_string(KF, "Session 1", "Position", Position);
 
-        //sprintf(monitormon, "%d,%d", xx, yy);
-        //g_key_file_set_string(KF, "Session 1", "Scrollwin", monitormon);
+        /*sprintf(monitormon, "%d,%d", xx, yy); */
+        /*g_key_file_set_string(KF, "Session 1", "Scrollwin", monitormon); */
         Value = g_key_file_to_data(KF, &length, &error);
 
 		outfile = fopen ( path, "w");
@@ -932,8 +932,8 @@ void get_fontname(GtkWidget *widget, gpointer data)
 
 		g_key_file_free(KF);
 		gtk_widget_destroy(font_select_dlg);
-//        gtk_entry_new_with_buffer();
-    //return;
+/*        gtk_entry_new_with_buffer(); */
+    /*return; */
 }
 
 
@@ -987,8 +987,8 @@ void SendTraceOptions()
 {
 	char Buffer[80];
 
-	//int Len = sprintf(Buffer,"\\\\\\\\%x %x %x %x %x %x\r", PortMask, mtxparam, MCOM, MonNODES, MONColour, muionly);
-    // ** makes the system use utf8 **
+	/*int Len = sprintf(Buffer,"\\\\\\\\%x %x %x %x %x %x\r", PortMask, mtxparam, MCOM, MonNODES, MONColour, muionly); */
+    /* ** makes the system use utf8 ** */
     int Len = sprintf(Buffer,"\\\\\\\\%x %x %x %x %x %x %x\r", PortMask, mtxparam, MCOM, MonNODES, MONColour, muionly, 1);
 	send(sock, Buffer, Len, 0);
 
@@ -1008,7 +1008,7 @@ void WritetoOutputWindow(const char * Msg, int len)
 
 	if (SaveLen)
 	{
-		// Have part line - append to it
+		/* Have part line - append to it */
 		memcpy(&Save[SaveLen], Msg, len);
 		SaveLen += len;
 		ptr1 = Save;
@@ -1024,18 +1024,18 @@ lineloop:
 		return;
 	}
 
-	//	copy text to control a line at a time
+	/*	copy text to control a line at a time */
 
 	ptr2 = memchr(ptr1, 13, len);
 
-	if (ptr2 == 0)	// No CR
+	if (ptr2 == 0)	/* No CR */
 	{
 		memmove(Save, ptr1, len);
 		SaveLen = len;
 		return;
 	}
 
-//	*(ptr2++) = 0;
+/*	*(ptr2++) = 0; */
 
 	if (ptr1[0] == 0x1b)
 	{
@@ -1053,21 +1053,21 @@ lineloop:
 	}
 	else
 	{
-//		gtk_text_insert (GTK_TEXT (text), fixed_font, &text->style->black, NULL, ptr1, -1);
+/*		gtk_text_insert (GTK_TEXT (text), fixed_font, &text->style->black, NULL, ptr1, -1); */
 		gtk_text_buffer_get_end_iter(text2, &iter);
 		gtk_text_buffer_insert(text2, &iter, ptr1, ptr2 - ptr1);
 
 	}
 
-//	gtk_text_insert (GTK_TEXT (text), fixed_font, &text->style->black, NULL, "\n", -1);
+/*	gtk_text_insert (GTK_TEXT (text), fixed_font, &text->style->black, NULL, "\n", -1); */
 	gtk_text_buffer_get_end_iter(text2, &iter);
 	gtk_text_buffer_insert(text2, &iter,  "\n", -1);
-//	gtk_text_view_place_cursor_onscreen (view2);
+/*	gtk_text_view_place_cursor_onscreen (view2); */
 	gtk_text_buffer_get_end_iter(text2, &iter);
 	gtk_text_view_scroll_to_iter ((GtkTextView *)view2, &iter, 0.0, FALSE, 0.0, 0.0);
 
 
-//	if (LogMonitor) WriteMonitorLine(ptr1, ptr2 - ptr1);
+/*	if (LogMonitor) WriteMonitorLine(ptr1, ptr2 - ptr1); */
 
 	len -= (++ptr2 - ptr1);
 	ptr1 = ptr2;
@@ -1089,7 +1089,7 @@ void WritetoMonWindow(char * Msg, int len)
 
 	if (MonSaveLen)
 	{
-		// Have part line - append to it
+		/* Have part line - append to it */
 		memcpy(&MonSave[MonSaveLen], Msg, len);
 		MonSaveLen += len;
 		ptr1 = MonSave;
@@ -1117,11 +1117,11 @@ lineloop:
 		g_timeout_add (100, ScrollTimer, 0);
 		return;
 	}
-	//	copy text to control a line at a time
+	/*	copy text to control a line at a time */
 
 	ptr2 = memchr(ptr1, 13, len);
 
-	if (ptr2 == 0)	// No CR
+	if (ptr2 == 0)	/* No CR */
 	{
 		memmove(MonSave, ptr1, len);
 		MonSaveLen = len;
@@ -1153,7 +1153,7 @@ lineloop:
 
 	 gtk_text_view_scroll_to_iter ((GtkTextView *)view, &iter, 0.0, FALSE, 0.0, 0.0);
 
-//	if (LogMonitor) WriteMonitorLine(ptr1, ptr2 - ptr1);
+/*	if (LogMonitor) WriteMonitorLine(ptr1, ptr2 - ptr1); */
 
 	len -= (++ptr2 - ptr1);
 	ptr1 = ptr2;
@@ -1172,20 +1172,20 @@ int TCPConnect(char * Host, char * Port)
 {
 
 	int err = 0;
-//	u_long param=1;
-//	int bcopt=TRUE;
-//	struct sockaddr_in sinx;
-//	int addrlen=sizeof(sinx);
+/*	u_long param=1; */
+/*	int bcopt=TRUE; */
+/*	struct sockaddr_in sinx; */
+/*	int addrlen=sizeof(sinx); */
 	char Title[80];
 
 	struct addrinfo hints, *res = NULL;
 
 	Disconnecting = FALSE;
 
-	// get host info, make socket, and connect it
+	/* get host info, make socket, and connect it */
 
 	memset(&hints, 0, sizeof hints);
-	hints.ai_family = AF_UNSPEC;  // use IPv4 or IPv6, whichever
+	hints.ai_family = AF_UNSPEC;  /* use IPv4 or IPv6, whichever */
 	hints.ai_socktype = SOCK_STREAM;
 	getaddrinfo(Host, Port, &hints, &res);
 
@@ -1207,7 +1207,7 @@ int TCPConnect(char * Host, char * Port)
 
 		gtk_window_set_title (GTK_WINDOW (window), Title);
 
-		return FALSE;			// Resolve failed
+		return FALSE;			/* Resolve failed */
 
 	}
 
@@ -1215,9 +1215,9 @@ int TCPConnect(char * Host, char * Port)
 
 	if (connect(sock, res->ai_addr, res->ai_addrlen) == 0)
 	{
-		//
-		//	Connected successful
-		//
+		/* */
+		/*	Connected successful */
+		/* */
 
 		Telnet_Connected(sock, 0);
 
@@ -1229,7 +1229,7 @@ int TCPConnect(char * Host, char * Port)
 
 		if (err == 10035)
 		{
-			//	Connect in Progress
+			/*	Connect in Progress */
 
 			sprintf(Title,"BPQTermTCP Version %s - Connecting to %s", VersionString, Host);
 			gtk_window_set_title (GTK_WINDOW (window), Title);
@@ -1241,7 +1241,7 @@ int TCPConnect(char * Host, char * Port)
 		}
 		else
 		{
-			//	Connect failed
+			/*	Connect failed */
 
 			closesocket(sock);
 			dialog = gtk_message_dialog_new ((GtkWindow *)window,
@@ -1277,7 +1277,7 @@ int ProcessReceivedData()
 	{
 		if (Disconnecting == FALSE)
 		{
-			shutdown(sock, 2);		// SD_BOTH
+			shutdown(sock, 2);		/* SD_BOTH */
 			Disconnecting = TRUE;
 		}
 		else
@@ -1301,7 +1301,7 @@ int ProcessReceivedData()
 		printf("recv - len = 0\r\n");
 		if (Disconnecting == FALSE)
 		{
-			shutdown(sock, 2);		// SD_BOTH
+			shutdown(sock, 2);		/* SD_BOTH */
 			Disconnecting = TRUE;
 		}
 		else
@@ -1312,19 +1312,19 @@ int ProcessReceivedData()
 
 	message[len] = 0;
 
-	// Look for MON delimiters (FF/FE)
+	/* Look for MON delimiters (FF/FE) */
 
 	Buffptr = message;
 
 	if (MonData)
 	{
-		// Already in MON State
+		/* Already in MON State */
 
 		FEptr = memchr(Buffptr, 0xfe, len);
 
 		if (!FEptr)
 		{
-			// no FE - so send all to monitor
+			/* no FE - so send all to monitor */
 
 			WritetoMonWindow(Buffptr, len);
 			return TRUE;
@@ -1332,19 +1332,19 @@ int ProcessReceivedData()
 
 		MonData = FALSE;
 
-		MonLen = FEptr - Buffptr;		// Mon Data, Excluding the FE
+		MonLen = FEptr - Buffptr;		/* Mon Data, Excluding the FE */
 
 		WritetoMonWindow(Buffptr, MonLen);
 
-		Buffptr = ++FEptr;				// Char following FE
+		Buffptr = ++FEptr;				/* Char following FE */
 
 		if (++MonLen < len)
 		{
 			len -= MonLen;
-			goto MonLoop;				// See if next in MON or Data
+			goto MonLoop;				/* See if next in MON or Data */
 		}
 
-		// Nothing Left
+		/* Nothing Left */
 
 		return TRUE;
 	}
@@ -1355,13 +1355,13 @@ MonLoop:
 
 	if (ptr)
 	{
-		// Buffer contains Mon Data
+		/* Buffer contains Mon Data */
 
 		if (ptr > Buffptr)
 		{
-			// Some Normal Data before the FF
+			/* Some Normal Data before the FF */
 
-			int NormLen = ptr - Buffptr;				// Before the FF
+			int NormLen = ptr - Buffptr;				/* Before the FF */
 			WritetoOutputWindow(Buffptr, NormLen);
 
 			len -= NormLen;
@@ -1377,11 +1377,11 @@ MonLoop:
 		{
 			MonData = FALSE;
 
-			MonLen = FEptr + 1 - Buffptr;				// MonLen includes FF and FE
+			MonLen = FEptr + 1 - Buffptr;				/* MonLen includes FF and FE */
 			WritetoMonWindow(Buffptr+1, MonLen - 2);
 
 			len -= MonLen;
-			Buffptr += MonLen;							// Char Following FE
+			Buffptr += MonLen;							/* Char Following FE */
 
 			if (len <= 0)
 			{
@@ -1391,15 +1391,15 @@ MonLoop:
 		}
 		else
 		{
-			// No FE, so rest of buffer is MON Data
+			/* No FE, so rest of buffer is MON Data */
 
-			WritetoMonWindow(Buffptr+1, len -1);		// Exclude FF
-//			dorefresh();
+			WritetoMonWindow(Buffptr+1, len -1);		/* Exclude FF */
+/*			dorefresh(); */
 			return TRUE;
 		}
 	}
 
-	// No FF, so must be session data
+	/* No FF, so must be session data */
 
 	WritetoOutputWindow(Buffptr, len);
 	SlowTimer = 0;
@@ -1412,7 +1412,7 @@ int Telnet_Connected(SOCKET sock, int Error)
 	char Msg[80];
 	int Len;
 
-	// Connect Complete
+	/* Connect Complete */
 
 	if (Error)
 	{
@@ -1437,11 +1437,11 @@ int Telnet_Connected(SOCKET sock, int Error)
 
 	}
 
-//	RecvChannel = g_io_channel_unix_new((gint)sock);
-//	RecvChannel = g_io_channel_win32_new_socket((gint)sock);
-//	g_io_channel_set_encoding (RecvChannel, NULL, NULL);
-//	g_io_channel_set_flags(RecvChannel, G_IO_FLAG_APPEND| G_IO_FLAG_NONBLOCK, NULL);
-//	g_io_add_watch(RecvChannel, G_IO_IN | G_IO_HUP, GtkMsg_ShowMessage, 0);
+/*	RecvChannel = g_io_channel_unix_new((gint)sock); */
+/*	RecvChannel = g_io_channel_win32_new_socket((gint)sock); */
+/*	g_io_channel_set_encoding (RecvChannel, NULL, NULL); */
+/*	g_io_channel_set_flags(RecvChannel, G_IO_FLAG_APPEND| G_IO_FLAG_NONBLOCK, NULL); */
+/*	g_io_add_watch(RecvChannel, G_IO_IN | G_IO_HUP, GtkMsg_ShowMessage, 0); */
 
 	SocketActive = TRUE;
 	Connecting = FALSE;
@@ -1467,7 +1467,7 @@ static void Disconnect(GtkWidget *w, gpointer   data)
 {
 	if (Disconnecting)
 	{
-		// Force close
+		/* Force close */
 
 			if (SocketActive)
 				closesocket(sock);
@@ -1485,7 +1485,7 @@ static void Disconnect(GtkWidget *w, gpointer   data)
 			Disconnecting = FALSE;
 			return;
 	}
-	shutdown(sock, 2);		// SD_BOTH
+	shutdown(sock, 2);		/* SD_BOTH */
 	Disconnecting = TRUE;
 }
 
@@ -1511,9 +1511,9 @@ void ReadConfig()
 {
 	FILE *infile;
 	GKeyFile * KF;
-//	gchar * Value;
+/*	gchar * Value; */
 	gchar * Posn;
-//    gchar * font;
+/*    gchar * font; */
 
 	GError *error = NULL;
 	char path[PATH_MAX];
@@ -1542,11 +1542,11 @@ void ReadConfig()
 	ChatMode= g_key_file_get_integer(KF, "Session 1", "ChatMode", &error);
 	CurrentHost = g_key_file_get_integer (KF, "Session 1", "CurrentHost", &error);
 	mtxparam = g_key_file_get_integer (KF, "Session 1", "MTX", &error);
-//    fontname = g_key_file_intger (KF, "Session 1", "FontName", &error);
-//   charset = g_key_file_intger (KF, "Session 1", "CharSet", &error);
-//    codepage = g_key_file_intger (KF, "Session 1", "CodePage", &error);
-//    fontsize = g_key_file_intger (KF, "Session 1", "FontSize", &error);
-//    fontwidth = g_key_file_intger (KF, "Session 1", "FontWidth", &error);
+/*    fontname = g_key_file_intger (KF, "Session 1", "FontName", &error); */
+/*   charset = g_key_file_intger (KF, "Session 1", "CharSet", &error); */
+/*    codepage = g_key_file_intger (KF, "Session 1", "CodePage", &error); */
+/*    fontsize = g_key_file_intger (KF, "Session 1", "FontSize", &error); */
+/*    fontwidth = g_key_file_intger (KF, "Session 1", "FontWidth", &error); */
     muionly = g_key_file_get_integer (KF, "Session 1", "MUIONLY", &error);
 
 	g_key_file_free(KF);
@@ -1600,5 +1600,5 @@ void ReadConfig()
 			}
 		}
 	}
-//    return 0
+/*    return 0 */
 }

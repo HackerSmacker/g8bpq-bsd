@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-//
-//	Interface to allow G8BPQ switch to use  Serial TNC in character mode
+/* */
+/*	Interface to allow G8BPQ switch to use  Serial TNC in character mode */
 
 
 #define _CRT_SECURE_NO_DEPRECATE
@@ -78,7 +78,7 @@ static int ProcessLine(char * buf, int Port)
 	struct TNCINFO * TNC = TNCInfo[Port];
 	char errbuf[256];
 
-	// Read Initialisation lines
+	/* Read Initialisation lines */
 
 	while(TRUE)
 	{
@@ -142,7 +142,7 @@ BOOL SerialReadConfigFile(int Port, int ProcLine())
 
 	if (Config)
 	{
-		// Using config from bpq32.cfg
+		/* Using config from bpq32.cfg */
 
 		if (strlen(Config) == 0)
 		{
@@ -180,11 +180,11 @@ static VOID SendToTNC(struct TNCINFO * TNC, int Stream, UCHAR * Encoded, int Enc
 {
 	if (TNC->hDevice)
 	{
-		// Serial mode. Queue to Hostmode driver
+		/* Serial mode. Queue to Hostmode driver */
 		
 		PMSGWITHLEN buffptr = (PMSGWITHLEN)GetBuff();
 
-		if (buffptr == 0) return;			// No buffers, so ignore
+		if (buffptr == 0) return;			/* No buffers, so ignore */
 
 		buffptr->Len = EncLen;
 		memcpy(&buffptr->Data[0], Encoded, EncLen);
@@ -203,7 +203,7 @@ VOID SerialChangeMYC(struct TNCINFO * TNC, char * Call)
 	int datalen;
 
 	if (strcmp(Call, TNC->CurrentMYC) == 0)
-		return;								// No Change
+		return;								/* No Change */
 
 	strcpy(TNC->CurrentMYC, Call);
 
@@ -215,7 +215,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 {
 	int datalen;
 	PMSGWITHLEN buffptr;
-//	char txbuff[500];
+/*	char txbuff[500]; */
 	unsigned int bytes,txlen = 0;
 	UCHAR * TXMsg;
 
@@ -227,11 +227,11 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 	struct ScanEntry * Scan;
 
 	if (TNC == NULL)
-		return 0;							// Port not defined
+		return 0;							/* Port not defined */
 
 	if (TNC->hDevice == 0)
 	{
-		// Clear anything from UI_Q
+		/* Clear anything from UI_Q */
 
 		while (TNC->PortRecord->UI_Q)
 		{
@@ -239,7 +239,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 			ReleaseBuffer(buffptr);
 		}
 
-		// Try to reopen every 30 secs
+		/* Try to reopen every 30 secs */
 
 		if (fn > 3  && fn < 7)
 			goto ok;
@@ -267,12 +267,12 @@ ok:
 	{
 		case 7:			
 
-		// 100 mS Timer. May now be needed, as Poll can be called more frequently in some circumstances
+		/* 100 mS Timer. May now be needed, as Poll can be called more frequently in some circumstances */
 
 		SerialCheckRX(TNC);
 		return 0;
 
-	case 1:				// poll
+	case 1:				/* poll */
 
 		while (TNC->PortRecord->UI_Q)
 		{
@@ -294,7 +294,7 @@ ok:
 
 			if (TNC->DiscPending == 0)
 			{
-				// Too long in Disc Pending - Kill and Restart TNC
+				/* Too long in Disc Pending - Kill and Restart TNC */
 			}
 		}
 
@@ -309,7 +309,7 @@ ok:
 
 				if (STREAM->NeedDisc == 0)
 				{
-					// Send the DISCONNECT
+					/* Send the DISCONNECT */
 
 					SerialSendCommand(TNC, "DISCONNECT\r");
 				}
@@ -317,7 +317,7 @@ ok:
 
 			if (TNC->PortRecord->ATTACHEDSESSIONS[Stream] && STREAM->Attached == 0)
 			{
-				// New Attach
+				/* New Attach */
 
 				int calllen;
 				char Msg[80];
@@ -332,14 +332,14 @@ ok:
 	
 				SerialChangeMYC(TNC, TNC->Streams[0].MyCall);
 		
-				// Stop other ports in same group
+				/* Stop other ports in same group */
 
 				SuspendOtherPorts(TNC);
 	
-				//sprintf(TNC->WEB_TNCSTATE, "In Use by %s", TNC->Streams[0].MyCall);
-				//MySetWindowText(TNC->xIDC_TNCSTATE, TNC->WEB_TNCSTATE);
+				/*sprintf(TNC->WEB_TNCSTATE, "In Use by %s", TNC->Streams[0].MyCall); */
+				/*MySetWindowText(TNC->xIDC_TNCSTATE, TNC->WEB_TNCSTATE); */
 
-					// Stop Scanning
+					/* Stop Scanning */
 
 				sprintf(Msg, "%d SCANSTOP", TNC->Port);
 	
@@ -351,7 +351,7 @@ ok:
 
 		}
 				
-		// See if any frames for this port
+		/* See if any frames for this port */
 
 		for (Stream = 0; Stream <= 2; Stream++)
 		{
@@ -375,9 +375,9 @@ ok:
 
 				datalen = (int)buffptr->Len;
 
-				buff->PORT = Stream;						// Compatibility with Kam Driver
+				buff->PORT = Stream;						/* Compatibility with Kam Driver */
 				buff->PID = 0xf0;
-				memcpy(&buff->L2DATA, &buffptr->Data[0], datalen);		// Data goes to + 7, but we have an extra byte
+				memcpy(&buff->L2DATA, &buffptr->Data[0], datalen);		/* Data goes to + 7, but we have an extra byte */
 				datalen += sizeof(void *) + 4;
 
 				PutLengthinBuffer(buff, datalen);
@@ -387,56 +387,56 @@ ok:
 				return (1);
 			}
 
-			if (STREAM->ReportDISC)		// May need a delay so treat as a counter
+			if (STREAM->ReportDISC)		/* May need a delay so treat as a counter */
 			{
 				STREAM->ReportDISC--;
 				if (STREAM->ReportDISC == 0)
 				{
 					buff->PORT = Stream;
-//					STREAM->Connected = 0;
-//					STREAM->Attached = 0;
+/*					STREAM->Connected = 0; */
+/*					STREAM->Attached = 0; */
 					return -1;
 				}
 			}
 		}
 		return (0);
 
-	case 2:				// send
+	case 2:				/* send */
 
 		Stream = buff->PORT;
 
 		if (!TNC->hDevice)
 		{
-			// Send Error Response
+			/* Send Error Response */
 
 			PMSGWITHLEN buffptr = (PMSGWITHLEN)GetBuff();
 
-			if (buffptr == 0) return (0);			// No buffers, so ignore
+			if (buffptr == 0) return (0);			/* No buffers, so ignore */
 
 			buffptr->Len = 36;
 			memcpy(&buffptr->Data[0], "No Connection to TNC\r", 36);
 
 			C_Q_ADD(&TNC->Streams[Stream].PACTORtoBPQ_Q, buffptr);
 			
-			return 0;		// Don't try if not connected
+			return 0;		/* Don't try if not connected */
 		}
 
 		STREAM = &TNC->Streams[Stream];
 		
 		if (TNC->SwallowSignon)
 		{
-			TNC->SwallowSignon = FALSE;		// Discard *** connected
+			TNC->SwallowSignon = FALSE;		/* Discard *** connected */
 			return 0;
 		}
 
-		txlen = GetLengthfromBuffer(buff) - (MSGHDDRLEN + 1);		// 1 as no PID
+		txlen = GetLengthfromBuffer(buff) - (MSGHDDRLEN + 1);		/* 1 as no PID */
 		TXMsg = &buff->L2DATA[0];
 		TXMsg[txlen] = 0;
 
-		// for now just send, but allow sending control
-		// characters with \\ or ^ escape
+		/* for now just send, but allow sending control */
+		/* characters with \\ or ^ escape */
 
-//		if (STREAM->Connected)
+/*		if (STREAM->Connected) */
 		{
 			STREAM->PacketsSent++;
 
@@ -444,17 +444,17 @@ ok:
 			{
 				txlen = ProcessEscape(TXMsg);
 
-				if (txlen == 0)			// Must be \\D
+				if (txlen == 0)			/* Must be \\D */
 				{
-					STREAM->ReportDISC = TRUE;		// Tell Node
+					STREAM->ReportDISC = TRUE;		/* Tell Node */
 					return 0;
 				}
 			}
 
 			bytes=SerialSendData(TNC, TXMsg, txlen);
-			TNC->Streams[Stream].BytesOutstanding += bytes;		// So flow control works - will be updated by BUFFER response
+			TNC->Streams[Stream].BytesOutstanding += bytes;		/* So flow control works - will be updated by BUFFER response */
 			STREAM->BytesTXed += bytes;
-//			WritetoTrace(TNC, &buff->L2DATA[0], txlen);
+/*			WritetoTrace(TNC, &buff->L2DATA[0], txlen); */
 	
 			return 1;
 		}
@@ -564,24 +564,24 @@ ok:
 */
 	case 3:	
 		
-		// CHECK IF OK TO SEND (And check TNC Status)
+		/* CHECK IF OK TO SEND (And check TNC Status) */
 
 		Stream = (int)(size_t)buff;
 
-		// I think we should check buffer space for all comms modes
+		/* I think we should check buffer space for all comms modes */
 
 		{
 		int Queued;
 		int Outstanding = TNC->Streams[Stream].BytesOutstanding;
 
 		if (Stream == 0)
-			Queued = TNC->Streams[13].FramesQueued;		// ARDOP Native Mode Send Queue
+			Queued = TNC->Streams[13].FramesQueued;		/* ARDOP Native Mode Send Queue */
 		else
 			Queued = TNC->Streams[Stream].FramesQueued;
 
 		Outstanding = Queued = 0;
 
- 		if (TNC->Mode == 'O')		// OFDM version has more buffer space
+ 		if (TNC->Mode == 'O')		/* OFDM version has more buffer space */
 		{
 			if (Queued > 4 || Outstanding > 8500)
 				return (1 | (TNC->HostMode | TNC->CONNECTED) << 8 | STREAM->Disconnecting << 15);
@@ -596,40 +596,40 @@ ok:
 		if (TNC->Streams[Stream].Attached == 0)
 			return (TNC->hDevice != 0) << 8 | 1;
 
-		return ((TNC->hDevice != 0) << 8 | TNC->Streams[Stream].Disconnecting << 15);		// OK
+		return ((TNC->hDevice != 0) << 8 | TNC->Streams[Stream].Disconnecting << 15);		/* OK */
 		
 
-	case 4:				// reinit7
+	case 4:				/* reinit7 */
 
 		return 0;
 
-	case 5:				// Close
+	case 5:				/* Close */
 
 		return 0;
 
-	case 6:				// Scan Stop Interface
+	case 6:				/* Scan Stop Interface */
 
 		Param = (size_t)buff;
 	
-		if (Param == 2)		// Check  Permission (Shouldn't happen)
+		if (Param == 2)		/* Check  Permission (Shouldn't happen) */
 		{
 			Debugprintf("Scan Check Permission called on ARDOP");
-			return 1;		// OK to change
+			return 1;		/* OK to change */
 		}
 
-		if (Param == 1)		// Request Permission
+		if (Param == 1)		/* Request Permission */
 		{
-			if (TNC->ARDOPCommsMode == 'T')		// TCP Mode
+			if (TNC->ARDOPCommsMode == 'T')		/* TCP Mode */
 			{
 				if (!TNC->CONNECTED)
-					return 0;					// No connection so no interlock
+					return 0;					/* No connection so no interlock */
 			}
 			else
 			{
-				// Serial Modes
+				/* Serial Modes */
 
 				if (!TNC->HostMode)
-					return 0;					// No connection so no interlock
+					return 0;					/* No connection so no interlock */
 			}
 			
 
@@ -637,27 +637,27 @@ ok:
 			{
 				SerialSendCommand(TNC, "CONOK OFF");
 				TNC->GavePermission = TRUE;
-				return 0;	// OK to Change
+				return 0;	/* OK to Change */
 			}
 
 			if (TNC->ConnectPending)
-				TNC->ConnectPending--;		// Time out if set too long
+				TNC->ConnectPending--;		/* Time out if set too long */
 
 			return TRUE;
 		}
 
-		if (Param == 3)		// Release  Permission
+		if (Param == 3)		/* Release  Permission */
 		{
 			if (TNC->GavePermission)
 			{
 				TNC->GavePermission = FALSE;
-				if (TNC->ARDOPCurrentMode[0] != 'S')	// Skip
+				if (TNC->ARDOPCurrentMode[0] != 'S')	/* Skip */
 					SerialSendCommand(TNC, "CONOK ON");
 			}
 			return 0;
 		}
 
-		// Param is Address of a struct ScanEntry
+		/* Param is Address of a struct ScanEntry */
 
 		Scan = (struct ScanEntry *)buff;
 		return 0;
@@ -667,13 +667,13 @@ ok:
 
 VOID SerialReleaseTNC(struct TNCINFO * TNC)
 {
-	// Set mycall back to Node or Port Call, and Start Scanner
+	/* Set mycall back to Node or Port Call, and Start Scanner */
 
 	UCHAR TXMsg[1000];
 
 	SerialChangeMYC(TNC, TNC->NodeCall);
 
-	//	Start Scanner
+	/*	Start Scanner */
 				
 	sprintf(TXMsg, "%d SCANSTART 15", TNC->Port);
 
@@ -707,7 +707,7 @@ VOID * SerialExtInit(EXTPORTDATA * PortEntry)
 
 	port=PortEntry->PORTCONTROL.PORTNUMBER;
 
-	if (TNCInfo[port])					// If restarting, free old config
+	if (TNCInfo[port])					/* If restarting, free old config */
 		free(TNCInfo[port]);
 
 	TNC = TNCInfo[port] = malloc(sizeof(struct TNCINFO));
@@ -716,14 +716,14 @@ VOID * SerialExtInit(EXTPORTDATA * PortEntry)
 	TNC->InitScript = malloc(1000);
 	TNC->InitScript[0] = 0;
 
-	if (PortConfig[port])			// May not have config
+	if (PortConfig[port])			/* May not have config */
 		SerialReadConfigFile(port, ProcessLine);
 
 	TNC = TNCInfo[port];
 
 	if (TNC == NULL)
 	{
-		// Not defined in Config file
+		/* Not defined in Config file */
 
 		sprintf(Msg," ** Error - no info in BPQ32.cfg for this port\n");
 		WritetoConsole(Msg);
@@ -752,8 +752,8 @@ VOID * SerialExtInit(EXTPORTDATA * PortEntry)
 
 	PortEntry->MAXHOSTMODESESSIONS = TNC->PacketChannels + 1;
 
-	PortEntry->SCANCAPABILITIES = SIMPLE;			// Scan Control - pending connect only
-	PortEntry->PERMITGATEWAY = TRUE;				// Can change ax.25 call on each stream
+	PortEntry->SCANCAPABILITIES = SIMPLE;			/* Scan Control - pending connect only */
+	PortEntry->PERMITGATEWAY = TRUE;				/* Can change ax.25 call on each stream */
 
 	PortEntry->PORTCONTROL.UICAPABLE = TRUE;
 
@@ -768,15 +768,15 @@ VOID * SerialExtInit(EXTPORTDATA * PortEntry)
 
 
 	ptr=strchr(TNC->NodeCall, ' ');
-	if (ptr) *(ptr) = 0;					// Null Terminate
+	if (ptr) *(ptr) = 0;					/* Null Terminate */
 
-	// Set Essential Params and MYCALL
+	/* Set Essential Params and MYCALL */
 
-	// Put overridable ones on front, essential ones on end
+	/* Put overridable ones on front, essential ones on end */
 
 	TempScript = zalloc(1000);
 
-	// cant think of any yet
+	/* cant think of any yet */
 
 	if (TNC->InitScript)
 	{
@@ -786,7 +786,7 @@ VOID * SerialExtInit(EXTPORTDATA * PortEntry)
 
 	TNC->InitScript = TempScript;
 
-	// Set MYCALL
+	/* Set MYCALL */
 
 	sprintf(Msg, "MYCALL %s\r", TNC->NodeCall);
 	strcat(TNC->InitScript, Msg);
@@ -794,7 +794,7 @@ VOID * SerialExtInit(EXTPORTDATA * PortEntry)
 	strcpy(TNC->CurrentMYC, TNC->NodeCall);
 
 	if (TNC->WL2K == NULL)
-		if (PortEntry->PORTCONTROL.WL2KInfo.RMSCall[0])			// Alrerady decoded
+		if (PortEntry->PORTCONTROL.WL2KInfo.RMSCall[0])			/* Alrerady decoded */
 			TNC->WL2K = &PortEntry->PORTCONTROL.WL2KInfo;
 
 	OpenCOMMPort(TNC, PortEntry->PORTCONTROL.SerialPortName, PortEntry->PORTCONTROL.BAUDRATE, FALSE);
@@ -803,7 +803,7 @@ VOID * SerialExtInit(EXTPORTDATA * PortEntry)
 
 	SendInitScript(TNC);
 
-	time(&TNC->lasttime);			// Get initial time value
+	time(&TNC->lasttime);			/* Get initial time value */
 
 	return ExtProc;
 }
@@ -811,7 +811,7 @@ VOID * SerialExtInit(EXTPORTDATA * PortEntry)
 
 VOID TidyClose(struct TNCINFO * TNC, int Stream)
 {
-	// If all acked, send disc
+	/* If all acked, send disc */
 	
 	if (TNC->Streams[Stream].BytesOutstanding == 0)
 		SerialSendCommand(TNC, "DISCONNECT\r");
@@ -837,7 +837,7 @@ VOID SerialAbort(struct TNCINFO * TNC)
 	SerialSendCommand(TNC, "ABORT\r");
 }
 
-// Host Mode Stuff (we reuse some routines in SCSPactor)
+/* Host Mode Stuff (we reuse some routines in SCSPactor) */
 
 VOID SerialDoTermModeTimeout(struct TNCINFO * TNC)
 {
@@ -845,7 +845,7 @@ VOID SerialDoTermModeTimeout(struct TNCINFO * TNC)
 
 	if (TNC->ReinitState == 0)
 	{
-		//Checking if in Terminal Mode - Try to set back to Term Mode
+		/*Checking if in Terminal Mode - Try to set back to Term Mode */
 
 		TNC->ReinitState = 1;
 		return;
@@ -853,7 +853,7 @@ VOID SerialDoTermModeTimeout(struct TNCINFO * TNC)
 
 	if (TNC->ReinitState == 1)
 	{
-		// Forcing back to Term Mode
+		/* Forcing back to Term Mode */
 
 		TNC->ReinitState = 0;
 		return;
@@ -871,7 +871,7 @@ VOID SendInitScript(struct TNCINFO * TNC)
 	char * ptr1, * ptr2;
 	int len;
 
-	// Send INIT script
+	/* Send INIT script */
 
 	ptr1 = &TNC->InitScript[0];
 
@@ -895,7 +895,7 @@ VOID SendInitScript(struct TNCINFO * TNC)
 		Sleep(50);
 
 		if (ptr2)
-			*(ptr2++) = 13;		// Put CR back for next time 
+			*(ptr2++) = 13;		/* Put CR back for next time  */
 
 		ptr1 = ptr2;
 	}
@@ -912,7 +912,7 @@ VOID SerialProcessTNCMessage(struct TNCINFO * TNC)
 
 	if (buffptr == 0)
 	{
-		return;			// No buffers, so ignore
+		return;			/* No buffers, so ignore */
 	}
 	
 	buffptr->Len = sprintf((UCHAR *)&buffptr->Data[0], "%s", TNC->RXBuffer);
@@ -941,22 +941,22 @@ void SerialCheckRX(struct TNCINFO * TNC)
 
 	TNC->RXBuffer[TNC->RXLen] = 0;
 
-//		if (TNC->Streams[Stream].RXBuffer[TNC->Streams[Stream].RXLen-2] != ':')
+/*		if (TNC->Streams[Stream].RXBuffer[TNC->Streams[Stream].RXLen-2] != ':') */
 
 	if (strlen(TNC->RXBuffer) < TNC->RXLen)
 		TNC->RXLen = 0;
 
-	// Also need timeout for incomplete lines
+	/* Also need timeout for incomplete lines */
 
-//	if ((strchr(TNC->RXBuffer, 10) == 0) && (strchr(TNC->RXBuffer, 13) == 0))
-//		return;				// Wait for rest of frame
+/*	if ((strchr(TNC->RXBuffer, 10) == 0) && (strchr(TNC->RXBuffer, 13) == 0)) */
+/*		return;				// Wait for rest of frame */
 
 
-//		OpenLogFile(TNC->Port);
-//		WriteLogLine(TNC->Port, TNC->RXBuffer, (int)strlen(TNC->RXBuffer));
-//		CloseLogFile(TNC->Port);
+/*		OpenLogFile(TNC->Port); */
+/*		WriteLogLine(TNC->Port, TNC->RXBuffer, (int)strlen(TNC->RXBuffer)); */
+/*		CloseLogFile(TNC->Port); */
 
-	TNC->RXLen = 0;		// Ready for next frame
+	TNC->RXLen = 0;		/* Ready for next frame */
 					
 	SerialProcessTNCMessage(TNC);
 	return;
@@ -996,23 +996,23 @@ int ProcessEscape(UCHAR * TXMsg)
 	BOOL HexEscape = FALSE;
 	int NewLen;
 
-	// Now using ^C for ctrl/c, etc
-	// Still use \\d
-	// ^^ for ^, \\\ for \\
+	/* Now using ^C for ctrl/c, etc */
+	/* Still use \\d */
+	/* ^^ for ^, \\\ for \\ */
 
 	while (ptr2)
 	{
 		UCHAR Next;
 
-		ptr1 = ptr2;		// over stuff before escape
+		ptr1 = ptr2;		/* over stuff before escape */
 
-		ptr2 += 2;			// over \\
+		ptr2 += 2;			/* over \\ */
 		
 		Next = *ptr2;
 
 		if (Next == '\\')
 		{
-			ptr1 = ptr2;			// put \\ in message
+			ptr1 = ptr2;			/* put \\ in message */
 			memmove(ptr2, ptr2 + 1, strlen(ptr2));
 		}
 		else if (Next == 'd' || Next == 'D')
@@ -1021,7 +1021,7 @@ int ProcessEscape(UCHAR * TXMsg)
 		ptr2 = strstr(ptr2, "\\\\");
 	}
 
-	// now look for ^
+	/* now look for ^ */
 
 	ptr1 = Orig;
 	ptr2 = strchr(Orig, '^');
@@ -1030,14 +1030,14 @@ int ProcessEscape(UCHAR * TXMsg)
 	{
 		UCHAR Next;
 
-		ptr1 = ptr2;		// over stuff before escape
-		ptr2 ++;			// over ^
+		ptr1 = ptr2;		/* over stuff before escape */
+		ptr2 ++;			/* over ^ */
 		
 		Next = *ptr2;
 
 		if (Next != '^')
 		{
-			Next &= 0x1F;	// Mask to control char
+			Next &= 0x1F;	/* Mask to control char */
 			HexEscape = TRUE;
 		}
 
@@ -1052,7 +1052,7 @@ int ProcessEscape(UCHAR * TXMsg)
 
 	if (HexEscape)
 	{
-		//	remove trailing CR
+		/*	remove trailing CR */
 
 		NewLen --;
 

@@ -17,15 +17,15 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-// Mail and Chat Server for BPQ32 Packet Switch
-//
-//	Support for FLAMP compatible Mulitcast
+/* Mail and Chat Server for BPQ32 Packet Switch */
+/* */
+/*	Support for FLAMP compatible Mulitcast */
 
 #include "bpqmail.h"
 
-void decodeblock( unsigned char in[4], unsigned char out[3]);  // Base64 Decode
+void decodeblock( unsigned char in[4], unsigned char out[3]);  /* Base64 Decode */
 
-time_t MulticastMaxAge = 48 * 60 * 60;		// 48 Hours in secs
+time_t MulticastMaxAge = 48 * 60 * 60;		/* 48 Hours in secs */
 
 struct MSESSION * MSessions = NULL;
 
@@ -36,7 +36,7 @@ struct MSESSION * MSessions = NULL;
 HWND hMCMonitor = NULL;
 HWND MCList;
 
-static HMENU hMCMenu;		// handle of menu 
+static HMENU hMCMenu;		/* handle of menu  */
 
 static char MCClassName[]="BPQMCWINDOW";
 
@@ -53,7 +53,7 @@ void MCMoveWindows()
 
 	GetClientRect(hMCMonitor, &rcClient); 
 
-	if (rcClient.bottom == 0)		// Minimised
+	if (rcClient.bottom == 0)		/* Minimised */
 		return;
 
 	ClientHeight = rcClient.bottom;
@@ -79,15 +79,15 @@ LRESULT CALLBACK MCWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam
 		break;
 
 	case WM_CLOSE:
-		if (wParam)				// Used by Close All Programs.
+		if (wParam)				/* Used by Close All Programs. */
 			return 0;
 			
 		return (DefWindowProc(hWnd, message, wParam, lParam));
 
 	case WM_COMMAND:
 
-		wmId    = LOWORD(wParam); // Remember, these are...
-		wmEvent = HIWORD(wParam); // ...different for Win32!
+		wmId    = LOWORD(wParam); /* Remember, these are... */
+		wmEvent = HIWORD(wParam); /* ...different for Win32! */
 
 		switch (wmId)
 		{
@@ -131,8 +131,8 @@ LRESULT CALLBACK MCWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam
 
 	case WM_SYSCOMMAND:
 
-		wmId    = LOWORD(wParam); // Remember, these are...
-		wmEvent = HIWORD(wParam); // ...different for Win32!
+		wmId    = LOWORD(wParam); /* Remember, these are... */
+		wmEvent = HIWORD(wParam); /* ...different for Win32! */
 
 		switch (wmId) { 
 
@@ -160,9 +160,9 @@ LRESULT CALLBACK MCWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam
 
 		case WM_DESTROY:
 		
-			// Remove the subclass from the edit control. 
+			/* Remove the subclass from the edit control.  */
 
-			GetWindowRect(hWnd,	&MonitorRect);	// For save soutine         
+			GetWindowRect(hWnd,	&MonitorRect);	/* For save soutine          */
 
 			if (cfgMinToTray) 
 				DeleteTrayMenuItem(hWnd);
@@ -191,9 +191,9 @@ static void MoveMCWindows()
 	ClientHeight = rcClient.bottom;
 	ClientWidth = rcClient.right;
 
-//	MoveWindow(hwndMon,2, 0, ClientWidth-4, SplitPos, TRUE);
-//	MoveWindow(hwndOutput,2, 2, ClientWidth-4, ClientHeight-4, TRUE);
-//	MoveWindow(hwndSplit,0, SplitPos, ClientWidth, SplitBarHeight, TRUE);
+/*	MoveWindow(hwndMon,2, 0, ClientWidth-4, SplitPos, TRUE); */
+/*	MoveWindow(hwndOutput,2, 2, ClientWidth-4, ClientHeight-4, TRUE); */
+/*	MoveWindow(hwndSplit,0, SplitPos, ClientWidth, SplitBarHeight, TRUE); */
 }
 
 
@@ -201,7 +201,7 @@ static void MoveMCWindows()
 
 HWND CreateMCListView (HWND hwndParent) 
 {
-    INITCOMMONCONTROLSEX icex;           // Structure for control initialization.
+    INITCOMMONCONTROLSEX icex;           /* Structure for control initialization. */
 	HWND hList;
 	LV_COLUMN Column;
 	LOGFONT lf; 
@@ -220,7 +220,7 @@ HWND CreateMCListView (HWND hwndParent)
 	icex.dwICC = ICC_LISTVIEW_CLASSES;
     InitCommonControlsEx(&icex);
 
-    // Create the list-view window in report view with label editing enabled.
+    /* Create the list-view window in report view with label editing enabled. */
     
 	hList = CreateWindow(WC_LISTVIEW, 
                                      "Messages",
@@ -320,9 +320,9 @@ void RefreshMCLine(struct MSESSION * MSession)
 
 	Age = time(NULL) - MSession->LastUpdated;
 
-//	if (LocalTime)
-//		TM = localtime(&MSession->LastUpdated);
-//	else
+/*	if (LocalTime) */
+/*		TM = localtime(&MSession->LastUpdated); */
+/*	else */
 		TM = gmtime(&Age);
 
 	sprintf(Agestring, "%.2d:%.2d",
@@ -366,7 +366,7 @@ void RefreshMCLine(struct MSESSION * MSession)
 		pcent = (MSession->BlocksReceived * 100) / MSession->BlockCount;
 		sprintf(Percent, "%d", pcent);
 
-		// Flag received blocks. Normalise to 50 wide 
+		/* Flag received blocks. Normalise to 50 wide  */
 
 		memset(BlockList, '.', 50);
 
@@ -411,7 +411,7 @@ BOOL CreateMulticastConsole()
 	{
 		ShowWindow(hMCMonitor, SW_SHOWNORMAL);
 		SetForegroundWindow(hMCMonitor);
-		return FALSE;							// Already open
+		return FALSE;							/* Already open */
 	}
 
 	bgBrush = CreateSolidBrush(BGCOLOUR);
@@ -438,13 +438,13 @@ BOOL CreateMulticastConsole()
 
 	hMCMenu=GetMenu(hMCMonitor);
 
-//	CheckMenuItem(hMenu,MONBBS, MonBBS ? MF_CHECKED : MF_UNCHECKED);
-//	CheckMenuItem(hMenu,MONCHAT, MonCHAT ? MF_CHECKED : MF_UNCHECKED);
-//	CheckMenuItem(hMenu,MONTCP, MonTCP ? MF_CHECKED : MF_UNCHECKED);
+/*	CheckMenuItem(hMenu,MONBBS, MonBBS ? MF_CHECKED : MF_UNCHECKED); */
+/*	CheckMenuItem(hMenu,MONCHAT, MonCHAT ? MF_CHECKED : MF_UNCHECKED); */
+/*	CheckMenuItem(hMenu,MONTCP, MonTCP ? MF_CHECKED : MF_UNCHECKED); */
 
 	DrawMenuBar(hMCMonitor);	
 
-	// Create List View
+	/* Create List View */
 			
 	GetClientRect (hMCMonitor, &rcClient); 
 
@@ -496,7 +496,7 @@ void CopyMCToClipboard(HWND hWnd)
 
 	for (i=0; i<n; i++)
 	{
-		// Get Items
+		/* Get Items */
 		
 		ListView_GetItemText(MCList, i, 0, Key, 8);
 		ListView_GetItemText(MCList, i, 1, From, 15);
@@ -508,7 +508,7 @@ void CopyMCToClipboard(HWND hWnd)
 		ListView_GetItemText(MCList, i, 7, Complete, 2);
 		ListView_GetItemText(MCList, i, 8, BlockList, 100);
 
-		// Add line to buffer
+		/* Add line to buffer */
 
 		len += sprintf(&Buffer[len], "%4s %-10s %-16s %5s%4s %-6s%-6s%-2s%50s\r\n",
 			Key, From, FileName, Size, Percent, Time, Agestring, Complete, BlockList);
@@ -539,7 +539,7 @@ void CopyMCToClipboard(HWND hWnd)
 
 #else
 
-// LinBPQ
+/* LinBPQ */
 
 void RefreshMCLine(struct MSESSION * MSession)
 {
@@ -589,7 +589,7 @@ struct MSESSION * FindMSession(unsigned int Key)
 		Sess = Sess->Next;
 	}
 
-	//	 Not found
+	/*	 Not found */
 
 	Sess = zalloc(sizeof(struct MSESSION)); 
 
@@ -666,30 +666,30 @@ void decodeblock128(unsigned char in[8], unsigned char out[7] )
 
 void SaveMulticastMessage(struct MSESSION * MSession)
 {
-	UCHAR * Decoded = NULL;			// Output from Basexxx decode
+	UCHAR * Decoded = NULL;			/* Output from Basexxx decode */
 	UCHAR * Uncompressed = NULL;
-	int DecodedLen;					// Length of decoded message
-	int UncompressedLen;			// Length of decompressed message
-	int ExpectedLen;				// From front of Base128 or Base256 message
-	int HddrLen;					// Length of Expected Len Header
+	int DecodedLen;					/* Length of decoded message */
+	int UncompressedLen;			/* Length of decompressed message */
+	int ExpectedLen;				/* From front of Base128 or Base256 message */
+	int HddrLen;					/* Length of Expected Len Header */
 
 	if (MSession->FileName == NULL)
-		return;						// Need Name
+		return;						/* Need Name */
 		
-	MSession->Completed = TRUE;		// So we don't get it again
+	MSession->Completed = TRUE;		/* So we don't get it again */
 
-	// If compresses and encoded, decode and decompress
+	/* If compresses and encoded, decode and decompress */
 
 	if (memcmp(MSession->Message, "[b64:start]", 11) == 0)
 	{
 		UCHAR * ptr1 = &MSession->Message[11];
-		UCHAR * ptr2 = malloc(MSession->MessageLen);	// Must get smaller
+		UCHAR * ptr2 = malloc(MSession->MessageLen);	/* Must get smaller */
 		
-		int Len = MSession->MessageLen - 21;			// Header and Trailer
+		int Len = MSession->MessageLen - 21;			/* Header and Trailer */
 		
 		Decoded = ptr2;
 	
-		// Decode Base64 encoding
+		/* Decode Base64 encoding */
 
 		while (Len > 0)
 		{
@@ -705,20 +705,20 @@ void SaveMulticastMessage(struct MSESSION * MSession)
 	else if (memcmp(MSession->Message, "[b128:start]", 12) == 0)
 	{
 		UCHAR * ptr1 = &MSession->Message[12];
-		UCHAR * ptr2 = malloc(MSession->MessageLen);	// Must get smaller
+		UCHAR * ptr2 = malloc(MSession->MessageLen);	/* Must get smaller */
 		UCHAR ch;
 		UCHAR * Intermed;
 
-		int Len = MSession->MessageLen - 23;			// Header and Trailer
+		int Len = MSession->MessageLen - 23;			/* Header and Trailer */
 		
 		Intermed = ptr2;
 	
-		// Decode Base128 encoding
+		/* Decode Base128 encoding */
 
-		// First remove transparency (as in base256)
+		/* First remove transparency (as in base256) */
 
 
-		// Extract decoded msg len
+		/* Extract decoded msg len */
 		
 		ExpectedLen = atoi(ptr1);
 
@@ -773,7 +773,7 @@ void SaveMulticastMessage(struct MSESSION * MSession)
 		Len = ptr2 - Intermed;
 
 		ptr1 = Intermed;
-		ptr2 = malloc(MSession->MessageLen);	// Must get smaller
+		ptr2 = malloc(MSession->MessageLen);	/* Must get smaller */
 		Decoded = ptr2;
 
 		while (Len > 0)
@@ -790,16 +790,16 @@ void SaveMulticastMessage(struct MSESSION * MSession)
 	else if (memcmp(MSession->Message, "[b256:start]", 12) == 0)
 	{
 		UCHAR * ptr1 = &MSession->Message[12];
-		UCHAR * ptr2 = malloc(MSession->MessageLen);	// Must get smaller
+		UCHAR * ptr2 = malloc(MSession->MessageLen);	/* Must get smaller */
 		UCHAR ch;
 
-		int Len = MSession->MessageLen - 23;			// Header and Trailer
+		int Len = MSession->MessageLen - 23;			/* Header and Trailer */
 		
 		Decoded = ptr2;
 	
-		// Decode Base256 encoding
+		/* Decode Base256 encoding */
 
-		// Extract decoded msg len
+		/* Extract decoded msg len */
 		
 		ExpectedLen = atoi(ptr1);
 
@@ -855,12 +855,12 @@ void SaveMulticastMessage(struct MSESSION * MSession)
 	}
 	else
 	{
-		// Plain Text
+		/* Plain Text */
 
 		UncompressedLen = MSession->MessageLen;
 		Uncompressed = MSession->Message;
 
-		MSession->Message = NULL;		// So we dont try to free again
+		MSession->Message = NULL;		/* So we dont try to free again */
 	}
 
 	if (Decoded)
@@ -868,19 +868,19 @@ void SaveMulticastMessage(struct MSESSION * MSession)
 
 	if (Uncompressed)
 	{
-		// Write it away and free it
+		/* Write it away and free it */
 
 		char MsgFile[MAX_PATH];
 		FILE * hFile;
 		int WriteLen=0;
 		UCHAR * ptr1 = Uncompressed;
 
-		// Make Sure MCAST directory exists
+		/* Make Sure MCAST directory exists */
 
 		sprintf_s(MsgFile, sizeof(MsgFile), "%s/MCAST", MailDir);
 
 #ifdef WIN32
-		CreateDirectory(MsgFile, NULL);		// Just in case
+		CreateDirectory(MsgFile, NULL);		/* Just in case */
 #else
 		mkdir(MsgFile, S_IRWXU | S_IRWXG | S_IRWXO);
 		chmod(MsgFile, S_IRWXU | S_IRWXG | S_IRWXO);
@@ -897,8 +897,8 @@ void SaveMulticastMessage(struct MSESSION * MSession)
 		}
 
 
-		// if it looks like an export file (Starts SP SB or ST) and ends /ex
-		// import and delete it.
+		/* if it looks like an export file (Starts SP SB or ST) and ends /ex */
+		/* import and delete it. */
 		
 		if (*(ptr1) == 'S' && ptr1[2] == ' ')
 			if (_memicmp(&ptr1[UncompressedLen - 5], "/EX", 3) == 0)
@@ -922,14 +922,14 @@ VOID ProcessMCASTLine(ConnectionInfo * conn, struct UserInfo * user, char * Buff
 	if (MsgLen == 1 && Buffer[0] == 13)
 		return;
 
-	MsgLen --;			// Remove the CR we added
+	MsgLen --;			/* Remove the CR we added */
 
 	Buffer[MsgLen] = 0;
 
 	if (MsgLen == 1 && Buffer[0] == 13)
 		return;
 
-//	return;
+/*	return; */
 
 	n = sscanf(&Buffer[1], "%s %04d %04X", Opcode, &len, &checksum);
 
@@ -949,19 +949,19 @@ VOID ProcessMCASTLine(ConnectionInfo * conn, struct UserInfo * user, char * Buff
 	if (checksum != crcval)
 		return;
 
-	// Extract Session Key
+	/* Extract Session Key */
 
 	sscanf(&data[1], "%04X", &Key);
 
 	MSession = FindMSession(Key);
 
 	if (MSession == 0)
-		return;					// ?? couldn't allocate
+		return;					/* ?? couldn't allocate */
 
 	MSession->LastUpdated = time(NULL);
 
 	if (MSession->Completed)
-		return;					// We already have it all
+		return;					/* We already have it all */
 
 	if (strcmp(Opcode, "ID") == 0)
 	{
@@ -973,13 +973,13 @@ VOID ProcessMCASTLine(ConnectionInfo * conn, struct UserInfo * user, char * Buff
 
 	if (strcmp(Opcode, "PROG") == 0)
 	{
-		// Ignore for now
+		/* Ignore for now */
 		return;
 	}
 
 	if (strcmp(Opcode, "FILE") == 0)
 	{
-		//		<FILE 34 2A1A>{80BC}20141108142542:debug_log.txt
+		/*		<FILE 34 2A1A>{80BC}20141108142542:debug_log.txt */
 
 		char * FN = strchr(&data[6], ':');
 
@@ -991,14 +991,14 @@ VOID ProcessMCASTLine(ConnectionInfo * conn, struct UserInfo * user, char * Buff
 			MSession->OrigTimeStamp = _strdup(&data[6]);
 		}
 
-		// We could get whole message without getting the Name,
-		// so check
+		/* We could get whole message without getting the Name, */
+		/* so check */
 
 		if (MSession->BlockCount && MSession->BlocksReceived == MSession->BlockCount)
 		{
-			// We have the whole message. Decode and Save
+			/* We have the whole message. Decode and Save */
 
-			if (MSession->MessageLen)				// Also need length
+			if (MSession->MessageLen)				/* Also need length */
 				SaveMulticastMessage(MSession);
 		}
 
@@ -1008,24 +1008,24 @@ VOID ProcessMCASTLine(ConnectionInfo * conn, struct UserInfo * user, char * Buff
 
 	if (strcmp(Opcode, "SIZE") == 0)
 	{
-		// SIZE 14 2995>{80BC}465 8 64
+		/* SIZE 14 2995>{80BC}465 8 64 */
 
 		int a, b, c, n = sscanf(&data[6], "%d %d %d", &a, &b, &c);
 		
 		if (n == 3)
 		{
-			// We may already have some (or even all) the message if we
-			// missed the SIZE block first time round
+			/* We may already have some (or even all) the message if we */
+			/* missed the SIZE block first time round */
 
 			if (MSession->Message)
 			{
-				// Already have at least part of it
+				/* Already have at least part of it */
 
 				if (MSession->BlockSize	!= c)
 				{
-					// We based blocksize on last packet, so need to sort out mess
+					/* We based blocksize on last packet, so need to sort out mess */
 
-					// Find where we put the block, and move it
+					/* Find where we put the block, and move it */
 
 					UCHAR * OldLoc;
 
@@ -1041,7 +1041,7 @@ VOID ProcessMCASTLine(ConnectionInfo * conn, struct UserInfo * user, char * Buff
 
 				if (MSession->BlockCount < b)
 				{
-					// Dont have it all, so need to extend ;
+					/* Dont have it all, so need to extend ; */
 
 					MSession->Message = realloc(MSession->Message, a);
 					MSession->BlockList = realloc(MSession->BlockList, b);
@@ -1058,11 +1058,11 @@ VOID ProcessMCASTLine(ConnectionInfo * conn, struct UserInfo * user, char * Buff
 				MSession->BlockList = zalloc(b);
 			}
 
-			// We might have it all now
+			/* We might have it all now */
 
 			if (MSession->BlocksReceived == MSession->BlockCount)
 			{
-				// We have the whole message. Decode and Save
+				/* We have the whole message. Decode and Save */
 
 				SaveMulticastMessage(MSession);
 			}
@@ -1074,7 +1074,7 @@ VOID ProcessMCASTLine(ConnectionInfo * conn, struct UserInfo * user, char * Buff
 
 	if (strcmp(Opcode, "DATA") == 0)
 	{
-		//	<DATA 72 B21B>{80BC:1}[b256:start]401
+		/*	<DATA 72 B21B>{80BC:1}[b256:start]401 */
 		
 		int Blockno = atoi(&data[6]);
 		char * dataptr = strchr(&data[6], '}');
@@ -1084,17 +1084,17 @@ VOID ProcessMCASTLine(ConnectionInfo * conn, struct UserInfo * user, char * Buff
 
 		dataptr++;
 
-		// What should we do if we don't have Filename or Size??
+		/* What should we do if we don't have Filename or Size?? */
 
-		// If we assume this isn't the last block, then we can get
-		// the block size from this message. This is pretty save, but
-		// I guess as we will only get one last block, if we subsequently
-		// get an earlier one that is bigger, we can recalculate the position
-		// of this block and move it.
+		/* If we assume this isn't the last block, then we can get */
+		/* the block size from this message. This is pretty save, but */
+		/* I guess as we will only get one last block, if we subsequently */
+		/* get an earlier one that is bigger, we can recalculate the position */
+		/* of this block and move it. */
 
 		if (MSession->MessageLen == 0)
 		{
-			// Haven't received SIZE Message yet. Guess the blocksize
+			/* Haven't received SIZE Message yet. Guess the blocksize */
 
 			int blocksize = MsgLen - (int)(dataptr - Buffer);
 
@@ -1106,9 +1106,9 @@ VOID ProcessMCASTLine(ConnectionInfo * conn, struct UserInfo * user, char * Buff
 			{
 				if (MSession->BlockSize < blocksize)
 				{
-					// We based blocksize on last packet, so need to sort out mess
+					/* We based blocksize on last packet, so need to sort out mess */
 
-					// Find where we put the block, and move it
+					/* Find where we put the block, and move it */
 					
 					UCHAR * OldLoc = &MSession->Message[(MSession->BlockCount - 1) * MSession->BlockSize];
 					memmove(&MSession->Message[(MSession->BlockCount - 1) * blocksize], OldLoc, MSession->BlockSize);
@@ -1117,7 +1117,7 @@ VOID ProcessMCASTLine(ConnectionInfo * conn, struct UserInfo * user, char * Buff
 				}
 			}
 
-			// We need to realloc Message and Blocklist if this is a later block
+			/* We need to realloc Message and Blocklist if this is a later block */
 
 			if (MSession->BlockCount < Blockno)
 			{
@@ -1137,7 +1137,7 @@ VOID ProcessMCASTLine(ConnectionInfo * conn, struct UserInfo * user, char * Buff
 
 		if (MSession->BlockList[Blockno] == 1)
 		{
-			// Already have this block
+			/* Already have this block */
 
 			return;
 		}
@@ -1150,7 +1150,7 @@ VOID ProcessMCASTLine(ConnectionInfo * conn, struct UserInfo * user, char * Buff
 
 		if (MSession->BlocksReceived == MSession->BlockCount && MSession->MessageLen)
 		{
-			// We have the whole message. Decode and Save
+			/* We have the whole message. Decode and Save */
 
 			SaveMulticastMessage(MSession);
 		}
@@ -1561,7 +1561,7 @@ VOID MCastTimer()
 
 		if (Now - Sess->LastUpdated > MulticastMaxAge)
 		{
-			// remove from list
+			/* remove from list */
 
 #ifndef LINBPQ
 			ListView_DeleteItem(MCList, Sess->Index);
@@ -1588,7 +1588,7 @@ VOID MCastTimer()
 
 			free(Sess);
 
-			return;				// Saves messing with chain
+			return;				/* Saves messing with chain */
 
 		}
 		Prev = Sess;
@@ -1644,7 +1644,7 @@ int MulticastStatusHTML(char * Reply)
 			sprintf(Percent, "%d", pcent);
 		}
 
-		// Flag received blocks. Normalise to 50 wide 
+		/* Flag received blocks. Normalise to 50 wide  */
 
 		memset(BlockList, '.', 50);
 

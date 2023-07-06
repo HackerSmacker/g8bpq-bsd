@@ -17,16 +17,16 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-// Version 0.0.3.1 July 2016
-//	Switch to Thunderforest tile server
+/* Version 0.0.3.1 July 2016 */
+/*	Switch to Thunderforest tile server */
 
-// Version 0.0.4.1 January 2019
-//	Add option to set IS filter to map view automatically
+/* Version 0.0.4.1 January 2019 */
+/*	Add option to set IS filter to map view automatically */
 
 
 
-#ifndef _WIN32_WINNT		// Allow use of features specific to Windows XP or later.                   
-#define _WIN32_WINNT 0x0501	// Change this to the appropriate value to target other versions of Windows.
+#ifndef _WIN32_WINNT		/* Allow use of features specific to Windows XP or later.                    */
+#define _WIN32_WINNT 0x0501	/* Change this to the appropriate value to target other versions of Windows. */
 #endif	
 
 #define LINBPQ
@@ -130,12 +130,12 @@ int maxfd;
 
 struct SharedMem * SMEM;
 
-UCHAR * Shared;					// Start of Shared Mememy
-UCHAR * StnRecordBase;			// Start of Station Records
+UCHAR * Shared;					/* Start of Shared Mememy */
+UCHAR * StnRecordBase;			/* Start of Station Records */
 
 int AutoFilterTimer = 0;
 
-#define AUTOFILTERDELAY 20		// 20 secs
+#define AUTOFILTERDELAY 20		/* 20 secs */
 
 VOID SecTimer();
 void plotLine(int x0, int y0, int x1, int y1, COLORREF rgb);
@@ -168,9 +168,9 @@ struct SEM Semaphore = {0, 0, 0, 0};
 
 void GetSemaphore(struct SEM * Semaphore)
 {
-	//
-	//	Wait for it to be free
-	//
+	/* */
+	/*	Wait for it to be free */
+	/* */
 
 	if (Semaphore->Flag != 0)
 	{
@@ -184,14 +184,14 @@ loop1:
 		Sleep(10);
 	}
 
-	//	try to get semaphore
+	/*	try to get semaphore */
 
 	if (__sync_lock_test_and_set(&Semaphore->Flag, 1) != 0)
 
-		// Failed to get it
-		goto loop1;		// try again;
+		/* Failed to get it */
+		goto loop1;		/* try again; */
 
-	//Ok. got it
+	/*Ok. got it */
 
 	Semaphore->Gets++;
 
@@ -211,7 +211,7 @@ void FreeSemaphore(struct SEM * Semaphore)
 
 char * strlop(char * buf, char delim)
 {
-	// Terminate buf at delim, and return rest of string
+	/* Terminate buf at delim, and return rest of string */
 
 	char * ptr = strchr(buf, delim);
 
@@ -279,7 +279,7 @@ Window root, win;
 GC gc;
 XImage * image, * popupimage;
 
-int SetBaseX = 0;				// Lowest Tiles in currently loaded set
+int SetBaseX = 0;				/* Lowest Tiles in currently loaded set */
 int SetBaseY = 0;
 
 int TileX = 0;
@@ -303,7 +303,7 @@ int NeedRedraw = 0;
 int ScrollX = 128;
 int ScrollY = 128;
 
-int WindowX = 100, WindowY = 100;			// Position of window on screen
+int WindowX = 100, WindowY = 100;			/* Position of window on screen */
 int WindowWidth = 788;
 int WindowHeight = 788;
 
@@ -325,10 +325,10 @@ char LoppedAPRSCall[10];
 char BaseCall[10];
 
 
-// Image chunks are 256 rows of 3 * 256 bytes
+/* Image chunks are 256 rows of 3 * 256 bytes */
 
-// Read 8 * 8 files, and copy to a 2048 * 3 * 2048 array. The display scrolls over this area, and
-// it is refreshed when window approaches the edge of the array.
+/* Read 8 * 8 files, and copy to a 2048 * 3 * 2048 array. The display scrolls over this area, and */
+/* it is refreshed when window approaches the edge of the array. */
 
 int WIDTH;
 int HEIGHT;
@@ -345,112 +345,112 @@ BOOL ImageChanged = 0;
 int RetryCount = 7;
 int RetryIntervals[] = {0, 512, 256, 128, 64, 32, 16, 8};
 
-// Station Name Font
+/* Station Name Font */
 
 const unsigned char ASCII[][5] = {
-//const u08 ASCII[][5]  = {
-  {0x00, 0x00, 0x00, 0x00, 0x00} // 20  
-  ,{0x00, 0x00, 0x5f, 0x00, 0x00} // 21 !
-  ,{0x00, 0x07, 0x00, 0x07, 0x00} // 22 "
-  ,{0x14, 0x7f, 0x14, 0x7f, 0x14} // 23 #
-  ,{0x24, 0x2a, 0x7f, 0x2a, 0x12} // 24 $
-  ,{0x23, 0x13, 0x08, 0x64, 0x62} // 25 %
-  ,{0x36, 0x49, 0x55, 0x22, 0x50} // 26 &
-  ,{0x00, 0x05, 0x03, 0x00, 0x00} // 27 '
-  ,{0x00, 0x1c, 0x22, 0x41, 0x00} // 28 (
-  ,{0x00, 0x41, 0x22, 0x1c, 0x00} // 29 )
-  ,{0x14, 0x08, 0x3e, 0x08, 0x14} // 2a *
-  ,{0x08, 0x08, 0x3e, 0x08, 0x08} // 2b +
-  ,{0x00, 0x50, 0x30, 0x00, 0x00} // 2c ,
-  ,{0x08, 0x08, 0x08, 0x08, 0x08} // 2d -
-  ,{0x00, 0x60, 0x60, 0x00, 0x00} // 2e .
-  ,{0x20, 0x10, 0x08, 0x04, 0x02} // 2f /
-  ,{0x3e, 0x51, 0x49, 0x45, 0x3e} // 30 0
-  ,{0x00, 0x42, 0x7f, 0x40, 0x00} // 31 1
-  ,{0x42, 0x61, 0x51, 0x49, 0x46} // 32 2
-  ,{0x21, 0x41, 0x45, 0x4b, 0x31} // 33 3
-  ,{0x18, 0x14, 0x12, 0x7f, 0x10} // 34 4
-  ,{0x27, 0x45, 0x45, 0x45, 0x39} // 35 5
-  ,{0x3c, 0x4a, 0x49, 0x49, 0x30} // 36 6
-  ,{0x01, 0x71, 0x09, 0x05, 0x03} // 37 7
-  ,{0x36, 0x49, 0x49, 0x49, 0x36} // 38 8
-  ,{0x06, 0x49, 0x49, 0x29, 0x1e} // 39 9
-  ,{0x00, 0x36, 0x36, 0x00, 0x00} // 3a :
-  ,{0x00, 0x56, 0x36, 0x00, 0x00} // 3b ;
-  ,{0x08, 0x14, 0x22, 0x41, 0x00} // 3c <
-  ,{0x14, 0x14, 0x14, 0x14, 0x14} // 3d =
-  ,{0x00, 0x41, 0x22, 0x14, 0x08} // 3e >
-  ,{0x02, 0x01, 0x51, 0x09, 0x06} // 3f ?
-  ,{0x32, 0x49, 0x79, 0x41, 0x3e} // 40 @
-  ,{0x7e, 0x11, 0x11, 0x11, 0x7e} // 41 A
-  ,{0x7f, 0x49, 0x49, 0x49, 0x36} // 42 B
-  ,{0x3e, 0x41, 0x41, 0x41, 0x22} // 43 C
-  ,{0x7f, 0x41, 0x41, 0x22, 0x1c} // 44 D
-  ,{0x7f, 0x49, 0x49, 0x49, 0x41} // 45 E
-  ,{0x7f, 0x09, 0x09, 0x09, 0x01} // 46 F
-  ,{0x3e, 0x41, 0x49, 0x49, 0x7a} // 47 G
-  ,{0x7f, 0x08, 0x08, 0x08, 0x7f} // 48 H
-  ,{0x00, 0x41, 0x7f, 0x41, 0x00} // 49 I
-  ,{0x20, 0x40, 0x41, 0x3f, 0x01} // 4a J
-  ,{0x7f, 0x08, 0x14, 0x22, 0x41} // 4b K
-  ,{0x7f, 0x40, 0x40, 0x40, 0x40} // 4c L
-  ,{0x7f, 0x02, 0x0c, 0x02, 0x7f} // 4d M
-  ,{0x7f, 0x04, 0x08, 0x10, 0x7f} // 4e N
-  ,{0x3e, 0x41, 0x41, 0x41, 0x3e} // 4f O
-  ,{0x7f, 0x09, 0x09, 0x09, 0x06} // 50 P
-  ,{0x3e, 0x41, 0x51, 0x21, 0x5e} // 51 Q
-  ,{0x7f, 0x09, 0x19, 0x29, 0x46} // 52 R
-  ,{0x46, 0x49, 0x49, 0x49, 0x31} // 53 S
-  ,{0x01, 0x01, 0x7f, 0x01, 0x01} // 54 T
-  ,{0x3f, 0x40, 0x40, 0x40, 0x3f} // 55 U
-  ,{0x1f, 0x20, 0x40, 0x20, 0x1f} // 56 V
-  ,{0x3f, 0x40, 0x38, 0x40, 0x3f} // 57 W
-  ,{0x63, 0x14, 0x08, 0x14, 0x63} // 58 X
-  ,{0x07, 0x08, 0x70, 0x08, 0x07} // 59 Y
-  ,{0x61, 0x51, 0x49, 0x45, 0x43} // 5a Z
-  ,{0x00, 0x7f, 0x41, 0x41, 0x00} // 5b [
-  ,{0x02, 0x04, 0x08, 0x10, 0x20} // 5c 
-  ,{0x00, 0x41, 0x41, 0x7f, 0x00} // 5d ]
-  ,{0x04, 0x02, 0x01, 0x02, 0x04} // 5e ^
-  ,{0x40, 0x40, 0x40, 0x40, 0x40} // 5f _
-  ,{0x00, 0x01, 0x02, 0x04, 0x00} // 60 `
-  ,{0x20, 0x54, 0x54, 0x54, 0x78} // 61 a
-  ,{0x7f, 0x48, 0x44, 0x44, 0x38} // 62 b
-  ,{0x38, 0x44, 0x44, 0x44, 0x20} // 63 c
-  ,{0x38, 0x44, 0x44, 0x48, 0x7f} // 64 d
-  ,{0x38, 0x54, 0x54, 0x54, 0x18} // 65 e
-  ,{0x08, 0x7e, 0x09, 0x01, 0x02} // 66 f
-  ,{0x0c, 0x52, 0x52, 0x52, 0x3e} // 67 g
-  ,{0x7f, 0x08, 0x04, 0x04, 0x78} // 68 h
-  ,{0x00, 0x44, 0x7d, 0x40, 0x00} // 69 i
-  ,{0x20, 0x40, 0x44, 0x3d, 0x00} // 6a j 
-  ,{0x7f, 0x10, 0x28, 0x44, 0x00} // 6b k
-  ,{0x00, 0x41, 0x7f, 0x40, 0x00} // 6c l
-  ,{0x7c, 0x04, 0x18, 0x04, 0x78} // 6d m
-  ,{0x7c, 0x08, 0x04, 0x04, 0x78} // 6e n
-  ,{0x38, 0x44, 0x44, 0x44, 0x38} // 6f o
-  ,{0x7c, 0x14, 0x14, 0x14, 0x08} // 70 p
-  ,{0x08, 0x14, 0x14, 0x18, 0x7c} // 71 q
-  ,{0x7c, 0x08, 0x04, 0x04, 0x08} // 72 r
-  ,{0x48, 0x54, 0x54, 0x54, 0x20} // 73 s
-  ,{0x04, 0x3f, 0x44, 0x40, 0x20} // 74 t
-  ,{0x3c, 0x40, 0x40, 0x20, 0x7c} // 75 u
-  ,{0x1c, 0x20, 0x40, 0x20, 0x1c} // 76 v
-  ,{0x3c, 0x40, 0x30, 0x40, 0x3c} // 77 w
-  ,{0x44, 0x28, 0x10, 0x28, 0x44} // 78 x
-  ,{0x0c, 0x50, 0x50, 0x50, 0x3c} // 79 y
-  ,{0x44, 0x64, 0x54, 0x4c, 0x44} // 7a z
-  ,{0x00, 0x08, 0x36, 0x41, 0x00} // 7b {
-  ,{0x00, 0x00, 0x7f, 0x00, 0x00} // 7c |
-  ,{0x00, 0x41, 0x36, 0x08, 0x00} // 7d }
-  ,{0x10, 0x08, 0x08, 0x10, 0x08} // 7e ~
-  ,{0x78, 0x46, 0x41, 0x46, 0x78} // 7f DEL
+/*const u08 ASCII[][5]  = { */
+  {0x00, 0x00, 0x00, 0x00, 0x00} /* 20   */
+  ,{0x00, 0x00, 0x5f, 0x00, 0x00} /* 21 ! */
+  ,{0x00, 0x07, 0x00, 0x07, 0x00} /* 22 " */
+  ,{0x14, 0x7f, 0x14, 0x7f, 0x14} /* 23 # */
+  ,{0x24, 0x2a, 0x7f, 0x2a, 0x12} /* 24 $ */
+  ,{0x23, 0x13, 0x08, 0x64, 0x62} /* 25 % */
+  ,{0x36, 0x49, 0x55, 0x22, 0x50} /* 26 & */
+  ,{0x00, 0x05, 0x03, 0x00, 0x00} /* 27 ' */
+  ,{0x00, 0x1c, 0x22, 0x41, 0x00} /* 28 ( */
+  ,{0x00, 0x41, 0x22, 0x1c, 0x00} /* 29 ) */
+  ,{0x14, 0x08, 0x3e, 0x08, 0x14} /* 2a * */
+  ,{0x08, 0x08, 0x3e, 0x08, 0x08} /* 2b + */
+  ,{0x00, 0x50, 0x30, 0x00, 0x00} /* 2c , */
+  ,{0x08, 0x08, 0x08, 0x08, 0x08} /* 2d - */
+  ,{0x00, 0x60, 0x60, 0x00, 0x00} /* 2e . */
+  ,{0x20, 0x10, 0x08, 0x04, 0x02} /* 2f / */
+  ,{0x3e, 0x51, 0x49, 0x45, 0x3e} /* 30 0 */
+  ,{0x00, 0x42, 0x7f, 0x40, 0x00} /* 31 1 */
+  ,{0x42, 0x61, 0x51, 0x49, 0x46} /* 32 2 */
+  ,{0x21, 0x41, 0x45, 0x4b, 0x31} /* 33 3 */
+  ,{0x18, 0x14, 0x12, 0x7f, 0x10} /* 34 4 */
+  ,{0x27, 0x45, 0x45, 0x45, 0x39} /* 35 5 */
+  ,{0x3c, 0x4a, 0x49, 0x49, 0x30} /* 36 6 */
+  ,{0x01, 0x71, 0x09, 0x05, 0x03} /* 37 7 */
+  ,{0x36, 0x49, 0x49, 0x49, 0x36} /* 38 8 */
+  ,{0x06, 0x49, 0x49, 0x29, 0x1e} /* 39 9 */
+  ,{0x00, 0x36, 0x36, 0x00, 0x00} /* 3a : */
+  ,{0x00, 0x56, 0x36, 0x00, 0x00} /* 3b ; */
+  ,{0x08, 0x14, 0x22, 0x41, 0x00} /* 3c < */
+  ,{0x14, 0x14, 0x14, 0x14, 0x14} /* 3d = */
+  ,{0x00, 0x41, 0x22, 0x14, 0x08} /* 3e > */
+  ,{0x02, 0x01, 0x51, 0x09, 0x06} /* 3f ? */
+  ,{0x32, 0x49, 0x79, 0x41, 0x3e} /* 40 @ */
+  ,{0x7e, 0x11, 0x11, 0x11, 0x7e} /* 41 A */
+  ,{0x7f, 0x49, 0x49, 0x49, 0x36} /* 42 B */
+  ,{0x3e, 0x41, 0x41, 0x41, 0x22} /* 43 C */
+  ,{0x7f, 0x41, 0x41, 0x22, 0x1c} /* 44 D */
+  ,{0x7f, 0x49, 0x49, 0x49, 0x41} /* 45 E */
+  ,{0x7f, 0x09, 0x09, 0x09, 0x01} /* 46 F */
+  ,{0x3e, 0x41, 0x49, 0x49, 0x7a} /* 47 G */
+  ,{0x7f, 0x08, 0x08, 0x08, 0x7f} /* 48 H */
+  ,{0x00, 0x41, 0x7f, 0x41, 0x00} /* 49 I */
+  ,{0x20, 0x40, 0x41, 0x3f, 0x01} /* 4a J */
+  ,{0x7f, 0x08, 0x14, 0x22, 0x41} /* 4b K */
+  ,{0x7f, 0x40, 0x40, 0x40, 0x40} /* 4c L */
+  ,{0x7f, 0x02, 0x0c, 0x02, 0x7f} /* 4d M */
+  ,{0x7f, 0x04, 0x08, 0x10, 0x7f} /* 4e N */
+  ,{0x3e, 0x41, 0x41, 0x41, 0x3e} /* 4f O */
+  ,{0x7f, 0x09, 0x09, 0x09, 0x06} /* 50 P */
+  ,{0x3e, 0x41, 0x51, 0x21, 0x5e} /* 51 Q */
+  ,{0x7f, 0x09, 0x19, 0x29, 0x46} /* 52 R */
+  ,{0x46, 0x49, 0x49, 0x49, 0x31} /* 53 S */
+  ,{0x01, 0x01, 0x7f, 0x01, 0x01} /* 54 T */
+  ,{0x3f, 0x40, 0x40, 0x40, 0x3f} /* 55 U */
+  ,{0x1f, 0x20, 0x40, 0x20, 0x1f} /* 56 V */
+  ,{0x3f, 0x40, 0x38, 0x40, 0x3f} /* 57 W */
+  ,{0x63, 0x14, 0x08, 0x14, 0x63} /* 58 X */
+  ,{0x07, 0x08, 0x70, 0x08, 0x07} /* 59 Y */
+  ,{0x61, 0x51, 0x49, 0x45, 0x43} /* 5a Z */
+  ,{0x00, 0x7f, 0x41, 0x41, 0x00} /* 5b [ */
+  ,{0x02, 0x04, 0x08, 0x10, 0x20} /* 5c  */
+  ,{0x00, 0x41, 0x41, 0x7f, 0x00} /* 5d ] */
+  ,{0x04, 0x02, 0x01, 0x02, 0x04} /* 5e ^ */
+  ,{0x40, 0x40, 0x40, 0x40, 0x40} /* 5f _ */
+  ,{0x00, 0x01, 0x02, 0x04, 0x00} /* 60 ` */
+  ,{0x20, 0x54, 0x54, 0x54, 0x78} /* 61 a */
+  ,{0x7f, 0x48, 0x44, 0x44, 0x38} /* 62 b */
+  ,{0x38, 0x44, 0x44, 0x44, 0x20} /* 63 c */
+  ,{0x38, 0x44, 0x44, 0x48, 0x7f} /* 64 d */
+  ,{0x38, 0x54, 0x54, 0x54, 0x18} /* 65 e */
+  ,{0x08, 0x7e, 0x09, 0x01, 0x02} /* 66 f */
+  ,{0x0c, 0x52, 0x52, 0x52, 0x3e} /* 67 g */
+  ,{0x7f, 0x08, 0x04, 0x04, 0x78} /* 68 h */
+  ,{0x00, 0x44, 0x7d, 0x40, 0x00} /* 69 i */
+  ,{0x20, 0x40, 0x44, 0x3d, 0x00} /* 6a j  */
+  ,{0x7f, 0x10, 0x28, 0x44, 0x00} /* 6b k */
+  ,{0x00, 0x41, 0x7f, 0x40, 0x00} /* 6c l */
+  ,{0x7c, 0x04, 0x18, 0x04, 0x78} /* 6d m */
+  ,{0x7c, 0x08, 0x04, 0x04, 0x78} /* 6e n */
+  ,{0x38, 0x44, 0x44, 0x44, 0x38} /* 6f o */
+  ,{0x7c, 0x14, 0x14, 0x14, 0x08} /* 70 p */
+  ,{0x08, 0x14, 0x14, 0x18, 0x7c} /* 71 q */
+  ,{0x7c, 0x08, 0x04, 0x04, 0x08} /* 72 r */
+  ,{0x48, 0x54, 0x54, 0x54, 0x20} /* 73 s */
+  ,{0x04, 0x3f, 0x44, 0x40, 0x20} /* 74 t */
+  ,{0x3c, 0x40, 0x40, 0x20, 0x7c} /* 75 u */
+  ,{0x1c, 0x20, 0x40, 0x20, 0x1c} /* 76 v */
+  ,{0x3c, 0x40, 0x30, 0x40, 0x3c} /* 77 w */
+  ,{0x44, 0x28, 0x10, 0x28, 0x44} /* 78 x */
+  ,{0x0c, 0x50, 0x50, 0x50, 0x3c} /* 79 y */
+  ,{0x44, 0x64, 0x54, 0x4c, 0x44} /* 7a z */
+  ,{0x00, 0x08, 0x36, 0x41, 0x00} /* 7b { */
+  ,{0x00, 0x00, 0x7f, 0x00, 0x00} /* 7c | */
+  ,{0x00, 0x41, 0x36, 0x08, 0x00} /* 7d } */
+  ,{0x10, 0x08, 0x08, 0x10, 0x08} /* 7e ~ */
+  ,{0x78, 0x46, 0x41, 0x46, 0x78} /* 7f DEL */
 };
 
 COLORREF Colours[256] = {0, RGB(0,0,255), RGB(0,128,0), RGB(0,128,192), 
 		RGB(0,192,0), RGB(0,192,255), RGB(0,255,0), RGB(128,0,128),
 		RGB(128,64,0), RGB(128,128,128), RGB(192,0,0), RGB(192,0,255),
-		RGB(192,64,128), RGB(192,128,255), RGB(255,0,0), RGB(255,0,255),				// 81
+		RGB(192,64,128), RGB(192,128,255), RGB(255,0,0), RGB(255,0,255),				/* 81 */
 		RGB(255,64,0), RGB(255,64,128), RGB(255,64,192), RGB(255,128,0)};
 
 
@@ -525,7 +525,7 @@ char * strupr(char* s)
   return s;
 }
 
-// Return coorinates in tiles.
+/* Return coorinates in tiles. */
 
 double long2x(double lon, int z) 
 { 
@@ -575,9 +575,9 @@ void GetMouseLatLon(double * Lat, double * Lon)
 
 BOOL GetLocPixels(double Lat, double Lon, int * X, int * Y)
 {
-	// Get the pixel offet of supplied location in current image.
+	/* Get the pixel offet of supplied location in current image. */
 
-	// If location is outside current image, return FAlSE
+	/* If location is outside current image, return FAlSE */
 
 	int TileX;
 	int TileY;
@@ -585,7 +585,7 @@ BOOL GetLocPixels(double Lat, double Lon, int * X, int * Y)
 	double FX;
 	double FY;
 
-	// if TileX or TileY are outside the window, return null
+	/* if TileX or TileY are outside the window, return null */
 
 	FX = long2x(Lon, Zoom);
 	TileX = (int)floor(FX);
@@ -627,33 +627,33 @@ int lat2tiley(double lat, int z)
 
 BOOL CentrePositionToMouse(double Lat, double Lon)
 {
-	// Positions  specified location at the mouse
+	/* Positions  specified location at the mouse */
 
 	int X, Y;
 
 	SetBaseX = long2tilex(Lon, Zoom) - 2;
-	SetBaseY = lat2tiley(Lat, Zoom) - 2;				// Set Location at middle
+	SetBaseY = lat2tiley(Lat, Zoom) - 2;				/* Set Location at middle */
 
 	if (GetLocPixels(Lat, Lon, &X, &Y) == FALSE)
-		return FALSE;							// Off map
+		return FALSE;							/* Off map */
 
 	ScrollX = X - cxWinSize/2;
 	ScrollY = Y - cyWinSize/2;
 
 
-//	Map is now centered at loc cursor was at
+/*	Map is now centered at loc cursor was at */
 
-//  Need to move by distance mouse is from centre
+/*  Need to move by distance mouse is from centre */
 
-	// if ScrollX, Y are zero, the centre of the map corresponds to 1024, 1024
+	/* if ScrollX, Y are zero, the centre of the map corresponds to 1024, 1024 */
 	
-//	ScrollX -= 1024 - X;				// Posn to centre
-//	ScrollY -= 1024 - Y;
+/*	ScrollX -= 1024 - X;				// Posn to centre */
+/*	ScrollY -= 1024 - Y; */
 
 	ScrollX += cxWinSize/2 - MouseX;
 	ScrollY += cyWinSize/2 - MouseY;
 
-	// May Need to move image
+	/* May Need to move image */
 
 	while(ScrollX < 0)
 	{
@@ -679,7 +679,7 @@ BOOL CentrePositionToMouse(double Lat, double Lon)
 		ScrollY -= 256;
 	}
 		
-	AutoFilterTimer = AUTOFILTERDELAY;		// Update filter if no change for 30 secs
+	AutoFilterTimer = AUTOFILTERDELAY;		/* Update filter if no change for 30 secs */
 
 	return TRUE;
 }
@@ -688,14 +688,14 @@ SOCKADDR_IN destaddr = {0};
 
 unsigned int ipaddr = 0;
 
-//char Host[] = "tile.openstreetmap.org";
+/*char Host[] = "tile.openstreetmap.org"; */
 
-//char Host[] = "oatile1.mqcdn.com";		//SAT
-//char Host[] = "otile1.mqcdn.com";
+/*char Host[] = "oatile1.mqcdn.com";		//SAT */
+/*char Host[] = "otile1.mqcdn.com"; */
 
 char Host[] = "tile.thunderforest.com";
 
-char mapStyle[64] =	"outdoors"; //"neighbourhood mobile-atlas
+char mapStyle[64] =	"outdoors"; /*"neighbourhood mobile-atlas */
 
 
 char HeaderTemplate[] = "Accept: */*\r\nHost: %s\r\nConnection: close\r\nContent-Length: 0\r\nUser-Agent: BPQ32(G8BPQ)\r\n\r\n";
@@ -706,9 +706,9 @@ VOID ResolveThread()
 	struct hostent * HostEnt;
 	int err;
 
-//	while (TRUE)
+/*	while (TRUE) */
 	{
-		// Resolve Name if needed
+		/* Resolve Name if needed */
 
 		HostEnt = gethostbyname(Host);
 		 
@@ -721,7 +721,7 @@ VOID ResolveThread()
 		{
 			memcpy(&destaddr.sin_addr.s_addr,HostEnt->h_addr,4);	
 		}
-//		Sleep(60 * 15 * 1000);
+/*		Sleep(60 * 15 * 1000); */
 	}
 }
 
@@ -748,7 +748,7 @@ VOID RefreshTile(char * FN, int TileZoom, int Tilex, int Tiley);
 
 VOID OSMThread()
 {
-	// Request a page from OSM
+	/* Request a page from OSM */
 
 	char FN[256];
 	char Tile[80];
@@ -792,9 +792,9 @@ VOID OSMThread()
 
 		free(OSMRec);
 
-//		wsprintf(Tile, "/%02d/%d/%d.png", Zoom, x, y);
-//		wsprintf(Tile, "/tiles/1.0.0/sat/%02d/%d/%d.jpg", Zoom, x, y);
-//		sprintf(Tile, "/tiles/1.0.0/osm/%02d/%d/%d.jpg", Zoom, x, y);
+/*		wsprintf(Tile, "/%02d/%d/%d.png", Zoom, x, y); */
+/*		wsprintf(Tile, "/tiles/1.0.0/sat/%02d/%d/%d.jpg", Zoom, x, y); */
+/*		sprintf(Tile, "/tiles/1.0.0/osm/%02d/%d/%d.jpg", Zoom, x, y); */
 
 		sprintf(Tile, "/%s/%d/%d/%d.png?apikey=41ab899ed1fd4d09b11da7caf3a48e1f", mapStyle, Zoom, x, y);
 
@@ -810,7 +810,7 @@ VOID OSMThread()
 
 		Len = sprintf(Request, "GET %s HTTP/1.0\r\n", Tile);
 
-	//   Allocate a Socket entry
+	/*   Allocate a Socket entry */
 
 		sock=socket(AF_INET,SOCK_STREAM,0);
 
@@ -823,19 +823,19 @@ VOID OSMThread()
 		{
 			err=WSAGetLastError();
 
-			//
-			//	Connect failed
-			//
+			/* */
+			/*	Connect failed */
+			/* */
 
 			break;
 		}
 
-//GET /15/15810/9778.png HTTP/1.0
-//Accept: */*
-//Host: tile.openstreetmap.org
-//Connection: close
-//Content-Length: 0
-//User-Agent: APRSIS32(G8BPQ)
+/*GET /15/15810/9778.png HTTP/1.0 */
+/*Accept: */* */
+/*Host: tile.openstreetmap.org */
+/*Connection: close */
+/*Content-Length: 0 */
+/*User-Agent: APRSIS32(G8BPQ) */
 
 		InputLen = 0;
 		inptr = 0;
@@ -852,7 +852,7 @@ VOID OSMThread()
 				inptr += InputLen;
 			else
 			{
-				// File Complete??
+				/* File Complete?? */
 
 				if (strstr(Buffer, " 200 OK"))
 				{
@@ -870,7 +870,7 @@ VOID OSMThread()
 
 							if (FileLen == inptr - (ptr - Buffer))
 							{
-								// File is OK
+								/* File is OK */
 
 								int cnt;
 								
@@ -885,7 +885,7 @@ VOID OSMThread()
 									break;
 								}
 
-								if (errno != 2)			// Bad Path
+								if (errno != 2)			/* Bad Path */
 								{
 									printf("Create %s failed %d\n", FN, errno);
 									perror("fopen");
@@ -901,7 +901,7 @@ VOID OSMThread()
 									break;
 								}
 								
-								// Retry Create
+								/* Retry Create */
 
 								Handle = fopen(FN, "wb");
 
@@ -932,7 +932,7 @@ VOID OSMThread()
 		closesocket(sock);
 	}
 
-	// Queue is empty
+	/* Queue is empty */
 
 	sleep(1);
 }
@@ -1016,7 +1016,7 @@ double Bearing(double lat2, double lon2)
 	if (dlat < 0)
 	{
 		if (dlon > 0) return TC1 = 180 - TC1;
-		if (dlon < 0) return TC1 = 180 - TC1; // 'ok?
+		if (dlon < 0) return TC1 = 180 - TC1; /* 'ok? */
 		return 180;
 	}
 
@@ -1043,7 +1043,7 @@ WXLoop:
 
 	Type = *(ptr++);
 
-	if (*ptr =='.')	// Missing Value
+	if (*ptr =='.')	/* Missing Value */
 	{
 		while (*ptr == '.')
 			ptr++;
@@ -1055,47 +1055,47 @@ WXLoop:
 
 	switch (Type)
 	{
-	case 'c': // = wind direction (in degrees).	
+	case 'c': /* = wind direction (in degrees).	 */
 		
 		sockptr->WindDirn = Val;
 		break;
 	
-	case 's': // = sustained one-minute wind speed (in mph).
+	case 's': /* = sustained one-minute wind speed (in mph). */
 	
 		sockptr->WindSpeed = Val;
 		break;
 	
-	case 'g': // = gust (peak wind speed in mph in the last 5 minutes).
+	case 'g': /* = gust (peak wind speed in mph in the last 5 minutes). */
 	
 		sockptr->WindGust = Val;
 		break;
 
-	case 't': // = temperature (in degrees Fahrenheit). Temperatures below zero are expressed as -01 to -99.
+	case 't': /* = temperature (in degrees Fahrenheit). Temperatures below zero are expressed as -01 to -99. */
 	
 		sockptr->Temp = Val;
 		break;
 
-	case 'r': // = rainfall (in hundredths of an inch) in the last hour.
+	case 'r': /* = rainfall (in hundredths of an inch) in the last hour. */
 		
 		sockptr->RainLastHour = Val;
 		break;
 
-	case 'p': // = rainfall (in hundredths of an inch) in the last 24 hours.
+	case 'p': /* = rainfall (in hundredths of an inch) in the last 24 hours. */
 
 		sockptr->RainLastDay = Val;
 		break;
 
-	case 'P': // = rainfall (in hundredths of an inch) since midnight.
+	case 'P': /* = rainfall (in hundredths of an inch) since midnight. */
 
 		sockptr->RainToday = Val;
 		break;
 
-	case 'h': // = humidity (in %. 00 = 100%).
+	case 'h': /* = humidity (in %. 00 = 100%). */
 	
 		sockptr->Humidity = Val;
 		break;
 
-	case 'b': // = barometric pressure (in tenths of millibars/tenths of hPascal).
+	case 'b': /* = barometric pressure (in tenths of millibars/tenths of hPascal). */
 
 		sockptr->Pressure = Val;
 		break;
@@ -1141,7 +1141,7 @@ struct STATIONRECORD * FindStation(char * Call, BOOL AddIfNotFount)
 		i++;
 	}
  
-	//   Not found - add on end
+	/*   Not found - add on end */
 
 /*
 	if (AddIfNotFount)
@@ -1249,14 +1249,14 @@ VOID CreateStationPopup(struct STATIONRECORD * ptr, int RelX, int RelY)
 	XDrawImageString(display, win, gc, x + 2, y + Line, ptr->Path, strlen(ptr->Path));
 	Line += 12;
 
-//	XDrawImageString(display, win, gc, x + 2, y + Line, ptr->Status, 40);
-//	Line += 12;
+/*	XDrawImageString(display, win, gc, x + 2, y + Line, ptr->Status, 40); */
+/*	Line += 12; */
 
 	XDrawImageString(display, win, gc, x + 2, y + Line, Msg, Len);
 	Line += 12;
 
 
-//	Item.pszText = ptr->LastPacket;
+/*	Item.pszText = ptr->LastPacket; */
 
 	Len = sprintf(Msg, "Distance %6.1f Bearing %3.0f Course %1.0f Speed %3.1f",
 		Distance(ptr->Lat, ptr->Lon),
@@ -1268,7 +1268,7 @@ VOID CreateStationPopup(struct STATIONRECORD * ptr, int RelX, int RelY)
 
 	if (ptr->LastWXPacket[0])
 	{
-		//display wx info
+		/*display wx info */
 
 		struct APRSConnectionInfo temp;
 
@@ -1332,7 +1332,7 @@ VOID FindStationsByPixel(int MouseX, int MouseY)
 
 	if (popupActive || selActive)
 	{
-		// if mouse within popup, leave alone
+		/* if mouse within popup, leave alone */
 
 		if (RelX > PopupLeft && RelX < (PopupLeft + PopupWidth) && 
 			RelY > PopupTop && RelY < (PopupTop + PopupHeight))
@@ -1363,10 +1363,10 @@ VOID FindStationsByPixel(int MouseX, int MouseY)
 		return;
 	}
 
-	//	If only one, display info popup, else display selection popup 
+	/*	If only one, display info popup, else display selection popup  */
 
 	if (popupActive || selActive)
-		return;						// Already on display
+		return;						/* Already on display */
 
 	if (j == 1)
 	{
@@ -1410,7 +1410,7 @@ VOID FindStationsByPixel(int MouseX, int MouseY)
 
 VOID DrawCharacter(int X, int Y, int j, unsigned char chr)
 {
-	// Font is 5 bits wide x 8 high. Each byte of font contains one column, so 5 bytes per char
+	/* Font is 5 bits wide x 8 high. Each byte of font contains one column, so 5 bytes per char */
 
 	int Pointer, i, c, index, bit, mask;
 
@@ -1422,7 +1422,7 @@ VOID DrawCharacter(int X, int Y, int j, unsigned char chr)
 	{
 		for (index = 0 ; index < 6 ; index++)
 		{
-			Image[Pointer++] = 255;				// Blank lines above chars 
+			Image[Pointer++] = 255;				/* Blank lines above chars  */
 			Image[Pointer++] = 255;
 			if (Bytesperpixel == 4)
 			{
@@ -1434,11 +1434,11 @@ VOID DrawCharacter(int X, int Y, int j, unsigned char chr)
 		Pointer += (WIDTH - 6) * Bytesperpixel;
 	}
 
-	//	Pointer = ((Y - 3) * 2048 * 3) + (X * 3) + 36 + (j * 18);
+	/*	Pointer = ((Y - 3) * 2048 * 3) + (X * 3) + 36 + (j * 18); */
 
 	for (i = 0; i < 7; i++)
 	{
-		Image[Pointer++] = 255;				// Blank col between chars
+		Image[Pointer++] = 255;				/* Blank col between chars */
 		Image[Pointer++] = 255;
 		if (Bytesperpixel == 4)
 		{
@@ -1447,7 +1447,7 @@ VOID DrawCharacter(int X, int Y, int j, unsigned char chr)
 		}
 		for (index = 0 ; index < 5 ; index++)
 		{
-			c = ASCII[chr - 0x20][index];	// Font data
+			c = ASCII[chr - 0x20][index];	/* Font data */
 			bit = c & mask;
 
 			if (bit)
@@ -1475,7 +1475,7 @@ VOID DrawCharacter(int X, int Y, int j, unsigned char chr)
 		Pointer += (WIDTH - 6) * Bytesperpixel;
 	}
 		
-	//	Pointer = ((Y - 3) * 2048 * 3) + (X * 3) + 36 + (j * 18);
+	/*	Pointer = ((Y - 3) * 2048 * 3) + (X * 3) + 36 + (j * 18); */
 
 	mask = 1;
 
@@ -1483,7 +1483,7 @@ VOID DrawCharacter(int X, int Y, int j, unsigned char chr)
 	{
 		for (index = 0 ; index < 6 ; index++)
 		{
-			Image[Pointer++] = 255;				// Blank lines below chars between chars
+			Image[Pointer++] = 255;				/* Blank lines below chars between chars */
 			Image[Pointer++] = 255;
 			if (Bytesperpixel == 4)
 			{
@@ -1505,22 +1505,22 @@ int DrawStation(struct STATIONRECORD * ptr, BOOL AllStations)
 	int SavePointer;
 
 	if (ptr->Moved == 0 && AllStations == 0)
-		return 0;				// No need to repaint
+		return 0;				/* No need to repaint */
 
 	if (SuppressNullPosn && ptr->Lat == 0.0)
 		return 0;
 
-	if (ptr->ObjState == '_')	// Killed Object
+	if (ptr->ObjState == '_')	/* Killed Object */
 		return 0;
 
 	if (GetLocPixels(ptr->Lat, ptr->Lon, &X, &Y))
 	{
 		if (X < 12 || Y < 12 || X > (WIDTH - 36) || Y > (HEIGHT - 36))
-			return 0;				// Too close to edges
+			return 0;				/* Too close to edges */
 
 		if (ptr->LatTrack[0] && ptr->NoTracks == FALSE)
 		{
-			// Draw Track
+			/* Draw Track */
 
 			int Index = ptr->Trackptr;
 			int i, n;
@@ -1555,16 +1555,16 @@ int DrawStation(struct STATIONRECORD * ptr, BOOL AllStations)
 		ptr->Moved = 0;
 
 		ptr->DispX = X;
-		ptr->DispY = Y;					// Save for mouse over checks
+		ptr->DispY = Y;					/* Save for mouse over checks */
 
-		// X and Y are offsets into the pixel data in array Image. Actual Bytes are at Y * 2048 * 3 + (X * 3)
+		/* X and Y are offsets into the pixel data in array Image. Actual Bytes are at Y * 2048 * 3 + (X * 3) */
 
-		// Draw Icon
+		/* Draw Icon */
 
 		if (Y < 8) Y = 8;
 		if (X < 8) X = 8;
 		
-		nptr = &Image[(((Y - 8) * WIDTH) + X - 8) * Bytesperpixel]; // Center icon on station
+		nptr = &Image[(((Y - 8) * WIDTH) + X - 8) * Bytesperpixel]; /* Center icon on station */
 
 		j =  (ptr->iconRow * 21 * 337 * Bytesperpixel)
 			+ (ptr->iconCol * 21 * Bytesperpixel) 
@@ -1577,7 +1577,7 @@ int DrawStation(struct STATIONRECORD * ptr, BOOL AllStations)
 			j += 337 * Bytesperpixel;
 		}
 
-		// If an overlay is specified, add it
+		/* If an overlay is specified, add it */
 
 		Overlay = ptr->IconOverlay;
 
@@ -1588,7 +1588,7 @@ int DrawStation(struct STATIONRECORD * ptr, BOOL AllStations)
 
 			for (index = 0 ; index < 7 ; index++)
 			{
-				Image[Pointer++] = 255;				// Blank line above chars 
+				Image[Pointer++] = 255;				/* Blank line above chars  */
 				Image[Pointer++] = 255;
 				if (Bytesperpixel == 4)
 				{
@@ -1600,7 +1600,7 @@ int DrawStation(struct STATIONRECORD * ptr, BOOL AllStations)
 
 			for (i = 0; i < 7; i++)
 			{
-				Image[Pointer++] = 255;				// Blank col 
+				Image[Pointer++] = 255;				/* Blank col  */
 				Image[Pointer++] = 255;
 				if (Bytesperpixel == 4)
 				{
@@ -1610,7 +1610,7 @@ int DrawStation(struct STATIONRECORD * ptr, BOOL AllStations)
 
 				for (index = 0 ; index < 5 ; index++)
 				{
-					c = ASCII[Overlay - 0x20][index];	// Font data
+					c = ASCII[Overlay - 0x20][index];	/* Font data */
 					bit = c & mask;
 
 
@@ -1636,7 +1636,7 @@ int DrawStation(struct STATIONRECORD * ptr, BOOL AllStations)
 				}
 				}
 
-				Image[Pointer++] = 255;				// Blank col 
+				Image[Pointer++] = 255;				/* Blank col  */
 				Image[Pointer++] = 255;
 				if (Bytesperpixel == 4)
 				{
@@ -1649,7 +1649,7 @@ int DrawStation(struct STATIONRECORD * ptr, BOOL AllStations)
 			}
 			for (index = 0 ; index < 7 ; index++)
 			{
-				Image[Pointer++] = 255;				// Blank line below chars 
+				Image[Pointer++] = 255;				/* Blank line below chars  */
 				Image[Pointer++] = 255;
 				if (Bytesperpixel == 4)
 				{
@@ -1662,16 +1662,16 @@ int DrawStation(struct STATIONRECORD * ptr, BOOL AllStations)
 		
 		calllen = strlen(ptr->Callsign);
 
-		while (calllen && ptr->Callsign[calllen - 1] == ' ')		// Remove trailing spaces
+		while (calllen && ptr->Callsign[calllen - 1] == ' ')		/* Remove trailing spaces */
 			calllen--;
 
 		calllenpixels = (calllen + 1) * 6;
 
-		// Draw Callsign Box
+		/* Draw Callsign Box */
 
 		Pointer = ((Y - 7) * WIDTH * Bytesperpixel) + ((X + 9) * Bytesperpixel);
 
-		// Draw | at each end
+		/* Draw | at each end */
 
 		for (j = 0; j < 13; j++)
 		{
@@ -1688,7 +1688,7 @@ int DrawStation(struct STATIONRECORD * ptr, BOOL AllStations)
 			Pointer += (WIDTH - 1) * Bytesperpixel;
 		}
 
-		// Draw Top Line
+		/* Draw Top Line */
 
 		for (i = 0; i < calllenpixels; i++)
 		{
@@ -1701,7 +1701,7 @@ int DrawStation(struct STATIONRECORD * ptr, BOOL AllStations)
 			}
 		}
 
-		// Draw Bottom Line
+		/* Draw Bottom Line */
 
 		Pointer = ((Y - 7) * WIDTH * Bytesperpixel) + ((X + 9) * Bytesperpixel);
 
@@ -1716,7 +1716,7 @@ int DrawStation(struct STATIONRECORD * ptr, BOOL AllStations)
 			}
 		}
 
-		// Draw Callsign. 
+		/* Draw Callsign.  */
 
 		for (j = 0; j < calllen; j++)
 		{
@@ -1728,7 +1728,7 @@ int DrawStation(struct STATIONRECORD * ptr, BOOL AllStations)
 	else
 	{
 		ptr->DispX = 0;
-		ptr->DispY = 0;			// Off Screen
+		ptr->DispY = 0;			/* Off Screen */
 	}
 	return 0;
 }
@@ -1750,11 +1750,11 @@ int RefreshStationMap(BOOL AllStations)
 		ptr = ptr->Next;
 	}
 
-//	NeedRefresh = FALSE;
-//	LastRefresh = time(NULL);
+/*	NeedRefresh = FALSE; */
+/*	LastRefresh = time(NULL); */
 
-//	if (RecsDeleted)
-//		RefreshStationList();]
+/*	if (RecsDeleted) */
+/*		RefreshStationList();] */
 
 	len = sprintf(msg, "%d Stations Zoom = %d", i, Zoom);
 	XDrawImageString(display, win, gc, 20, 20, msg, len);
@@ -1770,9 +1770,9 @@ void j_putRGBScanline(BYTE *jpegline,
 					 unsigned char *outBuf,
 					 int row, int XOffset, int YOffset)
 {
-	// Offsets are in tiles, not pixels
+	/* Offsets are in tiles, not pixels */
 	
-	int offset = row * WIDTH * Bytesperpixel;	//widthPix
+	int offset = row * WIDTH * Bytesperpixel;	/*widthPix */
 	int count;
 	unsigned int val;
 	
@@ -1791,17 +1791,17 @@ void j_putRGBScanline(BYTE *jpegline,
 		}
 		else
 		{
-			*(outBuf + offset++) = *(jpegline + count * 3 + 2);		// Blue
-			*(outBuf + offset++) = *(jpegline + count * 3 + 1);		// Green
-			*(outBuf + offset++) = *(jpegline + count * 3 + 0);		// Red	
+			*(outBuf + offset++) = *(jpegline + count * 3 + 2);		/* Blue */
+			*(outBuf + offset++) = *(jpegline + count * 3 + 1);		/* Green */
+			*(outBuf + offset++) = *(jpegline + count * 3 + 0);		/* Red	 */
 			offset++;
 		}
 	}
 }
 
-//
-//	stash a gray scanline
-//
+/* */
+/*	stash a gray scanline */
+/* */
 
 void j_putGrayScanlineToRGB(BYTE *jpegline, 
 							 int widthPix,
@@ -1814,7 +1814,7 @@ void j_putGrayScanlineToRGB(BYTE *jpegline,
 
 		BYTE iGray;
 
-		// get our grayscale value
+		/* get our grayscale value */
 		iGray = *(jpegline + count);
 
 		*(outBuf + offset + count * 3 + 0) = iGray;
@@ -1824,9 +1824,9 @@ void j_putGrayScanlineToRGB(BYTE *jpegline,
 }
 
 
-//
-//	read a JPEG file
-//
+/* */
+/*	read a JPEG file */
+/* */
 
 BYTE * JpegFileToRGB(char * fileName, UINT *width, UINT *height, int XOffset, int YOffset)
 {
@@ -1848,9 +1848,9 @@ BYTE * JpegFileToRGB(char * fileName, UINT *width, UINT *height, int XOffset, in
 	JSAMPARRAY buffer;		/* Output row buffer */
 	int row_stride;		/* physical row width in output buffer */
 	char buf[250];
-//	BYTE *dataBuf;
+/*	BYTE *dataBuf; */
 
-	// basic code from IJG Jpeg Code v6 example.c
+	/* basic code from IJG Jpeg Code v6 example.c */
 
 	*width=0;
 	*height=0;
@@ -1872,8 +1872,8 @@ BYTE * JpegFileToRGB(char * fileName, UINT *width, UINT *height, int XOffset, in
 	/* Step 1: allocate and initialize JPEG decompression object */
 
 	/* We set up the normal JPEG error routines, then override error_exit. */
-//	cinfo.err = jpeg_std_error(&jerr.pub);
-//	jerr.pub.error_exit = my_error_exit;
+/*	cinfo.err = jpeg_std_error(&jerr.pub); */
+/*	jerr.pub.error_exit = my_error_exit; */
 
 
 	/* Establish the setjmp return context for my_error_exit to use. */
@@ -1928,23 +1928,23 @@ BYTE * JpegFileToRGB(char * fileName, UINT *width, UINT *height, int XOffset, in
 	* In this example, we need to make an output work buffer of the right size.
 	*/ 
 
-	// get our buffer set to hold data
+	/* get our buffer set to hold data */
 
-	////////////////////////////////////////////////////////////
-	// alloc and open our new buffer
+	/*////////////////////////////////////////////////////////// */
+	/* alloc and open our new buffer */
 	
-//	dataBuf = malloc(cinfo.output_width * 4 * cinfo.output_height);
+/*	dataBuf = malloc(cinfo.output_width * 4 * cinfo.output_height); */
 	
-//	if (dataBuf==NULL) {
-//
-//		jpeg_destroy_decompress(&cinfo);
+/*	if (dataBuf==NULL) { */
+/* */
+/*		jpeg_destroy_decompress(&cinfo); */
 		
-//		fclose(infile);
+/*		fclose(infile); */
 
-//		return NULL;
-//	}
+/*		return NULL; */
+/*	} */
 
-	// how big is this thing gonna be?
+	/* how big is this thing gonna be? */
 	*width = cinfo.output_width;
 	*height = cinfo.output_height;
 	
@@ -1969,7 +1969,7 @@ BYTE * JpegFileToRGB(char * fileName, UINT *width, UINT *height, int XOffset, in
 		(void) jpeg_read_scanlines(&cinfo, buffer, 1);
 		/* Assume put_scanline_someplace wants a pointer and sample count. */
 
-		// asuumer all 3-components are RGBs
+		/* asuumer all 3-components are RGBs */
 		if (cinfo.out_color_components==3) {
 			
 			j_putRGBScanline(buffer[0], 
@@ -1979,7 +1979,7 @@ BYTE * JpegFileToRGB(char * fileName, UINT *width, UINT *height, int XOffset, in
 
 		} else if (cinfo.out_color_components==1) {
 
-			// assume all single component images are grayscale
+			/* assume all single component images are grayscale */
 			j_putGrayScanlineToRGB(buffer[0], 
 								*width,
 								Image,
@@ -2014,7 +2014,7 @@ BYTE * JpegFileToRGB(char * fileName, UINT *width, UINT *height, int XOffset, in
 
 	return 0;
 }
-// store a scanline to our data buffer
+/* store a scanline to our data buffer */
 
 void j_putRGBScanline(BYTE *jpegline, 
 						 int widthPix,
@@ -2030,7 +2030,7 @@ VOID LoadImageTile(int Zoom, int startx, int starty, int x, int y);
 
 VOID RefreshTile(char * FN, int TileZoom, int Tilex, int Tiley)
 {
-	// Called when a new tile has been diwnloaded from OSM
+	/* Called when a new tile has been diwnloaded from OSM */
 
 	int StartRow, StartCol;
 	UCHAR * pbImage = NULL;
@@ -2038,18 +2038,18 @@ VOID RefreshTile(char * FN, int TileZoom, int Tilex, int Tiley)
 	int ImgChannels;
 
 	if (TileZoom != Zoom)
-		return;					// Zoom level has changed
+		return;					/* Zoom level has changed */
 
 	x = Tilex - SetBaseX;
 	y = Tiley - SetBaseY;
 
 	if (x < 0 || x > WIDTHTILES -1 || y < 0 || y > HEIGHTTILES - 1)	
-		return;					// Tile isn't part of current image;
+		return;					/* Tile isn't part of current image; */
 
 	LoadImageTile (Zoom, Tilex, Tiley, x, y);
 	NeedRedraw = 1;
 
-//	XPutImage (display, win, gc, image, ScrollX, ScrollY, leftBorder, topBorder, cxImgSize, cyImgSize);
+/*	XPutImage (display, win, gc, image, ScrollX, ScrollY, leftBorder, topBorder, cxImgSize, cyImgSize); */
 }
 
 
@@ -2092,11 +2092,11 @@ VOID LoadImageTile(int Zoom, int startx, int starty, int x, int y)
 */
 	if ((startx) >= Limit || (starty) >= Limit || startx< 0 || starty < 0)
 	{
-//		printf("Not Loading %d %d %d\n",Limit, startx, startx );
-		return; //goto NoFile;
+/*		printf("Not Loading %d %d %d\n",Limit, startx, startx ); */
+		return; /*goto NoFile; */
 	}
 
-	// May be PNG or JPG
+	/* May be PNG or JPG */
 
 	sprintf(Tile, "/%02d/%d/%d.png", Zoom, startx, starty);
 	sprintf(FN, "%s%s", OSMDir, Tile);
@@ -2135,7 +2135,7 @@ gotfile:
 		StartCol = x * Bytesperpixel * 256;
 		StartRow = y * 256;
 
-//		printf("WIDTH %d Height %d Bytesperpixel = %d x = %d y = %d\n", WIDTH, HEIGHT, Bytesperpixel, x, y); 
+/*		printf("WIDTH %d Height %d Bytesperpixel = %d x = %d y = %d\n", WIDTH, HEIGHT, Bytesperpixel, x, y);  */
 		if (pbImage == NULL)
 		{
 			pbImage = malloc(256 * 3 * 256);
@@ -2146,7 +2146,7 @@ gotfile:
 
 		offset = ((StartRow) * WIDTH * ImgChannels) + StartCol;
 
-//		printf ("x %d y %d offset %d \n", x, y, offset);
+/*		printf ("x %d y %d offset %d \n", x, y, offset); */
 
 			
 		for (i = 0; i < 256; i++)
@@ -2155,7 +2155,7 @@ gotfile:
 
 			offset = ((StartRow + i) * WIDTH * Bytesperpixel) + StartCol;
 
-			// this does one scan line
+			/* this does one scan line */
 				
 			for (count = 0; count < 256; count++) 
 			{
@@ -2169,13 +2169,13 @@ gotfile:
 				}
 				else
 				{
-					Image[offset++] = *(pbImage + count * 3 + 2);		// Blue
-					Image[offset++] = *(pbImage + count * 3 + 1);		// Green
-					Image[offset++] = *(pbImage + count * 3 + 0);		// Red	
+					Image[offset++] = *(pbImage + count * 3 + 2);		/* Blue */
+					Image[offset++] = *(pbImage + count * 3 + 1);		/* Green */
+					Image[offset++] = *(pbImage + count * 3 + 0);		/* Red	 */
 					offset++;
 				}
 			}
-			pbImage += 768; // used 768 pixels
+			pbImage += 768; /* used 768 pixels */
 		}
 			
 		free(ImageSave);
@@ -2189,9 +2189,9 @@ VOID LoadImageSet(int Zoom, int TileX, int TileY)
 
 	if (SetBaseX != TileX || SetBaseY != TileY)
 	{
-		// Only Load if changed
+		/* Only Load if changed */
 
-		SetBaseX = TileX;				// Lowest Tiles in currently loaded set
+		SetBaseX = TileX;				/* Lowest Tiles in currently loaded set */
 		SetBaseY = TileY;
 
 		memset(Image, 0, WIDTH * Bytesperpixel * HEIGHT);
@@ -2261,7 +2261,7 @@ BYTE * ReadIcons(char * fileName, UINT *width, UINT *height)
 		return NULL;
 	}
 
-	// how big is this thing gonna be?
+	/* how big is this thing gonna be? */
 	*width = cinfo.output_width;
 	*height = cinfo.output_height;
 	
@@ -2300,9 +2300,9 @@ BYTE * ReadIcons(char * fileName, UINT *width, UINT *height)
 			}
 			else
 			{
-				*(dataBuf + offset++) = *(buffer[0] + count * 3 + 2);		// Blue
-				*(dataBuf + offset++) = *(buffer[0] + count * 3 + 1);		// Green
-				*(dataBuf + offset++) = *(buffer[0] + count * 3 + 0);		// Red	
+				*(dataBuf + offset++) = *(buffer[0] + count * 3 + 2);		/* Blue */
+				*(dataBuf + offset++) = *(buffer[0] + count * 3 + 1);		/* Green */
+				*(dataBuf + offset++) = *(buffer[0] + count * 3 + 0);		/* Red	 */
 				offset++;
 			}
 		}
@@ -2313,7 +2313,7 @@ BYTE * ReadIcons(char * fileName, UINT *width, UINT *height)
 	fclose(infile);
 	return dataBuf;
 }
-// store a scanline to our data buffer
+/* store a scanline to our data buffer */
 
 void ZoomIn()
 {
@@ -2436,7 +2436,7 @@ void view_popup_menu (GtkWidget *treeview, GdkEventButton *event, struct APRSMES
     g_signal_connect(menuitem2, "activate",
                      (GCallback) view_popup_menu_onDoNothing, treeview);
  
-	if (userdata->Retries)		// Not active so cant cancel
+	if (userdata->Retries)		/* Not active so cant cancel */
 	    gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem1);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem2);
  
@@ -2452,8 +2452,8 @@ void view_popup_menu (GtkWidget *treeview, GdkEventButton *event, struct APRSMES
  
 gboolean view_onButtonPressed (GtkWidget *treeview, GdkEventButton *event, gpointer userdata)
 {
-	//	Right click on TX Message window. If a message is selected,
-	//	Pop up a Cancel Message Window
+	/*	Right click on TX Message window. If a message is selected, */
+	/*	Pop up a Cancel Message Window */
 	
 	if (event->type == GDK_BUTTON_PRESS  &&  event->button == 3)
 	{
@@ -2466,7 +2466,7 @@ gboolean view_onButtonPressed (GtkWidget *treeview, GdkEventButton *event, gpoin
 		if (ptr == 0)
 			return TRUE;
 
-		// Make sure the entry that was clicked is selected
+		/* Make sure the entry that was clicked is selected */
 
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
 		
@@ -2487,7 +2487,7 @@ gboolean view_onButtonPressed (GtkWidget *treeview, GdkEventButton *event, gpoin
 
 			gtk_tree_model_get (model, &iter, 1, &Seq, -1);
 
-			// Find the message
+			/* Find the message */
 
 			while (ptr)
 			{
@@ -2567,18 +2567,18 @@ static GtkWidget *create_sent_window( void )
 
 	g_object_unref (model);
 
-//	gtk_container_add (GTK_CONTAINER (window), view2);
+/*	gtk_container_add (GTK_CONTAINER (window), view2); */
 
 	scrolledwin = gtk_scrolled_window_new(NULL,NULL);
 	gtk_container_set_border_width(GTK_CONTAINER(scrolledwin), 1);
-//	gtk_widget_set_size_request(scrolledwin, 300, 80);
+/*	gtk_widget_set_size_request(scrolledwin, 300, 80); */
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledwin),GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC);
 	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolledwin), GTK_SHADOW_IN);
-//    gtk_container_add(GTK_CONTAINER(scrolledwin), view);
-    //tree_view = gtk_tree_view_new();
+/*    gtk_container_add(GTK_CONTAINER(scrolledwin), view); */
+    /*tree_view = gtk_tree_view_new(); */
     gtk_container_add(GTK_CONTAINER (scrolledwin), view);
-    //gtk_tree_view_set_model (GTK_TREE_VIEW (tree_view), GTK_TREE_MODEL (view));
-    //gtk_widget_show(tree_view);
+    /*gtk_tree_view_set_model (GTK_TREE_VIEW (tree_view), GTK_TREE_MODEL (view)); */
+    /*gtk_widget_show(tree_view); */
 /*
     gtk_table_attach (GTK_TABLE (table), scrolledwin,0, 1, 0, 1,
 		    GTK_EXPAND | GTK_SHRINK | GTK_FILL,
@@ -2608,7 +2608,7 @@ static GtkWidget *create_received_window(void)
 
 	view2 = gtk_tree_view_new();
 
-//	gtk_tree_view_set_fixed_height_mode(view2, TRUE);
+/*	gtk_tree_view_set_fixed_height_mode(view2, TRUE); */
 
 	renderer = gtk_cell_renderer_text_new();
 	renderer->ypad = 0;
@@ -2642,7 +2642,7 @@ static GtkWidget *create_received_window(void)
 
  	scrolledwin2 = gtk_scrolled_window_new(NULL,NULL);
 	gtk_container_set_border_width(GTK_CONTAINER(scrolledwin2), 2);
-//	gtk_widget_set_size_request(scrolledwin2, 300, 80);
+/*	gtk_widget_set_size_request(scrolledwin2, 300, 80); */
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledwin2),GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC);
 	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolledwin2), GTK_SHADOW_IN);
 	gtk_container_add(GTK_CONTAINER(scrolledwin2), view2);
@@ -2674,7 +2674,7 @@ void enter_callback( GtkWidget *widget,
 	{
 		SendAPRSMessage(entry_text, tocall);
 	
-		// if new call add to combo box
+		/* if new call add to combo box */
 
 		if (strstr(ToCalls, Key) == 0)
 		{
@@ -2724,7 +2724,7 @@ int msgWinWidth = 300;
 int msgWinHeight = 300;
 int msgWinX = 100;
 int msgWinY = 100;
-int Split = 100;				// Rx/Tx Window split
+int Split = 100;				/* Rx/Tx Window split */
 
 
 void frame_callback(GtkWindow *window, GdkEvent *event, gpointer data)
@@ -2737,10 +2737,10 @@ void frame_callback(GtkWindow *window, GdkEvent *event, gpointer data)
    msgWinWidth = event->configure.width;
    msgWinHeight = event->configure.height;
 
- //  gtk_widget_set_size_request(entry, msgWinWidth - 210 , 20);	//gtk_entry_new_with_buffer(text);
+ /*  gtk_widget_set_size_request(entry, msgWinWidth - 210 , 20);	//gtk_entry_new_with_buffer(text); */
 
- //  gtk_window_set_title(window, buf);
- //  gtk_window_set_title (GTK_WINDOW (window), "BPQAPRS Messaging");
+ /*  gtk_window_set_title(window, buf); */
+ /*  gtk_window_set_title (GTK_WINDOW (window), "BPQAPRS Messaging"); */
 }
 
 BOOL OnlyMine = FALSE;
@@ -2762,7 +2762,7 @@ void check_callback(GtkButton *button, gpointer user_data)
 	ShowBulls = gtk_toggle_button_get_active((GtkToggleButton *)check3);
 	AllSSID = gtk_toggle_button_get_active((GtkToggleButton *)check4);
 
-	// rewite the Message display with new filter
+	/* rewite the Message display with new filter */
 
     if (gtk_tree_model_iter_nth_child(GTK_TREE_MODEL(receiveditems), &iter, NULL, 0))
 	{
@@ -2775,7 +2775,7 @@ void check_callback(GtkButton *button, gpointer user_data)
 			if (ShowBulls == TRUE)
 				goto wantit;
 
-			if (strcmp(ptr->ToCall, APRSCall) == 0)			//  to me?
+			if (strcmp(ptr->ToCall, APRSCall) == 0)			/*  to me? */
 				goto wantit;
 
 			if (AllSSID)
@@ -2788,11 +2788,11 @@ void check_callback(GtkButton *button, gpointer user_data)
 					goto wantit;
 			}
 
-			if (OnlyMine == FALSE)		// Want All
+			if (OnlyMine == FALSE)		/* Want All */
 				if (OnlySeq == FALSE || ptr->Seq[0] != 0)
 					goto wantit;
 			
-			// ignore
+			/* ignore */
 
 			ptr = ptr->Next;
 			continue;
@@ -2828,7 +2828,7 @@ void button_callback(GtkButton *button, gpointer user_data)
 
 void button2_callback(GtkButton *button, gpointer user_data)
 {
-	// Clear Sent Messages
+	/* Clear Sent Messages */
 
 	SMEM->ClearTX = 1;
 }
@@ -2836,7 +2836,7 @@ void button2_callback(GtkButton *button, gpointer user_data)
 
 static gboolean delete_event (GtkWidget *widget, GdkEvent *event, gpointer data)
 {
-	// Don't allow window to be closed
+	/* Don't allow window to be closed */
 	
 	return TRUE;
 }
@@ -2896,7 +2896,7 @@ void SaveConfig()
 	printf("%s\n", ToCalls);
 }
 
-// Linux Signal Handlers
+/* Linux Signal Handlers */
 
 BOOL Running = TRUE;
 
@@ -2945,7 +2945,7 @@ int main(int argc, char *argv[])
 	char text[256];
 	long unsigned int key;
 
-	int LastX, LastY;			// Saved mouse position when button down
+	int LastX, LastY;			/* Saved mouse position when button down */
 	int MovedX, MovedY;
 
 	double sx, sy;
@@ -3037,7 +3037,7 @@ int main(int argc, char *argv[])
 	if (strstr(Env, "localhost:1"))
 		printf("!!! WARNING !!! X session seems to be tunneled over an SSH session\nThis program will run much faster if you set DISPLAY to the Host running your X Server\n");
 
-	// Get shared memory
+	/* Get shared memory */
 
 	fd = shm_open("/BPQAPRSSharedMem", O_RDWR, S_IRUSR | S_IWUSR);
 	if (fd == -1)
@@ -3047,7 +3047,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		// Map shared memory object
+		/* Map shared memory object */
 
 		Shared = mmap((void *)APRSSHAREDMEMORYBASE, sizeof(struct STATIONRECORD) * 2,
 		     PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, fd, 0);
@@ -3076,11 +3076,11 @@ int main(int argc, char *argv[])
 	printf("LinBPQ Configured with MaxStations %d APRSCall %s\n", 
 		ControlRecord->LastPort, APRSCall);
 	
-	memcpy(BaseCall, APRSCall, 10);		// Get call less SSID
+	memcpy(BaseCall, APRSCall, 10);		/* Get call less SSID */
 	strlop(BaseCall, ' ');
 	strlop(BaseCall, '-');
 
-	//	Remap with Server's view of MaxStations
+	/*	Remap with Server's view of MaxStations */
 	
 	munmap(APRSStationMemory, sizeof(struct STATIONRECORD) * 2);
 
@@ -3094,7 +3094,7 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	SMEM->NeedRefresh = 1;		// Initial Load of messages
+	SMEM->NeedRefresh = 1;		/* Initial Load of messages */
 
 	maxfd = sfd = socket(AF_UNIX, SOCK_DGRAM, 0);
 
@@ -3144,11 +3144,11 @@ int main(int argc, char *argv[])
 	if (depth == 16)
 		Bytesperpixel = 2;
 
-	Image = malloc(WIDTH * Bytesperpixel * HEIGHT + 100);	// Seems past last byte gets corrupt
+	Image = malloc(WIDTH * Bytesperpixel * HEIGHT + 100);	/* Seems past last byte gets corrupt */
 
 	if (mkdir(OSMDir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) != 0)
 	{
-		if (errno != 17)			// File exists
+		if (errno != 17)			/* File exists */
 		{
 			printf("Error Creating %s\n", OSMDir);
 			perror("mkdir");
@@ -3160,7 +3160,7 @@ int main(int argc, char *argv[])
 		sprintf(FN, "%s/%02d", OSMDir, i);
 		if (mkdir(FN, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) != 0)
 		{
-			if (errno != 17)			// File exists
+			if (errno != 17)			/* File exists */
 			{
 				printf("Error Creating %s\n", FN);
 				perror("mkdir");
@@ -3168,21 +3168,21 @@ int main(int argc, char *argv[])
 		}
 	}
 	
-	// Read Icons
+	/* Read Icons */
 
 	iconImage = ReadIcons("BPQAPRS/Symbols.jpg", &x, &y);
 
 	if (x == 0)
 		printf("Couldn't load Icons\n");
 
-//	win = XCreateSimpleWindow (display, root, 50, 50, 800, 800, 0, black, white);
+/*	win = XCreateSimpleWindow (display, root, 50, 50, 800, 800, 0, black, white); */
 	win = XCreateWindow (display, root, 50, 50, 788, 788, 0, depth, CopyFromParent, CopyFromParent, 0, 0);
 	XStoreName(display, win, "BPQAPRS Map");
 	
 	wmDeleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", False);
 	XSetWMProtocols(display, win, &wmDeleteMessage, 1);
 
-//	XSelectInput(display, win, KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask);
+/*	XSelectInput(display, win, KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask); */
 
 	XSelectInput(display, win, ExposureMask | KeyPressMask | PointerMotionMask |
 		ButtonPressMask | ButtonReleaseMask | StructureNotifyMask);
@@ -3203,10 +3203,10 @@ int main(int argc, char *argv[])
 
 	XSetLineAttributes(display, gc, 2, LineSolid, CapNotLast, JoinMiter);
 
-	SetBaseX = -1;			// force reload
+	SetBaseX = -1;			/* force reload */
 	SetBaseY = -1;
 
-	LoadImageSet(Zoom, TileX, TileY);	// Loads 1024 * 1024 Block
+	LoadImageSet(Zoom, TileX, TileY);	/* Loads 1024 * 1024 Block */
 		
 	x11_fd = ConnectionNumber(display);
 
@@ -3224,23 +3224,23 @@ int main(int argc, char *argv[])
     gtk_container_set_border_width (GTK_CONTAINER (window), 10);
 
 	gtk_window_set_resizable(GTK_WINDOW (window), TRUE);
-//	g_signal_connect (G_OBJECT (window), "destroy", G_CALLBACK (close_application), NULL);
+/*	g_signal_connect (G_OBJECT (window), "destroy", G_CALLBACK (close_application), NULL); */
 	gtk_window_set_title (GTK_WINDOW (window), "BPQAPRS Messaging");
 	gtk_container_set_border_width(GTK_CONTAINER (window), 0);
 
-	// Load bpqicon if present
+	/* Load bpqicon if present */
 
 	if (stat("bpqicon.png", &STAT) == 0)
 		gtk_window_set_icon(GTK_WINDOW(window), create_pixbuf("bpqicon.png"));
 
-    //gtk_window_get_frame_dimensions(GTK_WINDOW(window),&left,&top,&right,&bottom);
+    /*gtk_window_get_frame_dimensions(GTK_WINDOW(window),&left,&top,&right,&bottom); */
 
 
 	gtk_signal_connect(GTK_OBJECT(window), "delete_event", GTK_SIGNAL_FUNC(delete_event), NULL);
 
-//	g_signal_connect(G_OBJECT(window), "configure-event", G_CALLBACK(frame_callback), NULL);
+/*	g_signal_connect(G_OBJECT(window), "configure-event", G_CALLBACK(frame_callback), NULL); */
 
-	// Create a box for the menu
+	/* Create a box for the menu */
 
 	box1 = gtk_vbox_new (FALSE, 0);
 	gtk_container_add (GTK_CONTAINER (window), box1);
@@ -3267,7 +3267,7 @@ int main(int argc, char *argv[])
 	g_signal_connect(G_OBJECT(button), "clicked", G_CALLBACK(button_callback), "1");
 	g_signal_connect(G_OBJECT(button2), "clicked", G_CALLBACK(button2_callback), "1");
 
-	// hBox for Check boxes
+	/* hBox for Check boxes */
 
 	checkhbox = gtk_hbox_new (FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (checkhbox), checklabel, FALSE, FALSE, 0);
@@ -3284,9 +3284,9 @@ int main(int argc, char *argv[])
 
 	box10 = gtk_vbox_new (FALSE, 0);
 
-//	menubar = get_menubar_menu (window);
+/*	menubar = get_menubar_menu (window); */
 
-//    gtk_box_pack_start (GTK_BOX (box1), menubar, FALSE, TRUE, 1);
+/*    gtk_box_pack_start (GTK_BOX (box1), menubar, FALSE, TRUE, 1); */
 	gtk_container_add (GTK_CONTAINER (box1), box10);
 	gtk_widget_show (window);
 
@@ -3305,14 +3305,14 @@ int main(int argc, char *argv[])
 	gtk_paned_add2 (GTK_PANED (vpaned), frame2);
 	gtk_widget_show (frame2);
 
-//	separator = gtk_hseparator_new ();
-//	gtk_box_pack_start(GTK_BOX (box1), separator, FALSE, TRUE, 0);
+/*	separator = gtk_hseparator_new (); */
+/*	gtk_box_pack_start(GTK_BOX (box1), separator, FALSE, TRUE, 0); */
 
 	box2 = gtk_hbox_new(FALSE, 10);
 	gtk_container_set_border_width(GTK_CONTAINER (box2), 1);
 	gtk_box_pack_start(GTK_BOX (box10), box2, FALSE, FALSE, 0);
 
-	// set up the text entry line
+	/* set up the text entry line */
 
 	label1 = gtk_label_new("  To");
 	label2 = gtk_label_new("Message");
@@ -3320,7 +3320,7 @@ int main(int argc, char *argv[])
 	gtk_widget_set_size_request(combo, 100, 10);
 
 	entry = gtk_entry_new();
-//	gtk_widget_set_size_request(entry, 100, 20);	//gtk_entry_new_with_buffer(text);
+/*	gtk_widget_set_size_request(entry, 100, 20);	//gtk_entry_new_with_buffer(text); */
 	gtk_entry_set_max_length(GTK_ENTRY(entry), 100);
 	gtk_entry_set_activates_default(GTK_ENTRY (entry), TRUE);
 	g_signal_connect (G_OBJECT (entry), "activate", G_CALLBACK(enter_callback), (gpointer)entry);
@@ -3342,12 +3342,12 @@ int main(int argc, char *argv[])
 	gtk_widget_show_all (window);
 	gtk_widget_show (window);
 
-    // Main loop
+    /* Main loop */
 
 	_beginthread(GTKThread, 0, NULL);
 	_beginthread(SecTimer, 0, NULL);
 
-	AutoFilterTimer = AUTOFILTERDELAY;		// Update filter if no change for 30 secs
+	AutoFilterTimer = AUTOFILTERDELAY;		/* Update filter if no change for 30 secs */
 
 	while(Running)
 	{
@@ -3362,7 +3362,7 @@ int main(int argc, char *argv[])
 		tv.tv_usec = 0;
 		tv.tv_sec = 1;
 
-	   // Wait for X Event, Message from LinBPQ or a Timer
+	   /* Wait for X Event, Message from LinBPQ or a Timer */
 	   
 	   if (select(maxfd+1, &in_fds, 0, 0, &tv))
 	   {
@@ -3371,33 +3371,33 @@ int main(int argc, char *argv[])
 				numBytes = recvfrom(sfd, Msg, 256, 0, NULL, NULL);
 		   }
 
-		   // may be X event, but pick up later
+		   /* may be X event, but pick up later */
 	   }
 	   else
 	   {
-			// Handle timer here
+			/* Handle timer here */
 
 		   	if (SMEM->NeedRefresh)
 			{
 				SMEM->NeedRefresh  = FALSE;
 
-			   	// Use Checkbox event to rewrite display
+			   	/* Use Checkbox event to rewrite display */
 
 				check_callback((GtkButton *)check1, "1");
 				RefreshTXList();
 			}
 
-	//		NeedRedraw += RefreshStationMap(FALSE);			// Draw new or moved stations
+	/*		NeedRedraw += RefreshStationMap(FALSE);			// Draw new or moved stations */
 
-			// Do a full redraw at least evey 2 mins if anything has changed
+			/* Do a full redraw at least evey 2 mins if anything has changed */
 
-//			SlowTimer++;
-//			if (SlowTimer > 40)				// 2 Mins
-//				if (NeedRedraw)
-//					NeedRefresh = TRUE;
+/*			SlowTimer++; */
+/*			if (SlowTimer > 40)				// 2 Mins */
+/*				if (NeedRedraw) */
+/*					NeedRefresh = TRUE; */
 	   }
 
-        // Handle XEvents and flush the input 
+        /* Handle XEvents and flush the input  */
 
         while(Running && XPending(display))
 		{
@@ -3474,9 +3474,9 @@ int main(int argc, char *argv[])
 
             xce = event.xconfigure;
 
-            // This event type is generated for a variety of
-            //  happenings, so check whether the window has been
-            //   resized. 
+            /* This event type is generated for a variety of */
+            /*  happenings, so check whether the window has been */
+            /*   resized.  */
 				
 			WindowX = xce.x;
 			WindowY = xce.y;
@@ -3506,18 +3506,18 @@ int main(int argc, char *argv[])
 			
 			switch (event.xbutton.button)
 			{
-			case 1:					// Left Button
+			case 1:					/* Left Button */
 				
 				LastX = MouseX;
 				LastY = MouseY;
 				break;
 				
-			case 4:					// Scrollup
+			case 4:					/* Scrollup */
 			
 				ZoomIn();
 				break;
 				
-			case 5:					// Scrolldown
+			case 5:					/* Scrolldown */
 			
 				ZoomOut();			
 				break;
@@ -3529,7 +3529,7 @@ int main(int argc, char *argv[])
 
 			if (popupActive && (event.xbutton.time - lastupevent) < 300)
 			{
-				// Double Click on Station
+				/* Double Click on Station */
 				
 				char Key[32];
 				char LoppedCall[10];
@@ -3547,7 +3547,7 @@ int main(int argc, char *argv[])
 
 				sprintf(Key, "|%s|", LoppedCall);
 
-				// if new call add to combo box
+				/* if new call add to combo box */
 
 				if (strstr(ToCalls, Key) == 0)
 				{
@@ -3562,9 +3562,9 @@ int main(int argc, char *argv[])
 
 			switch (event.xbutton.button)
 			{
-			case 1:				// Left Button
+			case 1:				/* Left Button */
 
-				// if a Popup is on display, then select station, else scroll map
+				/* if a Popup is on display, then select station, else scroll map */
 
 				if (selActive)
 				{
@@ -3618,13 +3618,13 @@ int main(int argc, char *argv[])
 				}
 
 				NeedRefresh = TRUE;
-				AutoFilterTimer = AUTOFILTERDELAY;		// Update filter if no change for 30 secs
+				AutoFilterTimer = AUTOFILTERDELAY;		/* Update filter if no change for 30 secs */
 
 				break;
 			}
 			break;
 		} 
-		}	// end of while xpending
+		}	/* end of while xpending */
 
 		if (popupActive || selActive)
 		{
@@ -3681,7 +3681,7 @@ void RefreshTXList()
 	gchar *seq;
 	char status[10];
 
-	// Clear old list
+	/* Clear old list */
 	
 	if (gtk_tree_model_iter_nth_child(GTK_TREE_MODEL(sentitems), &iter, NULL, 0))
 	{
@@ -3736,14 +3736,14 @@ VOID SecTimer()
 	int n = 0;
 	char Msg[20];
 
-	// See if changed flag set on any stations
+	/* See if changed flag set on any stations */
 
-	NeedRedraw += RefreshStationMap(FALSE);			// Draw new or moved stations
+	NeedRedraw += RefreshStationMap(FALSE);			/* Draw new or moved stations */
 
-	// Do a full redraw at least evey 2 mins if anything has changed
+	/* Do a full redraw at least evey 2 mins if anything has changed */
 
 	SlowTimer++;
-	if (SlowTimer > 120)				// 2 Mins
+	if (SlowTimer > 120)				/* 2 Mins */
 		if (NeedRedraw)
 			NeedRefresh = TRUE;
 
@@ -3806,7 +3806,7 @@ VOID SecTimer()
 
 		if (AutoFilterTimer == 0 && AddViewToFilter)
 		{
-			// send filter to IS
+			/* send filter to IS */
 
 			double TLLat, TLLon, BRLat, BRLon;
 			char Filter[256];
@@ -3827,7 +3827,7 @@ BOOL RGBToJpegFile(char * fileName, BYTE *dataBuf, UINT widthPix, UINT height, B
 	struct jpeg_compress_struct cinfo;
 	struct my_error_mgr jerr;
 	FILE * outfile=NULL;
-	unsigned char * RGBBuff = malloc(widthPix * 3);	// no idea why
+	unsigned char * RGBBuff = malloc(widthPix * 3);	/* no idea why */
 	unsigned char * ptr1, * ptr2;
 	int n;
 	unsigned int val, r, g, b;
@@ -3843,7 +3843,7 @@ BOOL RGBToJpegFile(char * fileName, BYTE *dataBuf, UINT widthPix, UINT height, B
 	if (height==0)
 		return FALSE;
 
-	// Write a Date/Time stamp to top left
+	/* Write a Date/Time stamp to top left */
 
 	if (LocalTime)
 		TM = localtime(&NOW);
@@ -3895,9 +3895,9 @@ BOOL RGBToJpegFile(char * fileName, BYTE *dataBuf, UINT widthPix, UINT height, B
 
 	if ((outfile = fopen(fileName, "wb")) == NULL)
 	{
-//		char buf[250];
-//		sprintf(buf, "JpegFile :\nCan't open %s\n", fileName);
-//		MessageBox(NULL, buf, "", 0);
+/*		char buf[250]; */
+/*		sprintf(buf, "JpegFile :\nCan't open %s\n", fileName); */
+/*		MessageBox(NULL, buf, "", 0); */
 		return FALSE;
 	}
 
@@ -3952,7 +3952,7 @@ BOOL RGBToJpegFile(char * fileName, BYTE *dataBuf, UINT widthPix, UINT height, B
 
 	outRow = RGBBuff;
 
-	// We have to convert from 2 or 4 bytes to pixel to 3 byte rgb
+	/* We have to convert from 2 or 4 bytes to pixel to 3 byte rgb */
 
 	ptr1 = dataBuf + ((ScrollY * WIDTH) + ScrollX + (cinfo.next_scanline * WIDTH)) * Bytesperpixel;
 
@@ -4025,9 +4025,9 @@ VOID plot(int X, int Y, COLORREF rgb)
 			}
 			else
 			{ 
-				val = ((rgb & 0xff) >> 3) << 11;		// Red
+				val = ((rgb & 0xff) >> 3) << 11;		/* Red */
 				val |= (GetGValue(rgb) >> 2) << 5;
-				val |= (rgb >> 19);			// Blue
+				val |= (rgb >> 19);			/* Blue */
 				*(nptr++) = (val & 0xff);
 				*(nptr++) = (unsigned char)(val >> 8);
 			}
@@ -4037,7 +4037,7 @@ VOID plot(int X, int Y, COLORREF rgb)
 	}
 }
 
-// Algorithm assumes y increases slower than x. If not, swap x and y in plotline and plotpoint
+/* Algorithm assumes y increases slower than x. If not, swap x and y in plotline and plotpoint */
 
 void plotLineTB(int x0, int y0, int x1, int y1, COLORREF rgb);
 void plotLineLR(int x0, int y0, int x1, int y1, COLORREF rgb);
@@ -4056,8 +4056,8 @@ void plotLineLR(int x0, int y0, int x1, int y1, COLORREF rgb)
 	int dy;
 	int D, x, y;
 
-	// Must draw with increacing x and y, but can draw either way round, so if x is decreasing,
-	//	just swap ends, so we always draw left to right
+	/* Must draw with increacing x and y, but can draw either way round, so if x is decreasing, */
+	/*	just swap ends, so we always draw left to right */
 
 	if (x0 > x1)
 	{
@@ -4070,7 +4070,7 @@ void plotLineLR(int x0, int y0, int x1, int y1, COLORREF rgb)
 		y1 = y;
 	}
 
-	// if y is now decreasing, we must reverse algorithm
+	/* if y is now decreasing, we must reverse algorithm */
 
 	if (y1 > y0)
 	{
@@ -4131,8 +4131,8 @@ void plotLineTB(int x0, int y0, int x1, int y1, COLORREF rgb)
 	int dy;
 	int D, x, y;
 
-	// Must draw with increacing x and y, but can draw either way round, so if x is decreasing,
-	//	just swap ends, so we always draw left to right
+	/* Must draw with increacing x and y, but can draw either way round, so if x is decreasing, */
+	/*	just swap ends, so we always draw left to right */
 
 	if (x0 > x1)
 	{
@@ -4145,7 +4145,7 @@ void plotLineTB(int x0, int y0, int x1, int y1, COLORREF rgb)
 		y1 = y;
 	}
 
-	// if y is now decreasing, we must reverse algorithm
+	/* if y is now decreasing, we must reverse algorithm */
 
 	if (y1 > y0)
 	{
@@ -4207,7 +4207,7 @@ static png_structp png_ptr = NULL;
 static png_infop info_ptr = NULL;
 
 
-// cexcept interface
+/* cexcept interface */
 
 static void
 png_cexcept_error(png_structp png_ptr, png_const_charp msg)
@@ -4218,7 +4218,7 @@ png_cexcept_error(png_structp png_ptr, png_const_charp msg)
    fprintf(stderr, "libpng error: %s\n", msg);
 #endif
    {
-//      Throw msg;
+/*      Throw msg; */
    }
 }
 
@@ -4228,7 +4228,7 @@ int LoadImageFile (void * hwnd, char * pstrPathName,
                 int *piChannels, png_color *pBkgColor)
 {
  
-    // if there's an existing PNG, free the memory
+    /* if there's an existing PNG, free the memory */
 
     if (*ppbImage)
     {
@@ -4243,8 +4243,8 @@ int LoadImageFile (void * hwnd, char * pstrPathName,
 
     if (*ppbImage != NULL)
     {
-  //      sprintf (szTmp, "VisualPng - %s", strrchr(pstrPathName, '\\') + 1);
-   //     SetWindowText (hwnd, szTmp);
+  /*      sprintf (szTmp, "VisualPng - %s", strrchr(pstrPathName, '\\') + 1); */
+   /*     SetWindowText (hwnd, szTmp); */
     }
     else
     {
@@ -4254,8 +4254,8 @@ int LoadImageFile (void * hwnd, char * pstrPathName,
     return TRUE;
 }
 
-//----------------
-// PNG image handler functions
+/*---------------- */
+/* PNG image handler functions */
 
 BOOL PngLoadImage (char * pstrFileName, png_byte **ppbImageData,
                    png_uint_32 *piWidth, png_uint_32 *piHeight, int *piChannels, png_color *pBkgColor)
@@ -4272,7 +4272,7 @@ BOOL PngLoadImage (char * pstrFileName, png_byte **ppbImageData,
     static png_byte   **ppbRowPointers = NULL;
     int                 i;
 
-    // open the PNG input file
+    /* open the PNG input file */
 
     if (!pstrFileName)
     {
@@ -4288,7 +4288,7 @@ BOOL PngLoadImage (char * pstrFileName, png_byte **ppbImageData,
 		return FALSE;
 	}
 
-    // first check the eight byte PNG signature
+    /* first check the eight byte PNG signature */
 
     fread(pbSig, 1, 8, pfFile);
     if (!png_check_sig(pbSig, 8))
@@ -4304,7 +4304,7 @@ BOOL PngLoadImage (char * pstrFileName, png_byte **ppbImageData,
         return FALSE;
     }
 
-    // create the two png(-info) structures
+    /* create the two png(-info) structures */
 
     png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL,
       (png_error_ptr)png_cexcept_error, (png_error_ptr)NULL);
@@ -4324,10 +4324,10 @@ BOOL PngLoadImage (char * pstrFileName, png_byte **ppbImageData,
        return FALSE;
     }
 
-//    Try
+/*    Try */
     {
         
-        // initialize the png structure
+        /* initialize the png structure */
         
 #if !defined(PNG_NO_STDIO)
         png_init_io(png_ptr, pfFile);
@@ -4337,17 +4337,17 @@ BOOL PngLoadImage (char * pstrFileName, png_byte **ppbImageData,
         
         png_set_sig_bytes(png_ptr, 8);
         
-        // read all PNG info up to image data
+        /* read all PNG info up to image data */
         
         png_read_info(png_ptr, info_ptr);
         
-        // get width, height, bit-depth and color-type
+        /* get width, height, bit-depth and color-type */
         
         png_get_IHDR(png_ptr, info_ptr, piWidth, piHeight, &iBitDepth,
             &iColorType, NULL, NULL, NULL);
         
-        // expand images of all color-type and bit-depth to 3x8 bit RGB images
-        // let the library process things like alpha, transparency, background
+        /* expand images of all color-type and bit-depth to 3x8 bit RGB images */
+        /* let the library process things like alpha, transparency, background */
         
         if (iBitDepth == 16)
             png_set_strip_16(png_ptr);
@@ -4361,7 +4361,7 @@ BOOL PngLoadImage (char * pstrFileName, png_byte **ppbImageData,
             iColorType == PNG_COLOR_TYPE_GRAY_ALPHA)
             png_set_gray_to_rgb(png_ptr);
         
-        // set the background color to draw transparent and alpha images over.
+        /* set the background color to draw transparent and alpha images over. */
         if (png_get_bKGD(png_ptr, info_ptr, &pBackground))
         {
             png_set_background(png_ptr, pBackground, PNG_BACKGROUND_GAMMA_FILE, 1, 1.0);
@@ -4374,28 +4374,28 @@ BOOL PngLoadImage (char * pstrFileName, png_byte **ppbImageData,
             pBkgColor = NULL;
         }
         
-        // if required set gamma conversion
+        /* if required set gamma conversion */
         if (png_get_gAMA(png_ptr, info_ptr, &dGamma))
             png_set_gamma(png_ptr, (double) 2.2, dGamma);
         
-        // after the transformations have been registered update info_ptr data
+        /* after the transformations have been registered update info_ptr data */
         
         png_read_update_info(png_ptr, info_ptr);
         
-        // get again width, height and the new bit-depth and color-type
+        /* get again width, height and the new bit-depth and color-type */
         
         png_get_IHDR(png_ptr, info_ptr, piWidth, piHeight, &iBitDepth,
             &iColorType, NULL, NULL, NULL);
         
         
-        // row_bytes is the width x number of channels
+        /* row_bytes is the width x number of channels */
         
         ulRowBytes = png_get_rowbytes(png_ptr, info_ptr);
         ulChannels = png_get_channels(png_ptr, info_ptr);
         
         *piChannels = ulChannels;
         
-        // now we can allocate memory to store the image
+        /* now we can allocate memory to store the image */
         
         if (pbImageData)
         {
@@ -4409,7 +4409,7 @@ BOOL PngLoadImage (char * pstrFileName, png_byte **ppbImageData,
         }
         *ppbImageData = pbImageData;
         
-        // and allocate memory for an array of row-pointers
+        /* and allocate memory for an array of row-pointers */
         
         if ((ppbRowPointers = (png_bytepp) malloc((*piHeight)
                             * sizeof(png_bytep))) == NULL)
@@ -4417,20 +4417,20 @@ BOOL PngLoadImage (char * pstrFileName, png_byte **ppbImageData,
             png_error(png_ptr, "Visual PNG: out of memory");
         }
         
-        // set the individual row-pointers to point at the correct offsets
+        /* set the individual row-pointers to point at the correct offsets */
         
         for (i = 0; i < (*piHeight); i++)
             ppbRowPointers[i] = pbImageData + i * ulRowBytes;
         
-        // now we can go ahead and just read the whole image
+        /* now we can go ahead and just read the whole image */
         
         png_read_image(png_ptr, ppbRowPointers);
         
-        // read the additional chunks in the PNG file (not really needed)
+        /* read the additional chunks in the PNG file (not really needed) */
         
         png_read_end(png_ptr, NULL);
          
-        // and we're done
+        /* and we're done */
         
         free (ppbRowPointers);
         ppbRowPointers = NULL;
@@ -4438,7 +4438,7 @@ BOOL PngLoadImage (char * pstrFileName, png_byte **ppbImageData,
 		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 
         
-        // yepp, done
+        /* yepp, done */
     }
 /*
     Catch (msg)

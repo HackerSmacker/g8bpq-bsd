@@ -17,13 +17,13 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-//
-//	Netrom Record ROute Suport Code for BPQ32 Switch
-//
+/* */
+/*	Netrom Record ROute Suport Code for BPQ32 Switch */
+/* */
 
-//	All code runs from the BPQ32 Received or Timer Routines under Semaphore.
-//	As most data areas are dynamically allocated, they will not survive a Timer Process Swap.
-//	Shared data can be used for Config Info.
+/*	All code runs from the BPQ32 Received or Timer Routines under Semaphore. */
+/*	As most data areas are dynamically allocated, they will not survive a Timer Process Swap. */
+/*	Shared data can be used for Config Info. */
 
 
 #define _CRT_SECURE_NO_DEPRECATE 
@@ -33,7 +33,7 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 #include "time.h"
 #include "stdio.h"
 #include <fcntl.h>					 
-//#include "vmm.h"
+/*#include "vmm.h" */
 
 
 #include "CHeaders.h"
@@ -60,7 +60,7 @@ one.
 
 VOID NRRecordRoute(UCHAR * Buff, int Len)
 {
-	// NRR frame for us. If We originated it, report outcome, else put our call on end, and send back
+	/* NRR frame for us. If We originated it, report outcome, else put our call on end, and send back */
 	
 	L3MESSAGEBUFFER * Msg = (L3MESSAGEBUFFER *)Buff;
 	struct DEST_LIST * DEST;
@@ -82,7 +82,7 @@ VOID NRRecordRoute(UCHAR * Buff, int Len)
 
 		ptr1 = &BUFFER[MSGHDDRLEN];
 		
-		*ptr1++ = 0xf0;			// PID
+		*ptr1++ = 0xf0;			/* PID */
 
 		ptr1 += sprintf(ptr1, "NRR Response:");
 
@@ -94,20 +94,20 @@ VOID NRRecordRoute(UCHAR * Buff, int Len)
 			calllen = ConvFromAX25(Buff, call);
 			call[calllen] = 0;
 			ptr1 += sprintf(ptr1, " %s", call);
-			if ((Buff[7] & 0x80) == 0x80)			// Check turnround bit
+			if ((Buff[7] & 0x80) == 0x80)			/* Check turnround bit */
 				*ptr1++ = '*';
 	
 			Buff+=8;
 			Len -= 8;
 		}
 
-		// Add ours on end for neatness
+		/* Add ours on end for neatness */
 
 		calllen = ConvFromAX25(MYCALL, call);
 		call[calllen] = 0;
 		ptr1 += sprintf(ptr1, " %s", call);
 
-		*ptr1++ = 0x0d;			// CR
+		*ptr1++ = 0x0d;			/* CR */
 
 		Len = (int)(ptr1 - BUFFER);
 
@@ -126,15 +126,15 @@ VOID NRRecordRoute(UCHAR * Buff, int Len)
 		return;
 	}
 
-	// Add our call on end, and increase count
+	/* Add our call on end, and increase count */
 
 	Flags = Buff[Len - 1];
 
 	Flags--;
 
-	if (Flags && NRRLen < 228)					// Dont update if full
+	if (Flags && NRRLen < 228)					/* Dont update if full */
 	{
-		Flags |= 0x80;			// Set End of route bit
+		Flags |= 0x80;			/* Set End of route bit */
 
 		Msg->L3PID = NRPID;
 
@@ -143,7 +143,7 @@ VOID NRRecordRoute(UCHAR * Buff, int Len)
 		NRRLen += 8;
 	}
 
-	// We should send it back via our bast route, or recorded route could be wrong
+	/* We should send it back via our bast route, or recorded route could be wrong */
 
 	memcpy(Temp, Msg->L3DEST, 7);
 	memcpy(Msg->L3DEST, Msg->L3SRCE, 7);
@@ -151,7 +151,7 @@ VOID NRRecordRoute(UCHAR * Buff, int Len)
 
 	if (FindDestination(Msg->L3DEST, &DEST) == 0)
 	{
-		ReleaseBuffer(Msg);			// CANT FIND DESTINATION
+		ReleaseBuffer(Msg);			/* CANT FIND DESTINATION */
 		return;
 	}
 		
@@ -171,7 +171,7 @@ VOID SendNRRecordRoute(struct DEST_LIST * DEST, TRANSPORTENTRY * Session)
 	if (Msg == NULL)
 		return;
 
-	NRRSession = Session;			// Save Session Pointer for reply
+	NRRSession = Session;			/* Save Session Pointer for reply */
 
 	Msg->Port = 0;
 	Msg->L3PID = NRPID;

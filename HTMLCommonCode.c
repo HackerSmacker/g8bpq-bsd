@@ -18,7 +18,7 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
 
-// General C Routines common to bpq32 and linbpq.mainly moved from BPQ32.c
+/* General C Routines common to bpq32 and linbpq.mainly moved from BPQ32.c */
 
 #pragma data_seg("_BPQDATA")
 
@@ -29,7 +29,7 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 
 #include "CHeaders.h"
 
-#include "templatedefs.c"				// Inline definitions from HTLMPages
+#include "templatedefs.c"				/* Inline definitions from HTLMPages */
 
 
 char * GetTemplateFromFile(int Version, char * FN)
@@ -103,7 +103,7 @@ char * GetTemplateFromFile(int Version, char * FN)
 	MsgBytes[FileSize] = 0;
 	fclose(hFile);
 
-	// Check Version
+	/* Check Version */
 
 	if (Version)
 	{

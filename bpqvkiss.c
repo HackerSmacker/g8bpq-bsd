@@ -1,33 +1,33 @@
-//
-//	DLL to inteface the BPQ Virtual COM emulator to BPQ32 switch 
-//
-//	Uses BPQ EXTERNAL interface
-//
+/* */
+/*	DLL to inteface the BPQ Virtual COM emulator to BPQ32 switch  */
+/* */
+/*	Uses BPQ EXTERNAL interface */
+/* */
 
-//	Version 1.0 November 2005
-//
+/*	Version 1.0 November 2005 */
+/* */
 
-//  Version 1.1	October 2006
+/*  Version 1.1	October 2006 */
 
-//		Write diagmnostics to BPQ console window instead of STDOUT
+/*		Write diagmnostics to BPQ console window instead of STDOUT */
 
-// Version 1.2 February 2008
+/* Version 1.2 February 2008 */
 
-//		Changes for dynamic unload of bpq32.dll
+/*		Changes for dynamic unload of bpq32.dll */
 
-// Version 1.2.1 May 2008
+/* Version 1.2.1 May 2008 */
 
-//		Correct RX length (was 1 byte too long)
+/*		Correct RX length (was 1 byte too long) */
 
-// Version 1.3.1 Jan 2009
+/* Version 1.3.1 Jan 2009 */
 
-//		Support Win98 VirtualCOM Driver
+/*		Support Win98 VirtualCOM Driver */
 
 #define WIN32_LEAN_AND_MEAN
 #define _CRT_SECURE_NO_DEPRECATE 
 
-//#include <process.h>
-//#include <time.h>
+/*#include <process.h> */
+/*#include <time.h> */
 
 #define VERSION_MAJOR         1
 #define VERSION_MINOR         0
@@ -39,8 +39,8 @@ typedef unsigned char byte;
 
 #include <stdlib.h>
 
-//#define DYNLOADBPQ		// Dynamically Load BPQ32.dll
-//#define EXTDLL			// Use GetMuduleHandle instead of LoadLibrary 
+/*#define DYNLOADBPQ		// Dynamically Load BPQ32.dll */
+/*#define EXTDLL			// Use GetMuduleHandle instead of LoadLibrary  */
 #include "bpq32.h"
  
 
@@ -53,7 +53,7 @@ static BOOL WriteCommBlock(int port, UCHAR * lpByte , DWORD dwBytesToWrite);
 
 PVCOMINFO CreateInfo( int port,int speed, int bpqport )	;
 
-#define	FEND	0xC0	// KISS CONTROL CODES 
+#define	FEND	0xC0	/* KISS CONTROL CODES  */
 #define	FESC	0xDB
 #define	TFEND	0xDC
 #define	TFESC	0xDD
@@ -69,7 +69,7 @@ static size_t ExtProc(int fn, int port, PMESSAGE buff)
 
 	if (VCOMInfo[port]->ComDev == (HANDLE) -1)
 	{
-		// Try to reopen every 30 secs
+		/* Try to reopen every 30 secs */
 
 		VCOMInfo[port]->ReopenTimer++;
 
@@ -87,24 +87,24 @@ static size_t ExtProc(int fn, int port, PMESSAGE buff)
 
 	switch (fn)
 	{
-	case 1:				// poll
+	case 1:				/* poll */
 
 		len = GetRXMessage(port,buff);
 	
-//		if (len > 0)
-//		{
-//			// Randomly drop packets
+/*		if (len > 0) */
+/*		{ */
+/*			// Randomly drop packets */
 
-//			if ((rand() % 7) > 5)
-//			{
-//				Debugprintf("VKISS Test Drop packet");
-//				return 0;
-//			}
-//		}
+/*			if ((rand() % 7) > 5) */
+/*			{ */
+/*				Debugprintf("VKISS Test Drop packet"); */
+/*				return 0; */
+/*			} */
+/*		} */
 		
 		return len;
 
-	case 2:				// send
+	case 2:				/* send */
 
 		txlen = GetLengthfromBuffer((PDATAMESSAGE)buff); 
 
@@ -115,13 +115,13 @@ static size_t ExtProc(int fn, int port, PMESSAGE buff)
 		return (0);
 
 
-	case 3:				// CHECK IF OK TO SEND
+	case 3:				/* CHECK IF OK TO SEND */
 
-		return (0);		// OK
+		return (0);		/* OK */
 			
 		break;
 
-	case 4:				// reinit
+	case 4:				/* reinit */
 		
 		CloseHandle(VCOMInfo[port]->ComDev);
 		VCOMInfo[port]->ComDev =(HANDLE) -1;
@@ -129,7 +129,7 @@ static size_t ExtProc(int fn, int port, PMESSAGE buff)
 
 		return (0);
 
-	case 5:				// Close
+	case 5:				/* Close */
 
 		CloseHandle(VCOMInfo[port]->ComDev);
 
@@ -145,10 +145,10 @@ VOID * VCOMExtInit(struct PORTCONTROL *  PortEntry)
 {
 	char msg[80];
 	
-	//
-	//	Will be called once for each port to be mapped to a BPQ Virtual COM Port
-	//	The VCOM port number is in IOBASE
-	//
+	/* */
+	/*	Will be called once for each port to be mapped to a BPQ Virtual COM Port */
+	/*	The VCOM port number is in IOBASE */
+	/* */
 
 	sprintf(msg,"VKISS COM%d", PortEntry->IOBASE);
 	WritetoConsole(msg);
@@ -157,7 +157,7 @@ VOID * VCOMExtInit(struct PORTCONTROL *  PortEntry)
 	
 	CreateInfo(PortEntry->IOBASE, 9600, PortEntry->PORTNUMBER);
 
-	// Open File
+	/* Open File */
 	
 	ASYINIT(PortEntry->IOBASE, 9600, PortEntry->PORTNUMBER, TRUE);
 
@@ -228,8 +228,8 @@ int	ASYINIT(int comport, int speed, int bpqport, BOOL Report)
    if (Win98)
 	{
 		VCOMInfo[bpqport]->ComDev = CreateFile( "\\\\.\\BPQVCOMM.VXD", GENERIC_READ | GENERIC_WRITE,
-                  0,                    // exclusive access
-	               NULL,                 // no security attrs
+                  0,                    /* exclusive access */
+	               NULL,                 /* no security attrs */
                   OPEN_EXISTING,
                   FILE_ATTRIBUTE_NORMAL, 
                   NULL );
@@ -238,13 +238,13 @@ int	ASYINIT(int comport, int speed, int bpqport, BOOL Report)
 		sprintf( szPort, "\\\\.\\pipe\\BPQCOM%d", comport ) ;
 
 		VCOMInfo[bpqport]->ComDev = CreateFile( szPort, GENERIC_READ | GENERIC_WRITE,
-                  0,                    // exclusive access
-                  NULL,                 // no security attrs
+                  0,                    /* exclusive access */
+                  NULL,                 /* no security attrs */
                   OPEN_EXISTING,
                   FILE_ATTRIBUTE_NORMAL, 
                   NULL );
 
-			//Handle = CreateFile(Value, GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+			/*Handle = CreateFile(Value, GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL); */
 
 
 		Err = GetLastError();
@@ -256,13 +256,13 @@ int	ASYINIT(int comport, int speed, int bpqport, BOOL Report)
 		}
 		else
 		{
-			// Try old style 	
+			/* Try old style 	 */
 
 			sprintf( szPort, "\\\\.\\BPQ%d", comport ) ;
 
 			VCOMInfo[bpqport]->ComDev = CreateFile( szPort, GENERIC_READ | GENERIC_WRITE,
-                  0,                    // exclusive access
-                  NULL,                 // no security attrs
+                  0,                    /* exclusive access */
+                  NULL,                 /* no security attrs */
                   OPEN_EXISTING,
                   FILE_ATTRIBUTE_NORMAL, 
                   NULL );
@@ -288,37 +288,37 @@ static int GetRXMessage(int port, PMESSAGE buff)
 		return 0;
 
 	if (!pVCOMInfo->MSGREADY)
-		CheckReceivedData(pVCOMInfo);		// Look for data in RXBUFFER and COM port
+		CheckReceivedData(pVCOMInfo);		/* Look for data in RXBUFFER and COM port */
 
 	if (pVCOMInfo->MSGREADY)
 	{
-		len = (int)(pVCOMInfo->RXMPTR- &pVCOMInfo->RXMSG[1]);		// Don't need KISS Control Byte
+		len = (int)(pVCOMInfo->RXMPTR- &pVCOMInfo->RXMSG[1]);		/* Don't need KISS Control Byte */
 		
   		if (pVCOMInfo->RXMSG[0] != 0 && pVCOMInfo->RXMSG[0] != 12)
 		{
 			pVCOMInfo->MSGREADY=FALSE;
 			pVCOMInfo->RXMPTR=(UCHAR *)&pVCOMInfo->RXMSG;
-			return 0;						// Not KISS Data
+			return 0;						/* Not KISS Data */
 		}
 
-		//
-		//	Remove KISS control byte
-		//
+		/* */
+		/*	Remove KISS control byte */
+		/* */
 
 		if (pVCOMInfo->RXMSG[0] == 12)
 		{
-			//	AckMode Frame. Return the next 2 bytes, but don't pass them to Host
+			/*	AckMode Frame. Return the next 2 bytes, but don't pass them to Host */
 
 			UCHAR AckResp[8];
 
 			AckResp[0] = FEND;
-			memcpy(&AckResp[1], &pVCOMInfo->RXMSG[0], 3);	//Copy Opcode and Ack Bytes
+			memcpy(&AckResp[1], &pVCOMInfo->RXMSG[0], 3);	/*Copy Opcode and Ack Bytes */
 			AckResp[4] = FEND;
 			WriteCommBlock(port, AckResp, 5);
 
 			len -= 2;
 			memcpy(&buff->DEST[0], &pVCOMInfo->RXMSG[3], len);
-//			Debugprintf("VKISS Ackmode Frame");
+/*			Debugprintf("VKISS Ackmode Frame"); */
 		}
 		else
 	
@@ -328,9 +328,9 @@ static int GetRXMessage(int port, PMESSAGE buff)
 
 		PutLengthinBuffer((PDATAMESSAGE)buff, len);
 		
-		//
-		//	reset pointers
-		//
+		/* */
+		/*	reset pointers */
+		/* */
 
 		pVCOMInfo->MSGREADY=FALSE;
 		pVCOMInfo->RXMPTR=(UCHAR *)&pVCOMInfo->RXMSG;
@@ -339,7 +339,7 @@ static int GetRXMessage(int port, PMESSAGE buff)
 	}
 	else
 
-	return 0;					// nothing doing
+	return 0;					/* nothing doing */
 }
 
 static void CheckReceivedData(PVCOMINFO pVCOMInfo)
@@ -348,9 +348,9 @@ static void CheckReceivedData(PVCOMINFO pVCOMInfo)
 
 	if (pVCOMInfo->RXBCOUNT == 0)
 	{	
-		//
-		//	Check com buffer
-		//
+		/* */
+		/*	Check com buffer */
+		/* */
 	
 		pVCOMInfo->RXBCOUNT = ReadCommBlock(pVCOMInfo, (LPSTR) &pVCOMInfo->RXBUFFER, MAXBLOCK-1 );
 		pVCOMInfo->RXBPTR=(UCHAR *)&pVCOMInfo->RXBUFFER; 
@@ -367,8 +367,8 @@ static void CheckReceivedData(PVCOMINFO pVCOMInfo)
 
 		if (pVCOMInfo->ESCFLAG)
 		{
-			//
-			//	FESC received - next should be TFESC or TFEND
+			/* */
+			/*	FESC received - next should be TFESC or TFEND */
 
 			pVCOMInfo->ESCFLAG = FALSE;
 
@@ -385,9 +385,9 @@ static void CheckReceivedData(PVCOMINFO pVCOMInfo)
 			{
 			case FEND:		
 	
-				//
-				//	Either start of message or message complete
-				//
+				/* */
+				/*	Either start of message or message complete */
+				/* */
 				
 				if (pVCOMInfo->RXMPTR == (UCHAR *)&pVCOMInfo->RXMSG)
 					continue;
@@ -403,9 +403,9 @@ static void CheckReceivedData(PVCOMINFO pVCOMInfo)
 			}
 		}
 		
-		//
-		//	Ok, a normal char
-		//
+		/* */
+		/*	Ok, a normal char */
+		/* */
 
 		*(pVCOMInfo->RXMPTR++) = c;
 
@@ -491,7 +491,7 @@ static int ReadCommBlock(PVCOMINFO  pVCOMInfo, LPSTR lpszBlock, DWORD nMaxLength
 			
 			ReadFile(pVCOMInfo->ComDev, lpszBlock, Available, &dwLength, NULL);
 
-			// Have to look foro FF escape chars
+			/* Have to look foro FF escape chars */
 
 			Length = dwLength;
 
@@ -505,13 +505,13 @@ static int ReadCommBlock(PVCOMINFO  pVCOMInfo, LPSTR lpszBlock, DWORD nMaxLength
 					c = c = *(ptr1++);
 					Length--;
 					
-					if (c == 0xff)			// ff ff means ff
+					if (c == 0xff)			/* ff ff means ff */
 					{
 						dwLength--;
 					}
 					else
 					{
-						// This is connection statua from other end
+						/* This is connection statua from other end */
 
 						dwLength -= 2;
 						pVCOMInfo->NewVCOMConnected = c;
@@ -535,8 +535,8 @@ static BOOL WriteCommBlock(int port, UCHAR * Message, DWORD MsgLen)
 {
 	ULONG bytesReturned;
 
-//	if ((rand() % 100) > 80)
-//		return 0;
+/*	if ((rand() % 100) > 80) */
+/*		return 0; */
 
 	if (Win98)
 		return DeviceIoControl(
@@ -544,7 +544,7 @@ static BOOL WriteCommBlock(int port, UCHAR * Message, DWORD MsgLen)
 
 	else if (VCOMInfo[port]->NewVCOM)
 	{
-		// Have to escape all oxff chars, as these are used to get status info 
+		/* Have to escape all oxff chars, as these are used to get status info  */
 
 		UCHAR NewMessage[1000];
 		UCHAR * ptr1 = Message;

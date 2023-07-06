@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-// DRATS support code
+/* DRATS support code */
 
 #define _CRT_SECURE_NO_DEPRECATE
 
@@ -74,7 +74,7 @@ For a station status frame, the first byte of the message is an ASCII station st
 
 #pragma pack(1)
 
-// shorts are big-endian
+/* shorts are big-endian */
 
 struct DRATSHeader
 {
@@ -98,7 +98,7 @@ struct DRATSSession
 	unsigned int Sessno;
 	char CallFrom[8];
 	char CallTo[8];
-	int Stream;					// BPQ Stream
+	int Stream;					/* BPQ Stream */
 	int StreamState;
 	struct DRATSQueue * Queue;
 	struct DRATSSession * Next; 
@@ -106,7 +106,7 @@ struct DRATSSession
 
 struct DRATSQueue
 {
-	// Queue of messages to be sent to node from background (ie not under semaphore)
+	/* Queue of messages to be sent to node from background (ie not under semaphore) */
 
 	int Stream;
 	int Len;
@@ -133,12 +133,12 @@ void processDRATSFrame(unsigned char * Message, int Len, struct ConnectionInfo *
 
 int testDRATS()
 {
-//	processDRATSFrame(peer0_1, sizeof(peer0_1), 0);
-//	processDRATSFrame(peer0_2, sizeof(peer0_2), 0);
-//	processDRATSFrame(peer1_1, sizeof(peer1_1), 0);
-//	processDRATSFrame(peer1_20, sizeof(peer1_20));
-//	processDRATSFrame(peer0_20, sizeof(peer0_20));
-//	processDRATSFrame(peer1_21, sizeof(peer1_21));
+/*	processDRATSFrame(peer0_1, sizeof(peer0_1), 0); */
+/*	processDRATSFrame(peer0_2, sizeof(peer0_2), 0); */
+/*	processDRATSFrame(peer1_1, sizeof(peer1_1), 0); */
+/*	processDRATSFrame(peer1_20, sizeof(peer1_20)); */
+/*	processDRATSFrame(peer0_20, sizeof(peer0_20)); */
+/*	processDRATSFrame(peer1_21, sizeof(peer1_21)); */
 
 	return 0;
 }
@@ -170,7 +170,7 @@ int AllocateDRATSStream(struct DRATSSession * Sess)
 
 	if (memcmp(Sess->CallTo, "NODE", 6) == 0)
 	{
-		//  Just connect to command level on switch
+		/*  Just connect to command level on switch */
 	}
 
 	return Stream;
@@ -190,33 +190,33 @@ void ProcessDRATSPayload(struct DRATSHeader * Header, struct DRATSSession * Sess
 	{
 		unsigned char AXCall[10];
 
-		Connect(Sess->Stream);				// Connect
+		Connect(Sess->Stream);				/* Connect */
 		ConvToAX25(Sess->CallFrom, AXCall);
-		ChangeSessionCallsign(Sess->Stream, AXCall);		// Prevent triggering incoming connect code
+		ChangeSessionCallsign(Sess->Stream, AXCall);		/* Prevent triggering incoming connect code */
 
-		// Clear State Changed bits (cant use SessionState under semaphore)
+		/* Clear State Changed bits (cant use SessionState under semaphore) */
 
-		HOST = &BPQHOSTVECTOR[Sess->Stream -1]; // API counts from 1
-		HOST->HOSTFLAGS &= 0xFC;		  // Clear Change Bits
+		HOST = &BPQHOSTVECTOR[Sess->Stream -1]; /* API counts from 1 */
+		HOST->HOSTFLAGS &= 0xFC;		  /* Clear Change Bits */
 		Sess->StreamState = 1;
 	}
 
 	strcat(Header->Message, "\r");
 
-	// Need to Queue to Background as we can't use SendMsg under semaphore
+	/* Need to Queue to Background as we can't use SendMsg under semaphore */
 
 	QEntry = zalloc(sizeof(struct DRATSQueue));
 	QEntry->Len = strlen(Header->Message);
 	QEntry->Msg = malloc(QEntry->Len);
 	memcpy(QEntry->Msg, Header->Message, QEntry->Len);
 
-	// Add to queue
+	/* Add to queue */
 
 	if (Sess->Queue)
 	{
 		struct DRATSQueue * End = Sess->Queue;
 
-		// Add on end
+		/* Add on end */
 		while (End->Next)
 			End = End->Next;
 
@@ -227,7 +227,7 @@ void ProcessDRATSPayload(struct DRATSHeader * Header, struct DRATSSession * Sess
 
 }
 
-// Called under semaphore
+/* Called under semaphore */
 
 
 void processDRATSFrame(unsigned char * Message, int Len, struct ConnectionInfo * sockptr)
@@ -261,7 +261,7 @@ void processDRATSFrame(unsigned char * Message, int Len, struct ConnectionInfo *
 
 	Header = (struct DRATSHeader *)Payload;
 
-	// Undo = transparency
+	/* Undo = transparency */
 
 	ptr = Payload;
 
@@ -272,7 +272,7 @@ void processDRATSFrame(unsigned char * Message, int Len, struct ConnectionInfo *
 		ptr++;
 	}
 
-	// Check CRC
+	/* Check CRC */
 
 	savecrc = htons(Header->CheckSum);
 	Header->CheckSum = 0;
@@ -281,13 +281,13 @@ void processDRATSFrame(unsigned char * Message, int Len, struct ConnectionInfo *
 
 	if (crc != savecrc)
 	{
-		Debugprintf(" DRARS CRC Error %x %x", crc, savecrc);		// Good CRC
+		Debugprintf(" DRARS CRC Error %x %x", crc, savecrc);		/* Good CRC */
 		return;
 	}
 
-	Header->Length = htons(Header->Length);		// convert to machine order
+	Header->Length = htons(Header->Length);		/* convert to machine order */
 
-	if (Header->Magic == 0xdd)		// Zlib compressed
+	if (Header->Magic == 0xdd)		/* Zlib compressed */
 	{
 		doinflate(Header->Message, dest,  Header->Length, 2048, &outLen);
 		memcpy(Header->Message, dest, outLen + 1);
@@ -295,7 +295,7 @@ void processDRATSFrame(unsigned char * Message, int Len, struct ConnectionInfo *
 	}
 	Debugprintf(Header->Message);
 
-	// Look for a matching From/To/Session
+	/* Look for a matching From/To/Session */
 
 	memcpy(CallFrom, Header->CallFrom, 8);
 	memcpy(CallTo, Header->CallTo, 8);
@@ -305,20 +305,20 @@ void processDRATSFrame(unsigned char * Message, int Len, struct ConnectionInfo *
 
 	if (Header->Type == T_STATUS)
 	{
-		// Status frame ?? What to do with it ??
+		/* Status frame ?? What to do with it ?? */
 
 		return;
 	}
 
 	if (Header->Type == T_PNG_REQ)
 	{
-		// "Ping Request"
+		/* "Ping Request" */
 
-		// if to "NODE" reply to it
+		/* if to "NODE" reply to it */
 
 		if (strcmp(CallTo, "NODE") == 0)
 		{
-			// Reuse incoming message
+			/* Reuse incoming message */
 
 			strcpy(Header->CallFrom, CallTo);
 			strcpy(Header->CallTo, CallFrom);
@@ -329,16 +329,16 @@ void processDRATSFrame(unsigned char * Message, int Len, struct ConnectionInfo *
 			return;
 		}
 
-		// Not to us - do we route it ??
+		/* Not to us - do we route it ?? */
 
 		return;
 	}
 
 	if (Header->Type == T_PNG_RSP)
 	{
-		// Reponse is PNG_RSP then Status - 1Online (D-RATS)
-		// "Running D-RATS 0.3.9  (Windows 8->10 (6, 2, 9200, 2, ''))"
-		// "Running D-RATS 0.3.10 beta 4  (Linux - Raspbian GNU/Linux 9)"
+		/* Reponse is PNG_RSP then Status - 1Online (D-RATS) */
+		/* "Running D-RATS 0.3.9  (Windows 8->10 (6, 2, 9200, 2, ''))" */
+		/* "Running D-RATS 0.3.10 beta 4  (Linux - Raspbian GNU/Linux 9)" */
 
 		return;
 	}
@@ -348,11 +348,11 @@ void processDRATSFrame(unsigned char * Message, int Len, struct ConnectionInfo *
 		return;
 	}
 
-	// ?? Normal Data
+	/* ?? Normal Data */
 
 	if (strcmp(CallTo, "NODE") != 0)
 	{
-		// Not not Node - should we route it ??
+		/* Not not Node - should we route it ?? */
 
 		return;
 	}
@@ -368,7 +368,7 @@ void processDRATSFrame(unsigned char * Message, int Len, struct ConnectionInfo *
 		Sess = Sess->Next;
 	}
 
-	// Allocate a new one
+	/* Allocate a new one */
 
 	Sess = zalloc(sizeof(struct DRATSSession));
 
@@ -379,7 +379,7 @@ void processDRATSFrame(unsigned char * Message, int Len, struct ConnectionInfo *
 
 	if (DRATSSessions)
 	{
-		// Add to front of Chain
+		/* Add to front of Chain */
 
 		Sess->Next = DRATSSessions;
 	}
@@ -409,11 +409,11 @@ void DRATSPoll()
 		{
 			if (state == 1)
 			{
-				// Connected - do we need anything ??
+				/* Connected - do we need anything ?? */
 			}
 			else
 			{
-				// Send a disconnected message
+				/* Send a disconnected message */
 
 				char From[10] = "~~~~~~~~~";
 				char To[10] = "~~~~~~~~~";
@@ -468,7 +468,7 @@ void DRATSPoll()
 		}
 		while (count > 0);
 
-		// See if anything to send to node
+		/* See if anything to send to node */
 
 		QEntry = Sess->Queue;
 
@@ -496,7 +496,7 @@ void sendDRATSFrame(struct ConnectionInfo * sockptr, struct DRATSHeader * Header
 	unsigned char out[2048] = "[SOB]";
 	int packetLen = Header->Length + HeaderLen;
 
-	// Length is in host order
+	/* Length is in host order */
 
 	Header->Length = htons(Header->Length);
 
@@ -514,7 +514,7 @@ void sendDRATSFrame(struct ConnectionInfo * sockptr, struct DRATSHeader * Header
 
 void DRATSConnectionLost(struct ConnectionInfo * sockptr)
 {
-	// Disconnect any sessions, then free Stream and Sess record
+	/* Disconnect any sessions, then free Stream and Sess record */
 	
 	struct DRATSSession * Sess = DRATSSessions;
 	struct DRATSSession * Save = 0;
@@ -524,22 +524,22 @@ void DRATSConnectionLost(struct ConnectionInfo * sockptr)
 	{
 		if (Sess->sockptr == sockptr)
 		{
-			if (Sess->StreamState == 1)	// COnnected
+			if (Sess->StreamState == 1)	/* COnnected */
 			{
 				Disconnect(Sess->Stream);
-				HOST = &BPQHOSTVECTOR[Sess->Stream -1]; // API counts from 1
-				HOST->HOSTFLAGS &= 0xFC;		  // Clear Change Bits
+				HOST = &BPQHOSTVECTOR[Sess->Stream -1]; /* API counts from 1 */
+				HOST->HOSTFLAGS &= 0xFC;		  /* Clear Change Bits */
 			}
 			DeallocateStream(Sess->Stream);
 
-			// We must unhook from chain
+			/* We must unhook from chain */
 
 			if (Save)
 				Save->Next = Sess->Next;
 			else
 				DRATSSessions = Sess->Next;
 
-			// Should really Free any Queue, but unlikely to be any
+			/* Should really Free any Queue, but unlikely to be any */
 			
 			free(Sess);
 
@@ -598,7 +598,7 @@ int doinflate(unsigned char * source, unsigned char * dest, int Len, int destlen
     return ret == Z_STREAM_END ? Z_OK : Z_DATA_ERROR;
 }
 
-// No idea what this CRC is, but it works! (converted from DRATS python code)
+/* No idea what this CRC is, but it works! (converted from DRATS python code) */
 
 int update_crc(int c, int crc)
 {

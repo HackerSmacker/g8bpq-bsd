@@ -1,6 +1,6 @@
-// Mail and Chat Server for BPQ32 Packet Switch
-//
-//	Debug Window(s) Module
+/* Mail and Chat Server for BPQ32 Packet Switch */
+/* */
+/*	Debug Window(s) Module */
 
 #include "BPQChat.h"
 
@@ -14,7 +14,7 @@ HWND hDebug;
 static HWND hwndInput;
 static HWND hwndOutput;
 
-static HMENU hMenu;		// handle of menu 
+static HMENU hMenu;		/* handle of menu  */
 
 #define InputBoxHeight 25
 
@@ -32,7 +32,7 @@ static BOOL MonCHAT = TRUE;
 static BOOL MonTCP = TRUE;
 
 static int PartLinePtr=0;
-static int PartLineIndex=0;		// Listbox index of (last) incomplete line
+static int PartLineIndex=0;		/* Listbox index of (last) incomplete line */
 
 
 static LRESULT CALLBACK MonWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -56,7 +56,7 @@ BOOL CreateDebugWindow()
 	{
 		ShowWindow(hDebug, SW_SHOWNORMAL);
 		SetForegroundWindow(hDebug);
-		return FALSE;							// Alreaqy open
+		return FALSE;							/* Alreaqy open */
 	}
 
 	bgBrush = CreateSolidBrush(BGCOLOUR);
@@ -102,11 +102,11 @@ BOOL CreateDebugWindow()
 
 	DrawMenuBar(hWnd);	
 
-	// Retrieve the handlse to the edit controls. 
+	/* Retrieve the handlse to the edit controls.  */
 
 	hwndOutput = GetDlgItem(hDebug, 122); 
  
-	// Set our own WndProcs for the controls. 
+	/* Set our own WndProcs for the controls.  */
 
 	wpOrigOutputProc = (WNDPROC)SetWindowLong(hwndOutput, GWL_WNDPROC, (LONG)OutputProc);
 
@@ -141,9 +141,9 @@ static void MoveWindows()
 	ClientHeight = rcClient.bottom;
 	ClientWidth = rcClient.right;
 
-//	MoveWindow(hwndMon,2, 0, ClientWidth-4, SplitPos, TRUE);
+/*	MoveWindow(hwndMon,2, 0, ClientWidth-4, SplitPos, TRUE); */
 	MoveWindow(hwndOutput,2, 2, ClientWidth-4, ClientHeight-4, TRUE);
-//	MoveWindow(hwndSplit,0, SplitPos, ClientWidth, SplitBarHeight, TRUE);
+/*	MoveWindow(hwndSplit,0, SplitPos, ClientWidth, SplitBarHeight, TRUE); */
 }
 
 
@@ -162,8 +162,8 @@ static LRESULT CALLBACK MonWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARA
 
 	case WM_COMMAND:
 
-		wmId    = LOWORD(wParam); // Remember, these are...
-		wmEvent = HIWORD(wParam); // ...different for Win32!
+		wmId    = LOWORD(wParam); /* Remember, these are... */
+		wmEvent = HIWORD(wParam); /* ...different for Win32! */
 
 		switch (wmId) {
 
@@ -195,10 +195,10 @@ static LRESULT CALLBACK MonWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARA
 
 
 
-		//case BPQHELP:
+		/*case BPQHELP: */
 
-		//	HtmlHelp(hWnd,"BPQTerminal.chm",HH_HELP_FINDER,0);  
-		//	break;
+		/*	HtmlHelp(hWnd,"BPQTerminal.chm",HH_HELP_FINDER,0);   */
+		/*	break; */
 
 		default:
 
@@ -208,8 +208,8 @@ static LRESULT CALLBACK MonWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARA
 
 	case WM_SYSCOMMAND:
 
-		wmId    = LOWORD(wParam); // Remember, these are...
-		wmEvent = HIWORD(wParam); // ...different for Win32!
+		wmId    = LOWORD(wParam); /* Remember, these are... */
+		wmEvent = HIWORD(wParam); /* ...different for Win32! */
 
 		switch (wmId) { 
 
@@ -237,9 +237,9 @@ static LRESULT CALLBACK MonWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARA
 
 		case WM_DESTROY:
 		
-			// Remove the subclass from the edit control. 
+			/* Remove the subclass from the edit control.  */
 
-			GetWindowRect(hWnd,	&DebugRect);	// For save soutine
+			GetWindowRect(hWnd,	&DebugRect);	/* For save soutine */
 
             SetWindowLong(hwndInput, GWL_WNDPROC, 
                 (LONG) wpOrigInputProc); 
@@ -265,8 +265,8 @@ static LRESULT CALLBACK MonWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARA
 LRESULT APIENTRY OutputProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 
-	// Trap mouse messages, so we cant select stuff in output and mon windows,
-	//	otherwise scrolling doesnt work.
+	/* Trap mouse messages, so we cant select stuff in output and mon windows, */
+	/*	otherwise scrolling doesnt work. */
 
 	if (uMsg >= WM_MOUSEFIRST && uMsg <= WM_MOUSELAST) 
         return TRUE; 
@@ -321,13 +321,13 @@ lineloop:
 
 	if (len > 0)
 	{
-		//	copy text to control a line at a time	
+		/*	copy text to control a line at a time	 */
 					
 		ptr2=memchr(ptr1,13,len);
 
 		if (ptr2 == 0)
 		{
-			// no newline. Move data to start of buffer and Save pointer
+			/* no newline. Move data to start of buffer and Save pointer */
 
 			PartLinePtr=len;
 			memmove(readbuff,ptr1,len);
@@ -342,7 +342,7 @@ lineloop:
 
 		index=SendMessage(hwndOutput,LB_ADDSTRING,0,(LPARAM)(LPCTSTR) ptr1 );
 					
-	//		if (LogOutput) WriteMonitorLine(ptr1, ptr2 - ptr1);
+	/*		if (LogOutput) WriteMonitorLine(ptr1, ptr2 - ptr1); */
 
 		PartLinePtr=0;
 
@@ -352,7 +352,7 @@ lineloop:
 
 		if ((len > 0) && StripLF)
 		{
-			if (*ptr1 == 0x0a)					// Line Feed
+			if (*ptr1 == 0x0a)					/* Line Feed */
 			{
 				ptr1++;
 				len--;
@@ -388,9 +388,9 @@ static  void CopyToClipboard(HWND hWnd)
 	int i,n, len=0;
 	HGLOBAL	hMem;
 	char * ptr;
-	//
-	//	Copy List Box to clipboard
-	//
+	/* */
+	/*	Copy List Box to clipboard */
+	/* */
 	
 	n = SendMessage(hWnd, LB_GETCOUNT, 0, 0);		
 	
@@ -408,7 +408,7 @@ static  void CopyToClipboard(HWND hWnd)
 	
 		if (OpenClipboard(MainWnd))
 		{
-			//			CopyScreentoBuffer(GlobalLock(hMem));
+			/*			CopyScreentoBuffer(GlobalLock(hMem)); */
 			
 			for (i=0; i<n; i++)
 			{
@@ -417,7 +417,7 @@ static  void CopyToClipboard(HWND hWnd)
 				*(ptr++)=10;
 			}
 
-			*(ptr)=0;					// end of data
+			*(ptr)=0;					/* end of data */
 
 			GlobalUnlock(hMem);
 			EmptyClipboard();

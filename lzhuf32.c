@@ -17,9 +17,9 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-// Mail and Chat Server for BPQ32 Packet Switch
-//
-// lzhuf Routines
+/* Mail and Chat Server for BPQ32 Packet Switch */
+/* */
+/* lzhuf Routines */
 
 #include "bpqmail.h"
 
@@ -623,9 +623,9 @@ int32_t Encode(char * in, char * out, int32_t inlen, BOOL B1Protocol, int Compre
 	outfile = out;
 
 	if (B1Protocol)
-		outfile+=2;				// Space for CRC
+		outfile+=2;				/* Space for CRC */
 
-//	infile = &conn->MailBuffer[2];
+/*	infile = &conn->MailBuffer[2]; */
 
 	textsize = inlen;
 
@@ -650,8 +650,8 @@ int32_t Encode(char * in, char * out, int32_t inlen, BOOL B1Protocol, int Compre
 	endinfile = infile + inlen;
 	textsize = 0;                   /* rewind and re-read */
 
-	// if using uncompressed just copy in to out
-	// may not be optimum but is simple!
+	/* if using uncompressed just copy in to out */
+	/* may not be optimum but is simple! */
 
 	if (Compress)
 	{
@@ -740,17 +740,17 @@ BOOL CheckifPacket(char * Via)
 {
 	char * ptr1, * ptr2;
 	
-	// Message addressed to a non-winlink address
-	// Need to see if real smtp, or a packet address
+	/* Message addressed to a non-winlink address */
+	/* Need to see if real smtp, or a packet address */
 
-	// No . in address assume Packet - g8bpq@g8bpq
+	/* No . in address assume Packet - g8bpq@g8bpq */
 
 	ptr1 = strchr(Via, '.');
 
 	if (ptr1 == NULL)
-		return TRUE;			// Packet
+		return TRUE;			/* Packet */
 
-	// Find Last Element
+	/* Find Last Element */
 
 	ptr2 = strchr(++ptr1, '.');
 
@@ -761,15 +761,15 @@ BOOL CheckifPacket(char * Via)
 	}
 
 	if (ptr1[0] == 0)
-		return TRUE;			// Packet
+		return TRUE;			/* Packet */
 
-	// ptr1 is last element. If a valid continent, it is a packet message
+	/* ptr1 is last element. If a valid continent, it is a packet message */
 	
 	if (FindContinent(ptr1))
-		return TRUE;			// Packet
+		return TRUE;			/* Packet */
 
-	if ((_stricmp(ptr1, "MARS") == 0) || (_stricmp(ptr1, "USA") == 0))		// MARS used both
-		return TRUE;			// Packet
+	if ((_stricmp(ptr1, "MARS") == 0) || (_stricmp(ptr1, "USA") == 0))		/* MARS used both */
+		return TRUE;			/* Packet */
 
 	return FALSE;
 }
@@ -783,7 +783,7 @@ void Decode(CIRCUIT * conn, int FromSync)
 	uint32_t count;
 	unsigned short  crc_read;
 	int Index = 0;
-	struct FBBHeaderLine * FBBHeader= &conn->FBBHeaders[0];	// The Headers from an FFB forward block
+	struct FBBHeaderLine * FBBHeader= &conn->FBBHeaders[0];	/* The Headers from an FFB forward block */
 	BOOL NTS = FALSE;
 
 	getbuf = 0;
@@ -814,7 +814,7 @@ void Decode(CIRCUIT * conn, int FromSync)
 			free(conn->MailBuffer);
 			conn->MailBufferSize=0;
 			conn->MailBuffer=0;
-			conn->CloseAfterFlush = 20;			// 2 Secs
+			conn->CloseAfterFlush = 20;			/* 2 Secs */
 
 			return;
 		}
@@ -839,7 +839,7 @@ void Decode(CIRCUIT * conn, int FromSync)
 
 #endif
 
-	// Temp fix for duff MACBPQ (Message Length sent big-endian)
+	/* Temp fix for duff MACBPQ (Message Length sent big-endian) */
 
 	if (textsize > 500000)
 	{
@@ -861,7 +861,7 @@ void Decode(CIRCUIT * conn, int FromSync)
 			free(conn->MailBuffer);
 			conn->MailBufferSize=0;
 			conn->MailBuffer=0;
-			conn->CloseAfterFlush = 20;			// 2 Secs
+			conn->CloseAfterFlush = 20;			/* 2 Secs */
 			return;
 		}
 	}
@@ -869,12 +869,12 @@ void Decode(CIRCUIT * conn, int FromSync)
 	Logprintf(LOG_BBS, conn, '|', "Uncompressing Message Comp Len %d Msg Len %d CRC %x", 
 			conn->TempMsg->length, textsize, crc);
 	
-	outfile = zalloc(textsize + 10000);		// Lots of space for B2 header manipulations
+	outfile = zalloc(textsize + 10000);		/* Lots of space for B2 header manipulations */
 
 	if (textsize == 0)
 		return;
 
-	// If compressed, decompress
+	/* If compressed, decompress */
 
 	if (conn->BBSFlags & FBBCompressed)
 	{
@@ -924,7 +924,7 @@ void Decode(CIRCUIT * conn, int FromSync)
 
 	if (FromSync)
 	{
-		// Refomat Sync message as if from WLE
+		/* Refomat Sync message as if from WLE */
 		
 		if (ReformatSyncMessage(conn) == 0)
 			return;
@@ -945,7 +945,7 @@ void Decode(CIRCUIT * conn, int FromSync)
 
 	if (FBBHeader->B2Message)
 	{
-		// Parse the Message for B2 From and To info
+		/* Parse the Message for B2 From and To info */
 /*
 MID: A3EDD4P00P55
 Date: 2009/07/25 10:08
@@ -965,12 +965,12 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 		time_t Date;
 		char FullTo[100];
 		char FullFrom[100];
-		char ** RecpTo = NULL;				// May be several Recipients
-		char ** HddrTo = NULL;				// May be several Recipients
-		char ** Via = NULL;					// May be several Recipients
-		__int32 LocalMsg[1000];				// Set if Recipient is a local wl2k address
-		char Type[1000];					// Message Type for each dest
-		__int32 B2To;						// Offset to To: fields in B2 header
+		char ** RecpTo = NULL;				/* May be several Recipients */
+		char ** HddrTo = NULL;				/* May be several Recipients */
+		char ** Via = NULL;					/* May be several Recipients */
+		__int32 LocalMsg[1000];				/* Set if Recipient is a local wl2k address */
+		char Type[1000];					/* Message Type for each dest */
+		__int32 B2To;						/* Offset to To: fields in B2 header */
 		__int32 Recipients = 0;
 		__int32 RMSMsgs = 0, BBSMsgs = 0;
 #ifndef LINBPQ
@@ -980,7 +980,7 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 #endif
 		Msg->B2Flags |= B2Msg;
 
-		// Display the whole header for debugging
+		/* Display the whole header for debugging */
 
 /*
 		ptr1 = strstr(outfile, "\r\n\r\n");
@@ -1013,7 +1013,7 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 
 			if (conn->Paclink || (conn->RMSExpress && (conn->UserPointer->flags & F_NOWINLINK) == 0))
 			{
-				// Messages just have the call - need to add @winlink.org
+				/* Messages just have the call - need to add @winlink.org */
 
 				strcpy(Msg->emailfrom, "@winlink.org");
 
@@ -1022,7 +1022,7 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 			{
 				if (_stricmp(conn->Callsign, "RMS") == 0)
 				{
-					// Swap smtp: to rms: and save originator so we can reply via RMS
+					/* Swap smtp: to rms: and save originator so we can reply via RMS */
 
 					strcpy(Msg->from, "RMS:");
 					memcpy(Msg->emailfrom, &ptr1[11], linelen - 11);
@@ -1038,23 +1038,23 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 				char SaveFrom[100];
 				char * FromHA;
 
-				// B2 From may now contain an @BBS 
+				/* B2 From may now contain an @BBS  */
 
 				strcpy(SaveFrom, FullFrom);
 				
 				FromHA = strlop(SaveFrom, '@');
 
-				// If it has an @ it could be an internet address - if it has a dot or longer than
-				// 6 chars assume it is.
-				// No, could also be packet
+				/* If it has an @ it could be an internet address - if it has a dot or longer than */
+				/* 6 chars assume it is. */
+				/* No, could also be packet */
 
-				// I don't think you can have an Internet message without a . in @field
-				// Why not just use checkifpacket ??
+				/* I don't think you can have an Internet message without a . in @field */
+				/* Why not just use checkifpacket ?? */
 					
 				if (FromHA && !CheckifPacket(FromHA))
 				{
-					// Internet address - set from empty and full email in
-					// emailfrom
+					/* Internet address - set from empty and full email in */
+					/* emailfrom */
 					
 					strcpy(Msg->from, "SMTP:");
 
@@ -1065,7 +1065,7 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 				}
 				else
 				{
-					// Not an Internet Address so must be a callsign and therefore <= 6 chars
+					/* Not an Internet Address so must be a callsign and therefore <= 6 chars */
 
 					if (strlen(SaveFrom) > 12)			
 						SaveFrom[12] = 0;
@@ -1080,25 +1080,25 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 					}
 				}
 
-				// Remove any SSID
+				/* Remove any SSID */
 
 				ptr3 = strchr(Msg->from, '-');
 				if (ptr3) *ptr3 = 0;
 			}
 
-			// If from a CMS, and no @ in message, append @winlink.org to the B2 Header.
-			// so messages passed via B2 know it is from Winlink
+			/* If from a CMS, and no @ in message, append @winlink.org to the B2 Header. */
+			/* so messages passed via B2 know it is from Winlink */
 
 			if ((Msg->B2Flags & FromCMS) && strchr(FullFrom, '@') == NULL)
 			{
-				// Move Message down buffer - ptr2 is the insertion point
+				/* Move Message down buffer - ptr2 is the insertion point */
 
 				memmove(ptr2+12, ptr2, count);
 				memcpy(ptr2, "@winlink.org", 12);
 				count += 12;
 				conn->TempMsg->length += 12;
 
-				// Also set Emailfrom, in case read on BBS (eg by outpost)
+				/* Also set Emailfrom, in case read on BBS (eg by outpost) */
 				
 				strcat(Msg->emailfrom, "@winlink.org");
 			}
@@ -1115,7 +1115,7 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 			memcpy(FullTo, &ptr1[4], linelen-4);
 			memcpy(HddrTo[Recipients], ptr1, linelen+2);
 			LocalMsg[Recipients] = FALSE;
-			Type[Recipients] = Msg->type;	// Default to Type from Header
+			Type[Recipients] = Msg->type;	/* Default to Type from Header */
 
 			Logprintf(LOG_BBS, conn, '?', "B2 Msg To: %s", FullTo);
 
@@ -1123,16 +1123,16 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 
 			B2To = (int)(ptr1 - outfile);
 
-			// if ending in AMPR.ORG send via ISP if we have enabled forwarding AMPR
+			/* if ending in AMPR.ORG send via ISP if we have enabled forwarding AMPR */
 
 			toLen = (int)strlen(FullTo);
 
 			if (_memicmp(&FullTo[toLen - 8], "ampr.org", 8) == 0)
 			{
-				// if our domain keep here.
+				/* if our domain keep here. */
 				
-				// if not, and SendAMPRDirect set, set as ISP,
-				// else set as RMS			
+				/* if not, and SendAMPRDirect set, set as ISP, */
+				/* else set as RMS			 */
 				
 				memcpy(Msg->via, FullTo, toLen);
 
@@ -1144,7 +1144,7 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 
 					if (_stricmp(ptr3, AMPRDomain) == 0)
 					{
-						// Our Message
+						/* Our Message */
 
 						strcpy(Msg->via, FullTo);
 						BBSMsgs ++;
@@ -1164,9 +1164,9 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 				RMSMsgs ++;
 			}
 
-			if (conn->BPQBBS && !CheckifPacket(FullTo))  // May be an message for RMS being passed to an intermediate BBS
+			if (conn->BPQBBS && !CheckifPacket(FullTo))  /* May be an message for RMS being passed to an intermediate BBS */
 			{
-				// Internet address - send via RMS
+				/* Internet address - send via RMS */
 
 				strcpy(Msg->via, FullTo);
 				strcpy(FullTo,"RMS");
@@ -1189,25 +1189,25 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 			{
 				Msg->B2Flags |= FromPaclink;
 
-				// Message from paclink
+				/* Message from paclink */
 
-				// Messages to WL2K just have call.
-				// Messages to email or BBS addresses have smtp:
+				/* Messages to WL2K just have call. */
+				/* Messages to email or BBS addresses have smtp: */
 			
 
 				if (_memicmp(&ptr1[4], "SMTP:", 5) == 0)
 				{
-					// See if Packet or SMTP
+					/* See if Packet or SMTP */
 					
-					if (CheckifPacket(Msg->via))	//  If no RMS, don't check for routing to it)
+					if (CheckifPacket(Msg->via))	/*  If no RMS, don't check for routing to it) */
 					{
-						// Packet Message
+						/* Packet Message */
 
 						memmove(FullTo, &FullTo[5], strlen(FullTo) - 4);
 						_strupr(FullTo);
 						_strupr(Msg->via);
 						
-						// Update the saved to: line (remove the smtp:)
+						/* Update the saved to: line (remove the smtp:) */
 
 						strcpy(&HddrTo[Recipients][4], &HddrTo[Recipients][9]);
 						BBSMsgs++;
@@ -1215,9 +1215,9 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 					}
 					else
 					{
-						// Internet address - do we send via RMS??
+						/* Internet address - do we send via RMS?? */
 
-						// ??? Need to see if RMS is available
+						/* ??? Need to see if RMS is available */
 
 						memcpy(Msg->via, &ptr1[9], linelen);
 						Msg->via[linelen-9] = 0;
@@ -1227,9 +1227,9 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 				}
 				else
 				{
-					if (conn->RadioOnlyMode == 0 && (conn->UserPointer->flags & F_NOWINLINK) == 0)	// treat as Packet Address?
+					if (conn->RadioOnlyMode == 0 && (conn->UserPointer->flags & F_NOWINLINK) == 0)	/* treat as Packet Address? */
 					{
-						strcpy(Msg->via, "winlink.org");		// Message for WL2K - add via
+						strcpy(Msg->via, "winlink.org");		/* Message for WL2K - add via */
 						RMSMsgs ++;
 						LocalMsg[Recipients] = CheckifLocalRMSUser(FullTo);
 					}
@@ -1240,23 +1240,23 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 				}
 
 			}
-//			else if (conn->RMSExpress && FindRMS())			//  If no RMS, don't check for routing to it
+/*			else if (conn->RMSExpress && FindRMS())			//  If no RMS, don't check for routing to it */
 			else if (conn->RMSExpress)	
 			{
 				Msg->B2Flags |= FromRMSExpress;
 
-				// Message from RMS Express
-				// Messages to WL2K just have call.
-				// Messages to email or BBS addresses don't have smtp:
+				/* Message from RMS Express */
+				/* Messages to WL2K just have call. */
+				/* Messages to email or BBS addresses don't have smtp: */
 			
 
 				if (Msg->via[0])
 				{
-					// Has an @ - See if Packet or SMTP. If to our AMPR address, treat as packet
+					/* Has an @ - See if Packet or SMTP. If to our AMPR address, treat as packet */
 					
 					if (CheckifPacket(Msg->via) || _stricmp(Msg->via, AMPRDomain) == 0)
 					{
-						// Packet Message
+						/* Packet Message */
 
 						_strupr(FullTo);
 						_strupr(Msg->via);
@@ -1264,7 +1264,7 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 					}
 					else
 					{
-						// Internet address - do we send via RMS??
+						/* Internet address - do we send via RMS?? */
 
 						if (_memicmp(FullTo, "smtp/", 5) == 0 && ISP_Gateway_Enabled)
 						{
@@ -1272,7 +1272,7 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 							Msg->via[linelen-9] = 0;
 							FullTo[0] = Msg->to[0] = 0;
 						}
-						else if (FindRMS()) // have RMS 
+						else if (FindRMS()) /* have RMS  */
 						{
 							memcpy(Msg->via, &ptr1[4], linelen);
 							Msg->via[linelen-4] = 0;
@@ -1286,14 +1286,14 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 							FullTo[0] = Msg->to[0] = 0;
 						}
 						else if (isAMPRMsg(Msg->via))
-							strcpy(Msg->to, "RMS");		// Routing will redirect it
+							strcpy(Msg->to, "RMS");		/* Routing will redirect it */
 					}
 				}
 				else
 				{
-					if (conn->RadioOnlyMode == 0 && (conn->UserPointer->flags & F_NOWINLINK) == 0)	//  Dont default to winlink.org
+					if (conn->RadioOnlyMode == 0 && (conn->UserPointer->flags & F_NOWINLINK) == 0)	/*  Dont default to winlink.org */
 					{
-						strcpy(Msg->via, "winlink.org");		// Message for WL2K - add via
+						strcpy(Msg->via, "winlink.org");		/* Message for WL2K - add via */
 						RMSMsgs ++;
 						LocalMsg[Recipients] = CheckifLocalRMSUser(FullTo);
 					}
@@ -1302,28 +1302,28 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 				}
 			}
 
-			else			// Not Paclink or RMS Express (or no RMS)
+			else			/* Not Paclink or RMS Express (or no RMS) */
 			{
 				if (_memicmp(&ptr1[4], "SMTP:", 5) == 0)
 				{
-					// Airmail Sends MARS messages as SMTP
+					/* Airmail Sends MARS messages as SMTP */
 					
 					if (CheckifPacket(Msg->via))
 					{
-						// Packet Message
+						/* Packet Message */
 
 						memmove(FullTo, &FullTo[5], strlen(FullTo) - 4);
 						_strupr(FullTo);
 						_strupr(Msg->via);
 						
-						// Update the saved to: line (remove the smtp:)
+						/* Update the saved to: line (remove the smtp:) */
 
 						strcpy(&HddrTo[Recipients][4], &HddrTo[Recipients][9]);
 						BBSMsgs++;
 						goto BBSMsg;
 					}
 
-					// If a winlink.org address we need to convert to call
+					/* If a winlink.org address we need to convert to call */
 
 					if (_stricmp(Msg->via, "winlink.org") == 0)
 					{
@@ -1337,7 +1337,7 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 						Msg->via[linelen - 9] = 0;
 						strcpy(FullTo,"RMS");
 					}
-//					FullTo[0] = 0;
+/*					FullTo[0] = 0; */
 				}
 				else
 				{
@@ -1349,7 +1349,7 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 
 			if (memcmp(FullTo, "RMS:", 4) == 0)
 			{
-				// remove RMS and add @winlink.org
+				/* remove RMS and add @winlink.org */
 
 				memmove(FullTo, &FullTo[4], strlen(FullTo) - 3);
 				strcpy(Msg->via, "winlink.org");
@@ -1358,31 +1358,31 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 
 			else if (memcmp(FullTo, "NTS:", 4) == 0)
 			{
-				// remove NTS and set type 'T'
+				/* remove NTS and set type 'T' */
 
 				memmove(FullTo, &FullTo[4], strlen(FullTo) - 3);		
-				Type[Recipients] = 'T';		// NTS
+				Type[Recipients] = 'T';		/* NTS */
 				memmove(HddrTo[Recipients] + 4, HddrTo[Recipients] + 8, 91);
 
-				// Replace Type: Private with Type: Traffic
+				/* Replace Type: Private with Type: Traffic */
 
 			}
 			else if ((_memicmp(FullTo, "bull/", 5) == 0) || (_memicmp(FullTo, "bull:", 5) == 0))
 			{
-				// remove bull/ and set type 'B'
+				/* remove bull/ and set type 'B' */
 
 				memmove(FullTo, &FullTo[5], strlen(FullTo) - 4);		
-				Type[Recipients] = 'B';		// Bulletin
+				Type[Recipients] = 'B';		/* Bulletin */
 				memmove(HddrTo[Recipients] + 4, HddrTo[Recipients] + 9, 90);
 
-				// Replace Type: Private with Type: Bulletin
-				// Have to move rest of header down to make space
+				/* Replace Type: Private with Type: Bulletin */
+				/* Have to move rest of header down to make space */
 
 			}
 
 			if (strcmp(Msg->via, "RMS") == 0)
 			{
-				// replace RMS with @winlink.org
+				/* replace RMS with @winlink.org */
 
 				strcpy(Msg->via, "winlink.org");
 				sprintf(HddrTo[Recipients], "To: %s@winlink.org\r\n", FullTo);
@@ -1402,15 +1402,15 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 			if ((Msg->via[0] == 0 || strcmp(Msg->via, "BPQ") == 0 || strcmp(Msg->via, "BBS") == 0)
 				&& (conn->Paclink || conn->RMSExpress))
 			{
-				// No routing - check @BBS and WP
+				/* No routing - check @BBS and WP */
 
 				struct UserInfo * ToUser = LookupCall(FullTo);
 
-				Msg->via[0] = 0;				// In case BPQ and not found
+				Msg->via[0] = 0;				/* In case BPQ and not found */
 
 				if (ToUser)
 				{
-					// Local User. If Home BBS is specified, use it
+					/* Local User. If Home BBS is specified, use it */
 
 					if (ToUser->HomeBBS[0])
 					{
@@ -1428,7 +1428,7 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 					}
 				}
 
-				// Fix To: address in B2 Header
+				/* Fix To: address in B2 Header */
 
 				if (Msg->via[0])
 					sprintf(HddrTo[Recipients], "To: %s@%s\r\n", FullTo, Msg->via);
@@ -1446,7 +1446,7 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 			strcpy(Via[Recipients], Msg->via);
 			strcpy(RecpTo[Recipients++], FullTo);
 
-			// Remove the To: Line from the buffer
+			/* Remove the To: Line from the buffer */
 
 			memmove(ptr1, ptr2+2, count);
 			goto Loop;
@@ -1455,7 +1455,7 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 		else if (_memicmp(ptr1, "Type:", 4) == 0)
 		{
 			if (ptr1[6] == 'N')
-				Msg->type = 'T';				// NTS
+				Msg->type = 'T';				/* NTS */
 			else
 				Msg->type = ptr1[6];
 		}
@@ -1475,7 +1475,7 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 
 			memset(&rtime, 0, sizeof(struct tm));
 
-			// Date: 2009/07/25 10:08
+			/* Date: 2009/07/25 10:08 */
 	
 			sscanf(&ptr1[5], "%04d/%02d/%02d %02d:%02d",
 					&rtime.tm_year, &rtime.tm_mon, &rtime.tm_mday, &rtime.tm_hour, &rtime.tm_min);
@@ -1489,15 +1489,15 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 
 		}
 
-		if (linelen)			// Not Null line
+		if (linelen)			/* Not Null line */
 		{
-			ptr1 = ptr2 + 2;		// Skip crlf
+			ptr1 = ptr2 + 2;		/* Skip crlf */
 			goto Loop;
 		}
 
-		// Processed all headers
+		/* Processed all headers */
 
-		// If multiple recipents, create one copy for each BBS address, and one for all others (via RMS)
+		/* If multiple recipents, create one copy for each BBS address, and one for all others (via RMS) */
 	
 		if (Recipients == 0 || HddrTo == NULL)
 		{
@@ -1520,7 +1520,7 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 			SaveMsg = Msg;
 			SaveBody = conn->MailBuffer;
 
-			// If from WL2K, create one message for each to: or cc: that is a local user
+			/* If from WL2K, create one message for each to: or cc: that is a local user */
 
 			if (Msg->B2Flags & FromCMS)
 			{
@@ -1542,7 +1542,7 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 					if (user == 0)
 						continue;
 
-					if (strcmp(Call, BBSName) != 0)	// always accept to bbs call
+					if (strcmp(Call, BBSName) != 0)	/* always accept to bbs call */
 						if ((user->flags & F_POLLRMS) == 0)
 							continue;
 					
@@ -1552,11 +1552,11 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 					conn->MailBuffer = malloc(SaveMsgLen + 1000);
 					memcpy(conn->MailBuffer, SaveBody, SaveMsgLen);
 
-					// Add our To: 
+					/* Add our To:  */
 		
 					ToLen = (int)strlen(HddrTo[i]);
 
-					if (_memicmp(HddrTo[i], "CC", 2) == 0)	// Replace CC: with TO:
+					if (_memicmp(HddrTo[i], "CC", 2) == 0)	/* Replace CC: with TO: */
 						memcpy(HddrTo[i], "To", 2);
 
 					memmove(&conn->MailBuffer[B2To + ToLen], &conn->MailBuffer[B2To], count);
@@ -1576,11 +1576,11 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 			}
 			else
 			{
-				// From a client - Create one copy with all RMS recipients, and one for each packet recipient	
+				/* From a client - Create one copy with all RMS recipients, and one for each packet recipient	 */
 
-				// Merge all RMS To: lines 
+				/* Merge all RMS To: lines  */
 
-				// If don't add Winlink.org or no RMS BBS keep separate
+				/* If don't add Winlink.org or no RMS BBS keep separate */
 
 			ToLen = 0;
 			ToString[0] = 0;
@@ -1589,11 +1589,11 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 			{
 				if (conn->RadioOnlyMode || LocalMsg[i] || (conn->UserPointer->flags & F_NOWINLINK) || FindRMS()== NULL)
 				{
-					LocalMsg[i] = TRUE;				// Make sure local copy is created
-					continue;						// For a local RMS user
+					LocalMsg[i] = TRUE;				/* Make sure local copy is created */
+					continue;						/* For a local RMS user */
 				}
 
-				// ?? Should a Bang Path override this ?? - I think so!
+				/* ?? Should a Bang Path override this ?? - I think so! */
 
 				if (strchr(Via[i], '!'))
 					continue;
@@ -1601,8 +1601,8 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 				if (_stricmp(Via[i], "WINLINK.ORG") == 0 || _memicmp (&HddrTo[i][4], "SMTP:", 5) == 0 ||
 					_stricmp(RecpTo[i], "RMS") == 0)
 				{
-					if (ToLen == 0)					// First Addr
-						memcpy(HddrTo[i], "To", 2);	// In Case CC
+					if (ToLen == 0)					/* First Addr */
+						memcpy(HddrTo[i], "To", 2);	/* In Case CC */
 
 					ToLen += (int)strlen(HddrTo[i]);
 					strcat(ToString, HddrTo[i]);
@@ -1617,7 +1617,7 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 				conn->MailBuffer = malloc(SaveMsgLen + 1000);
 				memcpy(conn->MailBuffer, SaveBody, SaveMsgLen);
 
-				// Add all the To: lines back to message
+				/* Add all the To: lines back to message */
 
 				memmove(&conn->MailBuffer[B2To + ToLen], &conn->MailBuffer[B2To], count);
 				memcpy(&conn->MailBuffer[B2To], ToString, ToLen); 
@@ -1629,11 +1629,11 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 				{
 					strcpy(Msg->via, "winlink.org");
 					strcpy(Msg->to, "RMS");
-					Msg->bid[0] = 0;		// Must Change the BID
+					Msg->bid[0] = 0;		/* Must Change the BID */
 				}
 				
-				// Don't change type, as we don't change the B2 Header for messages to RMS
-				//Msg->type = Type[0];
+				/* Don't change type, as we don't change the B2 Header for messages to RMS */
+				/*Msg->type = Type[0]; */
 	
 				CreateMessageFromBuffer(conn);
 			}
@@ -1642,9 +1642,9 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 
 			for (i = 0; i < Recipients; i++)
 			{
-				// Only Process Non - RMS Dests or local RMS Users
+				/* Only Process Non - RMS Dests or local RMS Users */
 
-				// ?? Should a Bang Path override this ?? - I think so!
+				/* ?? Should a Bang Path override this ?? - I think so! */
 
 				if (strchr(Via[i], '!') == 0)
 					if (LocalMsg[i] == 0)
@@ -1659,32 +1659,32 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 				conn->MailBuffer = malloc(SaveMsgLen + 1000);
 				memcpy(conn->MailBuffer, SaveBody, SaveMsgLen);
 
-				// Add our To: 
+				/* Add our To:  */
 
 				ptr = HddrTo[i];
 
-				// We removed any nts: or bull: earlier on, 
-				// and saved type. We need to set type here, as
-				// may be sending to more than one type
-				// If message contains Type: Private and not 'P',
-				// need to changes to Traffic or Bulletin
+				/* We removed any nts: or bull: earlier on,  */
+				/* and saved type. We need to set type here, as */
+				/* may be sending to more than one type */
+				/* If message contains Type: Private and not 'P', */
+				/* need to changes to Traffic or Bulletin */
 
-				// But we need to remove last bang path if any
+				/* But we need to remove last bang path if any */
 
 				if (strchr(ptr, '!'))
 				{
 					bang = ptr + strlen(ptr);
 	
-					while (*(--bang) != '!');		// Find last !
+					while (*(--bang) != '!');		/* Find last ! */
 
-					*(bang++) = 13;					// Need CR;
-					*(bang++) = 10;					// Need LF;
-					*(bang) = 0;					// remove it;
+					*(bang++) = 13;					/* Need CR; */
+					*(bang++) = 10;					/* Need LF; */
+					*(bang) = 0;					/* remove it; */
 				}
 
 				ToLen = (int)strlen(ptr);
 
-	//			if (_memicmp(HddrTo[i], "CC", 2) == 0)	// Replace CC: with TO:
+	/*			if (_memicmp(HddrTo[i], "CC", 2) == 0)	// Replace CC: with TO: */
 					memcpy(HddrTo[i], "To", 2);
 
 				memmove(&conn->MailBuffer[B2To + ToLen], &conn->MailBuffer[B2To], count);
@@ -1702,7 +1702,7 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 
 					ptr += 7;
 
-					// This handles a message arriving with bull/ or nts/ oerrides
+					/* This handles a message arriving with bull/ or nts/ oerrides */
 
 					if (_memicmp(ptr, "Private", 7) == 0 && Msg->type != 'P')
 					{
@@ -1711,14 +1711,14 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 						else
 						if (Msg->type == 'B')
 						{
-							// have to make space
+							/* have to make space */
 
 							memmove(ptr + 1, ptr, count);
 							conn->TempMsg->length++;
 							memcpy(ptr, "Bulletin", 8);
 						}
 
-						// remove //wl2k from subject
+						/* remove //wl2k from subject */
 
 						ptrx = strstr(conn->MailBuffer, "Subject: ");
 
@@ -1729,10 +1729,10 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 							memmove(conn->TempMsg->title, &conn->TempMsg->title[7], strlen(conn->TempMsg->title) - 6);
 						}
 					}
-					// if we are receiving from another BBS rather
-					// than WLE or PAT we need to set msgtype from Type:
+					/* if we are receiving from another BBS rather */
+					/* than WLE or PAT we need to set msgtype from Type: */
 
-					Msg->type = ptr[0];		// I think it is safe to do it always
+					Msg->type = ptr[0];		/* I think it is safe to do it always */
 	
 					if (Msg->type == 'N')
 						Msg->type = 'T';
@@ -1741,12 +1741,12 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 				strcpy(Msg->to, RecpTo[i]);
 				strcpy(Msg->via, Via[i]);
 				
-				if (i > 0 && Msg->type != 'B')			// Must Change the BID
+				if (i > 0 && Msg->type != 'B')			/* Must Change the BID */
 					Msg->bid[0] = 0;
 
 				CreateMessageFromBuffer(conn);
 			}
-			}	// End not from RMS
+			}	/* End not from RMS */
 
 			free(SaveMsg);
 			free(SaveBody);
@@ -1793,14 +1793,14 @@ File: 5566 NEWBOAT.HOMEPORT.JPG
 
 		BBSputs(conn, "*** Program Error Decoding B2 Message\r");
 		Flush(conn);
-		conn->CloseAfterFlush = 20;			// 2 Secs
+		conn->CloseAfterFlush = 20;			/* 2 Secs */
 		
 		return;
 		}
 #endif	
-	} // end if B2Msg
+	} /* end if B2Msg */
 
-	// Look for 
+	/* Look for  */
 
 	CreateMessageFromBuffer(conn);
 	SetupNextFBBMessage(conn);

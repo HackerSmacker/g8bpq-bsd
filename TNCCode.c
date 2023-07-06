@@ -17,9 +17,9 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-//
-//	C replacement for TNCCode.asm
-//
+/* */
+/*	C replacement for TNCCode.asm */
+/* */
 #define Kernel
 
 #define _CRT_SECURE_NO_DEPRECATE 
@@ -38,7 +38,7 @@ VOID SENDUIMESSAGE(struct DATAMESSAGE * Msg);
 
 VOID TNCTimerProc()
 {
-	//	CALLED AT 10 HZ
+	/*	CALLED AT 10 HZ */
 
 	int n = BPQHOSTSTREAMS;
 	PBPQVECSTRUC HOSTSESS = BPQHOSTVECTOR;
@@ -47,20 +47,20 @@ VOID TNCTimerProc()
 
 	while (n--)
 	{
-		//	Action any DISC Requests (must be done in timer owning process)
+		/*	Action any DISC Requests (must be done in timer owning process) */
 
-		if (HOSTSESS->HOSTFLAGS & 0x40)		// DISC REQUEST
+		if (HOSTSESS->HOSTFLAGS & 0x40)		/* DISC REQUEST */
 		{
-			if (HOSTSESS->HOSTFLAGS & 0x20)	// Stay?
+			if (HOSTSESS->HOSTFLAGS & 0x20)	/* Stay? */
 				DISCFLAG = 'S';
 
-			HOSTSESS->HOSTFLAGS &= 0x9F;		// Clear Flags
+			HOSTSESS->HOSTFLAGS &= 0x9F;		/* Clear Flags */
 
 			Session = HOSTSESS->HOSTSESSION;
 
-			if (Session == 0)					// Gone??
+			if (Session == 0)					/* Gone?? */
 			{
-				HOSTSESS->HOSTFLAGS |= 3;		//  STATE CHANGE
+				HOSTSESS->HOSTFLAGS |= 3;		/*  STATE CHANGE */
 #ifndef LINBPQ
 				if (HOSTSESS->HOSTHANDLE);
 				{
@@ -74,14 +74,14 @@ VOID TNCTimerProc()
 				Session->L4CROSSLINK->STAYFLAG = DISCFLAG;
 
 			HOSTSESS->HOSTSESSION = 0;
-			HOSTSESS->HOSTFLAGS |= 3;		//  STATE CHANGE
+			HOSTSESS->HOSTFLAGS |= 3;		/*  STATE CHANGE */
 
 			PostStateChange(Session);
 
-			CloseSessionPartner(Session);	// SEND CLOSE TO PARTNER (IF PRESENT)
+			CloseSessionPartner(Session);	/* SEND CLOSE TO PARTNER (IF PRESENT) */
 		}
 	
-		// Check Trace Q
+		/* Check Trace Q */
 
 		if (HOSTSESS->HOSTAPPLFLAGS & 0x80)
 		{
@@ -112,15 +112,15 @@ VOID SendSmartID(struct PORTCONTROL * PORT)
 
 		Buffer->PORT = PORT->PORTNUMBER;
 
-		//	IF PORT HAS A CALLSIGN DEFINED, SEND THAT INSTEAD
+		/*	IF PORT HAS A CALLSIGN DEFINED, SEND THAT INSTEAD */
 
 		if (PORT->PORTCALL[0] > 0x40)
 		{
 			memcpy(Buffer->ORIGIN, PORT->PORTCALL, 7);
-			Buffer->ORIGIN[6] |= 1;		// SET END OF CALL BIT
+			Buffer->ORIGIN[6] |= 1;		/* SET END OF CALL BIT */
 		}
 
-		// If Pactor Style add to UI_Q
+		/* If Pactor Style add to UI_Q */
 
 		if (PORT->PROTOCOL == 10 && PORT->TNC && PORT->TNC->Hardware != H_KISSHF && PORT->UICAPABLE)
 		{
@@ -143,7 +143,7 @@ VOID SENDIDMSG()
 
 	while (PORT)
 	{
-		if (PORT->PROTOCOL < 10)			// Not Pactor-style
+		if (PORT->PROTOCOL < 10)			/* Not Pactor-style */
 		{
 			Buffer = GetBuff();
 		
@@ -153,12 +153,12 @@ VOID SENDIDMSG()
 			
 				Buffer->PORT = PORT->PORTNUMBER;
 
-				//	IF PORT HAS A CALLSIGN DEFINED, SEND THAT INSTEAD
+				/*	IF PORT HAS A CALLSIGN DEFINED, SEND THAT INSTEAD */
 
 				if (PORT->PORTCALL[0] > 0x40)
 				{
 					memcpy(Buffer->ORIGIN, PORT->PORTCALL, 7);
-					Buffer->ORIGIN[6] |= 1;		// SET END OF CALL BIT
+					Buffer->ORIGIN[6] |= 1;		/* SET END OF CALL BIT */
 				}
 				C_Q_ADD(&IDMSG_Q, Buffer);
 			}
@@ -177,7 +177,7 @@ VOID SENDBTMSG()
 
 	while (PORT)
 	{
-		if (PORT->PROTOCOL >= 10 || PORT->PORTUNPROTO == 0)	// Pactor-style or no UNPROTO ADDR?
+		if (PORT->PROTOCOL >= 10 || PORT->PORTUNPROTO == 0)	/* Pactor-style or no UNPROTO ADDR? */
 		{
 			PORT = PORT->PORTPOINTER;
 			continue;
@@ -188,9 +188,9 @@ VOID SENDBTMSG()
 		if (Buffer)
 		{
 			memcpy(Buffer->DEST, PORT->PORTUNPROTO, 7);
-			Buffer->DEST[6] |= 0xC0;		// Set COmmand bits
+			Buffer->DEST[6] |= 0xC0;		/* Set COmmand bits */
 
-			//	Send from BBSCALL unless PORTBCALL defined
+			/*	Send from BBSCALL unless PORTBCALL defined */
 
 			if (PORT->PORTBCALL[0] > 32)
 				memcpy(Buffer->ORIGIN, PORT->PORTBCALL, 7);
@@ -199,10 +199,10 @@ VOID SENDBTMSG()
 			else
 				memcpy(Buffer->ORIGIN, MYCALL, 7);
 
-			ptr1 = &PORT->PORTUNPROTO[7];		// First Digi
-			ptr2 = &Buffer->CTL;				// Digi field in buffer
+			ptr1 = &PORT->PORTUNPROTO[7];		/* First Digi */
+			ptr2 = &Buffer->CTL;				/* Digi field in buffer */
 
-			// Copy any digis
+			/* Copy any digis */
 
 			while (*(ptr1))
 			{
@@ -211,7 +211,7 @@ VOID SENDBTMSG()
 				ptr2 += 7;
 			}
 
-			*(ptr2 - 1) |= 1;					// Set End of Address
+			*(ptr2 - 1) |= 1;					/* Set End of Address */
 			*(ptr2++) = UI;
 	
 			memcpy(ptr2, &BTHDDR.PID, BTHDDR.LENGTH);
@@ -231,11 +231,11 @@ VOID SENDUIMESSAGE(struct DATAMESSAGE * Msg)
 	struct _MESSAGE * Buffer;
 	char * ptr1, * ptr2;
 
-	Msg->LENGTH -= MSGHDDRLEN;	// Remove Header
+	Msg->LENGTH -= MSGHDDRLEN;	/* Remove Header */
 
 	while (PORT)
 	{
-		if ((PORT->PROTOCOL == 10 && PORT->UICAPABLE == 0) || PORT->PORTUNPROTO == 0)	// Pactor-style or no UNPROTO ADDR?
+		if ((PORT->PROTOCOL == 10 && PORT->UICAPABLE == 0) || PORT->PORTUNPROTO == 0)	/* Pactor-style or no UNPROTO ADDR? */
 		{
 			PORT = PORT->PORTPOINTER;
 			continue;
@@ -246,9 +246,9 @@ VOID SENDUIMESSAGE(struct DATAMESSAGE * Msg)
 		if (Buffer)
 		{
 			memcpy(Buffer->DEST, PORT->PORTUNPROTO, 7);
-			Buffer->DEST[6] |= 0xC0;		// Set Command bits
+			Buffer->DEST[6] |= 0xC0;		/* Set Command bits */
 
-			//	Send from BBSCALL unless PORTBCALL defined
+			/*	Send from BBSCALL unless PORTBCALL defined */
 
 			if (PORT->PORTBCALL[0] > 32)
 				memcpy(Buffer->ORIGIN, PORT->PORTBCALL, 7);
@@ -257,10 +257,10 @@ VOID SENDUIMESSAGE(struct DATAMESSAGE * Msg)
 			else
 				memcpy(Buffer->ORIGIN, MYCALL, 7);
 
-			ptr1  = &PORT->PORTUNPROTO[7];		// First Digi
-			ptr2 = &Buffer->CTL;				// Digi field in buffer
+			ptr1  = &PORT->PORTUNPROTO[7];		/* First Digi */
+			ptr2 = &Buffer->CTL;				/* Digi field in buffer */
 
-			// Copy any digis
+			/* Copy any digis */
 
 			while (*(ptr1))
 			{
@@ -269,7 +269,7 @@ VOID SENDUIMESSAGE(struct DATAMESSAGE * Msg)
 				ptr2 += 7;
 			}
 
-			*(ptr2 - 1) |= 1;					// Set End of Address
+			*(ptr2 - 1) |= 1;					/* Set End of Address */
 			*(ptr2++) = UI;
 	
 			memcpy(ptr2, &Msg->PID, Msg->LENGTH);
@@ -291,7 +291,7 @@ VOID SENDUIMESSAGE(struct DATAMESSAGE * Msg)
 
 Dll VOID APIENTRY Send_AX(UCHAR * Block, DWORD Len, UCHAR Port)
 {
-	// Block included the 7/11 byte header, Len does not
+	/* Block included the 7/11 byte header, Len does not */
 
 	struct PORTCONTROL * PORT;
 	PMESSAGE Copy;
@@ -300,7 +300,7 @@ Dll VOID APIENTRY Send_AX(UCHAR * Block, DWORD Len, UCHAR Port)
 		return;
 
 	if (QCOUNT < 50)
-		return;				// Running low
+		return;				/* Running low */
 
 	PORT = GetPortTableEntryFromPortNum(Port);
 
@@ -318,7 +318,7 @@ Dll VOID APIENTRY Send_AX(UCHAR * Block, DWORD Len, UCHAR Port)
 
 	if (PORT->PROTOCOL == 10 && PORT->TNC && PORT->TNC->Hardware != H_KISSHF)
 	{
-		// 	Pactor Style. Probably will only be used for Tracker uneless we do APRS over V4 or WINMOR
+		/* 	Pactor Style. Probably will only be used for Tracker uneless we do APRS over V4 or WINMOR */
 
 		EXTPORTDATA * EXTPORT = (EXTPORTDATA *) PORT;
 
@@ -334,7 +334,7 @@ Dll VOID APIENTRY Send_AX(UCHAR * Block, DWORD Len, UCHAR Port)
 
 TRANSPORTENTRY * SetupSessionFromHost(PBPQVECSTRUC HOST, UINT ApplMask)
 {
-	// Create a Transport (L4) session linked to an incoming HOST (API) Session
+	/* Create a Transport (L4) session linked to an incoming HOST (API) Session */
 
 	TRANSPORTENTRY * NewSess = L4TABLE;
 	int Index = 0;
@@ -344,15 +344,15 @@ TRANSPORTENTRY * SetupSessionFromHost(PBPQVECSTRUC HOST, UINT ApplMask)
 	{
 		if (NewSess->L4USER[0] == 0)
 		{
-			// Got One
+			/* Got One */
 
 			UCHAR * ourcall = &MYCALL[0];
 		
-			// IF APPL PORT USE APPL CALL, ELSE NODE CALL
+			/* IF APPL PORT USE APPL CALL, ELSE NODE CALL */
 
 			if (ApplMask)
 			{
-				// Circuit for APPL - look for an APPLCALL
+				/* Circuit for APPL - look for an APPLCALL */
 
 				APPLCALLS * APPL = APPLCALLTABLE;
 
@@ -361,19 +361,19 @@ TRANSPORTENTRY * SetupSessionFromHost(PBPQVECSTRUC HOST, UINT ApplMask)
 					ApplMask >>= 1;
 					APPL++;
 				}
-				if (APPL->APPLCALL[0] > 0x40)		// We have an applcall
+				if (APPL->APPLCALL[0] > 0x40)		/* We have an applcall */
 					ourcall = &APPL->APPLCALL[0];
 			}
 
 			memcpy(NewSess->L4USER, ourcall, 7);
 			memcpy(NewSess->L4MYCALL, ourcall, 7);
 
-			NewSess->CIRCUITINDEX = Index;				//OUR INDEX
+			NewSess->CIRCUITINDEX = Index;				/*OUR INDEX */
 			NewSess->CIRCUITID = NEXTID;
 
 			NEXTID++;
 			if (NEXTID == 0)
-				NEXTID++;								// Keep Non-Zero
+				NEXTID++;								/* Keep Non-Zero */
 
 			NewSess->L4TARGET.HOST = HOST;
 			NewSess->L4STATE = 5;
@@ -381,7 +381,7 @@ TRANSPORTENTRY * SetupSessionFromHost(PBPQVECSTRUC HOST, UINT ApplMask)
 			
 			NewSess->SESSIONT1 = L4T1;
 			NewSess->L4WINDOW = (UCHAR)L4DEFAULTWINDOW;
-			NewSess->SESSPACLEN = PACLEN;				// Default;
+			NewSess->SESSPACLEN = PACLEN;				/* Default; */
 
 			return NewSess;
 			}
@@ -389,7 +389,7 @@ TRANSPORTENTRY * SetupSessionFromHost(PBPQVECSTRUC HOST, UINT ApplMask)
 		NewSess++;
 	}
 
-	// Table Full
+	/* Table Full */
 
 	return NULL;
 }

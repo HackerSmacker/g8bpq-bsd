@@ -17,9 +17,9 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-// Mail and Chat Server for BPQ32 Packet Switch
-//
-// FBB Forwarding Routines
+/* Mail and Chat Server for BPQ32 Packet Switch */
+/* */
+/* FBB Forwarding Routines */
 
 #include "bpqmail.h"
 
@@ -39,7 +39,7 @@ extern char ProperBaseDir[];
 
 VOID FBBputs(CIRCUIT * conn, char * buf)
 {
-	// Sends to user and logs
+	/* Sends to user and logs */
 
 	int len = (int)strlen(buf);
 	
@@ -54,9 +54,9 @@ VOID FBBputs(CIRCUIT * conn, char * buf)
 
 VOID ProcessFBBLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int len)
 {
-	struct FBBHeaderLine * FBBHeader;	// The Headers from an FBB forward block
+	struct FBBHeaderLine * FBBHeader;	/* The Headers from an FBB forward block */
 	int i;
-	int Index = 0;			// Message Type Index for Stats
+	int Index = 0;			/* Message Type Index for Stats */
 	char * ptr;
 	char * Context;
 	char seps[] = " \r";
@@ -71,7 +71,7 @@ VOID ProcessFBBLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 		ProcessMsgLine(conn, user, Buffer, len);
 		if (conn->Flags & GETTINGMESSAGE)
 
-			// Still going
+			/* Still going */
 			return;
 
 		SetupNextFBBMessage(conn);
@@ -84,9 +84,9 @@ VOID ProcessFBBLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 		return;
 	}
 
-	// Should be FA FB F> FS FF FQ
+	/* Should be FA FB F> FS FF FQ */
 
-	if (Buffer[0] == ';')			// winlink comment or BPQ Type Select
+	if (Buffer[0] == ';')			/* winlink comment or BPQ Type Select */
 	{
 		if (memcmp(Buffer, "; MSGTYPES", 7) == 0)
 		{
@@ -122,7 +122,7 @@ VOID ProcessFBBLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 			return;
 		}
 
-		// Other ; Line - Ignore
+		/* Other ; Line - Ignore */
 
 		return;
 	}
@@ -131,14 +131,14 @@ VOID ProcessFBBLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 	{
 		if (strstr(Buffer, "*** Profanity detected") || strstr(Buffer, "*** Unknown message sender"))
 		{
-			// Winlink Check - hold message
+			/* Winlink Check - hold message */
 
 			if (conn->FBBMsgsSent)
 				HoldSentMessages(conn, user);
 		}
 
 		if (conn->BBSFlags & DISCONNECTING)
-			return;				// Ignore if disconnect aleady started
+			return;				/* Ignore if disconnect aleady started */
 
 		BBSputs(conn, "*** Protocol Error - Line should start with 'F'\r");
 		Flush(conn);
@@ -153,32 +153,32 @@ VOID ProcessFBBLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 	{
 	case 'F':
 
-		// Request Reverse
+		/* Request Reverse */
 
 		if (conn->FBBMsgsSent)
 			FlagSentMessages(conn, user);
 		
-		if (!FBBDoForward(conn))				// Send proposal if anthing to forward
+		if (!FBBDoForward(conn))				/* Send proposal if anthing to forward */
 		{
 			FBBputs(conn, "FQ\r");
 
 			conn->BBSFlags |= DISCONNECTING;
 
-			// LinFBB needs a Disconnect Here
+			/* LinFBB needs a Disconnect Here */
 
 			if (conn->BPQBBS)
-				return;							// BPQ will close when it sees FQ. Close collisions aren't good!
+				return;							/* BPQ will close when it sees FQ. Close collisions aren't good! */
 
 			if ((conn->SessType & Sess_PACTOR) == 0)
-				conn->CloseAfterFlush = 20;			// 2 Secs
+				conn->CloseAfterFlush = 20;			/* 2 Secs */
 			else
-				conn->CloseAfterFlush = 20;			// PACTOR/WINMOR drivers support deferred disc so 5 secs should be enough
+				conn->CloseAfterFlush = 20;			/* PACTOR/WINMOR drivers support deferred disc so 5 secs should be enough */
 		}
 		return;
 
 	case 'S':
 
-		//	Proposal response
+		/*	Proposal response */
 
 		Respptr=&Buffer[2];
 
@@ -197,23 +197,23 @@ VOID ProcessFBBLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 
 			if (*Respptr == 'E')
 			{
-				// Rejected 
+				/* Rejected  */
 
 				Logprintf(LOG_BBS, conn, '?', "Proposal %d Rejected by far end", i + 1);
 			}
 			
-			if ((*Respptr == '-') || (*Respptr == 'N') || (*Respptr == 'R') || (*Respptr == 'E'))				// Not wanted
+			if ((*Respptr == '-') || (*Respptr == 'N') || (*Respptr == 'R') || (*Respptr == 'E'))				/* Not wanted */
 			{
 				user->Total.MsgsRejectedOut[Index]++;
 				
-				// Zap the entry
+				/* Zap the entry */
 
-				if (conn->Paclink || conn->RMSExpress || conn->PAT)			// Not using Bit Masks
+				if (conn->Paclink || conn->RMSExpress || conn->PAT)			/* Not using Bit Masks */
 				{
-					// Kill Messages sent to paclink/RMS Express unless BBS FWD bit set
+					/* Kill Messages sent to paclink/RMS Express unless BBS FWD bit set */
 
-					// What if WLE retrieves P message that is queued to differnet BBS?
-					// if we dont kill it will be offered again
+					/* What if WLE retrieves P message that is queued to differnet BBS? */
+					/* if we dont kill it will be offered again */
 
 					if (FBBHeader->FwdMsg->type == 'P' || (check_fwd_bit(FBBHeader->FwdMsg->fbbs, user->BBSNumber) == 0))
 						FlagAsKilled(FBBHeader->FwdMsg, FALSE);
@@ -222,15 +222,15 @@ VOID ProcessFBBLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 				clear_fwd_bit(FBBHeader->FwdMsg->fbbs, user->BBSNumber);
 				set_fwd_bit(FBBHeader->FwdMsg->forw, user->BBSNumber);
 
-				FBBHeader->FwdMsg->Locked = 0;	// Unlock
+				FBBHeader->FwdMsg->Locked = 0;	/* Unlock */
 
-				// Shouldn't we set P messages as Forwarded
-				// (or will check above have killed it if it is P with other FWD bits set)
-				// Maybe better to be safe !!
+				/* Shouldn't we set P messages as Forwarded */
+				/* (or will check above have killed it if it is P with other FWD bits set) */
+				/* Maybe better to be safe !! */
 
 				if (FBBHeader->FwdMsg->type == 'P' || memcmp(FBBHeader->FwdMsg->fbbs, zeros, NBMASK) == 0)
 				{
-					FBBHeader->FwdMsg->status = 'F';			// Mark as forwarded
+					FBBHeader->FwdMsg->status = 'F';			/* Mark as forwarded */
 					FBBHeader->FwdMsg->datechanged=time(NULL);
 				}
 				
@@ -242,23 +242,23 @@ VOID ProcessFBBLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 				continue;
 			}
 
-			// FBB uses H for HOLD, but I've never seen it. RMS Express sends H for Defer.
+			/* FBB uses H for HOLD, but I've never seen it. RMS Express sends H for Defer. */
 
 
-			if (*Respptr == '=' || *Respptr == 'L' || (*Respptr == 'H' && conn->RMSExpress))	// Defer
+			if (*Respptr == '=' || *Respptr == 'L' || (*Respptr == 'H' && conn->RMSExpress))	/* Defer */
 			{
-				// Remove entry from forwarding block
+				/* Remove entry from forwarding block */
 
-				FBBHeader->FwdMsg->Defered = 4;		// Don't retry for the next few forward cycles 
+				FBBHeader->FwdMsg->Defered = 4;		/* Don't retry for the next few forward cycles  */
 				memset(FBBHeader, 0, sizeof(struct FBBHeaderLine));
 				continue;
 			}
 
-			conn->RestartFrom = 0;		// Assume Restart from
+			conn->RestartFrom = 0;		/* Assume Restart from */
 	
 			if ((*Respptr == '!') || (*Respptr == 'A'))
 			{
-				// Restart 
+				/* Restart  */
 
 				char Num[10];
 				char *numptr=&Num[0];
@@ -273,10 +273,10 @@ VOID ProcessFBBLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 
 				conn->RestartFrom = atoi(Num);
 
-				*(--Respptr) = '+';  // So can drop through
+				*(--Respptr) = '+';  /* So can drop through */
 			}
 
-			// FBB uses H for HOLD, but I've never seen it. RMS Express sends H for Defer. RMS use trapped above
+			/* FBB uses H for HOLD, but I've never seen it. RMS Express sends H for Defer. RMS use trapped above */
 
 			if ((*Respptr == '+') || (*Respptr == 'Y') || (*Respptr == 'H'))	
 			{
@@ -284,7 +284,7 @@ VOID ProcessFBBLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 				time_t now;
 				char * MsgBytes;
 
-				conn->FBBMsgsSent = TRUE;		// Messages to flag as complete when next command received
+				conn->FBBMsgsSent = TRUE;		/* Messages to flag as complete when next command received */
 				AllRejected = FALSE;
 
 				if (conn->BBSFlags & FBBForwarding)
@@ -314,7 +314,7 @@ VOID ProcessFBBLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 						tm->tm_year-100, tm->tm_mon+1, tm->tm_mday, tm->tm_hour, tm->tm_min,
 						FBBHeader->FwdMsg->number, BBSName, HRoute, RlineVer);
 
-					if (memcmp(MsgBytes, "R:", 2) != 0)    // No R line, so must be our message - put blank line after header
+					if (memcmp(MsgBytes, "R:", 2) != 0)    /* No R line, so must be our message - put blank line after header */
 						BBSputs(conn, "\r\n");
 
 					QueueMsg(conn, MsgBytes, FBBHeader->FwdMsg->length);
@@ -330,13 +330,13 @@ VOID ProcessFBBLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 			BBSputs(conn, "*** Protocol Error - Invalid Proposal Response'\r");
 		}
 
-		conn->FBBIndex = 0;		// ready for next block;
+		conn->FBBIndex = 0;		/* ready for next block; */
 		conn->FBBChecksum = 0;
 
 
 		if (AllRejected && (conn->RMSExpress || conn->PAT))
 		{
-			// RMS Express and PAT don't send FF or proposal after rejecting all messages
+			/* RMS Express and PAT don't send FF or proposal after rejecting all messages */
 
 			FBBputs(conn, "FF\r");
 		}
@@ -353,25 +353,25 @@ VOID ProcessFBBLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 		Disconnect(conn->BPQStream);
 		return;
 
-	case 'A':			// Proposal
-	case 'B':			// Proposal
+	case 'A':			/* Proposal */
+	case 'B':			/* Proposal */
 
 		if (conn->FBBMsgsSent)
-			FlagSentMessages(conn, user);			// Mark previously sent messages
+			FlagSentMessages(conn, user);			/* Mark previously sent messages */
 
-		if (conn->DoReverse == FALSE)				// Dont accept messages
+		if (conn->DoReverse == FALSE)				/* Dont accept messages */
 			return;
 
-		// Accumulate checksum
+		/* Accumulate checksum */
 
 		for (i=0; i< len; i++)
 		{
 			conn->FBBChecksum+=Buffer[i];
 		}
 
-		// Parse Header
+		/* Parse Header */
 
-		// Find free line
+		/* Find free line */
 
 		for (i = 0; i < 5; i++)
 		{
@@ -385,10 +385,10 @@ VOID ProcessFBBLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 		{
 			BBSputs(conn, "*** Protocol Error - Too Many Proposals\r");
 			Flush(conn);
-			conn->CloseAfterFlush = 20;			// 2 Secs
+			conn->CloseAfterFlush = 20;			/* 2 Secs */
 		}
 
-		//FA P GM8BPQ G8BPQ G8BPQ 2209_GM8BPQ 8
+		/*FA P GM8BPQ G8BPQ G8BPQ 2209_GM8BPQ 8 */
 
 		FBBHeader->Format = Buffer[1];
 
@@ -411,7 +411,7 @@ VOID ProcessFBBLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 		ptr = strtok_s(NULL, seps, &Context);
 
 		if (ptr == NULL) goto badparam;
-		strlop(ptr, '-');						// Remove any (illegal) ssid
+		strlop(ptr, '-');						/* Remove any (illegal) ssid */
 
 		if (strlen(ptr) > 6 ) goto badparam;
 
@@ -431,9 +431,9 @@ VOID ProcessFBBLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 
 		if (strlen(ptr) > 6)
 		{
-			// Temp fix - reject instead of breaking connection
+			/* Temp fix - reject instead of breaking connection */
 		
-			memset(FBBHeader, 0, sizeof(struct FBBHeaderLine));		// Clear header
+			memset(FBBHeader, 0, sizeof(struct FBBHeaderLine));		/* Clear header */
 			conn->FBBReplyChars[conn->FBBReplyIndex++] = '-';
 			Logprintf(LOG_BBS, conn, '?', "Message Rejected as TO field too long");
 
@@ -441,7 +441,7 @@ VOID ProcessFBBLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 			return;
 		}
 
-		strlop(ptr, '-');						// Remove any (illegal) ssid
+		strlop(ptr, '-');						/* Remove any (illegal) ssid */
 
 		strcpy(FBBHeader->To, ptr);
 
@@ -465,28 +465,28 @@ badparam:
 
 		BBSputs(conn, "*** Protocol Error - Proposal format error\r");
 		Flush(conn);
-		conn->CloseAfterFlush = 20;			// 2 Secs
+		conn->CloseAfterFlush = 20;			/* 2 Secs */
 		return;
 
 ok:
 
-		// Check Filters
+		/* Check Filters */
 
 		if (CheckRejFilters(FBBHeader->From, FBBHeader->To, FBBHeader->ATBBS, FBBHeader->BID, FBBHeader->MsgType))
 		{
-			memset(FBBHeader, 0, sizeof(struct FBBHeaderLine));		// Clear header
+			memset(FBBHeader, 0, sizeof(struct FBBHeaderLine));		/* Clear header */
 			conn->FBBReplyChars[conn->FBBReplyIndex++] = '-';
 			Logprintf(LOG_BBS, conn, '?', "Message Rejected by Filters");
 
 			user->Total.MsgsRejectedIn[Index]++;
 		}
 
-		// If P Message, dont immediately reject on a Duplicate BID. Check if we still have the message
-		//	If we do, reject  it. If not, accept it again. (do we need some loop protection ???)
+		/* If P Message, dont immediately reject on a Duplicate BID. Check if we still have the message */
+		/*	If we do, reject  it. If not, accept it again. (do we need some loop protection ???) */
 
 		else if (DoWeWantIt(conn, FBBHeader) == FALSE)
 		{
-			memset(FBBHeader, 0, sizeof(struct FBBHeaderLine));		// Clear header
+			memset(FBBHeader, 0, sizeof(struct FBBHeaderLine));		/* Clear header */
 			conn->FBBReplyChars[conn->FBBReplyIndex++] = '-';
 			user->Total.MsgsRejectedIn[Index]++;
 		}
@@ -496,13 +496,13 @@ ok:
 		}
 		else if (LookupTempBID(FBBHeader->BID))
 		{
-			memset(FBBHeader, 0, sizeof(struct FBBHeaderLine));		// Clear header
+			memset(FBBHeader, 0, sizeof(struct FBBHeaderLine));		/* Clear header */
 			conn->FBBReplyChars[conn->FBBReplyIndex++] = '=';
 		}
 		else
 		{
 
-			//	Save BID in temp list in case we are offered it again before completion
+			/*	Save BID in temp list in case we are offered it again before completion */
 			
 			BIDRec * TempBID = AllocateTempBIDRecord();
 			strcpy(TempBID->BID, FBBHeader->BID);
@@ -515,24 +515,24 @@ ok:
 
 		return;
 
-	case 'C':			// B2 Proposal
+	case 'C':			/* B2 Proposal */
 
 		if (conn->FBBMsgsSent)
-			FlagSentMessages(conn, user);			// Mark previously sent messages
+			FlagSentMessages(conn, user);			/* Mark previously sent messages */
 
-		if (conn->DoReverse == FALSE)				// Dont accept messages
+		if (conn->DoReverse == FALSE)				/* Dont accept messages */
 			return;
 
-		// Accumulate checksum
+		/* Accumulate checksum */
 
 		for (i=0; i< len; i++)
 		{
 			conn->FBBChecksum+=Buffer[i];
 		}
 
-		// Parse Header
+		/* Parse Header */
 
-		// Find free line
+		/* Find free line */
 
 		for (i = 0; i < 5; i++)
 		{
@@ -546,11 +546,11 @@ ok:
 		{
 			BBSputs(conn, "*** Protocol Error - Too Many Proposals\r");
 			Flush(conn);
-			conn->CloseAfterFlush = 20;			// 2 Secs
+			conn->CloseAfterFlush = 20;			/* 2 Secs */
 		}
 
 
-		// FC EM A3EDD4P00P55 377 281 0
+		/* FC EM A3EDD4P00P55 377 281 0 */
 		
 		/*
 		
@@ -569,13 +569,13 @@ ok:
 		ptr = strtok_s(&Buffer[3], seps, &Context);
 		if (ptr == NULL) goto badparam2;
 		if (strlen(ptr) != 2) goto badparam2;
-		FBBHeader->MsgType = 'P'; //ptr[0];
+		FBBHeader->MsgType = 'P'; /*ptr[0]; */
 
 		ptr = strtok_s(NULL, seps, &Context);
 
 		if (ptr == NULL) goto badparam2;
 
-		// Relay In RO mode adds @MPS@R to the MID. Don't know why (yet!)
+		/* Relay In RO mode adds @MPS@R to the MID. Don't know why (yet!) */
 
 		MPS = strlop(ptr, '@');
 		if (MPS)
@@ -593,7 +593,7 @@ ok:
 		FBBHeader->CSize = atoi(ptr);
 		FBBHeader->B2Message = TRUE;
 
-		// If using BPQ Extensions (From To AT in proposal) Check Filters
+		/* If using BPQ Extensions (From To AT in proposal) Check Filters */
 
 		Buffer[len - 1] = 0;
 
@@ -606,7 +606,7 @@ ok:
 
 			if (From && To && ATBBS && Type && CheckRejFilters(From, To, ATBBS, NULL, *Type))
 			{
-				memset(FBBHeader, 0, sizeof(struct FBBHeaderLine));		// Clear header
+				memset(FBBHeader, 0, sizeof(struct FBBHeaderLine));		/* Clear header */
 				conn->FBBReplyChars[conn->FBBReplyIndex++] = '-';
 				user->Total.MsgsRejectedIn[Index]++;
 				Logprintf(LOG_BBS, conn, '?', "Message Rejected by Filters");
@@ -620,13 +620,13 @@ badparam2:
 
 		BBSputs(conn, "*** Protocol Error - Proposal format error\r");
 		Flush(conn);
-		conn->CloseAfterFlush = 20;			// 2 Secs
+		conn->CloseAfterFlush = 20;			/* 2 Secs */
 		return;
 
 ok2:
 		if (LookupBID(FBBHeader->BID))
 		{
-			memset(FBBHeader, 0, sizeof(struct FBBHeaderLine));		// Clear header
+			memset(FBBHeader, 0, sizeof(struct FBBHeaderLine));		/* Clear header */
 			conn->FBBReplyChars[conn->FBBReplyIndex++] = '-';
 			Logprintf(LOG_BBS, conn, '?', "Message Rejected by BID Check");
 			user->Total.MsgsRejectedIn[Index]++;
@@ -634,7 +634,7 @@ ok2:
 		}
 		else if (FBBHeader->Size > MaxRXSize)
 		{
-			memset(FBBHeader, 0, sizeof(struct FBBHeaderLine));		// Clear header
+			memset(FBBHeader, 0, sizeof(struct FBBHeaderLine));		/* Clear header */
 			conn->FBBReplyChars[conn->FBBReplyIndex++] = '-';
 			Logprintf(LOG_BBS, conn, '?', "Message Rejected by Size Limit");
 			user->Total.MsgsRejectedIn[Index]++;
@@ -647,12 +647,12 @@ ok2:
 
 		else if (LookupTempBID(FBBHeader->BID))
 		{
-			memset(FBBHeader, 0, sizeof(struct FBBHeaderLine));		// Clear header
+			memset(FBBHeader, 0, sizeof(struct FBBHeaderLine));		/* Clear header */
 			conn->FBBReplyChars[conn->FBBReplyIndex++] = '=';
 		}
 		else
 		{
-			//	Save BID in temp list in case we are offered it again before completion
+			/*	Save BID in temp list in case we are offered it again before completion */
 			
 			BIDRec * TempBID = AllocateTempBIDRecord();
 			strcpy(TempBID->BID, FBBHeader->BID);
@@ -665,9 +665,9 @@ ok2:
 
 	case '>':
 
-		// Optional Checksum
+		/* Optional Checksum */
 
-		if (conn->DoReverse == FALSE)				// Dont accept messages
+		if (conn->DoReverse == FALSE)				/* Dont accept messages */
 		{
 			Logprintf(LOG_BBS, conn, '?', "Reverse Forwarding not allowed");
 			Disconnect(conn->BPQStream);
@@ -686,29 +686,29 @@ ok2:
 			{
 				BBSputs(conn, "*** Proposal Checksum Error\r");
 				Flush(conn);
-				conn->CloseAfterFlush = 20;			// 2 Secs
+				conn->CloseAfterFlush = 20;			/* 2 Secs */
 				return;
 			}
 		}
 
-		// Return "FS ", followed by +-= for each proposal
+		/* Return "FS ", followed by +-= for each proposal */
 
 		conn->FBBReplyChars[conn->FBBReplyIndex] = 0;
 		conn->FBBReplyIndex = 0;
 
 		nodeprintfEx(conn, "FS %s\r", conn->FBBReplyChars);
 
-		// if all rejected, send proposals or prompt, else set up for first message
+		/* if all rejected, send proposals or prompt, else set up for first message */
 
 		FBBHeader = &conn->FBBHeaders[0];
 
 		if (FBBHeader->MsgType == 0)
 		{
-			conn->FBBIndex = 0;						// ready for first block;
+			conn->FBBIndex = 0;						/* ready for first block; */
 			memset(&conn->FBBHeaders[0], 0, 5 * sizeof(struct FBBHeaderLine));
 			conn->FBBChecksum = 0;
 
-			if (!FBBDoForward(conn))				// Send proposal if anthing to forward
+			if (!FBBDoForward(conn))				/* Send proposal if anthing to forward */
 			{
 				conn->InputMode = 0;
 				
@@ -717,7 +717,7 @@ ok2:
 				else
 				{
 					FBBputs(conn, "FQ\r");
-					conn->CloseAfterFlush = 20;			// 2 Secs
+					conn->CloseAfterFlush = 20;			/* 2 Secs */
 				}
 			}
 		}
@@ -740,7 +740,7 @@ ok2:
 
 VOID HoldSentMessages(CIRCUIT * conn, struct UserInfo * user)
 {
-	struct FBBHeaderLine * FBBHeader;	// The Headers from an FBB forward block
+	struct FBBHeaderLine * FBBHeader;	/* The Headers from an FBB forward block */
 	int i;
 
 	conn->FBBMsgsSent = FALSE;
@@ -749,7 +749,7 @@ VOID HoldSentMessages(CIRCUIT * conn, struct UserInfo * user)
 	{
 		FBBHeader = &conn->FBBHeaders[i];
 				
-		if (FBBHeader && FBBHeader->MsgType)				// Not a zapped entry
+		if (FBBHeader && FBBHeader->MsgType)				/* Not a zapped entry */
 		{
 			int Length=0;
 			char * MailBuffer = malloc(100);
@@ -759,7 +759,7 @@ VOID HoldSentMessages(CIRCUIT * conn, struct UserInfo * user)
 			sprintf(Title, "Message %d Held - Rejected by Winlink", FBBHeader->FwdMsg->number);
 			SendMessageToSYSOP(Title, MailBuffer, Length);
 
-			FBBHeader->FwdMsg->status = 'H';				// Mark as Held
+			FBBHeader->FwdMsg->status = 'H';				/* Mark as Held */
 		}
 	}
 	memset(&conn->FBBHeaders[0], 0, 5 * sizeof(struct FBBHeaderLine));
@@ -770,10 +770,10 @@ VOID HoldSentMessages(CIRCUIT * conn, struct UserInfo * user)
 
 VOID FlagSentMessages(CIRCUIT * conn, struct UserInfo * user)
 {
-	struct FBBHeaderLine * FBBHeader;	// The Headers from an FBB forward block
+	struct FBBHeaderLine * FBBHeader;	/* The Headers from an FBB forward block */
 	int i;
 
-	// Called if FBB command received after sending a block of messages . Flag as as sent.
+	/* Called if FBB command received after sending a block of messages . Flag as as sent. */
 
 	conn->FBBMsgsSent = FALSE;
 
@@ -781,13 +781,13 @@ VOID FlagSentMessages(CIRCUIT * conn, struct UserInfo * user)
 	{
 		FBBHeader = &conn->FBBHeaders[i];
 				
-		if (FBBHeader && FBBHeader->MsgType)				// Not a zapped entry
+		if (FBBHeader && FBBHeader->MsgType)				/* Not a zapped entry */
 		{
 			if ((conn->Paclink || conn->RMSExpress || conn->PAT) &&
-//				((conn->UserPointer->flags & F_NTSMPS) == 0) &&
+/*				((conn->UserPointer->flags & F_NTSMPS) == 0) && */
 				(FBBHeader->FwdMsg->type == 'P'))
 			{
-				// Kill Messages sent to paclink/RMS Express unless BBS FWD bit set
+				/* Kill Messages sent to paclink/RMS Express unless BBS FWD bit set */
 
 				if (check_fwd_bit(FBBHeader->FwdMsg->fbbs, user->BBSNumber) == 0)
 				{
@@ -799,15 +799,15 @@ VOID FlagSentMessages(CIRCUIT * conn, struct UserInfo * user)
 			clear_fwd_bit(FBBHeader->FwdMsg->fbbs, user->BBSNumber);
 			set_fwd_bit(FBBHeader->FwdMsg->forw, user->BBSNumber);
 
-			//  Only mark as forwarded if sent to all BBSs that should have it
+			/*  Only mark as forwarded if sent to all BBSs that should have it */
 			
 			if (memcmp(FBBHeader->FwdMsg->fbbs, zeros, NBMASK) == 0)
 			{
-				FBBHeader->FwdMsg->status = 'F';			// Mark as forwarded
+				FBBHeader->FwdMsg->status = 'F';			/* Mark as forwarded */
 				FBBHeader->FwdMsg->datechanged=time(NULL);
 			}
 
-			FBBHeader->FwdMsg->Locked = 0;	// Unlock
+			FBBHeader->FwdMsg->Locked = 0;	/* Unlock */
 			conn->UserPointer->ForwardingInfo->MsgCount--;
 		}
 	}
@@ -818,7 +818,7 @@ VOID FlagSentMessages(CIRCUIT * conn, struct UserInfo * user)
 
 VOID SetupNextFBBMessage(CIRCUIT * conn)
 {	
-	struct FBBHeaderLine * FBBHeader;	// The Headers from an FBB forward block
+	struct FBBHeaderLine * FBBHeader;	/* The Headers from an FBB forward block */
 
 	memmove(&conn->FBBHeaders[0], &conn->FBBHeaders[1], 4 * sizeof(struct FBBHeaderLine));
 	
@@ -828,13 +828,13 @@ VOID SetupNextFBBMessage(CIRCUIT * conn)
 
 	if (FBBHeader->MsgType == 0)
 	{
-		conn->FBBIndex = 0;		// ready for next block;
+		conn->FBBIndex = 0;		/* ready for next block; */
 		memset(&conn->FBBHeaders[0], 0, 5 * sizeof(struct FBBHeaderLine));
 
 		conn->FBBChecksum = 0;
 		conn->InputMode = 0;
 
-		if (!FBBDoForward(conn))				// Send proposal if anthing to forward
+		if (!FBBDoForward(conn))				/* Send proposal if anthing to forward */
 		{
 			conn->InputMode = 0;
 			FBBputs(conn, "FF\r");
@@ -857,7 +857,7 @@ BOOL FBBDoForward(CIRCUIT * conn)
 
 	if (FindMessagestoForward(conn))
 	{
-		// Send Proposal Block
+		/* Send Proposal Block */
 
 		struct FBBHeaderLine * FBBHeader;
 
@@ -869,7 +869,7 @@ BOOL FBBDoForward(CIRCUIT * conn)
 
 				if (conn->BPQBBS)
 					
-					// Add From and To Header for Filters
+					/* Add From and To Header for Filters */
 
 					proplen = sprintf(proposal, "FC EM %s %d %d %s %s %s %c\r", 
 						FBBHeader->BID,
@@ -882,7 +882,7 @@ BOOL FBBDoForward(CIRCUIT * conn)
 
 				else
 
-					// FC EM A3EDD4P00P55 377 281 0
+					/* FC EM A3EDD4P00P55 377 281 0 */
 
 					proplen = sprintf(proposal, "FC EM %s %d %d %d\r", 
 						FBBHeader->BID,
@@ -899,7 +899,7 @@ BOOL FBBDoForward(CIRCUIT * conn)
 					FBBHeader->BID,
 					FBBHeader->Size);
 
-			// Accumulate checksum
+			/* Accumulate checksum */
 
 			while(proplen > 0)
 			{
@@ -926,7 +926,7 @@ VOID UnpackFBBBinary(CIRCUIT * conn)
 
 loop:
 
-	if (conn->CloseAfterFlush)	// Failed (or complete), so discard rest of input
+	if (conn->CloseAfterFlush)	/* Failed (or complete), so discard rest of input */
 	{
 		conn->InputLen = 0;
 		return;
@@ -936,16 +936,16 @@ loop:
 	ptr = conn->InputBuffer;
 
 	if (conn->InputLen < 2)
-		return;							//  All formats need at least two bytes
+		return;							/*  All formats need at least two bytes */
 
 	switch (*ptr)
 	{
-	case 1:			// Header
+	case 1:			/* Header */
 
 		MsgLen = ptr[1] + 2;
 
 		if (conn->InputLen < MsgLen)
-			return;						// Wait for more
+			return;						/* Wait for more */
 
 		if (strlen(&ptr[2]) > 60)
 		{
@@ -970,7 +970,7 @@ loop:
 		{
 			struct FBBRestartData * RestartRec;
 
-			// Trying to restart - make sure we have restart data
+			/* Trying to restart - make sure we have restart data */
 
 			for (i = 1; i <= RestartCount; i++)
 			{
@@ -985,10 +985,10 @@ loop:
 						conn->MailBuffer = RestartRec->MailBuffer;
 						conn->MailBufferSize = RestartRec->MailBufferSize;
 
-						// FBB Seems to insert  6 Byte message
-						// It looks like the original csum and length - perhaps a a consistancy check
+						/* FBB Seems to insert  6 Byte message */
+						/* It looks like the original csum and length - perhaps a a consistancy check */
 
-						// But Airmail Sends the Restart Data in the next packet, move the check code.
+						/* But Airmail Sends the Restart Data in the next packet, move the check code. */
 
 						conn->NeedRestartHeader = TRUE;
 
@@ -998,35 +998,35 @@ loop:
 					{
 						BBSputs(conn, "*** Trying to restart from invalid position.\r");
 						Flush(conn);
-						conn->CloseAfterFlush = 20;			// 2 Secs
+						conn->CloseAfterFlush = 20;			/* 2 Secs */
 
 						return;
 					}
 
-					// Remove Restart info
+					/* Remove Restart info */
 
 					for (n = i; n < RestartCount; n++)
 					{
-						RestartData[n] = RestartData[n+1];		// move down all following entries
+						RestartData[n] = RestartData[n+1];		/* move down all following entries */
 					}
 					RestartCount--;
 				}
 			}
 
-			// No Restart Data
+			/* No Restart Data */
 
 			BBSputs(conn, "*** Trying to restart, but no restart data.\r");
 			Flush(conn);
-			conn->CloseAfterFlush = 20;			// 2 Secs
+			conn->CloseAfterFlush = 20;			/* 2 Secs */
 
 			return;
 		}
 	
-		// Create initial buffer of 10K. Expand if needed later
+		/* Create initial buffer of 10K. Expand if needed later */
 
 		if (conn->MailBufferSize == 0)
 		{
-			// Dont allocate if restarting
+			/* Dont allocate if restarting */
 
 			conn->MailBuffer=malloc(10000);
 			conn->MailBufferSize=10000;
@@ -1037,7 +1037,7 @@ loop:
 		if (conn->MailBuffer == NULL)
 		{
 			BBSputs(conn, "*** Failed to create Message Buffer\r");
-			conn->CloseAfterFlush = 20;			// 2 Secs
+			conn->CloseAfterFlush = 20;			/* 2 Secs */
 
 			return;
 		}
@@ -1046,7 +1046,7 @@ loop:
 
 
 
-	case 2:			// Data Block
+	case 2:			/* Data Block */
 
 		if (ptr[1] == 0)
 			MsgLen = 256;
@@ -1054,9 +1054,9 @@ loop:
 			MsgLen = ptr[1];
 
 		if (conn->InputLen < (MsgLen + 2))
-			return;						// Wait for more
+			return;						/* Wait for more */
 
-		// If waiting for Restart Header, see if it has arrived
+		/* If waiting for Restart Header, see if it has arrived */
 
 		if (conn->NeedRestartHeader)
 		{
@@ -1078,13 +1078,13 @@ loop:
 			{
 				BBSputs(conn, "*** Restart Header Missing.\r");
 				Flush(conn);
-				conn->CloseAfterFlush = 20;			// 2 Secs
+				conn->CloseAfterFlush = 20;			/* 2 Secs */
 			}
 
 			goto loop;
 
 		}
-		// Process it
+		/* Process it */
 
 		ptr+=2;
 
@@ -1103,7 +1103,7 @@ loop:
 			if (conn->MailBuffer == NULL)
 			{
 				BBSputs(conn, "*** Failed to extend Message Buffer\r");
-				conn->CloseAfterFlush = 20;			// 2 Secs
+				conn->CloseAfterFlush = 20;			/* 2 Secs */
 
 				return;
 			}
@@ -1124,9 +1124,9 @@ loop:
 		goto loop;
 
 
-	case 4:				// EOM
+	case 4:				/* EOM */
 
-		// Process EOM
+		/* Process EOM */
 
 		conn->FBBChecksum+=ptr[1];
 
@@ -1136,15 +1136,15 @@ loop:
 			__try 
 			{
 #endif
-				conn->InputMode = 0;		//  So we won't save Restart data if decode fails
-				Decode(conn, 0);			// Setup Next Message will reset InputMode if needed
+				conn->InputMode = 0;		/*  So we won't save Restart data if decode fails */
+				Decode(conn, 0);			/* Setup Next Message will reset InputMode if needed */
 #ifndef LINBPQ
 			}
 			__except(EXCEPTION_EXECUTE_HANDLER)
 			{
 				BBSputs(conn, "*** Program Error Decoding Message\r");
 				Flush(conn);
-				conn->CloseAfterFlush = 20;			// 2 Secs
+				conn->CloseAfterFlush = 20;			/* 2 Secs */
 				return;
 			}
 #endif
@@ -1154,9 +1154,9 @@ loop:
 		{
 			BBSputs(conn, "*** Message Checksum Error\r");
 			Flush(conn);
-			conn->CloseAfterFlush = 20;			// 2 Secs
+			conn->CloseAfterFlush = 20;			/* 2 Secs */
 	
-			//	Don't allow restart, as saved data is probably duff
+			/*	Don't allow restart, as saved data is probably duff */
 
 			conn->DontSaveRestartData = TRUE;
 			return;
@@ -1176,16 +1176,16 @@ loop:
 
 		if (conn->CloseAfterFlush == 0)
 		{
-			// Dont do it more than once
+			/* Dont do it more than once */
 
-			conn->CloseAfterFlush = 20;			// 2 Secs
+			conn->CloseAfterFlush = 20;			/* 2 Secs */
 
-			//	Don't allow restart, as saved data is probably duff
+			/*	Don't allow restart, as saved data is probably duff */
 
-			//	Actually all but the last block is probably OK, but maybe
-			//  not worth the risk of restarting
+			/*	Actually all but the last block is probably OK, but maybe */
+			/*  not worth the risk of restarting */
 
-			// Actually I think it is
+			/* Actually I think it is */
 
 			if (conn->TempMsg->length > 256)
 			{
@@ -1242,7 +1242,7 @@ VOID SendCompressed(CIRCUIT * conn, struct MsgInfo * FwdMsg)
 	sprintf(Outputptr, "%6d", conn->RestartFrom);
 	Outputptr += 7;
 
-	DataOffset = (int)(Outputptr - Output);	// Used if restarting
+	DataOffset = (int)(Outputptr - Output);	/* Used if restarting */
 
 	memcpy(&temp, &FwdMsg->datereceived, sizeof(time_t));
 	tm = gmtime(&temp);	
@@ -1251,7 +1251,7 @@ VOID SendCompressed(CIRCUIT * conn, struct MsgInfo * FwdMsg)
 		tm->tm_year-100, tm->tm_mon+1, tm->tm_mday, tm->tm_hour, tm->tm_min,
 		FwdMsg->number, BBSName, HRoute, RlineVer);
 
-	if (memcmp(MsgBytes, "R:", 2) != 0)    // No R line, so must be our message
+	if (memcmp(MsgBytes, "R:", 2) != 0)    /* No R line, so must be our message */
 		strcat(Rline, "\r\n");
 
 	RLineLen = (int)strlen(Rline);
@@ -1262,21 +1262,21 @@ VOID SendCompressed(CIRCUIT * conn, struct MsgInfo * FwdMsg)
 	
 	strcpy(UnCompressed, Rline);
 
-	// If a B2 Message, Remove B2 Header
+	/* If a B2 Message, Remove B2 Header */
 
 	if (FwdMsg->B2Flags & B2Msg)
 	{
 		char * ptr;
 		int BodyLen = OrigLen;				
 		
-		// Remove all B2 Headers, and all but the first part.
+		/* Remove all B2 Headers, and all but the first part. */
 					
 		ptr = strstr(MsgBytes, "Body:");
 			
 		if (ptr)
 		{
 			BodyLen = atoi(&ptr[5]);
-			ptr= strstr(MsgBytes, "\r\n\r\n");		// Blank Line after headers
+			ptr= strstr(MsgBytes, "\r\n\r\n");		/* Blank Line after headers */
 	
 			if (ptr)
 				ptr +=4;
@@ -1287,14 +1287,14 @@ VOID SendCompressed(CIRCUIT * conn, struct MsgInfo * FwdMsg)
 		else
 			ptr = MsgBytes;
 
-		if (memcmp(ptr, "R:", 2) == 0)    // Already have RLines, so remove blank line after new R:line
+		if (memcmp(ptr, "R:", 2) == 0)    /* Already have RLines, so remove blank line after new R:line */
 			RLineLen -= 2;
 
 		memcpy(&UnCompressed[RLineLen], ptr, BodyLen);
 
 		MsgLen = BodyLen + RLineLen;
 	}
-	else  // Not B2 Message
+	else  /* Not B2 Message */
 	{
 		memcpy(&UnCompressed[RLineLen], MsgBytes, OrigLen);
 	}
@@ -1303,8 +1303,8 @@ VOID SendCompressed(CIRCUIT * conn, struct MsgInfo * FwdMsg)
 
 	conn->FBBChecksum = 0;
 
-	// If restarting, send the checksum and length as a single record, then data from the restart point
-	// The count includes the header, so adjust count and pointers
+	/* If restarting, send the checksum and length as a single record, then data from the restart point */
+	/* The count includes the header, so adjust count and pointers */
 
 	if (conn->RestartFrom)
 	{
@@ -1355,10 +1355,10 @@ VOID SendCompressed(CIRCUIT * conn, struct MsgInfo * FwdMsg)
 	conn->FBBChecksum = - conn->FBBChecksum;
 	*Outputptr++ = conn->FBBChecksum;
 
-	if (conn->OpenBCM)			// Telnet, so escape any 0xFF
+	if (conn->OpenBCM)			/* Telnet, so escape any 0xFF */
 	{
 		unsigned char * ptr1 = Output;
-		unsigned char * ptr2 = Compressed;	// Reuse Compressed buffer
+		unsigned char * ptr2 = Compressed;	/* Reuse Compressed buffer */
 		size_t Len = Outputptr - Output;
 		unsigned char c;
 
@@ -1366,7 +1366,7 @@ VOID SendCompressed(CIRCUIT * conn, struct MsgInfo * FwdMsg)
 		{
 			c = *(ptr1++);
 			*(ptr2++) = c;
-			if (c == 0xff)		// FF becodes FFFF
+			if (c == 0xff)		/* FF becodes FFFF */
 				*(ptr2++) = c;
 		}
 
@@ -1422,9 +1422,9 @@ BOOL CreateB2Message(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader, char * Rl
 
 	OrigLen = Msg->length;
 
-	// If a B2 Message  add R:line at start of Body, but otherwise leave intact.
-	// Unless a message to Paclink, when we must remove any HA from the TO address
-	// Or to a CMS, when we remove HA from From or Reply-to
+	/* If a B2 Message  add R:line at start of Body, but otherwise leave intact. */
+	/* Unless a message to Paclink, when we must remove any HA from the TO address */
+	/* Or to a CMS, when we remove HA from From or Reply-to */
 
 	if (Msg->B2Flags & B2Msg)
 	{
@@ -1437,7 +1437,7 @@ BOOL CreateB2Message(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader, char * Rl
 
 		if (conn->Paclink)
 		{
-			// Remove any HA on the TO address
+			/* Remove any HA on the TO address */
 		
 			ptr = strstr(MsgBytes, "To:");
 			if (ptr)
@@ -1460,7 +1460,7 @@ BOOL CreateB2Message(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader, char * Rl
 
 		if (conn->WL2K)
 		{
-			// Remove any HA on the From or Reply-To address
+			/* Remove any HA on the From or Reply-To address */
 		
 			ptr = strstr(MsgBytes, "From:");
 			if (ptr == NULL)
@@ -1485,7 +1485,7 @@ BOOL CreateB2Message(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader, char * Rl
 		}
 
 
-		// Add R: Line at start of body. Will Need to Update Body Length
+		/* Add R: Line at start of body. Will Need to Update Body Length */
 
 		ptr = strstr(MsgBytes, "Body:");
 
@@ -1496,7 +1496,7 @@ BOOL CreateB2Message(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader, char * Rl
 		}
 		ptr2 = strstr(ptr, "\r\n");
 
-		Index = (int)(ptr - MsgBytes);		// Bytes Before Body: line
+		Index = (int)(ptr - MsgBytes);		/* Bytes Before Body: line */
 
 		if (Index <= 0 || Index > MsgLen)
 		{
@@ -1504,13 +1504,13 @@ BOOL CreateB2Message(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader, char * Rl
 			return FALSE;
 		}
 
-		// If message to saildocs adding an R: line will mess up the message processing, so add as an X header
+		/* If message to saildocs adding an R: line will mess up the message processing, so add as an X header */
 
 		if (strstr(MsgBytes, "To: query@saildocs.com"))
 		{
 			int x_Len;
 
-			memcpy(UnCompressed, MsgBytes, Index);	// Up to Old Body;
+			memcpy(UnCompressed, MsgBytes, Index);	/* Up to Old Body; */
 			x_Len = sprintf(&UnCompressed[Index], "x-R: %s", &Rline[2]);
 			MsgLen = OrigLen + x_Len;
 			Index +=x_Len;
@@ -1526,9 +1526,9 @@ BOOL CreateB2Message(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader, char * Rl
 		}
 
 		BodyLineLen = (int)(ptr2 - ptr) + 2;
-		MsgLen -= BodyLineLen;		// Length of Body Line may change
+		MsgLen -= BodyLineLen;		/* Length of Body Line may change */
 
-		ptr = strstr(ptr2, "\r\n\r\n");	// Blank line before Body
+		ptr = strstr(ptr2, "\r\n\r\n");	/* Blank line before Body */
 
 		if (ptr == 0)
 		{
@@ -1538,11 +1538,11 @@ BOOL CreateB2Message(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader, char * Rl
 
 		ptr += 4;
 	
-		ptr2 += 2;					// Line Following Original Body: Line
+		ptr2 += 2;					/* Line Following Original Body: Line */
 
 		BodyLineToBody = (int)(ptr - ptr2);
 
-		if (memcmp(ptr, "R:", 2) != 0)    // No R line, so must be our message
+		if (memcmp(ptr, "R:", 2) != 0)    /* No R line, so must be our message */
 		{
 			strcat(Rline, "\r\n");
 			RlineLen += 2;
@@ -1550,10 +1550,10 @@ BOOL CreateB2Message(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader, char * Rl
 		}
 		BodyLen += RlineLen;
 
-		memcpy(UnCompressed, MsgBytes, Index);	// Up to Old Body;
+		memcpy(UnCompressed, MsgBytes, Index);	/* Up to Old Body; */
 		BodyLineLen = sprintf(&UnCompressed[Index], "Body: %d\r\n", BodyLen);
 
-		MsgLen += BodyLineLen;		// Length of Body Line may have changed
+		MsgLen += BodyLineLen;		/* Length of Body Line may have changed */
 		Index += BodyLineLen;
 
 		if (BodyLineToBody < 0 || BodyLineToBody > 1000)
@@ -1561,7 +1561,7 @@ BOOL CreateB2Message(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader, char * Rl
 			Debugprintf("B2 Message - Body too far from Body Line - %d", BodyLineToBody);
 			return FALSE;
 		}
-		memcpy(&UnCompressed[Index], ptr2, BodyLineToBody); // Stuff Between Body: Line and Body
+		memcpy(&UnCompressed[Index], ptr2, BodyLineToBody); /* Stuff Between Body: Line and Body */
 
 		Index += BodyLineToBody;
 
@@ -1570,7 +1570,7 @@ BOOL CreateB2Message(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader, char * Rl
 
 copyRest:
 
-		memcpy(&UnCompressed[Index], ptr, MsgLen - Index);		// Rest of Message
+		memcpy(&UnCompressed[Index], ptr, MsgLen - Index);		/* Rest of Message */
 
 		FBBHeader->Size = MsgLen;
 
@@ -1592,7 +1592,7 @@ copyRest:
 	}
 
 	
-	if (memcmp(MsgBytes, "R:", 2) != 0)    // No R line, so must be our message
+	if (memcmp(MsgBytes, "R:", 2) != 0)    /* No R line, so must be our message */
 	{
 		strcat(Rline, "\r\n");
 		RlineLen += 2;
@@ -1600,19 +1600,19 @@ copyRest:
 
 	MsgLen = OrigLen + RlineLen;
 
-//	if (conn->RestartFrom == 0)
-//	{
-//		// save time first sent, or checksum will be wrong when we restart
-//		
-//		FwdMsg->datechanged=time(NULL);
-//	}
+/*	if (conn->RestartFrom == 0) */
+/*	{ */
+/*		// save time first sent, or checksum will be wrong when we restart */
+/*		 */
+/*		FwdMsg->datechanged=time(NULL); */
+/*	} */
 
 	tm = gmtime((time_t *)&Msg->datechanged);	
 	
 	sprintf(Date, "%04d/%02d/%02d %02d:%02d",
 		tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday, tm->tm_hour, tm->tm_min);
 
-	// We create the B2 Header
+	/* We create the B2 Header */
 /*
 	MID: XR88I1J160EB
 	Date: 2009/07/25 18:17
@@ -1624,7 +1624,7 @@ copyRest:
 	Body: 213
 
 */
-	if (strcmp(Msg->to, "RMS") == 0)		// Address is in via
+	if (strcmp(Msg->to, "RMS") == 0)		/* Address is in via */
 		strcpy(B2To, Msg->via);
 	else
 		if (Msg->via[0] && (!conn->Paclink))
@@ -1632,15 +1632,15 @@ copyRest:
 		else
 			strcpy(B2To, Msg->to);
 
-	// Try to create a full from: addrsss so RMS Express can reply
+	/* Try to create a full from: addrsss so RMS Express can reply */
 	
 	strcpy(B2From, Msg->from);
 
 	Logprintf(LOG_BBS, conn, '?', "B2 From %s", B2From);
 
-	if (strcmp(conn->Callsign, "RMS") != 0 && conn->WL2K == 0)		// if going to RMS - just send calll
+	if (strcmp(conn->Callsign, "RMS") != 0 && conn->WL2K == 0)		/* if going to RMS - just send calll */
 	{
-		if (_stricmp(Msg->from, "SMTP:") == 0)		// Address is in via
+		if (_stricmp(Msg->from, "SMTP:") == 0)		/* Address is in via */
 			strcpy(B2From, Msg->emailfrom);
 		else
 		{
@@ -1683,7 +1683,7 @@ copyRest:
 
 
 	memcpy(&UnCompressed[B2HddrLen], Rline, RlineLen);
-	memcpy(&UnCompressed[B2HddrLen + RlineLen], MsgBytes, OrigLen);		// Rest of Message
+	memcpy(&UnCompressed[B2HddrLen + RlineLen], MsgBytes, OrigLen);		/* Rest of Message */
 
 	MsgLen += B2HddrLen;
 
@@ -1735,8 +1735,8 @@ VOID SendCompressedB2(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader)
 
 	conn->FBBChecksum = 0;
 
-	// If restarting, send the checksum and length as a single record, then data from the restart point
-	// The count includes the header, so adjust count and pointers
+	/* If restarting, send the checksum and length as a single record, then data from the restart point */
+	/* The count includes the header, so adjust count and pointers */
 
 	if (conn->RestartFrom)
 	{
@@ -1790,10 +1790,10 @@ VOID SendCompressedB2(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader)
 	conn->FBBChecksum = - conn->FBBChecksum;
 	*Outputptr++ = conn->FBBChecksum;
 
-	if (conn->OpenBCM)			// Telnet, so escape any 0xFF
+	if (conn->OpenBCM)			/* Telnet, so escape any 0xFF */
 	{
 		unsigned char * ptr1 = Output;
-		unsigned char * ptr2 = Compressed;	// Reuse Compressed buffer
+		unsigned char * ptr2 = Compressed;	/* Reuse Compressed buffer */
 		int Len = (int)(Outputptr - Output);
 		unsigned char c;
 
@@ -1801,7 +1801,7 @@ VOID SendCompressedB2(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader)
 		{
 			c = *(ptr1++);
 			*(ptr2++) = c;
-			if (c == 0xff)		// FF becodes FFFF
+			if (c == 0xff)		/* FF becodes FFFF */
 				*(ptr2++) = c;
 		}
 
@@ -1814,11 +1814,11 @@ VOID SendCompressedB2(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader)
 	free(Output);		
 }
 
-// Restart Routines.
+/* Restart Routines. */
 
 VOID SaveFBBBinary(CIRCUIT * conn)
 {
-	// Disconnected during binary transfer
+	/* Disconnected during binary transfer */
 
 	char Msg[120];
 	int i, len;
@@ -1828,9 +1828,9 @@ VOID SaveFBBBinary(CIRCUIT * conn)
 		return;
 	
 	if (conn->TempMsg->length < 256)
-		return;							// Not worth it.
+		return;							/* Not worth it. */
 
-	// If we already have a restart record, reuse it
+	/* If we already have a restart record, reuse it */
 
 	for (i = 1; i <= RestartCount; i++)
 	{
@@ -1839,9 +1839,9 @@ VOID SaveFBBBinary(CIRCUIT * conn)
 		if ((RestartRec->UserPointer == conn->UserPointer)
 			&& (strcmp(RestartRec->TempMsg->bid, conn->TempMsg->bid) == 0))
 		{
-			// Fund it, so reuse
+			/* Fund it, so reuse */
 
-			//	If we have more data, reset retry count
+			/*	If we have more data, reset retry count */
 
 			if (RestartRec->TempMsg->length < conn->TempMsg->length)
 				RestartRec->Count = 0;;
@@ -1880,7 +1880,7 @@ BOOL LookupRestart(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader)
 	struct FBBRestartData * RestartRec;
 
 	if ((conn->BBSFlags & FBBB1Mode) == 0)
-		return FALSE;						// Only B1 & B2 support restart
+		return FALSE;						/* Only B1 & B2 support restart */
 
 	for (i = 1; i <= RestartCount; i++)
 	{
@@ -1901,11 +1901,11 @@ BOOL LookupRestart(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader)
 				
 				WriteLogLine(conn, '|',Msg, len, LOG_BBS);
 
-				// Remove restrt data
+				/* Remove restrt data */
 
 				for (n = i; n < RestartCount; n++)
 				{
-					RestartData[n] = RestartData[n+1];		// move down all following entries
+					RestartData[n] = RestartData[n+1];		/* move down all following entries */
 				}
 				
 				RestartCount--;
@@ -1921,7 +1921,7 @@ BOOL LookupRestart(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader)
 		}
 	}
 
-	return FALSE;				// Not Found
+	return FALSE;				/* Not Found */
 }
 
 
@@ -1953,7 +1953,7 @@ BOOL DoWeWantIt(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader)
 			return FALSE;
 		}
 
-		// Treat P messages to SYSOP@WW as Bulls
+		/* Treat P messages to SYSOP@WW as Bulls */
 
 		if (strcmp(FBBHeader->To, "SYSOP") == 0 && strcmp(FBBHeader->ATBBS, "WW") == 0)
 		{
@@ -1969,22 +1969,22 @@ BOOL DoWeWantIt(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader)
  
 			if (Msg->number == BID->u.msgno)
 			{
-				// if the same TO we will assume the same message
+				/* if the same TO we will assume the same message */
 
 				if (strcmp(Msg->to, FBBHeader->To) == 0)
 				{
-					// We have this message. If we have already forwarded it, we should accept it again
+					/* We have this message. If we have already forwarded it, we should accept it again */
 
 					if ((Msg->status == 'N') || (Msg->status == 'Y')|| (Msg->status == 'H'))
 					{
 						Logprintf(LOG_BBS, conn, '?', "Message Rejected by BID Check");
-						return FALSE;			// Dont want it
+						return FALSE;			/* Dont want it */
 					}
 					else
-						return TRUE;			// Get it again
+						return TRUE;			/* Get it again */
 				}
 
-				// Same number. but different message (why?) Accept for now
+				/* Same number. but different message (why?) Accept for now */
 
 				return TRUE; 
 			}
@@ -1992,13 +1992,13 @@ BOOL DoWeWantIt(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader)
 			m--;
 		}
 
-		return TRUE; // A personal Message we have had before, but don't still have.
+		return TRUE; /* A personal Message we have had before, but don't still have. */
 	}
 	else
 	{
-		// We don't know the BID
+		/* We don't know the BID */
 
-		return TRUE;	// We want it
+		return TRUE;	/* We want it */
 	}
 }
 

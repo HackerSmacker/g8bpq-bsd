@@ -36,9 +36,9 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-//
-//	C replacement for L3Code.asm
-//
+/* */
+/*	C replacement for L3Code.asm */
+/* */
 #define Kernel
 
 #define _CRT_SECURE_NO_DEPRECATE 
@@ -70,10 +70,10 @@ int L3_10SECS = 10;
 
 VOID L3BG()
 {
-	//	TRANSFER MESSAGES FROM DEST TO LINK
+	/*	TRANSFER MESSAGES FROM DEST TO LINK */
 
 	int n = MAXDESTS;
-	struct DEST_LIST * DEST = DESTS;		// NODE LIST
+	struct DEST_LIST * DEST = DESTS;		/* NODE LIST */
 	struct PORTCONTROL * PORT = PORTTABLE;
 	struct ROUTE * ROUTE;
 	struct TNCINFO * TNC;
@@ -82,9 +82,9 @@ VOID L3BG()
 
 	while (n--)
 	{
-		if (DEST->DEST_CALL[0])				// Active entry?
+		if (DEST->DEST_CALL[0])				/* Active entry? */
 		{
-			while(DEST->DEST_Q)				// FRAMES TO SEND?
+			while(DEST->DEST_Q)				/* FRAMES TO SEND? */
 			{
 				int ActiveRoute = DEST->DEST_ROUTE;
 
@@ -92,7 +92,7 @@ VOID L3BG()
 				{
 					ROUTE = DEST->NRROUTE[ActiveRoute - 1].ROUT_NEIGHBOUR;
 
-					// if NetROM over VARA pass direct to the driver
+					/* if NetROM over VARA pass direct to the driver */
 
 					if (ROUTE)
 					{
@@ -114,7 +114,7 @@ VOID L3BG()
 					{
 						if (LINK->L2STATE == 0)
 						{
-							//	LINK ENTRY IS INVALID - IT PROBABLY HAS BEEN 'ZAPPED', SO CANCEL IT
+							/*	LINK ENTRY IS INVALID - IT PROBABLY HAS BEEN 'ZAPPED', SO CANCEL IT */
 							
 							ROUTE->NEIGHBOUR_LINK = NULL;
 						}
@@ -122,25 +122,25 @@ VOID L3BG()
 						{
 							if (LINK->L2STATE < 5)
 							{
-								goto NextDest;			// Wait for it to activate
+								goto NextDest;			/* Wait for it to activate */
 							}
 							else
 							{
 								ROUTE->NBOUR_IFRAMES++;
 								C_Q_ADD(&LINK->TX_Q, Q_REM(&DEST->DEST_Q));
-								continue;				// See if more
+								continue;				/* See if more */
 							}
 						}
 					}
-					// Drop through to Activate
+					/* Drop through to Activate */
 				}
 				
 				if (ACTIVATE_DEST(DEST) == FALSE)
 				{
-					// Node has no routes - get rid of it
+					/* Node has no routes - get rid of it */
 
 					REMOVENODE(DEST);
-					return;					// Avoid riskof looking at lod entries
+					return;					/* Avoid riskof looking at lod entries */
 				}
 			}
 		}
@@ -160,8 +160,8 @@ BOOL ACTIVATE_DEST(struct DEST_LIST * DEST)
 
 	int ActiveRoute;
 
-	if (DEST->DEST_ROUTE == 0)		// ALREADY HAVE A SELECTED ROUTE?
-		DEST->DEST_ROUTE = 1;		// TRY TO ACTIVATE FIRST
+	if (DEST->DEST_ROUTE == 0)		/* ALREADY HAVE A SELECTED ROUTE? */
+		DEST->DEST_ROUTE = 1;		/* TRY TO ACTIVATE FIRST */
 
 	ActiveRoute = DEST->DEST_ROUTE - 1;
 
@@ -169,22 +169,22 @@ BOOL ACTIVATE_DEST(struct DEST_LIST * DEST)
 
 	if (ROUTE == 0)
 	{
-		//	Currnet Route not present
-		//	If  current route is 1, then we must have INP3 routes (or entry is corrupt)
+		/*	Currnet Route not present */
+		/*	If  current route is 1, then we must have INP3 routes (or entry is corrupt) */
 
 		if (DEST->DEST_ROUTE != 1)
 			goto NOROUTETODEST;
 
-		// Current Route is 1
+		/* Current Route is 1 */
 
 		if (DEST->ROUTE[0].ROUT_NEIGHBOUR == 0)
-			return FALSE;					// No INP3 so No Routes
+			return FALSE;					/* No INP3 so No Routes */
 
-		DEST->DEST_ROUTE = 4;			// First INP3
+		DEST->DEST_ROUTE = 4;			/* First INP3 */
 		ROUTE = DEST->ROUTE[0].ROUT_NEIGHBOUR;
 	}
 
-	// if NetROM over VARA conection is made by the driver
+	/* if NetROM over VARA conection is made by the driver */
 
 	TNC = TNCInfo[ROUTE->NEIGHBOUR_PORT];
 
@@ -197,23 +197,23 @@ BOOL ACTIVATE_DEST(struct DEST_LIST * DEST)
 	
 	if (LINK == 0)
 	{
-		// Need to Activate Link
+		/* Need to Activate Link */
 	
-		// SET UP LINK TABLE ENTRY
+		/* SET UP LINK TABLE ENTRY */
 
 		return L2SETUPCROSSLINK(ROUTE);
 	}
 	
-	// We mst be waiting for link to come up
+	/* We mst be waiting for link to come up */
 	
 	return TRUE;
 
 NOROUTETODEST:
 
-	//	CURRENT NEIGHBOUR NOT DEFINED - RESET TO USE FIRST
+	/*	CURRENT NEIGHBOUR NOT DEFINED - RESET TO USE FIRST */
 
 	if (DEST->DEST_ROUTE == 1)
-		return FALSE;				// First not defined  so give up
+		return FALSE;				/* First not defined  so give up */
 	
 	DEST->DEST_ROUTE = 0;
 	return TRUE;
@@ -225,10 +225,10 @@ char Call3[10];
 
 VOID PROCESSNODEMESSAGE(MESSAGE * Msg, struct PORTCONTROL * PORT)
 {
-	//	PROCESS A NET/ROM 'NODES' MESSAGE
+	/*	PROCESS A NET/ROM 'NODES' MESSAGE */
 
-	//	    UPDATE _NEIGHBOURS LIST WITH ORIGINATING CALL, AND
-	//	    DESTINATION LIST WITH ANY PRACTICAL ROUTES
+	/*	    UPDATE _NEIGHBOURS LIST WITH ORIGINATING CALL, AND */
+	/*	    DESTINATION LIST WITH ANY PRACTICAL ROUTES */
 
 
 	struct DEST_LIST * DEST;
@@ -247,7 +247,7 @@ VOID PROCESSNODEMESSAGE(MESSAGE * Msg, struct PORTCONTROL * PORT)
 	if (PORT->PORTQUALITY == 0 || PORT->INP3ONLY)
 		return;
 
-	//	SEE IF OUR CALL - DONT WANT TO PUT IT IN LIST!
+	/*	SEE IF OUR CALL - DONT WANT TO PUT IT IN LIST! */
 
 	if (CompareCalls(Msg->ORIGIN, NETROMCALL))
 		return;
@@ -263,9 +263,9 @@ VOID PROCESSNODEMESSAGE(MESSAGE * Msg, struct PORTCONTROL * PORT)
 			return;
 	}
 
-	Msg->ORIGIN[6] &= 0x1E;			// MASK OFF LAST ADDR BIT
+	Msg->ORIGIN[6] &= 0x1E;			/* MASK OFF LAST ADDR BIT */
 
-	// Trap Empty Call
+	/* Trap Empty Call */
 
 	if (Msg->ORIGIN[0] == 0x40)
 		return;
@@ -296,51 +296,51 @@ VOID PROCESSNODEMESSAGE(MESSAGE * Msg, struct PORTCONTROL * PORT)
 	}
 
 */
-	//	SEE IF ORIGINATING CALL IS IN NEIGHBOUR LIST - IF NOT ADD IT
+	/*	SEE IF ORIGINATING CALL IS IN NEIGHBOUR LIST - IF NOT ADD IT */
 
 	if (FindNeighbour(Msg->ORIGIN, Portno, &ROUTE) == 0)
 	{
-		// Not in list
+		/* Not in list */
 
 		if (ROUTE == NULL)
-			return;					// Table full
+			return;					/* Table full */
 
-		//	CREATE NEIGHBOUR RECORD
+		/*	CREATE NEIGHBOUR RECORD */
 
 		memcpy(ROUTE->NEIGHBOUR_CALL, Msg->ORIGIN, 7);
 
 		ROUTE->NEIGHBOUR_PORT = Portno;
 		ROUTE->NEIGHBOUR_QUAL = PORT->PORTQUALITY;
 		
-		ROUTE->NEIGHBOUR_LINK = 0;		// CANT HAVE A LINK IF NEW _NODE
+		ROUTE->NEIGHBOUR_LINK = 0;		/* CANT HAVE A LINK IF NEW _NODE */
 	
 		ROUTE->NoKeepAlive = PORT->PortNoKeepAlive;
 	}
 
-	// if locked route with quality zero ignore
+	/* if locked route with quality zero ignore */
 
-	if ((ROUTE->NEIGHBOUR_FLAG & 1))	 // LOCKED ROUTE
+	if ((ROUTE->NEIGHBOUR_FLAG & 1))	 /* LOCKED ROUTE */
 		if (ROUTE->NEIGHBOUR_QUAL == 0)
 			return;
 
-	//	If Ignoreunlocked set, ignore it not locked
+	/*	If Ignoreunlocked set, ignore it not locked */
 
-	if ((ROUTE->NEIGHBOUR_FLAG & 1) == 0)	 // LOCKED ROUTE
+	if ((ROUTE->NEIGHBOUR_FLAG & 1) == 0)	 /* LOCKED ROUTE */
 		if (PORT->IgnoreUnlocked)
 			return;
 	
 	SendNETROMRoute(PORT, Msg->ORIGIN);
 
-	// if not locked, update route quality from port quality (may have changed config and not cleared SAVENODES
+	/* if not locked, update route quality from port quality (may have changed config and not cleared SAVENODES */
 
-	if ((ROUTE->NEIGHBOUR_FLAG & 1) == 0)	 // Not LOCKED ROUTE
+	if ((ROUTE->NEIGHBOUR_FLAG & 1) == 0)	 /* Not LOCKED ROUTE */
 		ROUTE->NEIGHBOUR_QUAL = PORT->PORTQUALITY;
 
-	//	GET TIME FROM BIOS DATA AREA OR RTC
+	/*	GET TIME FROM BIOS DATA AREA OR RTC */
 
 	time((time_t *)&Stamp);
 
-	Stamp = Stamp % 86400;			// Secs into day
+	Stamp = Stamp % 86400;			/* Secs into day */
 	HH = (int)(Stamp / 3600);
 
 	Stamp -= HH * 3600;
@@ -348,18 +348,18 @@ VOID PROCESSNODEMESSAGE(MESSAGE * Msg, struct PORTCONTROL * PORT)
 
 	ROUTE->NEIGHBOUR_TIME = 256 * HH + MM;
 
-	//	GET QUALITY
+	/*	GET QUALITY */
 
-	Qual = ROUTEQUAL = ROUTE->NEIGHBOUR_QUAL;		// FOR INITIAL ROUTE TABLE UPDATE
+	Qual = ROUTEQUAL = ROUTE->NEIGHBOUR_QUAL;		/* FOR INITIAL ROUTE TABLE UPDATE */
 	
-	//	CHECK LINK IS IN DEST LIST
+	/*	CHECK LINK IS IN DEST LIST */
 
 	if (FindDestination(Msg->ORIGIN, &DEST) == 0)
 	{
 		if (DEST == NULL)
-			return;				// Tsble Full
+			return;				/* Tsble Full */
 
-		//	CREATE DESTINATION RECORD
+		/*	CREATE DESTINATION RECORD */
 
 		memset(DEST, 0, sizeof(struct DEST_LIST));
 
@@ -368,14 +368,14 @@ VOID PROCESSNODEMESSAGE(MESSAGE * Msg, struct PORTCONTROL * PORT)
 		NUMBEROFNODES++;
 	}
 
-	//	ALWAYS UPDATE ALIAS IN CASE NOT PRESENT IN ORIGINAL TABLE
+	/*	ALWAYS UPDATE ALIAS IN CASE NOT PRESENT IN ORIGINAL TABLE */
 
 	ptr1 = &Msg->L2DATA[1];
 	ptr2 = &DEST->DEST_ALIAS[0];
 
-	if (*ptr1  > ' ')			// Only of present
+	if (*ptr1  > ' ')			/* Only of present */
 	{
-		// Validate Alias, mainly for DISABL KPC3 Problem
+		/* Validate Alias, mainly for DISABL KPC3 Problem */
 		UCHAR c;
 
 		n = 6;
@@ -392,48 +392,48 @@ VOID PROCESSNODEMESSAGE(MESSAGE * Msg, struct PORTCONTROL * PORT)
 		ptr1 += 6;
 
 
-	//	UPDATE QUALITY AND OBS COUNT
+	/*	UPDATE QUALITY AND OBS COUNT */
 
 	PROCROUTES(DEST, ROUTE, Qual);
 
-	Msglen -= (MSGHDDRLEN + 23);				// LEVEL 2 HEADER FLAG and NODE MNEMONIC
+	Msglen -= (MSGHDDRLEN + 23);				/* LEVEL 2 HEADER FLAG and NODE MNEMONIC */
 
-	//	PROCESS DESTINATIONS from message
+	/*	PROCESS DESTINATIONS from message */
 
-	// ptr1 = start
+	/* ptr1 = start */
 
 	saveptr = ptr1 - 21;
 
-	while (Msglen >= 21)		// STILL AT LEAST 1 ENTRY LEFT
+	while (Msglen >= 21)		/* STILL AT LEAST 1 ENTRY LEFT */
 	{
 		Msglen -= 21;
 		saveptr += 21;
 		ptr1 = saveptr;
 
-		// SEE IF OUR CALL - DONT WANT TO PUT IT IN LIST!
+		/* SEE IF OUR CALL - DONT WANT TO PUT IT IN LIST! */
 
 		if (CompareCalls(ptr1, MYCALL))
 		{
-			// But use it to get route quality setting from other end
+			/* But use it to get route quality setting from other end */
 			
-			// As we now get qual ftom highest, only use this after a reload in
-			// case other end has changed.
+			/* As we now get qual ftom highest, only use this after a reload in */
+			/* case other end has changed. */
 			if (ROUTE->FirstTimeFlag == 0)
 			{
-				// Check if route is via our node
+				/* Check if route is via our node */
 
 				if (memcmp(ptr1, &ptr1[13], 7) == 0)
 				{
-					if (ROUTE->OtherendLocked == 0)	// Dont update locked quality
+					if (ROUTE->OtherendLocked == 0)	/* Dont update locked quality */
 						ROUTE->OtherendsRouteQual = ptr1[20];
 
-					ROUTE->FirstTimeFlag = 1;		// Only do it first time after load
+					ROUTE->FirstTimeFlag = 1;		/* Only do it first time after load */
 				}
 			}
 			continue;
 		}
 
-		if (CheckExcludeList(ptr1) == 0)			// Excluded
+		if (CheckExcludeList(ptr1) == 0)			/* Excluded */
 			continue;
 
 		for (n = 0; n < 32; n++)
@@ -442,13 +442,13 @@ VOID PROCESSNODEMESSAGE(MESSAGE * Msg, struct PORTCONTROL * PORT)
 				continue;
 		}
 
-		//	MAKE SURE ITS NOT CORRUPTED
+		/*	MAKE SURE ITS NOT CORRUPTED */
 
 		n = 6;
 
 		while (n--)
 		{
-			if (*(ptr1++) < 0x40)	// Call
+			if (*(ptr1++) < 0x40)	/* Call */
 			{
 				Call1[ConvFromAX25(Msg->ORIGIN, Call1)] = 0;
 				Call2[ConvFromAX25(saveptr, Call2)] = 0;
@@ -458,13 +458,13 @@ VOID PROCESSNODEMESSAGE(MESSAGE * Msg, struct PORTCONTROL * PORT)
 				goto IgnoreNode;
 			}		
 		}
-		ptr1++;						// skip ssid
+		ptr1++;						/* skip ssid */
 
 		n = 6;
 
 		while (n--)
 		{
-			if (*(ptr1) && ((*(ptr1) < 0x20 || *(ptr1) > 0x7A))	)	// Should we accept zeros or convert to spaces??
+			if (*(ptr1) && ((*(ptr1) < 0x20 || *(ptr1) > 0x7A))	)	/* Should we accept zeros or convert to spaces?? */
 			{
 				Call1[ConvFromAX25(Msg->ORIGIN, Call1)] = 0;
 				Call2[ConvFromAX25(saveptr, Call2)] = 0;
@@ -476,70 +476,70 @@ VOID PROCESSNODEMESSAGE(MESSAGE * Msg, struct PORTCONTROL * PORT)
 			ptr1++;
 		}
 
-		ptr1 -= 13;					// Back to start
+		ptr1 -= 13;					/* Back to start */
 
-		// CALCULATE ROUTE QUALITY
+		/* CALCULATE ROUTE QUALITY */
 
-		// Experimantal Code to adjust received route qualities based on deduced quality
-		// settings at other end of link.
+		/* Experimantal Code to adjust received route qualities based on deduced quality */
+		/* settings at other end of link. */
 
-		// Don't mess with Application Qualities. There are almost always 255, and
-		// if not there is probably a good reason for the value chosen.
+		/* Don't mess with Application Qualities. There are almost always 255, and */
+		/* if not there is probably a good reason for the value chosen. */
 
 		if (CompareCalls(Msg->ORIGIN, &ptr1[13]))
 		{
-			// Application Node - Just do normal update
+			/* Application Node - Just do normal update */
 
 			Qual = (((ROUTEQUAL * ptr1[20]) + 128)) / 256;
 		}
 		else
 		{
-			// Try using the highest reported indirect route as remote qual
+			/* Try using the highest reported indirect route as remote qual */
 
-			if (ROUTE->OtherendLocked == 0)			// Not locked
+			if (ROUTE->OtherendLocked == 0)			/* Not locked */
 			{
 				if (ptr1[20] > ROUTE->OtherendsRouteQual)
 					ROUTE->OtherendsRouteQual = ptr1[20];
 			}
 
-			// Treat 255 as 254, so 255 routes doen't get included with minquals 
-			//	designed to only include applcalls
+			/* Treat 255 as 254, so 255 routes doen't get included with minquals  */
+			/*	designed to only include applcalls */
 
 			if (ptr1[20] == 255)
 				ptr1[20] = 254;	
 
 			Qual = (((ROUTEQUAL * ptr1[20]) + 128)) / 256;
 
-			// I think we should normalize indirect routes twice 
-			// as node not only sends differnet qual but adjusts incoming qual with it
+			/* I think we should normalize indirect routes twice  */
+			/* as node not only sends differnet qual but adjusts incoming qual with it */
 
-			// or should we ............
+			/* or should we ............ */
 
-			// We don't touch appl callsigns so I think everything here is an indirect route
+			/* We don't touch appl callsigns so I think everything here is an indirect route */
 
 			if (ROUTE->OtherendsRouteQual && PORT->NormalizeQuality)
 			{
 				Qual = (Qual * ROUTEQUAL) / ROUTE->OtherendsRouteQual;
-// not sure about this!	Qual = (Qual * ROUTEQUAL) / ROUTE->OtherendsRouteQual;	// Twice
+/* not sure about this!	Qual = (Qual * ROUTEQUAL) / ROUTE->OtherendsRouteQual;	// Twice */
 
 				if (Qual > ROUTEQUAL)
 					Qual = ROUTEQUAL;
 			}
 		}
 
-		//	SEE IF BELOW MIN QUAL FOR AUTO UPDATES
+		/*	SEE IF BELOW MIN QUAL FOR AUTO UPDATES */
 
 		if (Qual < MINQUAL)
 			continue;
 
-		//	CHECK LINK IS IN DEST LIST
+		/*	CHECK LINK IS IN DEST LIST */
 		
 		if (FindDestination(ptr1, &DEST) == 0)
 		{
 			if (DEST == NULL)
 				continue;
 		
-			//	CREATE DESTINATION RECORD
+			/*	CREATE DESTINATION RECORD */
 
 			memset(DEST, 0, sizeof(struct DEST_LIST));
 			memcpy(DEST->DEST_CALL, ptr1, 7);
@@ -548,21 +548,21 @@ VOID PROCESSNODEMESSAGE(MESSAGE * Msg, struct PORTCONTROL * PORT)
 
 		ptr1 += 7;
 	
-		//	UPDATE ALIAS
+		/*	UPDATE ALIAS */
 
 		memcpy(DEST->DEST_ALIAS, ptr1, 6);
 
 		ptr1 += 6;
 		
-		//	NOW POINTING AT BEST NEIGHBOUR - IF THIS IS US, THEN ROUTE IS A LOOP
+		/*	NOW POINTING AT BEST NEIGHBOUR - IF THIS IS US, THEN ROUTE IS A LOOP */
 	
 		if (CompareCalls(ptr1, NETROMCALL))
 			Qual = 0;
 	
-		//	DEST IS NOW IN TABLE -
+		/*	DEST IS NOW IN TABLE - */
 
-		//	   1. SEE IF THIS ROUTE IS IN TABLE - IF SO UPDATE QUALITY,
-		//	      IF NOT, ADD THIS ONE IF IT HAS HIGHER QUALITY THAN EXISTING ONES
+		/*	   1. SEE IF THIS ROUTE IS IN TABLE - IF SO UPDATE QUALITY, */
+		/*	      IF NOT, ADD THIS ONE IF IT HAS HIGHER QUALITY THAN EXISTING ONES */
 
 
 		PROCROUTES(DEST, ROUTE, Qual);
@@ -573,12 +573,12 @@ IgnoreNode:;
 
 VOID PROCROUTES(struct DEST_LIST * DEST, struct ROUTE * ROUTE, int Qual)
 {
-	//	ADD NEIGHBOUR ADDRESS IN ROUTE TO NODE's ROUTE TABLE IF BETTER QUALITY THAN THOSE PRESENT
+	/*	ADD NEIGHBOUR ADDRESS IN ROUTE TO NODE's ROUTE TABLE IF BETTER QUALITY THAN THOSE PRESENT */
 
 	int Index = 0;
 	struct NR_DEST_ROUTE_ENTRY Temp;
 	
-	if (DEST->DEST_STATE & 0x80)			// BBS ENTRY
+	if (DEST->DEST_STATE & 0x80)			/* BBS ENTRY */
 		return;
 
 	for (Index = 0; Index < 4; Index++)
@@ -587,9 +587,9 @@ VOID PROCROUTES(struct DEST_LIST * DEST, struct ROUTE * ROUTE, int Qual)
 		{
 			if (Index == 0)
 			{
-				//	THIS IS A REFRESH OF BEST - IF THIS ISNT ACTIVE ROUTE, MAKE IT ACTIVE
+				/*	THIS IS A REFRESH OF BEST - IF THIS ISNT ACTIVE ROUTE, MAKE IT ACTIVE */
 	
-				if (DEST->DEST_ROUTE > 1)	// LEAVE IT IF NOT SELECTED OR ALREADY USING BEST
+				if (DEST->DEST_ROUTE > 1)	/* LEAVE IT IF NOT SELECTED OR ALREADY USING BEST */
 					DEST->DEST_ROUTE = 1;
 			}
 
@@ -597,21 +597,21 @@ VOID PROCROUTES(struct DEST_LIST * DEST, struct ROUTE * ROUTE, int Qual)
 		}
 	}
 				
-	//	NOT IN ANY ROUTE
+	/*	NOT IN ANY ROUTE */
 
 	Index = 0;
 
 	if (DEST->NRROUTE[0].ROUT_NEIGHBOUR == 0)
-		goto UpdatateThisEntry;					// SPARE ENTRY, SO USE IT
+		goto UpdatateThisEntry;					/* SPARE ENTRY, SO USE IT */
 
 	if (DEST->NRROUTE[0].ROUT_QUALITY < Qual)
 	{
-		// New route is better than best, so move other two down and add here
+		/* New route is better than best, so move other two down and add here */
 
 		DEST->NRROUTE[2] = DEST->NRROUTE[1];
 		DEST->NRROUTE[1] = DEST->NRROUTE[0];
 
-		DEST->DEST_ROUTE = 0;			// Se we will switch to new one
+		DEST->DEST_ROUTE = 0;			/* Se we will switch to new one */
 		
 		goto UpdatateThisEntry;
 	}
@@ -619,11 +619,11 @@ VOID PROCROUTES(struct DEST_LIST * DEST, struct ROUTE * ROUTE, int Qual)
 	Index = 1;
 
 	if (DEST->NRROUTE[1].ROUT_NEIGHBOUR == 0)
-		goto UpdatateThisEntry;					// SPARE ENTRY, SO USE IT
+		goto UpdatateThisEntry;					/* SPARE ENTRY, SO USE IT */
 
 	if (DEST->NRROUTE[1].ROUT_QUALITY < Qual)
 	{
-		// New route is better than second, so move down and add here
+		/* New route is better than second, so move down and add here */
 
 		DEST->NRROUTE[2] = DEST->NRROUTE[1];
 		goto UpdatateThisEntry;
@@ -636,11 +636,11 @@ VOID PROCROUTES(struct DEST_LIST * DEST, struct ROUTE * ROUTE, int Qual)
 
 	if (DEST->NRROUTE[2].ROUT_QUALITY < Qual)
 	{
-		// New route is better than third, so  add here
+		/* New route is better than third, so  add here */
 		goto UpdatateThisEntry;
 	}
 
-	//	THIS ROUTE IS WORSE THAN ANY OF THE CURRENT 3 - IGNORE IT
+	/*	THIS ROUTE IS WORSE THAN ANY OF THE CURRENT 3 - IGNORE IT */
 
 	return;
 
@@ -649,55 +649,55 @@ UpdatateThisEntry:
 
 	DEST->NRROUTE[Index].ROUT_NEIGHBOUR = ROUTE;
 
-	//	I DONT KNOW WHY I DID THIS, BUT IT CAUSES REFLECTED ROUTES
-	//	TO BE SET UP WITH OBS = 0. THIS MAY PREVENT A VALID ALTERNATE
-	//	VIA THE SAME NODE TO FAIL TO BE FOUND. SO I'LL TAKE OUT THE
-	//	TEST AND SEE IF ANYTHING NASTY HAPPENS
-	//	IT DID - THIS IS ALSO CALLED BY CHECKL3TABLES. TRY RESETING
-	//	OBS, BUT NOT QUALITY 
+	/*	I DONT KNOW WHY I DID THIS, BUT IT CAUSES REFLECTED ROUTES */
+	/*	TO BE SET UP WITH OBS = 0. THIS MAY PREVENT A VALID ALTERNATE */
+	/*	VIA THE SAME NODE TO FAIL TO BE FOUND. SO I'LL TAKE OUT THE */
+	/*	TEST AND SEE IF ANYTHING NASTY HAPPENS */
+	/*	IT DID - THIS IS ALSO CALLED BY CHECKL3TABLES. TRY RESETING */
+	/*	OBS, BUT NOT QUALITY  */
 
 	if ((DEST->NRROUTE[Index].ROUT_OBSCOUNT & 0x80) == 0)
-		DEST->NRROUTE[Index].ROUT_OBSCOUNT = OBSINIT;	// SET OBSOLESCENCE COUNT
+		DEST->NRROUTE[Index].ROUT_OBSCOUNT = OBSINIT;	/* SET OBSOLESCENCE COUNT */
 
 	if (Qual)
-		DEST->NRROUTE[Index].ROUT_QUALITY = Qual;		// IF ZERO, SKIP UPDATE
+		DEST->NRROUTE[Index].ROUT_QUALITY = Qual;		/* IF ZERO, SKIP UPDATE */
 
-	//	IT IS POSSIBLE ROUTES ARE NOW OUT OF ORDER
+	/*	IT IS POSSIBLE ROUTES ARE NOW OUT OF ORDER */
 
 SORTROUTES:
 
 	if (DEST->NRROUTE[1].ROUT_QUALITY > DEST->NRROUTE[0].ROUT_QUALITY)
 	{
-		//	SWAP 1 AND 2
+		/*	SWAP 1 AND 2 */
 
 		Temp = DEST->NRROUTE[0];
 		
 		DEST->NRROUTE[0] = DEST->NRROUTE[1];
 		DEST->NRROUTE[1] = Temp;
 
-		DEST->DEST_ROUTE = 0;		// FORCE A RE-ASSESSMENT
+		DEST->DEST_ROUTE = 0;		/* FORCE A RE-ASSESSMENT */
 	}
 
 	if (DEST->NRROUTE[2].ROUT_QUALITY > DEST->NRROUTE[1].ROUT_QUALITY)
 	{
-		//	SWAP 2 AND 3 
+		/*	SWAP 2 AND 3  */
 
 		Temp = DEST->NRROUTE[1];
 		
 		DEST->NRROUTE[1] = DEST->NRROUTE[2];
 		DEST->NRROUTE[2] = Temp;
 		
-		goto SORTROUTES;			//  1 AND 2 MAY NOW BE WRONG!	
+		goto SORTROUTES;			/*  1 AND 2 MAY NOW BE WRONG!	 */
 	}
 }
 
 int COUNTNODES(struct ROUTE * ROUTE)
 {
-	//	COUNT NODES WITH ROUTE VIA NEIGHBOUR
+	/*	COUNT NODES WITH ROUTE VIA NEIGHBOUR */
 
 	int count = 0;
 	int n = MAXDESTS;
-	struct DEST_LIST * DEST = DESTS;		// NODE LIST
+	struct DEST_LIST * DEST = DESTS;		/* NODE LIST */
 
 	while (n--)
 	{
@@ -735,16 +735,16 @@ VOID SENDNODESMSG()
 	SENDNEXTNODESFRAGMENT();
 }
 
-int fragmentCount = 0;		// Node broadcast packets sent to current port
+int fragmentCount = 0;		/* Node broadcast packets sent to current port */
 
 VOID SENDNEXTNODESFRAGMENT()
 {
-	//	SEND NEXT FRAGMENT OF A NODES BROADCAST
+	/*	SEND NEXT FRAGMENT OF A NODES BROADCAST */
 
-	//	FRAGMENTS ARE SENT AT 10 SECONDS INTERVALS - PARTLY TO REDUCE
-	//	QRM, PARTLY TO REDUCE LOAD ON BUFFERS (AND TX POWER SUPPLIES!)
+	/*	FRAGMENTS ARE SENT AT 10 SECONDS INTERVALS - PARTLY TO REDUCE */
+	/*	QRM, PARTLY TO REDUCE LOAD ON BUFFERS (AND TX POWER SUPPLIES!) */
 
-	//	SEND TO PORT IN CURRENTPORT, STARTING AT CURRENTNODE
+	/*	SEND TO PORT IN CURRENTPORT, STARTING AT CURRENTNODE */
 
 	struct PORTCONTROL * PORT = L3CURRENTPORT;
 	dest_list * DEST = CURRENTNODE;
@@ -756,20 +756,20 @@ VOID SENDNEXTNODESFRAGMENT()
 
 	if (DEST == 0)
 	{
-		//	FIRST FRAGMENT TO A PORT
+		/*	FIRST FRAGMENT TO A PORT */
 
 		fragmentCount = 0;
 
-		// Don't send NODES to Shared TX or INP3 Port
+		/* Don't send NODES to Shared TX or INP3 Port */
 
 		while (PORT->PORTQUALITY == 0 || PORT->TXPORT || PORT->INP3ONLY)
 		{
-			// No NODES to this port, so go to next
+			/* No NODES to this port, so go to next */
 
 			PORT = PORT->PORTPOINTER;
 			if (PORT == NULL)
 			{
-				// Finished
+				/* Finished */
 
 				NODESINPROGRESS = 0;
 				return;
@@ -778,7 +778,7 @@ VOID SENDNEXTNODESFRAGMENT()
 
 		L3CURRENTPORT = PORT;
 
-		DEST = CURRENTNODE = DESTS;			// START OF LIST
+		DEST = CURRENTNODE = DESTS;			/* START OF LIST */
 		NODESINPROGRESS = 1;
 	}
 
@@ -787,7 +787,7 @@ VOID SENDNEXTNODESFRAGMENT()
 	TXMINQUAL = PORT->PORTMINQUAL;
 
 	if (TXMINQUAL == 0)
-		TXMINQUAL = 1;						// Dont send zero
+		TXMINQUAL = 1;						/* Dont send zero */
 
 	Buffer = GetBuff();
 
@@ -799,44 +799,44 @@ VOID SENDNEXTNODESFRAGMENT()
 	memcpy(Buffer->ORIGIN, NETROMCALL, 7);
 	memcpy(Buffer->DEST, NODECALL, 7);
 
-	Buffer->ORIGIN[6] |= 0x61;		// SET CMD END AND RESERVED BITS
+	Buffer->ORIGIN[6] |= 0x61;		/* SET CMD END AND RESERVED BITS */
 
 	Buffer->CTL = UI;
-	Buffer->PID = 0xCF;				// Netrom
+	Buffer->PID = 0xCF;				/* Netrom */
 
 	ptr1 = &Buffer->L2DATA[0];
 	
-	*(ptr1++) = 0xff;		// Nodes Flag
+	*(ptr1++) = 0xff;		/* Nodes Flag */
 
 	memcpy(ptr1, MYALIASTEXT, 6);
 
 	ptr1+= 6;
 
-	//	ADD DESTINATION INFO (UNLESS BBS ONLY)
+	/*	ADD DESTINATION INFO (UNLESS BBS ONLY) */
 
-	// If NODE = 0 just send application nodes
+	/* If NODE = 0 just send application nodes */
 
 	Count = PORT->NODESPACLEN;
 	
 	if (Count == 0)
 		Count = 256;
 	
-	if (Count < 50)				// STUPIDLY SMALL?
-		Count = 50;					// EVEN THIS IS RATHER SILLY
+	if (Count < 50)				/* STUPIDLY SMALL? */
+		Count = 50;					/* EVEN THIS IS RATHER SILLY */
 
-	Count -= 22;					// Fixed Part
+	Count -= 22;					/* Fixed Part */
 
-	Count /= 21;					// 21 Bytres per entry
+	Count /= 21;					/* 21 Bytres per entry */
 
 	while (Count)
 	{
 		if (DEST >= ENDDESTLIST)
 		{
-			CURRENTNODE = 0;			// Finished on this port
+			CURRENTNODE = 0;			/* Finished on this port */
 			L3CURRENTPORT = PORT->PORTPOINTER;
 			if (L3CURRENTPORT == NULL)
 			{
-				// Finished
+				/* Finished */
 
 				NODESINPROGRESS = 0;
 			}
@@ -845,30 +845,30 @@ VOID SENDNEXTNODESFRAGMENT()
 
 		if (DEST->DEST_CALL[0] != 0x40 && DEST->NRROUTE[0].ROUT_QUALITY >= TXMINQUAL &&
 			DEST->NRROUTE[0].ROUT_OBSCOUNT >= OBSMIN &&
-			(NODE == 1 || DEST->DEST_STATE & 0x80))			// Only send appl nodes if DEST = 0;
+			(NODE == 1 || DEST->DEST_STATE & 0x80))			/* Only send appl nodes if DEST = 0; */
 		{		
-			// Send it
+			/* Send it */
 			
 			ptr2 = &DEST->DEST_CALL[0];
-			memcpy(ptr1, ptr2, 13);				// Dest and Alias
+			memcpy(ptr1, ptr2, 13);				/* Dest and Alias */
 			ptr1 += 13;
 
 			ptr2 = (UCHAR *)DEST->NRROUTE[0].ROUT_NEIGHBOUR;
 			
 			if (ptr2 == 0)
 		
-				//	DUMMY POINTER IN BBS ENTRY - PUT IN OUR CALL
+				/*	DUMMY POINTER IN BBS ENTRY - PUT IN OUR CALL */
 
 				ptr2 = MYCALL;
 		
-			memcpy(ptr1, ptr2, 7);				// Neighbour Call
+			memcpy(ptr1, ptr2, 7);				/* Neighbour Call */
 			ptr1 += 7;
 	
 			Qual = 100;
 
 			if (DEST->NRROUTE[0].ROUT_NEIGHBOUR && DEST->NRROUTE[0].ROUT_NEIGHBOUR->NEIGHBOUR_PORT == CURRENTPORTNO)
 			{
-				//	BEST NEIGHBOUR IS ON CURRENT PORT - REDUCE QUALITY BY QUAL_ADJUST
+				/*	BEST NEIGHBOUR IS ON CURRENT PORT - REDUCE QUALITY BY QUAL_ADJUST */
 
 				Qual -= PORT->QUAL_ADJUST;
 			}
@@ -889,7 +889,7 @@ Sendit:
 
 	Buffer->LENGTH = (int)(ptr1 - (UCHAR *)Buffer);
 
-	if (Buffer->LENGTH > 35 || fragmentCount == 0)		// Always send first even if no other nodes
+	if (Buffer->LENGTH > 35 || fragmentCount == 0)		/* Always send first even if no other nodes */
 	{
 		if (PORT->TNC && PORT->TNC->Hardware == H_VARA)
 			SendVARANetromNodes(PORT->TNC, Buffer);
@@ -905,27 +905,27 @@ Sendit:
 
 VOID L3LINKCLOSED(struct _LINKTABLE * LINK, int Reason)
 {
-	//	L2 SESSION HAS SHUT DOWN (PROBABLY DUE TO INACTIVITY)
+	/*	L2 SESSION HAS SHUT DOWN (PROBABLY DUE TO INACTIVITY) */
 	
 	struct ROUTE * ROUTE;
 	
-	//	CLEAR NEIGHBOUR
+	/*	CLEAR NEIGHBOUR */
 
-	ROUTE = LINK->NEIGHBOUR;			// TO NEIGHBOUR
+	ROUTE = LINK->NEIGHBOUR;			/* TO NEIGHBOUR */
 
 	if (ROUTE)
 	{
-		LINK->NEIGHBOUR = NULL;			// Clear links
+		LINK->NEIGHBOUR = NULL;			/* Clear links */
 		ROUTE->NEIGHBOUR_LINK = NULL;
 
-		CLEARACTIVEROUTE(ROUTE, Reason);		// CLEAR ASSOCIATED DEST ENTRIES
+		CLEARACTIVEROUTE(ROUTE, Reason);		/* CLEAR ASSOCIATED DEST ENTRIES */
 	}
 }
 
 VOID CLEARACTIVEROUTE(struct ROUTE * ROUTE, int Reason)
 {
-	//	FIND ANY DESINATIONS WITH [ESI] AS ACTIVE NEIGHBOUR, AND
-	//	SET INACTIVE
+	/*	FIND ANY DESINATIONS WITH [ESI] AS ACTIVE NEIGHBOUR, AND */
+	/*	SET INACTIVE */
 
 	dest_list * DEST;
 	int n;
@@ -936,7 +936,7 @@ VOID CLEARACTIVEROUTE(struct ROUTE * ROUTE, int Reason)
 	DEST = DESTS;
 	n = MAXDESTS;
 
-	DEST--;							// So we can increment at start of loop
+	DEST--;							/* So we can increment at start of loop */
 
 	while (n--)
 	{
@@ -945,11 +945,11 @@ VOID CLEARACTIVEROUTE(struct ROUTE * ROUTE, int Reason)
 		if (DEST->DEST_ROUTE == 0)
 			continue;
 
-		if (DEST->ROUTE[DEST->DEST_ROUTE].ROUT_NEIGHBOUR == ROUTE)   // Is this the active route
+		if (DEST->ROUTE[DEST->DEST_ROUTE].ROUT_NEIGHBOUR == ROUTE)   /* Is this the active route */
 		{
-			// Yes, so clear
+			/* Yes, so clear */
 
-			DEST->DEST_ROUTE = 0;			// SET NO ACTIVE ROUTE
+			DEST->DEST_ROUTE = 0;			/* SET NO ACTIVE ROUTE */
 		}
 	}
 }
@@ -963,7 +963,7 @@ VOID L3TimerProc()
 
 	struct _LINKTABLE * LINK;
 
-	//	CHECK FOR EXCESSIVE BUFFERS QUEUED AT LINK LEVEL
+	/*	CHECK FOR EXCESSIVE BUFFERS QUEUED AT LINK LEVEL */
 
 	if (QCOUNT < 100)
 	{
@@ -972,12 +972,12 @@ VOID L3TimerProc()
 
 		while (i--);
 		{
-			if (LINK->LINKTYPE == 3)		// Only if Internode
+			if (LINK->LINKTYPE == 3)		/* Only if Internode */
 			{
 				if (COUNT_AT_L2(LINK) > 50)
 				{
 					Debugprintf("Excessive L3 Queue");
-					L3LINKCLOSED(LINK, LINKSTUCK);			// REPORT TO LEVEL 3
+					L3LINKCLOSED(LINK, LINKSTUCK);			/* REPORT TO LEVEL 3 */
 					CLEAROUTLINK(LINK);
 				}
 			}
@@ -987,7 +987,7 @@ VOID L3TimerProc()
 
 	STATSTIME++;
 
-	if (IDTIMER)				// Not if Disabled
+	if (IDTIMER)				/* Not if Disabled */
 	{
 		IDTIMER--;
 
@@ -998,9 +998,9 @@ VOID L3TimerProc()
 		}
 	}
 
-	//	CHECK FOR BEACON
+	/*	CHECK FOR BEACON */
 
-	if (BTTIMER)				// Not if Disabled
+	if (BTTIMER)				/* Not if Disabled */
 	{
 		BTTIMER--;
 
@@ -1011,15 +1011,15 @@ VOID L3TimerProc()
 		}
 	}
 
-	//	CHECK FOR NODES BROADCAST
+	/*	CHECK FOR NODES BROADCAST */
 
-	if (L3TIMER)				// Not if Disabled
+	if (L3TIMER)				/* Not if Disabled */
 	{
 		L3TIMER--;
 
 		if (L3TIMER == 0)
 		{
-			//	UPDATE DEST LIST AND SEND 'NODES' MESSAGE
+			/*	UPDATE DEST LIST AND SEND 'NODES' MESSAGE */
 			
 			L3TIMER = L3INTERVAL;
 			UPDATEDESTLIST();
@@ -1027,7 +1027,7 @@ VOID L3TimerProc()
 		}
 	}
 
-	//	TIDY ROUTES
+	/*	TIDY ROUTES */
 
 	ROUTE = NEIGHBOURS;
 	i = MAXNEIGHBOURS;
@@ -1038,15 +1038,15 @@ VOID L3TimerProc()
 	{
 		ROUTE++;
 
-		if (ROUTE->NEIGHBOUR_FLAG & 1)			// Locked?
+		if (ROUTE->NEIGHBOUR_FLAG & 1)			/* Locked? */
 			continue;
 
-		if (ROUTE->NEIGHBOUR_LINK)				// Has an active Session
+		if (ROUTE->NEIGHBOUR_LINK)				/* Has an active Session */
 			continue;
 
-		if (COUNTNODES(ROUTE) == 0)				// NODES USING THIS DESTINATION
+		if (COUNTNODES(ROUTE) == 0)				/* NODES USING THIS DESTINATION */
 		{
-			// IF NUMBER USING ROUTE IS ZERO, DELETE IT
+			/* IF NUMBER USING ROUTE IS ZERO, DELETE IT */
 
 			memset(ROUTE, 0, sizeof (struct ROUTE));
 		}
@@ -1055,15 +1055,15 @@ VOID L3TimerProc()
 
 VOID L3FastTimer()
 {
-	//	CALLED ONCE PER SECOND - USED ONLY TO SEND NEXT PART OF A NODES OR
-	//	ID MESSAGE SEQUENCE
+	/*	CALLED ONCE PER SECOND - USED ONLY TO SEND NEXT PART OF A NODES OR */
+	/*	ID MESSAGE SEQUENCE */
 
 	MESSAGE * Msg;
 	struct PORTCONTROL * PORT = PORTTABLE;
 
 	INP3TIMER();
 
-	// Send Node faster if VARA
+	/* Send Node faster if VARA */
 
 	if (NODESINPROGRESS && L3CURRENTPORT->TNC && L3CURRENTPORT->TNC->NetRomMode)
 		SENDNEXTNODESFRAGMENT();
@@ -1074,13 +1074,13 @@ VOID L3FastTimer()
 	{
 		L3_10SECS = 10;
 	
-		if (IDMSG_Q)				// ID/BEACON TO SEND
+		if (IDMSG_Q)				/* ID/BEACON TO SEND */
 		{
 			Msg = Q_REM(&IDMSG_Q);
 
 			PORT = GetPortTableEntryFromPortNum(Msg->PORT);
 
-			if (PORT && PORT->TXPORT == 0)			// DONT SEND IF SHARED TX
+			if (PORT && PORT->TXPORT == 0)			/* DONT SEND IF SHARED TX */
 				PUT_ON_PORT_Q(PORT, Msg);
 			else
 				ReleaseBuffer(Msg);
@@ -1094,7 +1094,7 @@ VOID L3FastTimer()
 
 VOID UPDATEDESTLIST()
 {
-	//	DECREMENT OBS COUNTERS ON EACH ROUTE, AND REMOVE 'DEAD' ENTRIES
+	/*	DECREMENT OBS COUNTERS ON EACH ROUTE, AND REMOVE 'DEAD' ENTRIES */
 	
 	dest_list * DEST;
 	int n;
@@ -1102,96 +1102,96 @@ VOID UPDATEDESTLIST()
 	DEST = DESTS;
 	n = MAXDESTS;
 
-	DEST--;							// So we can increment at start of loop
+	DEST--;							/* So we can increment at start of loop */
 
 	while (n--)
 	{
 		DEST++;
 
-		if (DEST->DEST_CALL[0] == 0)	// SPARE ENTRY
+		if (DEST->DEST_CALL[0] == 0)	/* SPARE ENTRY */
 			continue;
 
-		if (DEST->DEST_STATE & 0x80)	// LOCKED DESTINATION
+		if (DEST->DEST_STATE & 0x80)	/* LOCKED DESTINATION */
 			continue;
 
 UPDEST000:
 
-		if (DEST->NRROUTE[0].ROUT_NEIGHBOUR == 0)		 // NO DESTINATIONS - DELETE ENTRY unless inp3 routes
+		if (DEST->NRROUTE[0].ROUT_NEIGHBOUR == 0)		 /* NO DESTINATIONS - DELETE ENTRY unless inp3 routes */
 		{
-			//	 Any INP3 Routes?
+			/*	 Any INP3 Routes? */
 
 			if (DEST->ROUTE[0].ROUT_NEIGHBOUR == 0)
 			{
-				//	NO ROUTES LEFT TO DEST - REMOVE IT
+				/*	NO ROUTES LEFT TO DEST - REMOVE IT */
 
-				REMOVENODE(DEST);						// Unchain, Clear queue and zap
+				REMOVENODE(DEST);						/* Unchain, Clear queue and zap */
 			}
 			continue;			
 		}
 
 		if (DEST->NRROUTE[0].ROUT_OBSCOUNT == 0)
 		{
-			//	 FAILED IN USE - DELETE
+			/*	 FAILED IN USE - DELETE */
 			
 			MOVEALL(DEST);
-			goto UPDEST000; //LOOP BACK TO PROCESS MOVED ENTRIES
+			goto UPDEST000; /*LOOP BACK TO PROCESS MOVED ENTRIES */
 		}
 
-		if ((DEST->NRROUTE[0].ROUT_OBSCOUNT & 0x80) == 0)	// Locked?
+		if ((DEST->NRROUTE[0].ROUT_OBSCOUNT & 0x80) == 0)	/* Locked? */
 		{
 			DEST->NRROUTE[0].ROUT_OBSCOUNT--;
 
-			if (DEST->NRROUTE[0].ROUT_OBSCOUNT == 0)		// Timed out
+			if (DEST->NRROUTE[0].ROUT_OBSCOUNT == 0)		/* Timed out */
 			{
 				MOVEALL(DEST);
-				goto UPDEST000; //LOOP BACK TO PROCESS MOVED ENTRIES
+				goto UPDEST000; /*LOOP BACK TO PROCESS MOVED ENTRIES */
 			}
 		}
 	
-		// Process Next Neighbour
+		/* Process Next Neighbour */
 
 UPDEST010:
 
 		if (DEST->NRROUTE[1].ROUT_NEIGHBOUR == 0)
-			continue;				// NO MORE DESTINATIONS
+			continue;				/* NO MORE DESTINATIONS */
 
 		if (DEST->NRROUTE[1].ROUT_OBSCOUNT == 0)
 		{
-			//	 FAILED IN USE - DELETE
+			/*	 FAILED IN USE - DELETE */
 			
 			MOVE3TO2(DEST);
-			goto UPDEST010;			//LOOP BACK TO PROCESS MOVED ENTRIES
+			goto UPDEST010;			/*LOOP BACK TO PROCESS MOVED ENTRIES */
 		}
 
-		if ((DEST->NRROUTE[1].ROUT_OBSCOUNT & 0x80) == 0)	// Locked?
+		if ((DEST->NRROUTE[1].ROUT_OBSCOUNT & 0x80) == 0)	/* Locked? */
 		{
 			DEST->NRROUTE[1].ROUT_OBSCOUNT--;
 
-			if (DEST->NRROUTE[1].ROUT_OBSCOUNT == 0)		// Timed out
+			if (DEST->NRROUTE[1].ROUT_OBSCOUNT == 0)		/* Timed out */
 			{
 				MOVE3TO2(DEST);
-				goto UPDEST010; //LOOP BACK TO PROCESS MOVED ENTRIES
+				goto UPDEST010; /*LOOP BACK TO PROCESS MOVED ENTRIES */
 			}
 		}
 	
-		// Process Next Neighbour
+		/* Process Next Neighbour */
 
 		if (DEST->NRROUTE[2].ROUT_NEIGHBOUR == 0)
-			continue;				// NO MORE DESTINATIONS
+			continue;				/* NO MORE DESTINATIONS */
 
 		if (DEST->NRROUTE[2].ROUT_OBSCOUNT == 0)
 		{
-			//	 FAILED IN USE - DELETE
+			/*	 FAILED IN USE - DELETE */
 			
 			CLEARTHIRD(DEST);
 			continue;
 		}
 
-		if ((DEST->NRROUTE[2].ROUT_OBSCOUNT & 0x80) == 0)	// Locked?
+		if ((DEST->NRROUTE[2].ROUT_OBSCOUNT & 0x80) == 0)	/* Locked? */
 		{
 			DEST->NRROUTE[2].ROUT_OBSCOUNT--;
 
-			if (DEST->NRROUTE[2].ROUT_OBSCOUNT == 0)		// Timed out
+			if (DEST->NRROUTE[2].ROUT_OBSCOUNT == 0)		/* Timed out */
 			{
 				CLEARTHIRD(DEST);
 				continue;
@@ -1216,27 +1216,27 @@ VOID MOVE3TO2(dest_list * DEST)
 VOID CLEARTHIRD(dest_list * DEST)
 {
 	memset(&DEST->NRROUTE[2], 0, sizeof (struct NR_DEST_ROUTE_ENTRY));
-	DEST->DEST_ROUTE = 0;		// CANCEL ACTIVE ROUTE, SO WILL RE-ASSESS BEST
+	DEST->DEST_ROUTE = 0;		/* CANCEL ACTIVE ROUTE, SO WILL RE-ASSESS BEST */
 }
 
-// L4 Flags Values
+/* L4 Flags Values */
 
-#define DISCPENDING	8		// SEND DISC WHEN ALL DATA ACK'ED
+#define DISCPENDING	8		/* SEND DISC WHEN ALL DATA ACK'ED */
 
 VOID REMOVENODE(dest_list * DEST)
 {
 	TRANSPORTENTRY * L4 = L4TABLE;
 	int n = MAXCIRCUITS;
 
-	//	Remove a node, either because routes have gone, or APPL API has invalidated it
+	/*	Remove a node, either because routes have gone, or APPL API has invalidated it */
 
 	while (DEST->DEST_Q)
 		ReleaseBuffer(Q_REM(&DEST->DEST_Q));
 
-	//	MAY NEED TO CHECK FOR L4 CIRCUITS USING DEST, BUT PROBABLY NOT,
-	//	 AS THEY SHOULD HAVE TIMED OUT LONG AGO
+	/*	MAY NEED TO CHECK FOR L4 CIRCUITS USING DEST, BUT PROBABLY NOT, */
+	/*	 AS THEY SHOULD HAVE TIMED OUT LONG AGO */
 
-	// Not necessarily true with INP3, so had better check
+	/* Not necessarily true with INP3, so had better check */
 
 	while (n--)
 	{
@@ -1244,24 +1244,24 @@ VOID REMOVENODE(dest_list * DEST)
 		{
 			if (L4->L4TARGET.DEST == DEST)
 			{
-				// Session to/from this Dest
+				/* Session to/from this Dest */
 
 				TRANSPORTENTRY * Partner = L4->L4CROSSLINK;
 				char Nodename[20];
 
-				Nodename[DecodeNodeName(DEST->DEST_CALL, Nodename)] = 0;		// null terminate
+				Nodename[DecodeNodeName(DEST->DEST_CALL, Nodename)] = 0;		/* null terminate */
 
 				Debugprintf("Delete Node for %s Called with active L4 Session - State %d",
 					Nodename, L4->L4STATE);
 
 				if (Partner)
 				{	
-					// if connnecting, send error message and drop back to command level
+					/* if connnecting, send error message and drop back to command level */
 
 					if (L4->L4STATE == 2)
 					{
 						struct DATAMESSAGE * Msg = GetBuff();
-						Partner->L4CROSSLINK = 0;		// Back to command lewel
+						Partner->L4CROSSLINK = 0;		/* Back to command lewel */
 
 						if (Msg)
 						{
@@ -1278,7 +1278,7 @@ VOID REMOVENODE(dest_list * DEST)
 					}
 					else
 					{
-						// Failed in session - treat as if a L4DREQ received
+						/* Failed in session - treat as if a L4DREQ received */
 
 						CLOSECURRENTSESSION(Partner);
 					}
@@ -1294,32 +1294,32 @@ VOID REMOVENODE(dest_list * DEST)
 
 VOID L3CONNECTFAILED(struct _LINKTABLE * LINK)
 {
-	//	L2 LINK SETUP HAS FAILED - SEE IF ANOTHER NEIGHBOUR CAN BE USED
+	/*	L2 LINK SETUP HAS FAILED - SEE IF ANOTHER NEIGHBOUR CAN BE USED */
 
 	struct PORTCONTROL * PORT = PORTTABLE;
 	struct ROUTE * ROUTE;
 
 
-	ROUTE = LINK->NEIGHBOUR;		// TO NEIGHBOUR
+	ROUTE = LINK->NEIGHBOUR;		/* TO NEIGHBOUR */
 	
 	if (ROUTE == NULL)
-		return;						// NOTHING ???
+		return;						/* NOTHING ??? */
 	
 	TellINP3LinkSetupFailed(ROUTE);
 
-	ROUTE->NEIGHBOUR_LINK = 0;		// CLEAR IT
+	ROUTE->NEIGHBOUR_LINK = 0;		/* CLEAR IT */
 
-	L3TRYNEXTDEST(ROUTE);			// RESET ASSOCIATED DEST ENTRIES
+	L3TRYNEXTDEST(ROUTE);			/* RESET ASSOCIATED DEST ENTRIES */
 }
 
 
 VOID L3TRYNEXTDEST(struct ROUTE * ROUTE)
 {
-	//	FIND ANY DESINATIONS WITH [ESI] AS ACTIVE NEIGHBOUR, AND
-	//	SET NEXT BEST NEIGHBOUR (IF ANY) ACTIVE
+	/*	FIND ANY DESINATIONS WITH [ESI] AS ACTIVE NEIGHBOUR, AND */
+	/*	SET NEXT BEST NEIGHBOUR (IF ANY) ACTIVE */
 
 	int n = MAXDESTS;
-	struct DEST_LIST * DEST = DESTS;		// NODE LIST
+	struct DEST_LIST * DEST = DESTS;		/* NODE LIST */
 	int ActiveRoute;
 
 	while (n--)
@@ -1328,39 +1328,39 @@ VOID L3TRYNEXTDEST(struct ROUTE * ROUTE)
 		
 		if (ActiveRoute)
 		{
-			ActiveRoute --;			// Routes numbered 1 - 6, idex from 0
+			ActiveRoute --;			/* Routes numbered 1 - 6, idex from 0 */
 			
 			if (DEST->NRROUTE[ActiveRoute].ROUT_NEIGHBOUR == ROUTE)
 			{
-				// We were best
+				/* We were best */
 
-				//	NEIGHBOUR HAS FAILED - DECREMENT OBSCOUNT
-				//	AND TRY TO ACTIVATE ANOTHER (IF ANY)
+				/*	NEIGHBOUR HAS FAILED - DECREMENT OBSCOUNT */
+				/*	AND TRY TO ACTIVATE ANOTHER (IF ANY) */
 
 				if (DEST->NRROUTE[ActiveRoute].ROUT_OBSCOUNT)
 				{
-					// IF ALREADY ZERO - WILL BE DELETED BY NEXT NODES UPDATE
+					/* IF ALREADY ZERO - WILL BE DELETED BY NEXT NODES UPDATE */
 
 					if ((DEST->NRROUTE[ActiveRoute].ROUT_OBSCOUNT & 0x80) == 0)
 					{
-						// not Locked
+						/* not Locked */
 
 						DEST->NRROUTE[ActiveRoute].ROUT_OBSCOUNT--;
 
-						// if ROUTE HAS EXPIRED - WE SHOULD CLEAR IT, AND MOVE OTHERS (IF ANY) UP
+						/* if ROUTE HAS EXPIRED - WE SHOULD CLEAR IT, AND MOVE OTHERS (IF ANY) UP */
 					}
 				}
 
-				//	REMOVE FIRST MESSAGE FROM DEST_Q. L4 WILL RETRY - IF IT IS LEFT HERE
-				//	WE WILL TRY TO ACTIVATE THE DESTINATION FOR EVER
+				/*	REMOVE FIRST MESSAGE FROM DEST_Q. L4 WILL RETRY - IF IT IS LEFT HERE */
+				/*	WE WILL TRY TO ACTIVATE THE DESTINATION FOR EVER */
 
 				if (DEST->DEST_Q)
 					ReleaseBuffer(Q_REM(&DEST->DEST_Q));
 
-				DEST->DEST_ROUTE++;			// TO NEXT
+				DEST->DEST_ROUTE++;			/* TO NEXT */
 				
 				if (DEST->DEST_ROUTE = 7)
-					DEST->DEST_ROUTE = 1;	// TRY TO ACTIVATE FIRST
+					DEST->DEST_ROUTE = 1;	/* TRY TO ACTIVATE FIRST */
 			}
 		}
 		DEST++;
@@ -1369,7 +1369,7 @@ VOID L3TRYNEXTDEST(struct ROUTE * ROUTE)
 
 VOID CHECKNEIGHBOUR(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * Msg)
 {
-	//	MESSAGE RECEIVED ON LINK WITH NO ROUTE - SET ONE UP
+	/*	MESSAGE RECEIVED ON LINK WITH NO ROUTE - SET ONE UP */
 
 	struct ROUTE * ROUTE;
 	struct PORTCONTROL * PORT = LINK->LINKPORT;
@@ -1378,9 +1378,9 @@ VOID CHECKNEIGHBOUR(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * Msg)
 	if (FindNeighbour(LINK->LINKCALL, Portno, &ROUTE) == 0)
 	{
 		if (ROUTE == 0)
-			goto L3CONN08;			// TABLE FULL??
+			goto L3CONN08;			/* TABLE FULL?? */
 		
-		// FIRST MAKE SURE WE ARE ALLOWING NETWORK ACTIVITY ON THIS PORT
+		/* FIRST MAKE SURE WE ARE ALLOWING NETWORK ACTIVITY ON THIS PORT */
 
 		if (PORT->PORTQUALITY == 0 && PORT->INP3ONLY == 0)
 			return;
@@ -1394,7 +1394,7 @@ VOID CHECKNEIGHBOUR(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * Msg)
 		ROUTE->NoKeepAlive = PORT->PortNoKeepAlive;
 	}
 
-	//	SET THIS AS ACTIVE LINK IF NONE PRESENT
+	/*	SET THIS AS ACTIVE LINK IF NONE PRESENT */
 
 	if (ROUTE->NEIGHBOUR_LINK == 0)
 	{
@@ -1404,13 +1404,13 @@ VOID CHECKNEIGHBOUR(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * Msg)
 
 L3CONN08:
 
-	LINK->NEIGHBOUR = ROUTE;		// SET LINK - NEIGHBOUR
+	LINK->NEIGHBOUR = ROUTE;		/* SET LINK - NEIGHBOUR */
 }
 
 struct DEST_LIST * CHECKL3TABLES(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * Msg)
 {
-	//	CHECK THAT FAR NODE IS IN 'NODES'.
-	//	RETURNS POINTER TO NEIGHBOUR ENTRY
+	/*	CHECK THAT FAR NODE IS IN 'NODES'. */
+	/*	RETURNS POINTER TO NEIGHBOUR ENTRY */
 
 	struct ROUTE * ROUTE;
 	struct DEST_LIST * DEST;
@@ -1419,12 +1419,12 @@ struct DEST_LIST * CHECKL3TABLES(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * Msg
 	ROUTE = LINK->NEIGHBOUR;
 
 	if (FindDestination(Msg->L3SRCE, &DEST))
-		return DEST;					// Ok
+		return DEST;					/* Ok */
 	
 	if (DEST == NULL)
-		return NULL;				// Tsble Full
+		return NULL;				/* Tsble Full */
 
-	//	ADD DESTINATION VIA NEIGHBOUR, UNLESS ON BLACK LIST
+	/*	ADD DESTINATION VIA NEIGHBOUR, UNLESS ON BLACK LIST */
 
 #ifdef EXCLUDEBITS
 
@@ -1437,19 +1437,19 @@ struct DEST_LIST * CHECKL3TABLES(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * Msg
 	
 	NUMBEROFNODES++;
 
-	//	MAKE SURE NEIGHBOUR IS DEFINED FOR DESTINATION
+	/*	MAKE SURE NEIGHBOUR IS DEFINED FOR DESTINATION */
 
-	//	IF NODE is NEIGHBOUR, THEN CAN USE NEIGHBOUR QUALITY,
-	//	   OTHERWISE WE DONT KNOW ROUTE, SO MUST SET QUAL TO 0
+	/*	IF NODE is NEIGHBOUR, THEN CAN USE NEIGHBOUR QUALITY, */
+	/*	   OTHERWISE WE DONT KNOW ROUTE, SO MUST SET QUAL TO 0 */
 
 
-	Qual = 0;						// DONT KNOW ROUTING, SO SET QUALITY TO ZERO
+	Qual = 0;						/* DONT KNOW ROUTING, SO SET QUALITY TO ZERO */
 	
-	PROCROUTES(DEST, ROUTE, Qual);	// ADD NEIGHBOUR  IF NOT PRESENT
+	PROCROUTES(DEST, ROUTE, Qual);	/* ADD NEIGHBOUR  IF NOT PRESENT */
 	
 	if (DEST->DEST_ROUTE == 0)
 	{
-		//	MAKE CURRENT NEIGHBOUR ACTIVE
+		/*	MAKE CURRENT NEIGHBOUR ACTIVE */
 
 		int n = 0;
 
@@ -1466,18 +1466,18 @@ struct DEST_LIST * CHECKL3TABLES(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * Msg
 
 		if (DEST->DEST_ROUTE > 3)
 		{
-			DEST->DEST_ROUTE = 1;	// CURRENT NEIGHBOUR ISNT IN DEST LIST - SET TO USE BEST
-			return DEST;			// Can't update OBS
+			DEST->DEST_ROUTE = 1;	/* CURRENT NEIGHBOUR ISNT IN DEST LIST - SET TO USE BEST */
+			return DEST;			/* Can't update OBS */
 		}
 	}
 
-	//	REFRESH OBS COUNT
+	/*	REFRESH OBS COUNT */
 
 	if (DEST->DEST_ROUTE)
 	{
 		int Index = DEST->DEST_ROUTE -1;
 		
-		if (DEST->NRROUTE[Index].ROUT_OBSCOUNT & 0x80)		// Locked:
+		if (DEST->NRROUTE[Index].ROUT_OBSCOUNT & 0x80)		/* Locked: */
 			return DEST;
 
 		DEST->NRROUTE[Index].ROUT_OBSCOUNT = OBSINIT;
@@ -1487,8 +1487,8 @@ struct DEST_LIST * CHECKL3TABLES(struct _LINKTABLE * LINK, L3MESSAGEBUFFER * Msg
 
 VOID REFRESHROUTE(TRANSPORTENTRY * Session)
 {
-	//	RESET OBS COUNT ON CURRENT ROUTE TO DEST FOR SESSION IN [EBX]
-	//	CALLED WHEN INFO ACK RECEIVED, INDICATING ROUTE IS STILL OK
+	/*	RESET OBS COUNT ON CURRENT ROUTE TO DEST FOR SESSION IN [EBX] */
+	/*	CALLED WHEN INFO ACK RECEIVED, INDICATING ROUTE IS STILL OK */
 
 	struct DEST_LIST * DEST;
 	int Index;
@@ -1496,17 +1496,17 @@ VOID REFRESHROUTE(TRANSPORTENTRY * Session)
 	DEST = Session->L4TARGET.DEST;
 
 	if (DEST == 0)
-		return;					// No Dest ???
+		return;					/* No Dest ??? */
 
 	Index = DEST->DEST_ROUTE;
 
 	if (Index == 0)
-		return;					// NONE ACTIVE???
+		return;					/* NONE ACTIVE??? */
 
 	Index--;
 
 	if (DEST->NRROUTE[Index].ROUT_OBSCOUNT & 0x80)
-		return;					// Locked
+		return;					/* Locked */
 
 	DEST->NRROUTE[Index].ROUT_OBSCOUNT = OBSINIT;
 }

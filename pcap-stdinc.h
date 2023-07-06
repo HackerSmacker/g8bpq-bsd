@@ -45,16 +45,16 @@
 #ifdef _WINSOCKAPI_
 #undef _WINSOCKAPI_
 #endif
-//#include <winsock2.h>
+/*#include <winsock2.h> */
 
 #include <fcntl.h>
 
-//#include "bittypes.h"
+/*#include "bittypes.h" */
 #include <time.h>
 #include <io.h>
 
 #ifndef __MINGW32__
-//#include "IP6_misc.h"
+/*#include "IP6_misc.h" */
 #endif
 
 #define caddr_t char*

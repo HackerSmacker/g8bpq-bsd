@@ -17,11 +17,11 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-//
-//	INP3 Suport Code for BPQ32 Switch
-//
+/* */
+/*	INP3 Suport Code for BPQ32 Switch */
+/* */
 
-//	All code runs from the BPQ32 Received or Timer Routines under Semaphore.
+/*	All code runs from the BPQ32 Received or Timer Routines under Semaphore. */
 
 
 #define _CRT_SECURE_NO_DEPRECATE 
@@ -33,11 +33,11 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 #include "time.h"
 #include "stdio.h"
 #include <fcntl.h>					 
-//#include "vmm.h"
+/*#include "vmm.h" */
 
 static VOID SendNetFrame(struct ROUTE * Route, struct _L3MESSAGEBUFFER * Frame)
 {
-	// INP3 should only ever send over an active link, so just queue the message
+	/* INP3 should only ever send over an active link, so just queue the message */
 	
 	if (Route->NEIGHBOUR_LINK)
 		C_Q_ADD(&Route->NEIGHBOUR_LINK->TX_Q, Frame);
@@ -76,23 +76,23 @@ VOID DecayNETROMRoutes(struct ROUTE * Route);
 VOID DeleteINP3Routes(struct ROUTE * Route);
 BOOL L2SETUPCROSSLINKEX(PROUTE ROUTE, int Retries);
 
-//#define NOINP3
+/*#define NOINP3 */
 
 struct _RTTMSG RTTMsg = {""};
 
-//struct ROUTE DummyRoute = {"","",""};
+/*struct ROUTE DummyRoute = {"","",""}; */
 
-int RIPTimerCount = 0;				// 1 sec to 10 sec counter
-int PosTimerCount = 0;				// 1 sec to 5 Mins counter
+int RIPTimerCount = 0;				/* 1 sec to 10 sec counter */
+int PosTimerCount = 0;				/* 1 sec to 5 Mins counter */
 
-// Timer Runs every 10 Secs
+/* Timer Runs every 10 Secs */
 
-extern int MAXRTT;			// 90 secs
+extern int MAXRTT;			/* 90 secs */
 extern int MaxHops;
 
-extern int RTTInterval;			// 4 Minutes
+extern int RTTInterval;			/* 4 Minutes */
 int RTTRetries = 2;
-int RTTTimeout = 6;				// 1 Min (Horizon is 1 min)
+int RTTTimeout = 6;				/* 1 Min (Horizon is 1 min) */
 
 VOID InitialiseRTT()
 {
@@ -102,8 +102,8 @@ VOID InitialiseRTT()
 	memcpy(RTTMsg.ID, "L3RTT: ", 7);
 	memcpy(RTTMsg.VERSION, "LEVEL3_V2.1 ", 12);
 	memcpy(RTTMsg.SWVERSION, "BPQ32001 ", 9);
-	_snprintf(temp, sizeof(temp), "$M%d $N      ", MAXRTT); // trailing spaces extend to ensure padding if the length of characters for MAXRTT changes.
-	memcpy(RTTMsg.FLAGS, temp, 10);                 // But still limit the actual characters copied.
+	_snprintf(temp, sizeof(temp), "$M%d $N      ", MAXRTT); /* trailing spaces extend to ensure padding if the length of characters for MAXRTT changes. */
+	memcpy(RTTMsg.FLAGS, temp, 10);                 /* But still limit the actual characters copied. */
 	memcpy(RTTMsg.ALIAS, &MYALIASTEXT, 6);
 	RTTMsg.ALIAS[6] = ' ';
 }
@@ -131,7 +131,7 @@ VOID DeleteINP3Routes(struct ROUTE * Route)
 	int i;
 	struct DEST_LIST * Dest =  DESTS;
 
-	// Delete any NETROM Dest entries via this Route
+	/* Delete any NETROM Dest entries via this Route */
 
 	Route->SRTT = 0;
 	Route->RTT = 0;
@@ -141,36 +141,36 @@ VOID DeleteINP3Routes(struct ROUTE * Route)
 
 	Dest--;
 
-	// Delete any Dest entries via this Route
+	/* Delete any Dest entries via this Route */
 
 	for (i=0; i < MAXDESTS; i++)
 	{
 		Dest++;
 
 		if (Dest->DEST_CALL[0] == 0)
-			continue;										// Spare Entry
+			continue;										/* Spare Entry */
 
-		if (Dest->NRROUTE[0].ROUT_OBSCOUNT >= 128)	 // Not if locked
+		if (Dest->NRROUTE[0].ROUT_OBSCOUNT >= 128)	 /* Not if locked */
 			continue;
 
 		if (Dest->ROUTE[0].ROUT_NEIGHBOUR == Route)
 		{
-			//	We are deleting the best route, so need to tell other nodes
-			//	If this is the only one, we need to keep the entry with at 60000 rtt so
-			//	we can send it. Remove when all gone
+			/*	We are deleting the best route, so need to tell other nodes */
+			/*	If this is the only one, we need to keep the entry with at 60000 rtt so */
+			/*	we can send it. Remove when all gone */
 
-			//	How do we indicate is is dead - Maybe the 60000 is enough!
+			/*	How do we indicate is is dead - Maybe the 60000 is enough! */
 			if (Dest->ROUTE[1].ROUT_NEIGHBOUR == 0)
 			{
-				// Only entry
+				/* Only entry */
 				Dest->ROUTE[0].SRTT = 60000;
 				Dest->ROUTE[0].Hops = 255;
 
 				continue;
 			}
 
-			Dest->ROUTE[1].LastRTT  = Dest->ROUTE[0].SRTT;		// So next scan will check if rtt has increaced
-															// enough to need a RIF
+			Dest->ROUTE[1].LastRTT  = Dest->ROUTE[0].SRTT;		/* So next scan will check if rtt has increaced */
+															/* enough to need a RIF */
 				
 			memcpy(&Dest->ROUTE[0], &Dest->ROUTE[1], sizeof(struct DEST_ROUTE_ENTRY));
 			memcpy(&Dest->ROUTE[1], &Dest->ROUTE[2], sizeof(struct DEST_ROUTE_ENTRY));
@@ -179,7 +179,7 @@ VOID DeleteINP3Routes(struct ROUTE * Route)
 			continue;
 		}
 
-		// If we aren't removing the best, we don't need to tell anyone.
+		/* If we aren't removing the best, we don't need to tell anyone. */
 		
 		if (Dest->ROUTE[1].ROUT_NEIGHBOUR == Route)
 		{
@@ -204,20 +204,20 @@ VOID DecayNETROMRoutes(struct ROUTE * Route)
 
 	Dest--;
 
-	// Decay any NETROM Dest entries via this Route. If OBS reaches zero, remove
+	/* Decay any NETROM Dest entries via this Route. If OBS reaches zero, remove */
 
-	// OBSINIT is probably too many retries. Try decrementing by 2.
+	/* OBSINIT is probably too many retries. Try decrementing by 2. */
 
 	for (i=0; i < MAXDESTS; i++)
 	{
 		Dest++;
 
 		if (Dest->DEST_CALL[0] == 0)
-			continue;										// Spare Entry
+			continue;										/* Spare Entry */
 
 		if (Dest->NRROUTE[0].ROUT_NEIGHBOUR == Route)
 		{
-			if (Dest->NRROUTE[0].ROUT_OBSCOUNT && Dest->NRROUTE[0].ROUT_OBSCOUNT < 128)	 // Not if locked
+			if (Dest->NRROUTE[0].ROUT_OBSCOUNT && Dest->NRROUTE[0].ROUT_OBSCOUNT < 128)	 /* Not if locked */
 			{
 				Dest->NRROUTE[0].ROUT_OBSCOUNT--;
 				if (Dest->NRROUTE[0].ROUT_OBSCOUNT)
@@ -226,20 +226,20 @@ VOID DecayNETROMRoutes(struct ROUTE * Route)
 			}
 			if (Dest->NRROUTE[0].ROUT_OBSCOUNT == 0)
 			{
-				// Route expired
+				/* Route expired */
 
-				if (Dest->NRROUTE[1].ROUT_NEIGHBOUR == 0)			// No more Netrom Routes
+				if (Dest->NRROUTE[1].ROUT_NEIGHBOUR == 0)			/* No more Netrom Routes */
 				{
-					if (Dest->ROUTE[0].ROUT_NEIGHBOUR == 0)		// Any INP3 ROutes?
+					if (Dest->ROUTE[0].ROUT_NEIGHBOUR == 0)		/* Any INP3 ROutes? */
 					{
-						// No More Routes - ZAP Dest
+						/* No More Routes - ZAP Dest */
 
-						REMOVENODE(Dest);			// Clear buffers, Remove from Sorted Nodes chain, and zap entry	
+						REMOVENODE(Dest);			/* Clear buffers, Remove from Sorted Nodes chain, and zap entry	 */
 						continue;
 					}
 					else
 					{
-						// Still have an INP3 Route - just zap this entry
+						/* Still have an INP3 Route - just zap this entry */
 
 						memset(&Dest->NRROUTE[0], 0, sizeof(struct NR_DEST_ROUTE_ENTRY));
 						continue;
@@ -284,12 +284,12 @@ VOID DecayNETROMRoutes(struct ROUTE * Route)
 
 VOID TellINP3LinkSetupFailed(struct ROUTE * Route)
 {
-	// Attempt to activate Neighbour failed
+	/* Attempt to activate Neighbour failed */
 	
-//	char call[11]="";
+/*	char call[11]=""; */
 
-//	ConvFromAX25(Route->NEIGHBOUR_CALL, call);
-//	Debugprintf("BPQ32 L2 Link to Neighbour %s setup failed", call);
+/*	ConvFromAX25(Route->NEIGHBOUR_CALL, call); */
+/*	Debugprintf("BPQ32 L2 Link to Neighbour %s setup failed", call); */
 
 
 	if (Route->INP3Node == 0)
@@ -305,7 +305,7 @@ VOID ProcessRTTReply(struct ROUTE * Route, struct _L3MESSAGEBUFFER * Buff)
 
 	if ((Route->Status & GotRTTResponse) == 0)
 	{
-		// Link is just starting
+		/* Link is just starting */
 
 		Route->Status |= GotRTTResponse;
 
@@ -317,13 +317,13 @@ VOID ProcessRTTReply(struct ROUTE * Route, struct _L3MESSAGEBUFFER * Buff)
 		}
 	}
 
-	Route->Timeout = 0;			// Got Response
+	Route->Timeout = 0;			/* Got Response */
 	
 	sscanf(&Buff->L4DATA[6], "%d", &OrigTime);
 	RTT = GetTickCount() - OrigTime;
 
 	if (RTT > 60000)
-		return;					// Ignore if more than 60 secs
+		return;					/* Ignore if more than 60 secs */
 
 	Route->RTT = RTT;
 
@@ -351,13 +351,13 @@ VOID ProcessINP3RIF(struct ROUTE * Route, UCHAR * ptr1, int msglen, int Port)
 #endif
 
 	if (Route->INP3Node == 0)
-		return;						// We don't want to use INP3
+		return;						/* We don't want to use INP3 */
 
-	// Update Timestamp on Route
+	/* Update Timestamp on Route */
 
 	time((time_t *)&Stamp);
 
-	Stamp = Stamp % 86400;			// Secs into day
+	Stamp = Stamp % 86400;			/* Secs into day */
 	HH = Stamp / 3600;
 
 	Stamp -= HH * 3600;
@@ -370,8 +370,8 @@ VOID ProcessINP3RIF(struct ROUTE * Route, UCHAR * ptr1, int msglen, int Port)
 		memset(alias, ' ', 6);	
 		memcpy(axcall, ptr1, 7);
 
-		if (axcall[0] < 0x60 || (axcall[0] & 1))		// Not valid ax25 callsign
-			return;					// Corrupt RIF
+		if (axcall[0] < 0x60 || (axcall[0] & 1))		/* Not valid ax25 callsign */
+			return;					/* Corrupt RIF */
 	
 		ptr1+=7;
 
@@ -387,7 +387,7 @@ VOID ProcessINP3RIF(struct ROUTE * Route, UCHAR * ptr1, int msglen, int Port)
 			opcode = *(ptr1+1);
 
 			if (len < 2 || len > msglen)
-				return;				// Duff RIF
+				return;				/* Duff RIF */
 
 			if (opcode == 0)
 			{
@@ -404,7 +404,7 @@ VOID ProcessINP3RIF(struct ROUTE * Route, UCHAR * ptr1, int msglen, int Port)
 		}
 
 		ptr1++;
-		msglen--;		// EOP
+		msglen--;		/* EOP */
 
 		UpdateNode(Route, axcall, alias, hops, rtt);
 	}
@@ -426,15 +426,15 @@ VOID UpdateNode(struct ROUTE * Route, UCHAR * axcall, UCHAR * alias, int  hops, 
 
 	if (hops > MaxHops && hops < 255)
 	{
-//		ConvFromAX25(axcall, call);
-//		Debugprintf("Node %s Hops %d RTT %d Ignored - Hop Count too high", call, hops, rtt);
+/*		ConvFromAX25(axcall, call); */
+/*		Debugprintf("Node %s Hops %d RTT %d Ignored - Hop Count too high", call, hops, rtt); */
 		return;
 	}
 
 	if (rtt > MAXRTT  && rtt < 60000)
 	{
-//		ConvFromAX25(axcall, call);
-//		Debugprintf("Node %s Hops %d RTT %d Ignored - rtt too high", call, hops, rtt);
+/*		ConvFromAX25(axcall, call); */
+/*		Debugprintf("Node %s Hops %d RTT %d Ignored - rtt too high", call, hops, rtt); */
 		return;
 	}
 
@@ -442,17 +442,17 @@ VOID UpdateNode(struct ROUTE * Route, UCHAR * axcall, UCHAR * alias, int  hops, 
 		goto Found;
 
 	if (Dest == NULL)
-		return;			// Tsble Full
+		return;			/* Tsble Full */
 
 	if (rtt >= 60000)
-		return;				// No Point addind a new dead route
+		return;				/* No Point addind a new dead route */
 
 	memset(Dest, 0, sizeof(struct DEST_LIST));
 
 	memcpy(Dest->DEST_CALL, axcall, 7);
 	memcpy(Dest->DEST_ALIAS, alias, 6);
 
-//	Set up First Route
+/*	Set up First Route */
 
 	Dest->ROUTE[0].Hops = hops;
 	Dest->ROUTE[0].SRTT = rtt;
@@ -471,15 +471,15 @@ VOID UpdateNode(struct ROUTE * Route, UCHAR * axcall, UCHAR * alias, int  hops, 
 
 Found:
 
-	if (Dest->DEST_STATE & 0x80)	// Application Entry
+	if (Dest->DEST_STATE & 0x80)	/* Application Entry */
 		return;
 
-	// Update ALIAS
+	/* Update ALIAS */
 
 	if (alias[0] > ' ')
 		memcpy(Dest->DEST_ALIAS, alias, 6);
 
-	// See if we are known to it, it not add
+	/* See if we are known to it, it not add */
 
 	ROUTEPTR = &Dest->ROUTE[0];
 
@@ -510,11 +510,11 @@ Found:
 		return;
 	}
 
-	// Not in list. If any spare, add.
-	// If full, see if this is better
+	/* Not in list. If any spare, add. */
+	/* If full, see if this is better */
 
 	if (rtt >= 60000)
-		return;				// No Point addind a new dead route
+		return;				/* No Point addind a new dead route */
 
 	ROUTEPTR = &Dest->ROUTE[0];
 
@@ -522,7 +522,7 @@ Found:
 	{
 		if (ROUTEPTR->ROUT_NEIGHBOUR == NULL)
 		{
-			// Add here
+			/* Add here */
 
 			Dest->ROUTE[0].Hops = hops;
 			Dest->ROUTE[0].SRTT = rtt;
@@ -533,13 +533,13 @@ Found:
 		ROUTEPTR++;
 	}
 
-	// Full, see if this is better
+	/* Full, see if this is better */
 
-	// Note that wont replace any netrom routes with INP3 ones unless we add pseudo rtt values to netrom entries
+	/* Note that wont replace any netrom routes with INP3 ones unless we add pseudo rtt values to netrom entries */
 
 	if (Dest->ROUTE[0].SRTT > rtt)
 	{
-		// We are better. Move others down and add on front
+		/* We are better. Move others down and add on front */
 
 		memcpy(&Dest->ROUTE[2], &Dest->ROUTE[1], sizeof(struct DEST_ROUTE_ENTRY));
 		memcpy(&Dest->ROUTE[1], &Dest->ROUTE[0], sizeof(struct DEST_ROUTE_ENTRY));
@@ -550,7 +550,7 @@ Found:
 
 	if (Dest->ROUTE[1].SRTT > rtt)
 	{
-		// We are better. Move  2nd down and add
+		/* We are better. Move  2nd down and add */
 
 		memcpy(&Dest->ROUTE[2], &Dest->ROUTE[1], sizeof(struct DEST_ROUTE_ENTRY));
 
@@ -560,13 +560,13 @@ Found:
 
 	if (Dest->ROUTE[2].SRTT > rtt)
 	{
-		// We are better. Add here
+		/* We are better. Add here */
 
 		AddHere(&Dest->ROUTE[2], Route, hops, rtt);
 		return;
 	}
 
-	// Worse than any - ignoee
+	/* Worse than any - ignoee */
 
 }
 
@@ -636,19 +636,19 @@ VOID SortRoutes(struct DEST_LIST * Dest)
 {
 	 struct DEST_ROUTE_ENTRY Temp;
 
-	// May now be out of order
+	/* May now be out of order */
 
 	if (Dest->ROUTE[1].ROUT_NEIGHBOUR == 0)
-		return;						// Only One, so cant be out of order
+		return;						/* Only One, so cant be out of order */
 	
 	if (Dest->ROUTE[2].ROUT_NEIGHBOUR == 0)
 	{
-		// Only 2
+		/* Only 2 */
 
 		if (Dest->ROUTE[0].SRTT <= Dest->ROUTE[1].SRTT)
 			return;
 
-		// Swap one and two
+		/* Swap one and two */
 
 		memcpy(&Temp, &Dest->ROUTE[0], sizeof(struct DEST_ROUTE_ENTRY));
 		memcpy(&Dest->ROUTE[0], &Dest->ROUTE[1], sizeof(struct DEST_ROUTE_ENTRY));
@@ -657,7 +657,7 @@ VOID SortRoutes(struct DEST_LIST * Dest)
 		return;
 	}
 
-	// Have 3 Entries
+	/* Have 3 Entries */
 }
 
 
@@ -666,7 +666,7 @@ VOID UpdateRoute(struct DEST_LIST * Dest, struct DEST_ROUTE_ENTRY * ROUTEPTR, in
 {
 	if (ROUTEPTR->Hops == 0)
 	{
-		// This is not a INP3 Route - Convert it
+		/* This is not a INP3 Route - Convert it */
 
 		ROUTEPTR->Hops = hops;
 		ROUTEPTR->SRTT = rtt;
@@ -694,7 +694,7 @@ VOID UpdateRoute(struct DEST_LIST * Dest, struct DEST_ROUTE_ENTRY * ROUTEPTR, in
 
 VOID ProcessRTTMsg(struct ROUTE * Route, struct _L3MESSAGEBUFFER * Buff, int Len, int Port)
 {
-	// See if a reply to our message, or a new request
+	/* See if a reply to our message, or a new request */
 
 	if (memcmp(Buff->L3SRCE, MYCALL,7) == 0)
 	{
@@ -709,21 +709,21 @@ VOID ProcessRTTMsg(struct ROUTE * Route, struct _L3MESSAGEBUFFER * Buff, int Len
 		if (Route->INP3Node == 0)
 		{
 			ReleaseBuffer(Buff);
-			return;						// We don't want to use INP3
+			return;						/* We don't want to use INP3 */
 		}
 
-		// Extract other end's SRTT
+		/* Extract other end's SRTT */
 
 		sscanf(&Buff->L4DATA[6], "%d %d", &Dummy, &OtherRTT);
-		Route->NeighbourSRTT = OtherRTT * 10;  // We store in mS
+		Route->NeighbourSRTT = OtherRTT * 10;  /* We store in mS */
 
-		// Echo Back to sender
+		/* Echo Back to sender */
 	
 		SendNetFrame(Route, Buff);
 
 		if ((Route->Status & GotRTTRequest) == 0)
 		{
-			// Link is just starting
+			/* Link is just starting */
 
 			Route->Status |= GotRTTRequest;
 			
@@ -736,9 +736,9 @@ VOID ProcessRTTMsg(struct ROUTE * Route, struct _L3MESSAGEBUFFER * Buff, int Len
 			}
 			else
 			{
-				// We have not yet seen a response (and maybe haven't sent one
+				/* We have not yet seen a response (and maybe haven't sent one */
 
-				Route->BCTimer = 0;		// So send one
+				Route->BCTimer = 0;		/* So send one */
 			}
 		}
 	}
@@ -796,7 +796,7 @@ VOID SendKeepAlive(struct ROUTE * Route)
 	Msg->L4TXNO = 0;
 	Msg->L4FLAGS = L4INFO;
 
-//	Msg->L3MSG.L4DATA[0] = 'K';
+/*	Msg->L3MSG.L4DATA[0] = 'K'; */
 
 	Msg->LENGTH = 20 + MSGHDDRLEN + 1;
 
@@ -811,7 +811,7 @@ int BuildRIF(UCHAR * RIF, UCHAR * Call, UCHAR * Alias, int Hops, int RTT)
 	UCHAR * ptr;
 
 
-	if (RTT > 60000) RTT = 60000;	// Dont send more than 60000
+	if (RTT > 60000) RTT = 60000;	/* Dont send more than 60000 */
 
 	memcpy(&RIF[0], Call, 7);
 	RIF[7] = Hops;
@@ -820,7 +820,7 @@ int BuildRIF(UCHAR * RIF, UCHAR * Call, UCHAR * Alias, int Hops, int RTT)
 
 	if (Alias)
 	{
-		// Need to null-terminate Alias
+		/* Need to null-terminate Alias */
 		
 		memcpy(AliasCopy, Alias, 6);
 		ptr = strchr(AliasCopy, ' ');
@@ -858,7 +858,7 @@ VOID SendOurRIF(struct ROUTE * Route)
 
 	Msg->L3SRCE[0] = 0xff;
 
-	// send a RIF for our Node and all our APPLCalls
+	/* send a RIF for our Node and all our APPLCalls */
 
 	RIFLen = BuildRIF(&Msg->L3SRCE[totLen], MYCALL, MYALIASTEXT, 1, 0);
 	totLen += RIFLen;
@@ -891,7 +891,7 @@ int SendRIPTimer()
 	{
 		if (Route->NEIGHBOUR_CALL[0] != 0)
 		{
-			if (Route->NoKeepAlive)					// Keepalive Disabled
+			if (Route->NoKeepAlive)					/* Keepalive Disabled */
 			{
 				Route++;
 				continue;
@@ -902,10 +902,10 @@ int SendRIPTimer()
 				if (Route->NEIGHBOUR_QUAL == 0)
 				{
 					Route++;
-					continue;						// Qual zero is a locked out route
+					continue;						/* Qual zero is a locked out route */
 				}
 
-				// Dont Activate if link has no nodes unless INP3
+				/* Dont Activate if link has no nodes unless INP3 */
 
 				if (Route->INP3Node == 0)
 				{
@@ -918,9 +918,9 @@ int SendRIPTimer()
 					}
 				}
 
-				// Delay more if Locked - they could be retrying for a long time
+				/* Delay more if Locked - they could be retrying for a long time */
 
-				if ((Route->NEIGHBOUR_FLAG & 1))	 // LOCKED ROUTE
+				if ((Route->NEIGHBOUR_FLAG & 1))	 /* LOCKED ROUTE */
 					INP3Delay = 1200;
 				else
 					INP3Delay = 600;
@@ -929,32 +929,32 @@ int SendRIPTimer()
 					(REALTIMETICKS - Route->LastConnectAttempt) < INP3Delay) 
 				{
 					Route++;
-					continue;						// No room for link
+					continue;						/* No room for link */
 				}
 
-				// Try to activate link
+				/* Try to activate link */
 
-				L2SETUPCROSSLINKEX(Route, 2);		// Only try SABM twice
+				L2SETUPCROSSLINKEX(Route, 2);		/* Only try SABM twice */
 
 				Route->LastConnectAttempt = REALTIMETICKS;
 				
 				if (Route->NEIGHBOUR_LINK == 0)
 				{
 					Route++;
-					continue;						// No room for link
+					continue;						/* No room for link */
 				}
 			}
 
-			if (Route->NEIGHBOUR_LINK->L2STATE != 5)	// Not up yet
+			if (Route->NEIGHBOUR_LINK->L2STATE != 5)	/* Not up yet */
 			{
 				Route++;
 				continue;
 			}
 
-			if (Route->NEIGHBOUR_LINK->KILLTIMER > ((L4LIMIT - 60) * 3))	// IDLETIME - 1 Minute
+			if (Route->NEIGHBOUR_LINK->KILLTIMER > ((L4LIMIT - 60) * 3))	/* IDLETIME - 1 Minute */
 			{
 				SendKeepAlive(Route);
-				Route->NEIGHBOUR_LINK->KILLTIMER = 0;		// Keep Open
+				Route->NEIGHBOUR_LINK->KILLTIMER = 0;		/* Keep Open */
 			}
 
 #ifdef NOINP3
@@ -967,28 +967,28 @@ int SendRIPTimer()
 			{
 				if (Route->Timeout)
 				{
-					// Waiting for response
+					/* Waiting for response */
 
 					Route->Timeout--;
 
 					if (Route->Timeout)
 					{
 						Route++;
-						continue;				// Wait
+						continue;				/* Wait */
 					}
-					// No response Try again
+					/* No response Try again */
 
 					Route->Retries--;
 
 					if (Route->Retries)
 					{
-						// More Left
+						/* More Left */
 
 						SendRTTMsg(Route);
 					}
 					else
 					{
-						// No Response - Kill all Nodes via this link
+						/* No Response - Kill all Nodes via this link */
 
 						if (Route->Status)
 						{
@@ -997,10 +997,10 @@ int SendRIPTimer()
 							ConvFromAX25(Route->NEIGHBOUR_CALL, Call);
 							Debugprintf("BPQ32 INP Neighbour %s Lost", Call);
 
-							Route->Status = 0;	// Down
+							Route->Status = 0;	/* Down */
 						}
 
-						Route->BCTimer=5;		// Wait a while before retrying
+						Route->BCTimer=5;		/* Wait a while before retrying */
 					}
 				}
 
@@ -1023,7 +1023,7 @@ int SendRIPTimer()
 	return (0);
 }
 
-// Create an Empty RIF
+/* Create an Empty RIF */
 
 struct _L3MESSAGEBUFFER * CreateRIFHeader(struct ROUTE * Route)
 {
@@ -1041,7 +1041,7 @@ struct _L3MESSAGEBUFFER * CreateRIFHeader(struct ROUTE * Route)
 
 VOID SendRIF(struct ROUTE * Route, struct _L3MESSAGEBUFFER * Msg)
 {
-	Msg->LENGTH += MSGHDDRLEN + 1;		// PID
+	Msg->LENGTH += MSGHDDRLEN + 1;		/* PID */
 
 	SendNetFrame(Route, Msg);
 }
@@ -1056,7 +1056,7 @@ VOID SendRIPToOtherNeighbours(UCHAR * axcall, UCHAR * alias, struct DEST_ROUTE_E
 	{
 		if ((Routes->INP3Node) && 
 			(Routes->Status) && 
-			(Routes != Entry->ROUT_NEIGHBOUR))	// Dont send to originator of route
+			(Routes != Entry->ROUT_NEIGHBOUR))	/* Dont send to originator of route */
 		{
 			Msg = Routes->Msg;
 			
@@ -1067,7 +1067,7 @@ VOID SendRIPToOtherNeighbours(UCHAR * axcall, UCHAR * alias, struct DEST_ROUTE_E
 				axcall, alias, Entry->Hops + 1, Entry->SRTT + Entry->ROUT_NEIGHBOUR->SRTT/10);
 
 			if (Msg->LENGTH > 250 - 15)
-//			if (Msg->LENGTH > Routes->NBOUR_PACLEN - 11)
+/*			if (Msg->LENGTH > Routes->NBOUR_PACLEN - 11) */
 			{
 				SendRIF(Routes, Msg);
 				Routes->Msg = NULL;
@@ -1086,7 +1086,7 @@ VOID SendRIPToNeighbour(struct ROUTE * Route)
 
 	Dest--;
 
-	// Send all entries not via this Neighbour - used when link starts
+	/* Send all entries not via this Neighbour - used when link starts */
 
 	for (i=0; i < MAXDESTS; i++)
 	{
@@ -1096,7 +1096,7 @@ VOID SendRIPToNeighbour(struct ROUTE * Route)
 
 		if (Entry->ROUT_NEIGHBOUR && Entry->Hops && Route != Entry->ROUT_NEIGHBOUR)	
 		{
-			// Best Route not via this neighbour - send
+			/* Best Route not via this neighbour - send */
 		
 			Msg = Route->Msg;
 			
@@ -1145,12 +1145,12 @@ VOID SendNegativeInfo()
 
 	Dest--;
 
-	// Send RIF for any Dests that have got worse
+	/* Send RIF for any Dests that have got worse */
 	
-	// ?? Should we send to one Neighbour at a time, or do all in parallel ??
+	/* ?? Should we send to one Neighbour at a time, or do all in parallel ?? */
 
-	// The spec says send Negative info as soon as possible so I'll try building them in parallel
-	// That will mean building several packets in parallel
+	/* The spec says send Negative info as soon as possible so I'll try building them in parallel */
+	/* That will mean building several packets in parallel */
 
 
 	for (i=0; i < MAXDESTS; i++)
@@ -1161,33 +1161,33 @@ VOID SendNegativeInfo()
 
 		if (Entry->SRTT > Entry->LastRTT)
 		{
-			if (Entry->LastRTT)		// if zero haven't yet reported +ve info
+			if (Entry->LastRTT)		/* if zero haven't yet reported +ve info */
 			{
-				if (Entry->LastRTT == 1)	// if 1, probably new, so send alias
+				if (Entry->LastRTT == 1)	/* if 1, probably new, so send alias */
 					SendRIPToOtherNeighbours(Dest->DEST_CALL, Dest->DEST_ALIAS, Entry);
 				else
 					SendRIPToOtherNeighbours(Dest->DEST_CALL, 0, Entry);
 
 				Preload = Entry->SRTT /10;
 				if (Entry->SRTT < 60000)
-					Entry->LastRTT = Entry->SRTT + Preload;	//10% Negative Preload
+					Entry->LastRTT = Entry->SRTT + Preload;	/*10% Negative Preload */
 			}
 		}
 			
 		if (Entry->SRTT >= 60000)
 		{
-			// It is dead, and we have reported it if necessary, so remove if no NETROM Routes
+			/* It is dead, and we have reported it if necessary, so remove if no NETROM Routes */
 
-			if (Dest->NRROUTE[0].ROUT_NEIGHBOUR == 0)			// No more Netrom Routes
+			if (Dest->NRROUTE[0].ROUT_NEIGHBOUR == 0)			/* No more Netrom Routes */
 			{
 				char call[11]="";
 				ConvFromAX25(Dest->DEST_CALL, call);
 				Debugprintf("Deleting Node %s", call);
-				REMOVENODE(Dest);			// Clear buffers, Remove from Sorted Nodes chain, and zap entry	
+				REMOVENODE(Dest);			/* Clear buffers, Remove from Sorted Nodes chain, and zap entry	 */
 			}
 			else
 			{
-				// Have a NETROM route, so zap the INP3 one
+				/* Have a NETROM route, so zap the INP3 one */
 
 				memset(Entry, 0, sizeof(struct DEST_ROUTE_ENTRY));
 			}
@@ -1203,7 +1203,7 @@ VOID SendPositiveInfo()
 
 	Dest--;
 
-	// Send RIF for any Dests that have got significantly better or are newly discovered
+	/* Send RIF for any Dests that have got significantly better or are newly discovered */
 
 	for (i=0; i < MAXDESTS; i++)
 	{
@@ -1211,12 +1211,12 @@ VOID SendPositiveInfo()
 
 		Entry = &Dest->ROUTE[0];
 
-		if (( (Entry->SRTT) && (Entry->LastRTT == 0) )|| 		// if zero haven't yet reported +ve info
-			((((Entry->SRTT * 125) /100) < Entry->LastRTT) && // Better by 25%
-			((Entry->LastRTT - Entry->SRTT) > 10)))			  // and 100ms
+		if (( (Entry->SRTT) && (Entry->LastRTT == 0) )|| 		/* if zero haven't yet reported +ve info */
+			((((Entry->SRTT * 125) /100) < Entry->LastRTT) && /* Better by 25% */
+			((Entry->LastRTT - Entry->SRTT) > 10)))			  /* and 100ms */
 		{
 			SendRIPToOtherNeighbours(Dest->DEST_CALL, 0, Entry);
-			Dest->ROUTE[0].LastRTT = (Dest->ROUTE[0].SRTT * 11) / 10;	//10% Negative Preload
+			Dest->ROUTE[0].LastRTT = (Dest->ROUTE[0].SRTT * 11) / 10;	/*10% Negative Preload */
 		}
 	}
 }
@@ -1230,7 +1230,7 @@ VOID SendNewInfo()
 
 	Dest--;
 
-	// Send RIF for any Dests that have just been added
+	/* Send RIF for any Dests that have just been added */
 
 	for (i=0; i < MAXDESTS; i++)
 	{
@@ -1245,7 +1245,7 @@ VOID SendNewInfo()
 			SendRIPToOtherNeighbours(Dest->DEST_CALL, Dest->DEST_ALIAS, Entry);
 
 			NewRTT = (Entry->SRTT * 11) / 10;
-			Entry->LastRTT = NewRTT;	//10% Negative Preload
+			Entry->LastRTT = NewRTT;	/*10% Negative Preload */
 		}
 	}
 }
@@ -1256,7 +1256,7 @@ VOID INP3TIMER()
 	if (RTTMsg.ID[0] == 0)
 		InitialiseRTT();
 
-	// Called once per second
+	/* Called once per second */
 
 #ifdef NOINP3
 
@@ -1272,12 +1272,12 @@ VOID INP3TIMER()
 
 #endif
 
-	SendNegativeInfo();					// Urgent
+	SendNegativeInfo();					/* Urgent */
 
 	if (RIPTimerCount == 0)
 	{
 		RIPTimerCount = 10;
-		SendNewInfo();					// Not quite so urgent
+		SendNewInfo();					/* Not quite so urgent */
 		SendRIPTimer();
 	}
 	else
@@ -1285,7 +1285,7 @@ VOID INP3TIMER()
 
 	if (PosTimerCount == 0)
 	{
-		PosTimerCount = 300;			// 5 mins
+		PosTimerCount = 300;			/* 5 mins */
 		SendPositiveInfo();
 	}
 	else
@@ -1315,7 +1315,7 @@ UCHAR * DisplayINP3RIF(UCHAR * ptr1, UCHAR * ptr2, unsigned int msglen)
 		calllen = ConvFromAX25(ptr1, call);
 		call[calllen] = 0;
 
-		// Validate the call
+		/* Validate the call */
 
 		for (i = 0; i < calllen; i++)
 		{
@@ -1349,7 +1349,7 @@ UCHAR * DisplayINP3RIF(UCHAR * ptr1, UCHAR * ptr2, unsigned int msglen)
 			}
 			if (opcode == 0 && len < 9)
 			{
-				memcpy(&alias[6 - (len - 2)], ptr1+2, len-2);		// Right Justiify
+				memcpy(&alias[6 - (len - 2)], ptr1+2, len-2);		/* Right Justiify */
 			}
 			else
 			if (opcode == 1 && len < 8)
@@ -1367,7 +1367,7 @@ UCHAR * DisplayINP3RIF(UCHAR * ptr1, UCHAR * ptr2, unsigned int msglen)
 			ptr2+=sprintf(ptr2, " %s:%s %d %4.2d\r", alias, call, hops, rtt);
 
 		ptr1++;
-		msglen--;		// EOP
+		msglen--;		/* EOP */
 	}
 	
 	return ptr2;

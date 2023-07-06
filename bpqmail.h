@@ -1,21 +1,21 @@
-#ifndef WINVER				// Allow use of features specific to Windows XP or later.
-#define WINVER 0x0501		// Change this to the appropriate value to target other versions of Windows.
+#ifndef WINVER				/* Allow use of features specific to Windows XP or later. */
+#define WINVER 0x0501		/* Change this to the appropriate value to target other versions of Windows. */
 #endif
 
-#ifndef _WIN32_WINNT		// Allow use of features specific to Windows XP or later.                   
-#define _WIN32_WINNT 0x0501	// Change this to the appropriate value to target other versions of Windows.
+#ifndef _WIN32_WINNT		/* Allow use of features specific to Windows XP or later.                    */
+#define _WIN32_WINNT 0x0501	/* Change this to the appropriate value to target other versions of Windows. */
 #endif						
 
-#ifndef _WIN32_WINDOWS		// Allow use of features specific to Windows 98 or later.
-#define _WIN32_WINDOWS 0x0410 // Change this to the appropriate value to target Windows Me or later.
+#ifndef _WIN32_WINDOWS		/* Allow use of features specific to Windows 98 or later. */
+#define _WIN32_WINDOWS 0x0410 /* Change this to the appropriate value to target Windows Me or later. */
 #endif
 
-#ifndef _WIN32_IE			// Allow use of features specific to IE 6.0 or later.
-#define _WIN32_IE 0x0600	// Change this to the appropriate value to target other versions of IE.
+#ifndef _WIN32_IE			/* Allow use of features specific to IE 6.0 or later. */
+#define _WIN32_IE 0x0600	/* Change this to the appropriate value to target other versions of IE. */
 #endif
 
 
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
+#define WIN32_LEAN_AND_MEAN		/* Exclude rarely-used stuff from Windows headers */
 #define _CRT_SECURE_NO_DEPRECATE
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 
@@ -39,7 +39,7 @@
 
 
 
-// Standard __except handler for try/except
+/* Standard __except handler for try/except */
 
 VOID CheckProgramErrors();
 VOID WriteMiniDump();
@@ -140,10 +140,10 @@ VOID * _zalloc_dbg(size_t len, int type, char * file, int line);
 #define LOG_DEBUG_X 3
 
 
-//Chat Duplicate suppression Code
+/*Chat Duplicate suppression Code */
 
-#define MAXDUPS 10			// Number to keep
-#define DUPSECONDS 5		// TIme to Keep
+#define MAXDUPS 10			/* Number to keep */
+#define DUPSECONDS 5		/* TIme to Keep */
 
 struct DUPINFO
 {
@@ -166,89 +166,89 @@ typedef struct ConnectionInfo_S
 {
 	struct ConnectionInfo_S *next;
 	PROC *proc;
-	UCHAR RadioOnlyMode;	// T or R flag for Radio Only mode.
+	UCHAR RadioOnlyMode;	/* T or R flag for Radio Only mode. */
 
-	int Number;				// Number of record - for Connections display
+	int Number;				/* Number of record - for Connections display */
 	BOOL Active;
     int BPQStream;
 	int paclen;
-	UCHAR Callsign[11];			// Station call including SSID
+	UCHAR Callsign[11];			/* Station call including SSID */
     BOOL GotHeader;
-	UCHAR InputMode;			// Line by Line or Binary or YAPP
+	UCHAR InputMode;			/* Line by Line or Binary or YAPP */
 
     UCHAR * InputBuffer;
     int InputBufferLen;
-    int InputLen;				// Data we have already = Offset of end of an incomplete packet;
+    int InputLen;				/* Data we have already = Offset of end of an incomplete packet; */
 
 	struct UserInfo * UserPointer;
     int Retries;
-	int	LoginState;				// 1 = user ok, 2 = password ok
+	int	LoginState;				/* 1 = user ok, 2 = password ok */
 	int Flags;
 
-	// Data to the user is kept in a malloc'd buffer. This can be appended to,
-	// and data sucked out under both terminal and system flow control. PACLEN is
-	// enfored when sending to node.
+	/* Data to the user is kept in a malloc'd buffer. This can be appended to, */
+	/* and data sucked out under both terminal and system flow control. PACLEN is */
+	/* enfored when sending to node. */
 
-	UCHAR * OutputQueue;		// Messages to user
-	int OutputQueueLength;		// Total Malloc'ed size. Also Put Pointer for next Message
-	int OutputGetPointer;		// Next byte to send. When Getpointer = Queue Length all is sent - free the buffer and start again.
+	UCHAR * OutputQueue;		/* Messages to user */
+	int OutputQueueLength;		/* Total Malloc'ed size. Also Put Pointer for next Message */
+	int OutputGetPointer;		/* Next byte to send. When Getpointer = Queue Length all is sent - free the buffer and start again. */
 
-	int CloseAfterFlush;		// Close session when all sent. Set to 100ms intervals to wait.
+	int CloseAfterFlush;		/* Close session when all sent. Set to 100ms intervals to wait. */
 	
-	int ErrorCount;				// Invalid Command  count
-	BOOL Paging;				// Set if user wants paging
-	int LinesSent;				// Count when paging
-	int PageLen;				// Lines per page
+	int ErrorCount;				/* Invalid Command  count */
+	BOOL Paging;				/* Set if user wants paging */
+	int LinesSent;				/* Count when paging */
+	int PageLen;				/* Lines per page */
 
-	UCHAR * MailBuffer;			// Mail Message being received
-	UCHAR * CopyBuffer;			// Mail Message being forwarded
-	int MailBufferSize;			// Total Malloc'ed size. Actual size in in Msg Struct
+	UCHAR * MailBuffer;			/* Mail Message being received */
+	UCHAR * CopyBuffer;			/* Mail Message being forwarded */
+	int MailBufferSize;			/* Total Malloc'ed size. Actual size in in Msg Struct */
 
-	long lastmsg;				// Last Listed. Stored here, updated in user record only on clean close
-	BOOL sysop;					// Set if user is authenticated as a sysop
-	BOOL Secure_Session;		// Set if Local Terminal, or Telnet connect with SYSOP status
-	UINT BBSFlags;						// Set if defined as a bbs and SID received
-	struct MsgInfo * TempMsg;			// Header while message is being received
-	struct MsgInfo * FwdMsg;			// Header while message is being forwarded
+	long lastmsg;				/* Last Listed. Stored here, updated in user record only on clean close */
+	BOOL sysop;					/* Set if user is authenticated as a sysop */
+	BOOL Secure_Session;		/* Set if Local Terminal, or Telnet connect with SYSOP status */
+	UINT BBSFlags;						/* Set if defined as a bbs and SID received */
+	struct MsgInfo * TempMsg;			/* Header while message is being received */
+	struct MsgInfo * FwdMsg;			/* Header while message is being forwarded */
 
-	char ** To;							// May be several Recipients
+	char ** To;							/* May be several Recipients */
 	int ToCount;
 
-	int BBSNumber;						// The BBS number (offset into bitlist of BBSes to forward a message to
-	int NextMessagetoForward;			// Next index to check in forward cycle
-	BOOL BPQBBS;						// Set if SID indicates other end is BPQ
-	char MSGTYPES[20];					// Any MSGTYPEFLAGS
-	BOOL SendT;							// Send T messages
-	BOOL SendP;							// Send P messages
-	BOOL SendB;							// Send Bulls
-	BOOL SendWL2KFW;					// send ;FW:
-	int MaxBLen;						// Max Size for this session
-	int MaxPLen;						// Max Size for this session
-	int MaxTLen;						// Max Size for this session
-	BOOL DoReverse;						// Request Reverse Forward
-	char LastForwardType;				// Last type of messages forwarded
-	struct FBBHeaderLine * FBBHeaders;	// The Headers from an FFB forward block
-	char FBBReplyChars[36];				//The +-=!nnnn chars for the 5 proposals
-	int FBBReplyIndex;					// current Reply Pointer
-	int FBBIndex;						// current propopsal number
-	int RestartFrom;					// Restart position
-	BOOL NeedRestartHeader;				// Set if waiting for 6 byte restart header
-	BOOL DontSaveRestartData;			// Set if corrupt data received
-	BOOL FBBMsgsSent;					// Messages need to be maked as complete when next command received
-	UCHAR FBBChecksum;					// Header Checksum
-	BOOL OpenBCM;						// OpenBCM mode (escape -xFF chars)
-	BOOL InTelnetExcape;				// Last Char was 0xff
-	BOOL LocalMsg;						// Set if current Send command is for a local user
-	BOOL NewUser;						// Set if first time user has accessed BBS
-	BOOL Paclink;						// Set if receiving messages from Paclink
-	BOOL RMSExpress;					// Set if receiving messages from RMS Express
-	BOOL WL2K;							// Set if communicating with a CMS
-	BOOL PAT;							// Set if communicating with PAT
-	char ** PacLinkCalls;				// Calls we are getting messages for
-	BOOL SkipPrompt;					// Set if a remote node sends a > at the end of his CTEXT
-	BOOL SkipConn;						// Node sends "connected" in its CTEXT
-	int Watchdog;						// Hung Circuit Detect.
-	int SessType;						// BPQ32 sesstype bits
+	int BBSNumber;						/* The BBS number (offset into bitlist of BBSes to forward a message to */
+	int NextMessagetoForward;			/* Next index to check in forward cycle */
+	BOOL BPQBBS;						/* Set if SID indicates other end is BPQ */
+	char MSGTYPES[20];					/* Any MSGTYPEFLAGS */
+	BOOL SendT;							/* Send T messages */
+	BOOL SendP;							/* Send P messages */
+	BOOL SendB;							/* Send Bulls */
+	BOOL SendWL2KFW;					/* send ;FW: */
+	int MaxBLen;						/* Max Size for this session */
+	int MaxPLen;						/* Max Size for this session */
+	int MaxTLen;						/* Max Size for this session */
+	BOOL DoReverse;						/* Request Reverse Forward */
+	char LastForwardType;				/* Last type of messages forwarded */
+	struct FBBHeaderLine * FBBHeaders;	/* The Headers from an FFB forward block */
+	char FBBReplyChars[36];				/*The +-=!nnnn chars for the 5 proposals */
+	int FBBReplyIndex;					/* current Reply Pointer */
+	int FBBIndex;						/* current propopsal number */
+	int RestartFrom;					/* Restart position */
+	BOOL NeedRestartHeader;				/* Set if waiting for 6 byte restart header */
+	BOOL DontSaveRestartData;			/* Set if corrupt data received */
+	BOOL FBBMsgsSent;					/* Messages need to be maked as complete when next command received */
+	UCHAR FBBChecksum;					/* Header Checksum */
+	BOOL OpenBCM;						/* OpenBCM mode (escape -xFF chars) */
+	BOOL InTelnetExcape;				/* Last Char was 0xff */
+	BOOL LocalMsg;						/* Set if current Send command is for a local user */
+	BOOL NewUser;						/* Set if first time user has accessed BBS */
+	BOOL Paclink;						/* Set if receiving messages from Paclink */
+	BOOL RMSExpress;					/* Set if receiving messages from RMS Express */
+	BOOL WL2K;							/* Set if communicating with a CMS */
+	BOOL PAT;							/* Set if communicating with PAT */
+	char ** PacLinkCalls;				/* Calls we are getting messages for */
+	BOOL SkipPrompt;					/* Set if a remote node sends a > at the end of his CTEXT */
+	BOOL SkipConn;						/* Node sends "connected" in its CTEXT */
+	int Watchdog;						/* Hung Circuit Detect. */
+	int SessType;						/* BPQ32 sesstype bits */
 
 #define Sess_L2LINK 1
 #define Sess_SESSION	2
@@ -257,52 +257,52 @@ typedef struct ConnectionInfo_S
 #define Sess_BPQHOST 0x20
 #define Sess_PACTOR	0x40
 
-	HANDLE DebugHandle;					// File Handle for session-based debugging
+	HANDLE DebugHandle;					/* File Handle for session-based debugging */
 
-	char ARQFilename[256];				// Filename from ARQ:FILE:: Header
-	int ARQClearCount;					// To make sure queues are flushed when sending
+	char ARQFilename[256];				/* Filename from ARQ:FILE:: Header */
+	int ARQClearCount;					/* To make sure queues are flushed when sending */
 
-	int SIDResponseTimer;				// Used to detect incomplete handshake
+	int SIDResponseTimer;				/* Used to detect incomplete handshake */
 
-	char PQChallenge[20];				// Secure User logon challange
-	char SecureMsg[20];					// CMS Secure Signon Response
-	int MCastListenTime;				// Time to run session for
+	char PQChallenge[20];				/* Secure User logon challange */
+	char SecureMsg[20];					/* CMS Secure Signon Response */
+	int MCastListenTime;				/* Time to run session for */
 
-	int YAPPLen;						// Bytes sent/received of YAPP Message
-	long YAPPDate;						// Date for received file - if set enables YAPPC
+	int YAPPLen;						/* Bytes sent/received of YAPP Message */
+	long YAPPDate;						/* Date for received file - if set enables YAPPC */
 
 	int SyncCompressedLen;
 	int SyncXMLLen;
 	int SyncMsgLen;
-	char * SyncHost;					// Saved so can send "request sync"
+	char * SyncHost;					/* Saved so can send "request sync" */
 	int SyncPort;
-	UCHAR * SyncMessage;				// Compressed SYNC message to send
+	UCHAR * SyncMessage;				/* Compressed SYNC message to send */
 
-	// These are used to detect CRLF split over a packet boundary
-	int usingCR;						// Session is (normally) using CR as terminator
-	int lastLineEnd;					// Terminator for current line
+	/* These are used to detect CRLF split over a packet boundary */
+	int usingCR;						/* Session is (normally) using CR as terminator */
+	int lastLineEnd;					/* Terminator for current line */
 
-	struct ConnectionInfo_S * SysopChatStream;			// Stream sysop is chatting to
+	struct ConnectionInfo_S * SysopChatStream;			/* Stream sysop is chatting to */
 
 } ConnectionInfo, CIRCUIT;
 
-// Flags Equates
+/* Flags Equates */
 
 #define GETTINGUSER 1
 #define GETTINGBBS 2
 #define CHATMODE 4
 #define GETTINGTITLE 8
 #define GETTINGMESSAGE 16
-#define CHATLINK 32					// Link to another Chat Node
+#define CHATLINK 32					/* Link to another Chat Node */
 #define SENDTITLE 64
 #define SENDBODY 128
-#define WAITPROMPT 256				// Waiting for prompt after message
-#define PROPOSINGSYNCMSG 512		// Sent proposal to SYNC, waiting response
-#define SENDINGSYNCMSG 1024			// Sent message to SYNC, waiting response
+#define WAITPROMPT 256				/* Waiting for prompt after message */
+#define PROPOSINGSYNCMSG 512		/* Sent proposal to SYNC, waiting response */
+#define SENDINGSYNCMSG 1024			/* Sent message to SYNC, waiting response */
 #define REQUESTINGSYNC 2048
-#define GETTINGSYNCMESSAGE 4096		// Receiving body of a SYNC message
+#define GETTINGSYNCMESSAGE 4096		/* Receiving body of a SYNC message */
 
-// BBSFlags Equates
+/* BBSFlags Equates */
 
 #define BBS 1
 #define FBBForwarding 2
@@ -310,47 +310,47 @@ typedef struct ConnectionInfo_S
 #define FBBB1Mode 8
 #define FBBB2Mode 16
 #define RunningConnectScript 32
-#define MBLFORWARDING 64				// MBL Style Frwarding- waiting for OK/NO or Prompt following message
-#define TEXTFORWARDING 128				// Plain Text forwarding
-#define OUTWARDCONNECT 256				// We connected to them
-#define FLARQMODE 512					// Message from FLARQ
-#define FLARQMAIL 1024					// Sending FLARQ Format Message
-#define ARQMAILACK 2048					// Waiting for all data to be acked
-#define	NEEDLF 4096						// Add LF to forward script commands (fro Telnet
-#define	MCASTRX 8192					// Stream in Multicast RX Mode
-#define DISCONNECTING 16384				// Disconnect sent to Node
-#define YAPPTX	  0x008000				// Sending YAPP file
-#define SYSOPCHAT 0x010000				// Chatting to BBS console
-#define WINLINKRO 0x020000				// WL2K RO (no J in SID)
-#define SYNCMODE  0x040000				// RMS RELAY SYNC
-#define MFJMODE   0x080000				// MFJ PMS
-#define NEWPACCOM 0x100000				// PACCOM PMS 3.2
-#define SETCALLTOSENDER 0x200000		// Set calling call to message sender
+#define MBLFORWARDING 64				/* MBL Style Frwarding- waiting for OK/NO or Prompt following message */
+#define TEXTFORWARDING 128				/* Plain Text forwarding */
+#define OUTWARDCONNECT 256				/* We connected to them */
+#define FLARQMODE 512					/* Message from FLARQ */
+#define FLARQMAIL 1024					/* Sending FLARQ Format Message */
+#define ARQMAILACK 2048					/* Waiting for all data to be acked */
+#define	NEEDLF 4096						/* Add LF to forward script commands (fro Telnet */
+#define	MCASTRX 8192					/* Stream in Multicast RX Mode */
+#define DISCONNECTING 16384				/* Disconnect sent to Node */
+#define YAPPTX	  0x008000				/* Sending YAPP file */
+#define SYSOPCHAT 0x010000				/* Chatting to BBS console */
+#define WINLINKRO 0x020000				/* WL2K RO (no J in SID) */
+#define SYNCMODE  0x040000				/* RMS RELAY SYNC */
+#define MFJMODE   0x080000				/* MFJ PMS */
+#define NEWPACCOM 0x100000				/* PACCOM PMS 3.2 */
+#define SETCALLTOSENDER 0x200000		/* Set calling call to message sender */
 
 
 struct FBBRestartData
 {
-	struct MsgInfo * TempMsg;		// Header while message is being received
+	struct MsgInfo * TempMsg;		/* Header while message is being received */
 	struct UserInfo * UserPointer;
-	UCHAR * MailBuffer;				// Mail Message being received
-	int MailBufferSize;				// Total Malloc'ed size. Actual size in in Msg Struct
-	int Count;						// Give up if too many restarts
+	UCHAR * MailBuffer;				/* Mail Message being received */
+	int MailBufferSize;				/* Total Malloc'ed size. Actual size in in Msg Struct */
+	int Count;						/* Give up if too many restarts */
 };
 
-//	We need to keep the B2Message file for B2 messages we are sending until the messages is acked, so
-//	we can restart it. Otherwise the file may change, resulting in a checksum error
+/*	We need to keep the B2Message file for B2 messages we are sending until the messages is acked, so */
+/*	we can restart it. Otherwise the file may change, resulting in a checksum error */
 
 
 struct B2RestartData
 {
-	int CSize;						// Compresses Size (B2 proto)
-	UCHAR * CompressedMsg;			// Compressed Body fo B2
+	int CSize;						/* Compresses Size (B2 proto) */
+	UCHAR * CompressedMsg;			/* Compressed Body fo B2 */
 	struct MsgInfo * FwdMsg;
 	struct UserInfo * UserPointer;
-	int Count;						// Give up if too many restarts
+	int Count;						/* Give up if too many restarts */
 };
 
-//------ TAJ -----
+/*------ TAJ ----- */
 typedef struct PGARGS
 {
 	CIRCUIT  * conn;
@@ -359,18 +359,18 @@ typedef struct PGARGS
 	int Len;
 }RUNPGARGS, *RUNPGARGS_PTR;
 
-//---------------
+/*--------------- */
 
 #pragma pack(1)
 
 struct TempUserInfo
 {
-	int LastAuthCode;				// Protect against playback attack
+	int LastAuthCode;				/* Protect against playback attack */
 
-	// Fields used to allow interrupting and resuming a paged listing
+	/* Fields used to allow interrupting and resuming a paged listing */
 
-	BOOL ListActive;				// Doing a list
-	BOOL ListSuspended;				// Paused doing a list
+	BOOL ListActive;				/* Doing a list */
+	BOOL ListSuspended;				/* Paused doing a list */
 	int LastListedInPagedMode;
 	char LastListCommand[80];
 	char LastListParams[80];
@@ -379,18 +379,18 @@ struct TempUserInfo
 	char ListType;
 	char ListDirn;
 	char ListStatus;
-	char ListSelector;				// < > @ etc
+	char ListSelector;				/* < > @ etc */
 
 	int ListRangeStart;
 	int ListRangeEnd;
-	int LLCount;					// Number still to send in List Last N
-	int UpdateLatest;				// if set, save last listed as latest
-	BOOL IncludeKilled;				// Show Killed Messages if SYSOP
-	//--- TAJ ---
-	int PG_INDEX;		// current index of PG server
-	int PG_SERVER;		// PG server to run
-	RUNPGARGS_PTR RUNPGPARAMS; 	// pointer to RUNPGARGS for dealloc
-	//-----------
+	int LLCount;					/* Number still to send in List Last N */
+	int UpdateLatest;				/* if set, save last listed as latest */
+	BOOL IncludeKilled;				/* Show Killed Messages if SYSOP */
+	/*--- TAJ --- */
+	int PG_INDEX;		/* current index of PG server */
+	int PG_SERVER;		/* PG server to run */
+	RUNPGARGS_PTR RUNPGPARAMS; 	/* pointer to RUNPGARGS for dealloc */
+	/*----------- */
 };
 
 #define PMSG 1
@@ -399,43 +399,39 @@ struct TempUserInfo
 
 struct OldUserInfo
 {	
-	// Old format - without message type specific traffic counts 
+	/* Old format - without message type specific traffic counts  */
 
-	char	Call[10];			//	Connected call without SSID	
-//	indicat relai[8];			/* 64 Digis path */
+	char	Call[10];			/*	Connected call without SSID	 */
 	int		lastmsg;			/* 4  Last L number */
 	int		ConnectsIn;				/* 4  Number of connexions in*/
-	int		TimeLastConnected;  //Last connexion date */
-//	long	lastyap __a2__  ;	/* 4  Last YN date */
+	int		TimeLastConnected;  /*Last connexion date */
 	ULONG	flags    ;	/* 4  Flags */
 
-	UCHAR	PageLen;			// Lines Per Page
+	UCHAR	PageLen;			/* Lines Per Page */
 	UCHAR	lang      ;	/* 1  Language */
 
 	int		Xnewbanner;	/* 4  Last Banner date */
 	short 	Xdownload  ;	/* 2  download size (KB) = 100 */
-	char	POP3Locked ;		// Nonzero if POP3 server has locked this user (stops other pop3 connections, or BBS user killing messages)
-	char	BBSNumber;			// BBS Bitmap Index Number
+	char	POP3Locked ;		/* Nonzero if POP3 server has locked this user (stops other pop3 connections, or BBS user killing messages) */
+	char	BBSNumber;			/* BBS Bitmap Index Number */
 	struct	BBSForwardingInfo * ForwardingInfo;
-	struct  UserInfo * BBSNext;	// links BBS record
-	struct  TempUserInfo * Temp;	// Working Fields - not saved in user file
+	struct  UserInfo * BBSNext;	/* links BBS record */
+	struct  TempUserInfo * Temp;	/* Working Fields - not saved in user file */
 	char	xfree[6];			/* 6 Spare */
 	char	Xtheme;				/* 1  Current topic */
 
 	char	Name[18];			/* 18 1st Name */
 	char	Address[61];		/* 61 Address */
 
-	// Stats. Was City[31];			/* 31 City */
-
 	int MsgsReceived;
 	int MsgsSent;
-	int MsgsRejectedIn;			// Messages we reject
-	int MsgsRejectedOut;		// Messages Rejectd by other end
+	int MsgsRejectedIn;			/* Messages we reject */
+	int MsgsRejectedOut;		/* Messages Rejectd by other end */
 	int BytesForwardedIn;
 	int BytesForwardedOut;
-	int ConnectsOut;			// Forwarding Connects Out
+	int ConnectsOut;			/* Forwarding Connects Out */
 
-	USHORT RMSSSIDBits;			// SSID's to poll in RMS
+	USHORT RMSSSIDBits;			/* SSID's to poll in RMS */
 
 	char Spare1;
 
@@ -449,41 +445,40 @@ struct OldUserInfo
 struct MsgStats
 {
 	int	ConnectsIn;				/* 4  Number of connexions in*/
-	int ConnectsOut;			// Forwarding Connects Out
+	int ConnectsOut;			/* Forwarding Connects Out */
 
-	// Stats saveed by message type
+	/* Stats saveed by message type */
 
 	int MsgsReceived[4];
 	int MsgsSent[4];
-	int MsgsRejectedIn[4];		// Messages we reject
-	int MsgsRejectedOut[4];		// Messages Rejectd by other end
+	int MsgsRejectedIn[4];		/* Messages we reject */
+	int MsgsRejectedOut[4];		/* Messages Rejectd by other end */
 	int BytesForwardedIn[4];
 	int BytesForwardedOut[4];
 };
 
 struct UserInfo
 {
-	// New Format - with stats maintained by message type and unused fields removed.
+	/* New Format - with stats maintained by message type and unused fields removed. */
 
-	char	Call[10];			//	Connected call without SSID	
+	char	Call[10];			/*	Connected call without SSID	 */
 
-	int		Length;				// To make subsequent format changes easier
+	int		Length;				/* To make subsequent format changes easier */
 
 	int		lastmsg;			/* 4  Last L number */
-	int		xTimeLastConnected;  //Last connexion date */
 	ULONG	flags    ;	/* 4  Flags */
 
-	UCHAR	PageLen;			// Lines Per Page
+	UCHAR	PageLen;			/* Lines Per Page */
 
-	char	POP3Locked ;		// Nonzero if POP3 server has locked this user (stops other pop3 connections, or BBS user killing messages)
-	unsigned char BBSNumber;			// BBS Bitmap Index Number
+	char	POP3Locked ;		/* Nonzero if POP3 server has locked this user (stops other pop3 connections, or BBS user killing messages) */
+	unsigned char BBSNumber;			/* BBS Bitmap Index Number */
 	struct	BBSForwardingInfo * ForwardingInfo;
-	struct  UserInfo * BBSNext;	// links BBS record
-	struct  TempUserInfo * Temp;	// Working Fields - not saved in user file
+	struct  UserInfo * BBSNext;	/* links BBS record */
+	struct  TempUserInfo * Temp;	/* Working Fields - not saved in user file */
 	char	Name[18];			/* 18 1st Name */
 	char	Address[61];		/* 61 Address */
 
-	USHORT RMSSSIDBits;			// SSID's to poll in RMS
+	USHORT RMSSSIDBits;			/* SSID's to poll in RMS */
 
 	char	HomeBBS[41];		/* 41 home BBS */
 	char	QRA[7];				/* 7  Qth Locator */
@@ -493,15 +488,14 @@ struct UserInfo
 	struct MsgStats Total;
 	struct MsgStats	Last;
 	
-	char CMSPass[16];			// For Secure Signon
+	char CMSPass[16];			/* For Secure Signon */
 	int WebSeqNo;
 	
-	long long TimeLastConnected;  //Last connection date */
 
-	char Filler[44 - 8];			// So we can add a few fields wirhout another resize
+	char Filler[44 - 8];			/* So we can add a few fields wirhout another resize */
 };
 
-// flags equates
+/* flags equates */
 
 #define F_Excluded    0x0001
 #define F_GGG         0x0002
@@ -519,12 +513,12 @@ struct UserInfo
 #define F_HOLDMAIL    0x2000
 #define F_POLLRMS	  0x4000
 #define F_SYSOP_IN_LM 0x8000
-#define F_Temp_B2_BBS 0x00010000			// "Winlink Express User"
-#define F_NOWINLINK	  0x00020000			// Don't add Winlink.org
+#define F_Temp_B2_BBS 0x00010000			/* "Winlink Express User" */
+#define F_NOWINLINK	  0x00020000			/* Don't add Winlink.org */
 #define F_NOBULLS	  0x00040000	
 #define F_NTSMPS	  0x00080000
-#define F_APRSMFOR	  0x00100000			// Send APRS message for new mail
-#define F_APRSSSID	  0xF0000000			// (Top 4 Bits
+#define F_APRSMFOR	  0x00100000			/* Send APRS message for new mail */
+#define F_APRSSSID	  0xF0000000			/* (Top 4 Bits */
 
 
 struct Override
@@ -541,7 +535,7 @@ struct ALIAS
 
 typedef struct _MESSAGEX
 {
-//	BASIC LINK LEVEL MESSAGE BUFFER LAYOUT
+/*	BASIC LINK LEVEL MESSAGE BUFFER LAYOUT */
 
 	struct _MESSAGEX * CHAIN;
 
@@ -551,22 +545,22 @@ typedef struct _MESSAGEX
 	UCHAR	DEST[7];
 	UCHAR	ORIGIN[7];
 
-//	 MAY BE UP TO 56 BYTES OF DIGIS
+/*	 MAY BE UP TO 56 BYTES OF DIGIS */
 
 	UCHAR	CTL;
 	UCHAR	PID;
 	UCHAR	DATA[256];
-	UCHAR	DIGIS[56];				// Padding in case we have digis
+	UCHAR	DIGIS[56];				/* Padding in case we have digis */
 
 }MESSAGEX, *PMESSAGEX;
 
 
 #pragma pack()
 
-// Message Database Entry. Designed to be compatible with FBB
+/* Message Database Entry. Designed to be compatible with FBB */
 
-#define NBBBS 160			// Max BBSes we can forward to. Must be Multiple of 8, and must be 80 for FBB compatibliliy
-#define NBMASK NBBBS/8		// Number of bytes in Forward bitlists.
+#define NBBBS 160			/* Max BBSes we can forward to. Must be Multiple of 8, and must be 80 for FBB compatibliliy */
+#define NBMASK NBBBS/8		/* Number of bytes in Forward bitlists. */
 
 #pragma pack(1)
 
@@ -577,14 +571,14 @@ struct OldMsgInfo
 	int		number ;
 	int		length ;
 	int		datereceived;
-	char	bbsfrom[7] ;			// ? BBS we got it from ?
+	char	bbsfrom[7] ;			/* ? BBS we got it from ? */
 	char	via[41] ;
 	char	from[7] ;
 	char	to[7] ;
 	char	bid[13] ;
 	char	title[61] ;
 	char	bin;
-	int		nntpnum;			// Number within topic (ie Bull TO Addr) - used for nntp
+	int		nntpnum;			/* Number within topic (ie Bull TO Addr) - used for nntp */
 
 	UCHAR	B2Flags;
 
@@ -606,41 +600,41 @@ struct MsgInfo
 	int		number;
 	int		length;
 	int		xdatereceived;
-	char	bbsfrom[7];			// ? BBS we got it from ?
+	char	bbsfrom[7];			/* ? BBS we got it from ? */
 	char	via[41];
 	char	from[7];
 	char	to[7];
 	char	bid[13];
 	char	title[61];
-	int		nntpnum;			// Number within topic (ie Bull TO Addr) - used for nntp
+	int		nntpnum;			/* Number within topic (ie Bull TO Addr) - used for nntp */
 
 	UCHAR	B2Flags;
 
-	#define B2Msg 1				// Set if Message File is a formatted B2 message
-	#define Attachments 2		// Set if B2 message has attachments
+	#define B2Msg 1				/* Set if Message File is a formatted B2 message */
+	#define Attachments 2		/* Set if B2 message has attachments */
 	#define FromPaclink 4
 	#define FromCMS 8
 	#define FromRMSExpress 16 
-	#define RadioOnlyMsg 32		// Received using call-T
-	#define RadioOnlyFwd 64		// Received using call-R
+	#define RadioOnlyMsg 32		/* Received using call-T */
+	#define RadioOnlyFwd 64		/* Received using call-R */
 
 	int		xdatecreated;
 	int		xdatechanged;
 	UCHAR	fbbs[NBMASK];
 	UCHAR	forw[NBMASK];
 	char	emailfrom[41];
-	char	Locked;				//	Set if selected for sending (NTS Pickup)
-	char	Defered;			//	FBB response '=' received
-	UCHAR	UTF8;				//	Set if Message is in UTF8 (ie from POP/SMTP)
+	char	Locked;				/*	Set if selected for sending (NTS Pickup) */
+	char	Defered;			/*	FBB response '=' received */
+	UCHAR	UTF8;				/*	Set if Message is in UTF8 (ie from POP/SMTP) */
 
-// For 64 bit time_t compatibility define as long long 
-// (so struct is same with 32 or 64 bit time_t)
+/* For 64 bit time_t compatibility define as long long  */
+/* (so struct is same with 32 or 64 bit time_t) */
 	
 	long long datereceived;
 	long long datecreated;
 	long long datechanged;
 
-	char	Spare[61 - 24];			//  For future use
+	char	Spare[61 - 24];			/*  For future use */
 } ;
 
 #define MSGTYPE_B 0
@@ -656,14 +650,14 @@ struct MsgInfo
 
 struct NNTPRec
 {
-	// Used for NNTP access to Bulls
+	/* Used for NNTP access to Bulls */
 
-	struct NNTPRec * Next;	// Record held in chain, so can be held sorted
-	char NewsGroup[64];		// = Bull TO.at field
-	int	FirstMsg;			// Lowest Number
-	int LastMsg;			// Highest Number
-	int Count;				// Active Msgs
-	time_t DateCreated;		// COntains Creation Date of First Bull in Group
+	struct NNTPRec * Next;	/* Record held in chain, so can be held sorted */
+	char NewsGroup[64];		/* = Bull TO.at field */
+	int	FirstMsg;			/* Lowest Number */
+	int LastMsg;			/* Highest Number */
+	int Count;				/* Active Msgs */
+	time_t DateCreated;		/* COntains Creation Date of First Bull in Group */
 };
 
 
@@ -710,65 +704,65 @@ struct FWDBAND
 
 struct BBSForwardingInfo
 {
-	// Holds info for forwarding
+	/* Holds info for forwarding */
 
-	BOOL Enabled;					// Forwarding Enabled
-	char ** ConnectScript;			// Main Connect Script
-	char ** TempConnectScript;		// Used with FWD command.
-	int ScriptIndex;				// Next line in script
-	BOOL MoreLines;					// Set until script is finsihed
+	BOOL Enabled;					/* Forwarding Enabled */
+	char ** ConnectScript;			/* Main Connect Script */
+	char ** TempConnectScript;		/* Used with FWD command. */
+	int ScriptIndex;				/* Next line in script */
+	BOOL MoreLines;					/* Set until script is finsihed */
 
-	char ** TOCalls;				// Calls in to field
-	char ** ATCalls;				// Calls in ATBBS field
-	char ** HaddressesP;			// Heirarchical Addresses for Personals to forward to (as stored)
-	char *** HADDRSP;				// Heirarchical Addresses for Personals to forward to
-	char ** Haddresses;				// Heirarchical Addresses to forward to (as stored)
-	char *** HADDRS;				// Heirarchical Addresses to forward to
-	int * HADDROffet;				// Elements added to complete the HR. At least n+1 must match to forward
-	char ** FWDTimes;				// Time bands to forward
+	char ** TOCalls;				/* Calls in to field */
+	char ** ATCalls;				/* Calls in ATBBS field */
+	char ** HaddressesP;			/* Heirarchical Addresses for Personals to forward to (as stored) */
+	char *** HADDRSP;				/* Heirarchical Addresses for Personals to forward to */
+	char ** Haddresses;				/* Heirarchical Addresses to forward to (as stored) */
+	char *** HADDRS;				/* Heirarchical Addresses to forward to */
+	int * HADDROffet;				/* Elements added to complete the HR. At least n+1 must match to forward */
+	char ** FWDTimes;				/* Time bands to forward */
 	struct FWDBAND ** FWDBands;
-	int MsgCount;					// Messages for this BBS
-	BOOL ReverseFlag;				// Set if BBS wants to poll for reverse forwarding
-	BOOL Forwarding;				// Forward in progress
+	int MsgCount;					/* Messages for this BBS */
+	BOOL ReverseFlag;				/* Set if BBS wants to poll for reverse forwarding */
+	BOOL Forwarding;				/* Forward in progress */
 	int MaxFBBBlockSize;
-	BOOL AllowBlocked;				// Allow FBB Blocked
-	BOOL AllowCompressed;			// Allow FBB Compressed
-	BOOL AllowB1;					// Enable B1
-	BOOL AllowB2;					// Enable B2 
-	BOOL SendCTRLZ;					// Send Ctrl/z instead of /ex
-	BOOL PersonalOnly;				// Only Forward Personals
-	BOOL SendNew;					// Forward new messages immediately
+	BOOL AllowBlocked;				/* Allow FBB Blocked */
+	BOOL AllowCompressed;			/* Allow FBB Compressed */
+	BOOL AllowB1;					/* Enable B1 */
+	BOOL AllowB2;					/* Enable B2  */
+	BOOL SendCTRLZ;					/* Send Ctrl/z instead of /ex */
+	BOOL PersonalOnly;				/* Only Forward Personals */
+	BOOL SendNew;					/* Forward new messages immediately */
 	int FwdInterval;
 	int RevFwdInterval;
 	int FwdTimer;
 	time_t LastReverseForward;
-	char *BBSHA;					// HA of BBS
-	char ** BBSHAElements;			// elements of HA of BBS
+	char *BBSHA;					/* HA of BBS */
+	char ** BBSHAElements;			/* elements of HA of BBS */
 	int ConTimeout;
-//	char UserCall[10];				// User we are forwarding on behalf of (Currently only for RMS)
-//	int UserIndex;					// index of User we are forwarding on behalf of (Currently only for RMS)
+/*	char UserCall[10];				// User we are forwarding on behalf of (Currently only for RMS) */
+/*	int UserIndex;					// index of User we are forwarding on behalf of (Currently only for RMS) */
 };
 
 
 struct FBBHeaderLine
 {
-	//	Holds the info from the (up to) 5 headers presented at the start of a Forward Block
+	/*	Holds the info from the (up to) 5 headers presented at the start of a Forward Block */
 
-	char Format;					// Ascii or Binary
-	char MsgType;					// P B etc 
-	char From[7];					// Sender
-	char ATBBS[41];					// BBS of recipient (@ Field)
-	char To[7];						// Recipient
+	char Format;					/* Ascii or Binary */
+	char MsgType;					/* P B etc  */
+	char From[7];					/* Sender */
+	char ATBBS[41];					/* BBS of recipient (@ Field) */
+	char To[7];						/* Recipient */
 	char BID[13];
 	int Size;
-	int CSize;						// Compresses Size (B2 proto)
-	BOOL B2Message;					// Set if an FC type
-	UCHAR * CompressedMsg;			// Compressed Body fo B2
-	struct MsgInfo * FwdMsg;		// Header so we can mark as complete 
+	int CSize;						/* Compresses Size (B2 proto) */
+	BOOL B2Message;					/* Set if an FC type */
+	UCHAR * CompressedMsg;			/* Compressed Body fo B2 */
+	struct MsgInfo * FwdMsg;		/* Header so we can mark as complete  */
 };
 
 #define MAXSTACK 20
-//#define MAXLINE 10000
+/*#define MAXLINE 10000 */
 #define INPUTLEN 512
 
 #define MAXLINES 1000
@@ -786,7 +780,7 @@ struct ConsoleInfo
 	HWND hConsole;
 	HWND hwndInput;
 	HWND hwndOutput;
-	HMENU hMenu;		// handle of menu 
+	HMENU hMenu;		/* handle of menu  */
 	RECT ConsoleRect;
 	RECT OutputRect;
 
@@ -796,14 +790,14 @@ struct ConsoleInfo
 	char kbbuf[INPUTLEN];
 	int kbptr;
 
-	char * readbuff;		// Malloc'ed
-	int readbufflen;		// Current Length
+	char * readbuff;		/* Malloc'ed */
+	int readbufflen;		/* Current Length */
 	char * KbdStack[MAXSTACK];
 
 	int StackIndex;
 
 	BOOL Bells;
-	BOOL FlashOnBell;		// Flash instead of Beep
+	BOOL FlashOnBell;		/* Flash instead of Beep */
 	BOOL StripLF;
 
 	BOOL WarnWrap;
@@ -816,21 +810,21 @@ struct ConsoleInfo
 	int maxlinelen;
 
 	int PartLinePtr;
-	int PartLineIndex;		// Listbox index of (last) incomplete line
+	int PartLineIndex;		/* Listbox index of (last) incomplete line */
 
-	DWORD dwCharX;      // average width of characters 
-	DWORD dwCharY;      // height of characters 
-	DWORD dwClientX;    // width of client area 
-	DWORD dwClientY;    // height of client area 
-	DWORD dwLineLen;    // line length 
-	int nCaretPosX; // horizontal position of caret 
-	int nCaretPosY; // vertical position of caret 
+	DWORD dwCharX;      /* average width of characters  */
+	DWORD dwCharY;      /* height of characters  */
+	DWORD dwClientX;    /* width of client area  */
+	DWORD dwClientY;    /* height of client area  */
+	DWORD dwLineLen;    /* line length  */
+	int nCaretPosX; /* horizontal position of caret  */
+	int nCaretPosY; /* vertical position of caret  */
 
-	COLORREF FGColour;		// Text Colour
-	COLORREF BGColour;		// Background Colour
-	COLORREF DefaultColour;	// Default Text Colour
+	COLORREF FGColour;		/* Text Colour */
+	COLORREF BGColour;		/* Background Colour */
+	COLORREF DefaultColour;	/* Default Text Colour */
 
-	int CurrentLine;				// Line we are writing to in circular buffer.
+	int CurrentLine;				/* Line we are writing to in circular buffer. */
 
 	int Index;
 	BOOL SendHeader;
@@ -844,8 +838,8 @@ struct ConsoleInfo
 	int CurrentColour;
 	int Thumb;
 	int FirstTime;
-	BOOL Scrolled;				// Set if scrolled back
-	int RTFHeight;				// Height of RTF control in pixels 
+	BOOL Scrolled;				/* Set if scrolled back */
+	int RTFHeight;				/* Height of RTF control in pixels  */
 
 };
 
@@ -866,7 +860,7 @@ struct MSESSION
 	BOOL Completed;
 	time_t Created;
 	time_t LastUpdated;
-	int Index;				// Line in Display
+	int Index;				/* Line in Display */
 };
 
 VOID __cdecl nprintf(CIRCUIT * conn, const char * format, ...);
@@ -895,47 +889,47 @@ VOID Send_MON_Datagram(UCHAR * Msg, DWORD Len);
 int EncryptPass(char * Pass, char * Encrypt);
 VOID DecryptPass(char * Encrypt, unsigned char * Pass, unsigned int len);
 
-// TCP Connections. FOr the moment SMTP or POP3
+/* TCP Connections. FOr the moment SMTP or POP3 */
 
 typedef struct SocketConnectionInfo
 {
 	struct SocketConnectionInfo * Next;
-	int Number;					// Number of record - for Connections display
+	int Number;					/* Number of record - for Connections display */
     SOCKET socket;
 	SOCKADDR_IN sin; 
-	int Type;					// SMTP or POP3
-	BOOL AMPR;					// Set if sending to an AMPR.ORG server
-	char FromDomain[50];		// Domain we are sending from
-	struct UserInfo * bbs;		// BBS dor forwarding to AMPR
-	int State;					// Transaction State Machine
+	int Type;					/* SMTP or POP3 */
+	BOOL AMPR;					/* Set if sending to an AMPR.ORG server */
+	char FromDomain[50];		/* Domain we are sending from */
+	struct UserInfo * bbs;		/* BBS dor forwarding to AMPR */
+	int State;					/* Transaction State Machine */
     UCHAR CallSign[10];
-    UCHAR TCPBuffer[3000];		// For converting byte stream to messages
-    int InputLen;				// Data we have alreasdy = Offset of end of an incomplete packet;
+    UCHAR TCPBuffer[3000];		/* For converting byte stream to messages */
+    int InputLen;				/* Data we have alreasdy = Offset of end of an incomplete packet; */
 
-	char * MailFrom;			// Envelope Sender and Receiver
-	char ** RecpTo;				// May be several Recipients
+	char * MailFrom;			/* Envelope Sender and Receiver */
+	char ** RecpTo;				/* May be several Recipients */
 	int Recipients;
 
-	UCHAR * MailBuffer;			// Mail Message being received. malloc'ed as needed
-	int MailBufferSize;			// Total Malloc'ed size. Actual size is in MailSize
+	UCHAR * MailBuffer;			/* Mail Message being received. malloc'ed as needed */
+	int MailBufferSize;			/* Total Malloc'ed size. Actual size is in MailSize */
 	int MailSize;
 	int Flags;
 
 	struct UserInfo * POP3User;
-	struct MsgInfo ** POP3Msgs;	// Header List of messages for this uaer
-	int POP3MsgCount;			// No of Messages
-	int POP3MsgNum;				// Sequence number of message being received
+	struct MsgInfo ** POP3Msgs;	/* Header List of messages for this uaer */
+	int POP3MsgCount;			/* No of Messages */
+	int POP3MsgNum;				/* Sequence number of message being received */
 
-	struct MsgInfo * SMTPMsg;	// message for this SMTP connection
+	struct MsgInfo * SMTPMsg;	/* message for this SMTP connection */
 
-	UCHAR * SendBuffer;			// Message being sent if socket is busy. malloc'ed as needed
-	int SendBufferSize;			// Total Malloc'ed size. Actual size is in MailSize
-	int SendSize;				// Bytes in buffer
-	int SendPtr;				// next byte to send when ready
+	UCHAR * SendBuffer;			/* Message being sent if socket is busy. malloc'ed as needed */
+	int SendBufferSize;			/* Total Malloc'ed size. Actual size is in MailSize */
+	int SendSize;				/* Bytes in buffer */
+	int SendPtr;				/* next byte to send when ready */
 
-	struct NNTPRec * NNTPGroup;	// Currently Selected Group
-	int NNTPNum;				// Currenrly Selected Msg Number
-	int Timeout;				// Used to close a session that is open too long
+	struct NNTPRec * NNTPGroup;	/* Currently Selected Group */
+	int NNTPNum;				/* Currenrly Selected Msg Number */
+	int Timeout;				/* Used to close a session that is open too long */
 
 } SocketConn;
 
@@ -947,17 +941,17 @@ typedef struct KEYVALUES
 
 typedef struct WEBMAILINFO
 {
-	// Info for HTML Forms Processing
+	/* Info for HTML Forms Processing */
 	
-	struct HtmlFormDir * Dir;	// HTML Directory
-	char * txtFileName;		// Template Name for current message
-	char * InputHTMLName;	// Template to input message
-	char * DisplayHTMLName;	// Template to display message
-	char * ReplyHTMLName;	// Template for replying to message
-	char * txtFile;			// Template data
-	char * OrigTo;			// To field when template loaded
-	char * OrigSubject;		// Subject field when template loaded
-	char * OrigBody;		// Msg text when template loaded
+	struct HtmlFormDir * Dir;	/* HTML Directory */
+	char * txtFileName;		/* Template Name for current message */
+	char * InputHTMLName;	/* Template to input message */
+	char * DisplayHTMLName;	/* Template to display message */
+	char * ReplyHTMLName;	/* Template for replying to message */
+	char * txtFile;			/* Template data */
+	char * OrigTo;			/* To field when template loaded */
+	char * OrigSubject;		/* Subject field when template loaded */
+	char * OrigBody;		/* Msg text when template loaded */
 	char * OrigBID;
 	char OrigType;
 	char * To;
@@ -966,15 +960,15 @@ typedef struct WEBMAILINFO
 	char * Body;
 	char * BID;
 	char Type;
-	struct MsgInfo * Msg;		// Msg record if replying
-	KeyValues txtKeys[1000];	// Key/Value pairs for txt template. Used when creating or displaying
-	KeyValues XMLKeys[1000];	// Key/Value pairs from XML attachment
+	struct MsgInfo * Msg;		/* Msg record if replying */
+	KeyValues txtKeys[1000];	/* Key/Value pairs for txt template. Used when creating or displaying */
+	KeyValues XMLKeys[1000];	/* Key/Value pairs from XML attachment */
 	BOOL isReply;
 	char * XMLName;
-	char * XML;					// XML attachment
+	char * XML;					/* XML attachment */
 	int XMLLen;
 	int Files;
-	char * FileName[100];		// Attachments
+	char * FileName[100];		/* Attachments */
 	char * FileBody[100];
 	int FileLen[100];
 
@@ -984,14 +978,14 @@ typedef struct WEBMAILINFO
 	char * Footer;
 	int FooterLen;
 
-	char * Reply;				// put in here to save passing lots of parameters 
+	char * Reply;				/* put in here to save passing lots of parameters  */
 	int * RLen;
 
 	BOOL Winlink;
 	BOOL P2P;
 	BOOL Packet;
 
-	int CurrentMessageIndex;	// Index of message currently displayed (for Prev and Next)
+	int CurrentMessageIndex;	/* Index of message currently displayed (for Prev and Next) */
 
 }WebMailInfo;
 
@@ -1001,7 +995,7 @@ typedef struct WEBMAILINFO
 #define POP3Client 4
 #define NNTPServer 5
 
-// State Values
+/* State Values */
 
 #define GettingUser 1
 #define GettingPass 2
@@ -1009,7 +1003,7 @@ typedef struct WEBMAILINFO
 
 #define Connecting 8
 
-// SMTP Master
+/* SMTP Master */
 
 #define WaitingForGreeting 16
 #define WaitingForHELOResponse 32
@@ -1019,7 +1013,7 @@ typedef struct WEBMAILINFO
 #define WaitingForBodyResponse 512
 #define WaitingForAUTHResponse 1024
 
-// POP3 Master
+/* POP3 Master */
 
 #define WaitingForUSERResponse 32
 #define WaitingForPASSResponse 64
@@ -1031,33 +1025,33 @@ typedef struct WEBMAILINFO
 #define WaitingForQUITResponse 2048
 
 
-#define SE 240 // End of subnegotiation parameters
-#define NOP 241 //No operation
-//#define DM 242 //Data mark Indicates the position of a Synch event within the data stream. This should always be accompanied by a TCP urgent notification.
-#define BRK 243 //Break Indicates that the "break" or "attention" key was hi.
-#define IP 244 //Suspend Interrupt or abort the process to which the NVT is connected.
-#define AO 245 //Abort output Allows the current process to run to completion but does not send its output to the user.
-#define AYT 246 //Are you there Send back to the NVT some visible evidence that the AYT was received.
-#define EC 247 //Erase character The receiver should delete the last preceding undeleted character from the data stream.
-#define EL 248 //Erase line Delete characters from the data stream back to but not including the previous CRLF.
-#define GA 249 //Go ahead Under certain circumstances used to tell the other end that it can transmit.
-#define SB 250 //Subnegotiation Subnegotiation of the indicated option follows.
-#define WILL 251 //will Indicates the desire to begin performing, or confirmation that you are now performing, the indicated option.
-#define WONT 252 //wont Indicates the refusal to perform, or continue performing, the indicated option.
-#define DOx 253 //do Indicates the request that the other party perform, or confirmation that you are expecting the other party to perform, the indicated option.
-#define DONT 254 //dont Indicates the demand that the other party stop performing, or confirmation that you are no longer expecting the other party to perform, the indicated option.
+#define SE 240 /* End of subnegotiation parameters */
+#define NOP 241 /*No operation */
+/*#define DM 242 //Data mark Indicates the position of a Synch event within the data stream. This should always be accompanied by a TCP urgent notification. */
+#define BRK 243 /*Break Indicates that the "break" or "attention" key was hi. */
+#define IP 244 /*Suspend Interrupt or abort the process to which the NVT is connected. */
+#define AO 245 /*Abort output Allows the current process to run to completion but does not send its output to the user. */
+#define AYT 246 /*Are you there Send back to the NVT some visible evidence that the AYT was received. */
+#define EC 247 /*Erase character The receiver should delete the last preceding undeleted character from the data stream. */
+#define EL 248 /*Erase line Delete characters from the data stream back to but not including the previous CRLF. */
+#define GA 249 /*Go ahead Under certain circumstances used to tell the other end that it can transmit. */
+#define SB 250 /*Subnegotiation Subnegotiation of the indicated option follows. */
+#define WILL 251 /*will Indicates the desire to begin performing, or confirmation that you are now performing, the indicated option. */
+#define WONT 252 /*wont Indicates the refusal to perform, or continue performing, the indicated option. */
+#define DOx 253 /*do Indicates the request that the other party perform, or confirmation that you are expecting the other party to perform, the indicated option. */
+#define DONT 254 /*dont Indicates the demand that the other party stop performing, or confirmation that you are no longer expecting the other party to perform, the indicated option. */
 #define IAC  255
 
-#define suppressgoahead 3 //858
-//#define Status 5 //859
-//#define echo 1 //857
-#define timingmark 6 //860
-#define terminaltype 24 //1091
-#define windowsize 31 //1073
-#define terminalspeed 32 //1079
-#define remoteflowcontrol 33 //1372
-#define linemode 34 //1184
-#define environmentvariables 36 //1408
+#define suppressgoahead 3 /*858 */
+/*#define Status 5 //859 */
+/*#define echo 1 //857 */
+#define timingmark 6 /*860 */
+#define terminaltype 24 /*1091 */
+#define windowsize 31 /*1073 */
+#define terminalspeed 32 /*1079 */
+#define remoteflowcontrol 33 /*1372 */
+#define linemode 34 /*1184 */
+#define environmentvariables 36 /*1408 */
 
 BOOL Initialise();
 #ifdef WIN32
@@ -1069,8 +1063,8 @@ int DoReceivedData(int Stream);
 int DoBBSMonitorData(int Stream);
 int Connected(int Stream);
 int Disconnected(int Stream);
-//int Socket_Accept(int SocketId);
-//int Socket_Data(int SocketId,int error, int eventcode);
+/*int Socket_Accept(int SocketId); */
+/*int Socket_Data(int SocketId,int error, int eventcode); */
 int DataSocket_Read(SocketConn * sockptr, SOCKET sock);
 int DataSocket_Write(SocketConn * sockptr, SOCKET sock);
 int DataSocket_Disconnect(SocketConn * sockptr);
@@ -1106,7 +1100,7 @@ VOID ProcessChatLine(ConnectionInfo * conn, struct UserInfo * user, char* Buffer
 VOID SendPrompt(ConnectionInfo * conn, struct UserInfo * user);
 int QueueMsg(	ConnectionInfo * conn, char * msg, int len);
 VOID SendUnbuffered(int stream, char * msg, int len);
-//int GetFileList(char * Dir);
+/*int GetFileList(char * Dir); */
 BOOL ListMessage(struct MsgInfo * Msg, ConnectionInfo * conn, struct TempUserInfo * Temp);
 void DoDeliveredCommand(CIRCUIT * conn, struct UserInfo * user, char * Cmd, char * Arg1, char * Context);
 void DoKillCommand(ConnectionInfo * conn, struct UserInfo * user, char * Cmd, char * Arg1, char * Context);
@@ -1224,20 +1218,20 @@ VOID DoAuthCmd(CIRCUIT * conn, struct UserInfo * user, char * Arg1, char * Conte
 VOID ProcessSuspendedListCommand(CIRCUIT * conn, struct UserInfo * user, char* Buffer, int len);
 VOID DoReroute(CIRCUIT * conn, struct UserInfo * user);
 
-// FBB Routines
+/* FBB Routines */
 
 VOID SendCompressed(CIRCUIT * conn, struct MsgInfo * FwdMsg);
 VOID SendCompressedB2(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader);
 VOID UnpackFBBBinary(CIRCUIT * conn);
 void Decode(CIRCUIT * conn, __int16 DecodeOnly);
-//long Encode(char * in, char * out, long inlen, BOOL B1Protocol);
+/*long Encode(char * in, char * out, long inlen, BOOL B1Protocol); */
 
 BOOL CreateB2Message(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader, char * Rline);
 VOID SaveFBBBinary(CIRCUIT * conn);
 BOOL LookupRestart(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader);
 BOOL DoWeWantIt(CIRCUIT * conn, struct FBBHeaderLine * FBBHeader);
 
-// Console Routines
+/* Console Routines */
 
 BOOL CreateConsole(int Stream);
 int WritetoConsoleWindow(int Stream, char * Msg, int len);
@@ -1246,7 +1240,7 @@ void CopyRichTextToClipboard(HWND hWnd);
 void CopyToClipboard(HWND hWnd);
 VOID CloseConsole(int Stream);
 
-// Monitor Routines
+/* Monitor Routines */
 
 BOOL CreateMonitor();
 int WritetoMonitorWindow(char * Msg, int len);
@@ -1256,7 +1250,7 @@ VOID WritetoDebugWindow(char * Msg, int len);
 VOID ClearDebugWindow();
 int RemoveLF(char * Message, int len);
 
-// Utilities
+/* Utilities */
 
 BOOL isdigits(char * string);
 void GetSemaphore(struct SEM * Semaphore, int ID);
@@ -1269,7 +1263,7 @@ VOID SortBBSChain();
 VOID ExpandAndSendMessage(CIRCUIT * conn, char * Msg, int LOG);
 int ImportMessages(CIRCUIT * conn, char * FN, BOOL Nopopup);
 
-// TCP Routines
+/* TCP Routines */
 
 BOOL InitialiseTCP();
 VOID SetupListenSet();
@@ -1300,7 +1294,7 @@ int CountMessagesTo(struct UserInfo * user, int * Unread);
 
 BOOL SendtoISP();
 
-// NNTP ROutines
+/* NNTP ROutines */
 
 VOID InitialiseNNTP();
 VOID BuildNNTPList(struct MsgInfo * Msg);
@@ -1320,14 +1314,14 @@ VOID MailHousekeepingResults();
 VOID CreateBBSTrafficReport();
 VOID CreateWPReport();
 
-// WP Routines
+/* WP Routines */
 
 VOID ProcessWPMsg(char * MailBuffer, int Size, char * FisrtRLine);
 VOID GetWPInfoFromRLine(char * From, char * FirstRLine, time_t RLineTime);
 VOID UpdateWPWithUserInfo(struct UserInfo * user);
 VOID GetWPBBSInfo(char * Rline);
 
-// UI Routines
+/* UI Routines */
 
 VOID SetupUIInterface();
 VOID Free_UI();
@@ -1338,7 +1332,7 @@ VOID SeeifBBSUIFrame(struct _MESSAGEX * buff, int len);
 struct MsgInfo * FindMessageByNumber(int msgno);
 int CountConnectionsOnPort(int CheckPort);
 
-// Message Routing Routtines
+/* Message Routing Routtines */
 
 VOID SetupHAElements(struct BBSForwardingInfo * ForwardingInfo);
 VOID SetupHAddreses(struct	BBSForwardingInfo * ForwardingInfo);
@@ -1386,9 +1380,9 @@ extern char Verstring[];
 
 extern char SignoffMsg[];
 extern char AbortedMsg[];
-extern char InfoBoxText[];			// Text to display in Config Info Popup
+extern char InfoBoxText[];			/* Text to display in Config Info Popup */
 
-extern int LastVer[4];				// In case we need to do somthing the first time a version is run
+extern int LastVer[4];				/* In case we need to do somthing the first time a version is run */
 
 extern HWND MainWnd;
 extern char BaseDir[];
@@ -1423,19 +1417,19 @@ extern char * Prompt;
 extern char * NewPrompt;
 extern char * ExpertPrompt;
 
-// Filter Params
+/* Filter Params */
 
-extern char ** RejFrom;					// Reject on FROM Call
-extern char ** RejTo;						// Reject on TO Call
-extern char ** RejAt;						// Reject on AT Call
+extern char ** RejFrom;					/* Reject on FROM Call */
+extern char ** RejTo;						/* Reject on TO Call */
+extern char ** RejAt;						/* Reject on AT Call */
 extern char ** RejBID;
 
-extern char ** HoldFrom;					// Hold on FROM Call
-extern char ** HoldTo;						// Hold on TO Call
-extern char ** HoldAt;						// Hold on AT Call
+extern char ** HoldFrom;					/* Hold on FROM Call */
+extern char ** HoldTo;						/* Hold on TO Call */
+extern char ** HoldAt;						/* Hold on AT Call */
 extern char ** HoldBID;
 
-// Send WP Params
+/* Send WP Params */
 
 extern BOOL SendWP;
 extern char SendWPVIA[81];
@@ -1450,7 +1444,7 @@ extern BIDRec ** BIDRecPtr;
 extern int NumberofBIDs;
 
 extern struct NNTPRec * FirstNNTPRec;
-//extern int NumberofNNTPRecs;
+/*extern int NumberofNNTPRecs; */
 
 
 extern int NumberofMessages;
@@ -1463,7 +1457,7 @@ extern struct SEM AllocSemaphore;
 extern struct SEM ConSemaphore;
 extern struct SEM MsgNoSemaphore;
 
-extern struct MsgInfo * MsgnotoMsg[];	// Message Number to Message Slot List.
+extern struct MsgInfo * MsgnotoMsg[];	/* Message Number to Message Slot List. */
 
 
 extern char hostname[];
@@ -1507,14 +1501,14 @@ extern BOOL RemoteEmail;
 
 extern int MaxStreams;
 extern UCHAR * OtherNodes;
-extern struct UserInfo * BBSChain;		// Chain of users that are BBSes
+extern struct UserInfo * BBSChain;		/* Chain of users that are BBSes */
 extern struct UserInfo ** UserRecPtr;
 extern int NumberofUsers;
 extern struct MsgInfo ** MsgHddrPtr;
 extern int NumberofMessages;
 extern int HighestBBSNumber;
-extern HMENU hFWDMenu;									// Forward Menu Handle
-extern char zeros[];						// For forward bitmask tests
+extern HMENU hFWDMenu;									/* Forward Menu Handle */
+extern char zeros[];						/* For forward bitmask tests */
 extern BOOL EnableUI;
 extern BOOL RefuseBulls;
 extern BOOL SendSYStoSYSOPCall;
@@ -1531,7 +1525,7 @@ extern char MailForText[];
 
 extern BOOL ISP_Gateway_Enabled;
 
-extern char MyDomain[];			// Mail domain for BBS<>Internet Mapping
+extern char MyDomain[];			/* Mail domain for BBS<>Internet Mapping */
 
 extern char ISPSMTPName[];
 extern char ISPEHLOName[];
@@ -1551,8 +1545,8 @@ extern HWND hDebug;
 extern RECT MonitorRect;
 extern RECT DebugRect;
 extern HWND hMonitor;
-//extern HWND hConsole;
-//extern RECT ConsoleRect;
+/*extern HWND hConsole; */
+/*extern RECT ConsoleRect; */
 extern int LogAge;
 extern BOOL DeletetoRecycleBin;
 extern BOOL SuppressMaintEmail;
@@ -1601,11 +1595,11 @@ extern BOOL MulticastRX;
 
 extern BOOL FilterWPBulls;
 extern BOOL NoWPGuesses;
-extern char ** SendWPAddrs;					// Replacers WP To and VIA
+extern char ** SendWPAddrs;					/* Replacers WP To and VIA */
 
 extern BOOL DontCheckFromCall;
 
-// YAPP stuff
+/* YAPP stuff */
 
 #define SOH 1
 #define STX 2

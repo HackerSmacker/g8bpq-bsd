@@ -394,7 +394,7 @@ void * _malloc_dbg_trace(int len, int type, char * file, int line);
 
 #define   zalloc(s)             _zalloc_dbg(s, _NORMAL_BLOCK, __FILE__, __LINE__)
 #else
-//#define   zalloc(s)             _zalloc(s)
+/*#define   zalloc(s)             _zalloc(s) */
 #endif
 
 

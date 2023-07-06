@@ -1,1119 +1,1119 @@
-// Mail and Chat Server for BPQ32 Packet Switch
-//
-//
+/* Mail and Chat Server for BPQ32 Packet Switch */
+/* */
+/* */
 
-// Version 1.0.0.17re
+/* Version 1.0.0.17re */
 
-//	Split Messasge, User and BBS Editing from Main Config.
-//	Add word wrap to Console input and output
-//  Flash Console on chat user connect
-//	Fix processing Name response in chat mode
-//	Fix processing of *RTL from station not defined as a Chat Node
-//	Fix overlength lines ln List responses
-//  Housekeeping expires BIDs 
-//  Killing a message removes it from the forwarding counts
+/*	Split Messasge, User and BBS Editing from Main Config. */
+/*	Add word wrap to Console input and output */
+/*  Flash Console on chat user connect */
+/*	Fix processing Name response in chat mode */
+/*	Fix processing of *RTL from station not defined as a Chat Node */
+/*	Fix overlength lines ln List responses */
+/*  Housekeeping expires BIDs  */
+/*  Killing a message removes it from the forwarding counts */
 
-// Version 1.0.0.18
+/* Version 1.0.0.18 */
 
-// Save User Database when name is entered or updated so it is not lost on a crash
-// Fix Protocol Error in Compressed Forwarding when switching direction
-// Add Housekeeping results dialog.
+/* Save User Database when name is entered or updated so it is not lost on a crash */
+/* Fix Protocol Error in Compressed Forwarding when switching direction */
+/* Add Housekeeping results dialog. */
 
-// Version 1.0.0.19
+/* Version 1.0.0.19 */
 
-// Allow PACLEN in forward scripts.
-// Store and forward messages with CRLF as line ends
-// Send Disconnect after FQ ( for LinFBB)
-// "Last Listed" is saved if MailChat is closed without closing Console
-// Maximum acceptable message length can be specified (in Forwarding Config)
+/* Allow PACLEN in forward scripts. */
+/* Store and forward messages with CRLF as line ends */
+/* Send Disconnect after FQ ( for LinFBB) */
+/* "Last Listed" is saved if MailChat is closed without closing Console */
+/* Maximum acceptable message length can be specified (in Forwarding Config) */
 
-// Version 1.0.0.20
+/* Version 1.0.0.20 */
 
-// Fix error in saving forwarding config (introduced in .19)
-// Limit size of FBB forwarding block.
-// Clear old connection (instead of new) if duplicate connect on Chat Node-Node link
-// Send FA for Compressed Mail (was sending FB for both Compressed and Uncompressed)
+/* Fix error in saving forwarding config (introduced in .19) */
+/* Limit size of FBB forwarding block. */
+/* Clear old connection (instead of new) if duplicate connect on Chat Node-Node link */
+/* Send FA for Compressed Mail (was sending FB for both Compressed and Uncompressed) */
 
-// Version 1.0.0.21
+/* Version 1.0.0.21 */
 
-// Fix Connect Script Processing (wasn't waiting for CONNECTED from last step)
-// Implement Defer
-// Fix MBL-style forwarding
-// Fix Add User (Params were not saved)
-// Add SC (Send Copy) Command
-// Accept call@bbs as well as call @ bbs
+/* Fix Connect Script Processing (wasn't waiting for CONNECTED from last step) */
+/* Implement Defer */
+/* Fix MBL-style forwarding */
+/* Fix Add User (Params were not saved) */
+/* Add SC (Send Copy) Command */
+/* Accept call@bbs as well as call @ bbs */
 
-// Version 1.0.0.22
+/* Version 1.0.0.22 */
 
-// Implement RB RP LN LR LF LN L$ Commands.
-// Implement QTH and ZIP Commands.
-// Entering an empty Title cancels the message.
-// Uses HomeBBS field to set @ field for local users.
-// Creates basic WP Database.
-// Uses WP to lookup @ field for non-local calls.
-// Console "Actions" Menu renamed "Options".
-// Excluded flag is actioned.
-// Asks user to set HomeBBS if not already set.
-// Fix "Shrinking Message" problem, where message got shorter each time it was read Initroduced in .19).
-// Flash Server window when anyone connects to chat (If Console Option "Flash on Chat User Connect" set).
+/* Implement RB RP LN LR LF LN L$ Commands. */
+/* Implement QTH and ZIP Commands. */
+/* Entering an empty Title cancels the message. */
+/* Uses HomeBBS field to set @ field for local users. */
+/* Creates basic WP Database. */
+/* Uses WP to lookup @ field for non-local calls. */
+/* Console "Actions" Menu renamed "Options". */
+/* Excluded flag is actioned. */
+/* Asks user to set HomeBBS if not already set. */
+/* Fix "Shrinking Message" problem, where message got shorter each time it was read Initroduced in .19). */
+/* Flash Server window when anyone connects to chat (If Console Option "Flash on Chat User Connect" set). */
 
-// Version 1.0.0.23
+/* Version 1.0.0.23 */
 
-// Fix R: line scan bug
+/* Fix R: line scan bug */
 
-// Version 1.0.0.24
+/* Version 1.0.0.24 */
 
-// Fix closing console window on 'B'.
-// Fix Message Creation time.
-// Enable Delete function in WP edit dialog
+/* Fix closing console window on 'B'. */
+/* Fix Message Creation time. */
+/* Enable Delete function in WP edit dialog */
 
-// Version 1.0.0.25
+/* Version 1.0.0.25 */
 
-// Implement K< and K> commands
-// Experimental support for B1 and B2 forwarding
-// Experimental UI System
-// Fix extracting QTH from WP updates
+/* Implement K< and K> commands */
+/* Experimental support for B1 and B2 forwarding */
+/* Experimental UI System */
+/* Fix extracting QTH from WP updates */
 
-// Version 1.0.0.26
+/* Version 1.0.0.26 */
 
-// Add YN etc responses for FBB B1/B2
+/* Add YN etc responses for FBB B1/B2 */
 
-// Version 1.0.0.27
+/* Version 1.0.0.27 */
 
-// Fix crash if NULL received as start of a packet.
-// Add Save WP command
-// Make B2 flag BBS-specific.
-// Implement B2 Send
+/* Fix crash if NULL received as start of a packet. */
+/* Add Save WP command */
+/* Make B2 flag BBS-specific. */
+/* Implement B2 Send */
 
-// Version 1.0.0.28
+/* Version 1.0.0.28 */
 
-// Fix parsing of smtp to addresses - eg smtp:john.wiseman@cantab.net
-// Flag messages as Held if smtp server rejects from or to addresses
-// Fix Kill to (K> Call)
-// Edit Message dialog shows latest first
-// Add chat debug window to try to track down occasional chat connection problems
+/* Fix parsing of smtp to addresses - eg smtp:john.wiseman@cantab.net */
+/* Flag messages as Held if smtp server rejects from or to addresses */
+/* Fix Kill to (K> Call) */
+/* Edit Message dialog shows latest first */
+/* Add chat debug window to try to track down occasional chat connection problems */
 
-// Version 1.0.0.29
+/* Version 1.0.0.29 */
 
-// Add loads of try/excspt
+/* Add loads of try/excspt */
 
-// Version 1.0.0.30
+/* Version 1.0.0.30 */
 
-// Writes Debug output to LOG_DEBUG_X and Monitor Window
+/* Writes Debug output to LOG_DEBUG_X and Monitor Window */
 
-// Version 1.0.0.32
+/* Version 1.0.0.32 */
 
-// Allow use of GoogleMail for ISP functions
-// Accept SYSOP as alias for SYSOPCall - ie user can do SP SYSOP, and it will appear in sysop's LM, RM, etc
-// Email Housekeeping Results to SYSOP
+/* Allow use of GoogleMail for ISP functions */
+/* Accept SYSOP as alias for SYSOPCall - ie user can do SP SYSOP, and it will appear in sysop's LM, RM, etc */
+/* Email Housekeeping Results to SYSOP */
 
-// Version 1.0.0.33
+/* Version 1.0.0.33 */
 
-// Housekeeping now runs at Maintenance Time. Maintenance Interval removed. 
-// Allow multiple numbers on R and K commands
-// Fix L command with single number
-// Log if Forward count is out of step with messages to forward.
-// UI Processing improved and F< command implemented
+/* Housekeeping now runs at Maintenance Time. Maintenance Interval removed.  */
+/* Allow multiple numbers on R and K commands */
+/* Fix L command with single number */
+/* Log if Forward count is out of step with messages to forward. */
+/* UI Processing improved and F< command implemented */
 
-// Version 1.0.0.34
+/* Version 1.0.0.34 */
 
-// Semaphore Chat Messages
-// Display Semaphore Clashes
-// More Program Error Traps
-// Kill Messages more than BIDLifetime old
+/* Semaphore Chat Messages */
+/* Display Semaphore Clashes */
+/* More Program Error Traps */
+/* Kill Messages more than BIDLifetime old */
 
-// Version 1.0.0.35
+/* Version 1.0.0.35 */
 
-// Test for Mike - Remove B1 check from Parse_SID
+/* Test for Mike - Remove B1 check from Parse_SID */
 
-// Version 1.0.0.36
+/* Version 1.0.0.36 */
 
-// Fix calculation of Housekeeping Time.
-// Set dialog box background explicitly.
-// Remove tray entry for chat debug window.
-// Add date to log file name.
-// Add Actions Menu option to disable logging.
-// Fix size of main window when it changes between versions.
+/* Fix calculation of Housekeeping Time. */
+/* Set dialog box background explicitly. */
+/* Remove tray entry for chat debug window. */
+/* Add date to log file name. */
+/* Add Actions Menu option to disable logging. */
+/* Fix size of main window when it changes between versions. */
 
-// Version 1.0.0.37
+/* Version 1.0.0.37 */
 
-// Implement Paging.
-// Fix L< command (was giving no messages).
-// Implement LR LR mmm-nnn LR nnn- (and L nnn-)
-// KM should no longer kill SYSOP bulls.
-// ISP interfaces allows SMTP Auth to be configured
-// SMTP Client would fail to send any more messages if a connection failed
+/* Implement Paging. */
+/* Fix L< command (was giving no messages). */
+/* Implement LR LR mmm-nnn LR nnn- (and L nnn-) */
+/* KM should no longer kill SYSOP bulls. */
+/* ISP interfaces allows SMTP Auth to be configured */
+/* SMTP Client would fail to send any more messages if a connection failed */
 
-// Version 1.0.0.38
+/* Version 1.0.0.38 */
 
-// Don't include killed messages in L commands (except LK!)
-// Implement l@
-// Add forwarding timebands
-// Allow resizing of main window.
-// Add Ver command.
+/* Don't include killed messages in L commands (except LK!) */
+/* Implement l@ */
+/* Add forwarding timebands */
+/* Allow resizing of main window. */
+/* Add Ver command. */
 
-// Version 1.0.1.1
+/* Version 1.0.1.1 */
 
-// First Public Beta
+/* First Public Beta */
 
-// Fix part line handling in Console
-// Maintenance deletes old log files.
-// Add option to delete files to the recycle bin.
+/* Fix part line handling in Console */
+/* Maintenance deletes old log files. */
+/* Add option to delete files to the recycle bin. */
 
-// Version 1.0.2.1
+/* Version 1.0.2.1 */
 
-// Allow all Node SYSOP commands in connect scripts.
-// Implement FBB B1 Protocol with Resume
-// Make FBB Max Block size settable for each BBS.
-// Add extra logging when Chat Sessions refused.
-// Fix Crash on invalid housekeeping override.
-// Add Hold Messages option.
-// Trap CRT Errors
-// Sort Actions/Start Forwarding List
+/* Allow all Node SYSOP commands in connect scripts. */
+/* Implement FBB B1 Protocol with Resume */
+/* Make FBB Max Block size settable for each BBS. */
+/* Add extra logging when Chat Sessions refused. */
+/* Fix Crash on invalid housekeeping override. */
+/* Add Hold Messages option. */
+/* Trap CRT Errors */
+/* Sort Actions/Start Forwarding List */
 
-// Version 1.0.2.2
+/* Version 1.0.2.2 */
 
-// Fill in gaps in BBS Number sequence
-// Fix PE if ctext contains }
-// Run Houskeeping at startup if previous Housekeeping was missed
+/* Fill in gaps in BBS Number sequence */
+/* Fix PE if ctext contains } */
+/* Run Houskeeping at startup if previous Housekeeping was missed */
 
-// Version 1.0.2.3
+/* Version 1.0.2.3 */
 
-// Add configured nodes to /p listing
+/* Add configured nodes to /p listing */
 
-// Version 1.0.2.4
+/* Version 1.0.2.4 */
 
-// Fix RMS (it wanted B2 not B12)
-// Send messages if available after rejecting all proposals
-// Dont try to send msg back to originator.
+/* Fix RMS (it wanted B2 not B12) */
+/* Send messages if available after rejecting all proposals */
+/* Dont try to send msg back to originator. */
 
-// Version 1.0.2.5
+/* Version 1.0.2.5 */
 
-// Fix timeband processing when none specified.
-// Improved Chat Help display.
-// Add helpful responses to /n /q and /t
+/* Fix timeband processing when none specified. */
+/* Improved Chat Help display. */
+/* Add helpful responses to /n /q and /t */
 
-// Version 1.0.2.6
+/* Version 1.0.2.6 */
 
-// Kill Personal WP messages after processing
-// Make sure a node doesnt try to "join" or "leave" a node as a user.
-// More tracing to try to track down lost topic links.
-// Add command recall to Console
-// Show users in new topic when changing topic
-// Add Send From Clipboard" Action
+/* Kill Personal WP messages after processing */
+/* Make sure a node doesnt try to "join" or "leave" a node as a user. */
+/* More tracing to try to track down lost topic links. */
+/* Add command recall to Console */
+/* Show users in new topic when changing topic */
+/* Add Send From Clipboard" Action */
 
-// Version 1.0.2.7
+/* Version 1.0.2.7 */
 
-// Hold messages from the future, or with invalid dates.
-// Add KH (kill held) command.
-// Send Message to SYSOP when a new user connects.
+/* Hold messages from the future, or with invalid dates. */
+/* Add KH (kill held) command. */
+/* Send Message to SYSOP when a new user connects. */
 
-// Version 1.0.2.8
+/* Version 1.0.2.8 */
 
-// Don't reject personal message on Dup BID unless we already have an unforwarded copy.
-// Hold Looping messages.
-// Warn SYSOP of held messages.
+/* Don't reject personal message on Dup BID unless we already have an unforwarded copy. */
+/* Hold Looping messages. */
+/* Warn SYSOP of held messages. */
 
-// Version 1.0.2.9
+/* Version 1.0.2.9 */
 
-// Close connecton on receipt of *** DONE (MBL style forwarding).
-// Improved validation in link_drop (Chat Node)
-// Change to welcome prompt and Msg Header for Outpost.
-// Fix Connect Script processing for KA Nodes
+/* Close connecton on receipt of *** DONE (MBL style forwarding). */
+/* Improved validation in link_drop (Chat Node) */
+/* Change to welcome prompt and Msg Header for Outpost. */
+/* Fix Connect Script processing for KA Nodes */
 
-// Version 1.0.3.1
+/* Version 1.0.3.1 */
 
-// Fix incorrect sending of NO - BID.
-// Fix problems caused by a user being connected to more than one chat node.
-// Show idle time on Chat /u display.
-// Rewrite forwarding by HA.
-// Add "Bad Words" Test.
-// Add reason for holding to SYSOP "Message Held" Message.
-// Make topics case-insensitive.
-// Allow SR for smtp mail.
-// Try to fix some user's "Add User" problem.
+/* Fix incorrect sending of NO - BID. */
+/* Fix problems caused by a user being connected to more than one chat node. */
+/* Show idle time on Chat /u display. */
+/* Rewrite forwarding by HA. */
+/* Add "Bad Words" Test. */
+/* Add reason for holding to SYSOP "Message Held" Message. */
+/* Make topics case-insensitive. */
+/* Allow SR for smtp mail. */
+/* Try to fix some user's "Add User" problem. */
 
 
-// Version 1.0.3.2
+/* Version 1.0.3.2 */
 
-// Fix program error when prcessing - response in FBB forwarding.
-// Fix code to flag messages as sent.
+/* Fix program error when prcessing - response in FBB forwarding. */
+/* Fix code to flag messages as sent. */
 
 
-// Version 1.0.3.3
+/* Version 1.0.3.3 */
 
-// Attempt to fix message loop on topic_change
-// Fix loop if compressed size is greater than 32K when receiving with B1 protocol.
-// Fix selection of B1
+/* Attempt to fix message loop on topic_change */
+/* Fix loop if compressed size is greater than 32K when receiving with B1 protocol. */
+/* Fix selection of B1 */
 
-// Version 1.0.3.4
+/* Version 1.0.3.4 */
 
-// Add "KISS ONLY" Flag to R: Lines (Needs Node Version 4.10.12 (4.10l) or above)
-// Add Basic NNTP Interface
-// Fix possible loop in lzhuf encode
+/* Add "KISS ONLY" Flag to R: Lines (Needs Node Version 4.10.12 (4.10l) or above) */
+/* Add Basic NNTP Interface */
+/* Fix possible loop in lzhuf encode */
 
-// Version 1.0.3.5
+/* Version 1.0.3.5 */
 
-// Fix forwarding of Held Messages
-// More attempts to fix Chat crashes.
-// Limit join/leave problem with mismatched nodes.
-// Add Chat Node Monitoring System.
-// Change order of elements in nntp addresses (now to.at, was at.to)
+/* Fix forwarding of Held Messages */
+/* More attempts to fix Chat crashes. */
+/* Limit join/leave problem with mismatched nodes. */
+/* Add Chat Node Monitoring System. */
+/* Change order of elements in nntp addresses (now to.at, was at.to) */
 
-// Version 1.0.3.6
+/* Version 1.0.3.6 */
 
-// Restart and Exit if too many errors
-// Fix forwarding of killed messages.
-// Fix Forwarding to PaKet.
-// Fix problem if BBS signon contains words from the "Fail" list
+/* Restart and Exit if too many errors */
+/* Fix forwarding of killed messages. */
+/* Fix Forwarding to PaKet. */
+/* Fix problem if BBS signon contains words from the "Fail" list */
 
-// Version 1.0.3.7
+/* Version 1.0.3.7 */
 
-// re-fix loop if compressed size is greater than 32K - reintroduced in 1.0.3.4
-// Add last message to edit users
-// Change Console and Monitor Buffer sizes
-// Don't flag msg as 'Y' on read if it was Held or Killed
+/* re-fix loop if compressed size is greater than 32K - reintroduced in 1.0.3.4 */
+/* Add last message to edit users */
+/* Change Console and Monitor Buffer sizes */
+/* Don't flag msg as 'Y' on read if it was Held or Killed */
 
-// Version 1.0.3.8
+/* Version 1.0.3.8 */
 
-// Don't connect if all messages for a BBS are held.
-// Hold message if From or To are missing.
-// Fix parsing of /n and /q commands
-// fix possible loop on changing name or qth
+/* Don't connect if all messages for a BBS are held. */
+/* Hold message if From or To are missing. */
+/* Fix parsing of /n and /q commands */
+/* fix possible loop on changing name or qth */
 
-// Version 1.0.3.9
+/* Version 1.0.3.9 */
 
-// More Chat fixes and monitoring
-// Added additional console for chat
+/* More Chat fixes and monitoring */
+/* Added additional console for chat */
 
-// Version 1.0.3.10
+/* Version 1.0.3.10 */
 
-// Fix for corruption of CIrcuit-Node chain.
+/* Fix for corruption of CIrcuit-Node chain. */
 
-// Version 1.0.3.11
+/* Version 1.0.3.11 */
 
-// Fix flow control for SMTP and NNTP 
+/* Fix flow control for SMTP and NNTP  */
 
-// Version 1.0.3.12
+/* Version 1.0.3.12 */
 
-// Fix crash in SendChatStatus if no Chat Links Defined.
-// Disable Chat Mode if there is no ApplCall for ChatApplNum,
-// Add Edit Message to Manage Messages Dialog
-// NNTP needs authentication
+/* Fix crash in SendChatStatus if no Chat Links Defined. */
+/* Disable Chat Mode if there is no ApplCall for ChatApplNum, */
+/* Add Edit Message to Manage Messages Dialog */
+/* NNTP needs authentication */
 
 
-// Version 1.0.3.13
+/* Version 1.0.3.13 */
 
-// Fix Chat ApplCall warning when ChatAppl = 0
-// Add NNTP NEWGROUPS Command
-// Fix MBL Forwarding (remove extra > prompt after SP)
+/* Fix Chat ApplCall warning when ChatAppl = 0 */
+/* Add NNTP NEWGROUPS Command */
+/* Fix MBL Forwarding (remove extra > prompt after SP) */
 
-// Version 1.0.3.14
+/* Version 1.0.3.14 */
 
-// Fix topic switch code.
-// Send SYSOP messages on POP3 interface if User SYSOP flag is set.
-// NNTP only needs Authentication for posting, not reading.
+/* Fix topic switch code. */
+/* Send SYSOP messages on POP3 interface if User SYSOP flag is set. */
+/* NNTP only needs Authentication for posting, not reading. */
 
-// Version 1.0.3.15
+/* Version 1.0.3.15 */
 
-// Fix reset of First to Forward after househeeping
+/* Fix reset of First to Forward after househeeping */
 
-// Version 1.0.3.16
+/* Version 1.0.3.16 */
 
-// Fix check of HA for terminating WW
-// MBL Mode remove extra > prompts
-// Fix program error if WP record has unexpected format
-// Connect Script changes for WINMOR
-// Fix typo in unconfigured node has connected message
+/* Fix check of HA for terminating WW */
+/* MBL Mode remove extra > prompts */
+/* Fix program error if WP record has unexpected format */
+/* Connect Script changes for WINMOR */
+/* Fix typo in unconfigured node has connected message */
 
-// Version 1.0.3.17
+/* Version 1.0.3.17 */
 
-// Fix forwarding of Personals 
+/* Fix forwarding of Personals  */
 
-// Version 1.0.3.18
+/* Version 1.0.3.18 */
 
-// Fix detection of misconfigured nodes to work with new nodes.
-// Limit connection attempt rate when a chat node is unavailable.
-// Fix Program Error on long input lines (> ~250 chars).
+/* Fix detection of misconfigured nodes to work with new nodes. */
+/* Limit connection attempt rate when a chat node is unavailable. */
+/* Fix Program Error on long input lines (> ~250 chars). */
 
-// Version 1.0.3.19
+/* Version 1.0.3.19 */
 
-// Fix Restart of B2 mode transfers.
-// Fix error if other end offers B1 and you are configured for B2 only.
+/* Fix Restart of B2 mode transfers. */
+/* Fix error if other end offers B1 and you are configured for B2 only. */
 
 
-// Version 1.0.3.20
+/* Version 1.0.3.20 */
 
-// Fix Paging in Chat Mode.
-// Report Node Versions.
+/* Fix Paging in Chat Mode. */
+/* Report Node Versions. */
 
-// Version 1.0.3.21
+/* Version 1.0.3.21 */
 
-// Check node is not already known when processing OK
-// Add option to suppress emailing of housekeeping results
+/* Check node is not already known when processing OK */
+/* Add option to suppress emailing of housekeeping results */
 
-// Version 1.0.3.22
+/* Version 1.0.3.22 */
 
-// Correct Version processing when user connects via the network
-// Add time controlled forwarding scripts
+/* Correct Version processing when user connects via the network */
+/* Add time controlled forwarding scripts */
 
-// Version 1.0.3.23
+/* Version 1.0.3.23 */
 
-// Changes to RMS forwarding
+/* Changes to RMS forwarding */
 
-// Version 1.0.3.24
+/* Version 1.0.3.24 */
 
-// Fix RMS: from SMTP interface
-// Accept RMS/ instead of RMS: for Thunderbird
+/* Fix RMS: from SMTP interface */
+/* Accept RMS/ instead of RMS: for Thunderbird */
 
-// Version 1.0.3.25
+/* Version 1.0.3.25 */
 
-// Accept smtp: addresses from smtp client, and route to ISP gateway.
-// Set FROM address of messages from RMS that are delivered to smtp client so a reply will go back via RMS.
+/* Accept smtp: addresses from smtp client, and route to ISP gateway. */
+/* Set FROM address of messages from RMS that are delivered to smtp client so a reply will go back via RMS. */
 
-// Version 1.0.3.26
+/* Version 1.0.3.26 */
 
-// Improve display of rms and smtp messages in message lists and message display.
+/* Improve display of rms and smtp messages in message lists and message display. */
 
-// Version 1.0.3.27
+/* Version 1.0.3.27 */
 
-// Correct code that prevents mail being retured to originating BBS.
-// Tidy stuck Nodes and Topics when all links close
-// Fix B2 handling of @ to TO Address.
+/* Correct code that prevents mail being retured to originating BBS. */
+/* Tidy stuck Nodes and Topics when all links close */
+/* Fix B2 handling of @ to TO Address. */
 
-// Version 1.0.3.28
+/* Version 1.0.3.28 */
 
-// Ensure user Record for the BBS Call has BBS bit set.
-// Don't send messages addressed @winlink.org if addressee is a local user with Poll RMS set.
-// Add user configurable welcome messages.
+/* Ensure user Record for the BBS Call has BBS bit set. */
+/* Don't send messages addressed @winlink.org if addressee is a local user with Poll RMS set. */
+/* Add user configurable welcome messages. */
 
-// Version 1.0.3.29
+/* Version 1.0.3.29 */
 
-// Add AUTH feature to Rig Control
+/* Add AUTH feature to Rig Control */
 
-// Version 1.0.3.30
+/* Version 1.0.3.30 */
 
-// Process Paclink Header (;FW:)
+/* Process Paclink Header (;FW:) */
 
-// Version 1.0.3.31
+/* Version 1.0.3.31 */
 
-// Process Messages with attachments.
-// Add inactivity timeout to Chat Console sessions.
+/* Process Messages with attachments. */
+/* Add inactivity timeout to Chat Console sessions. */
 
-// Version 1.0.3.32
+/* Version 1.0.3.32 */
 
-// Fix for Paclink > BBS Addresses 
+/* Fix for Paclink > BBS Addresses  */
 
-// Version 1.0.3.33
+/* Version 1.0.3.33 */
 
-// Fix multiple transfers per session for B2.
-// Kill messages eent to paclink.
-// Add option to forward messages on arrival.
+/* Fix multiple transfers per session for B2. */
+/* Kill messages eent to paclink. */
+/* Add option to forward messages on arrival. */
 
-// Version 1.0.3.34
+/* Version 1.0.3.34 */
 
-// Fix bbs addresses to winlink.
-// Fix adding @winlink.org to imcoming paclink msgs
+/* Fix bbs addresses to winlink. */
+/* Fix adding @winlink.org to imcoming paclink msgs */
 
-// Version 1.0.3.35
+/* Version 1.0.3.35 */
 
-// Fix bbs addresses to winlink. (Again)
+/* Fix bbs addresses to winlink. (Again) */
 
-// Version 1.0.3.36
+/* Version 1.0.3.36 */
 
-// Restart changes for RMS/paclink
+/* Restart changes for RMS/paclink */
 
-// Version 1.0.3.37
+/* Version 1.0.3.37 */
 
-// Fix for RMS Express forwarding
+/* Fix for RMS Express forwarding */
 
-// Version 1.0.3.38
+/* Version 1.0.3.38 */
 
-// Fixes for smtp and lower case packet addresses from Airmail
-// Fix missing > afer NO - Bid in MBL mode
+/* Fixes for smtp and lower case packet addresses from Airmail */
+/* Fix missing > afer NO - Bid in MBL mode */
 
-// Version 1.0.3.39
+/* Version 1.0.3.39 */
 
-// Use ;FW: for RMS polling.
+/* Use ;FW: for RMS polling. */
 
-// Version 1.0.3.40
+/* Version 1.0.3.40 */
 
-// Add ELSE Option to connect scripts.
+/* Add ELSE Option to connect scripts. */
 
-// Version 1.0.3.41
+/* Version 1.0.3.41 */
 
-// Improved handling of Multiple Addresses
-// Add user colours to chat.
+/* Improved handling of Multiple Addresses */
+/* Add user colours to chat. */
 
-// Version 1.0.3.42
+/* Version 1.0.3.42 */
 
-// Poll multiple SSID's for RMS
-// Colour support for BPQTEerminal
-// New /C chat command to toggle colour on or off.
+/* Poll multiple SSID's for RMS */
+/* Colour support for BPQTEerminal */
+/* New /C chat command to toggle colour on or off. */
 
-// Version 1.0.3.43
+/* Version 1.0.3.43 */
 
-// Add SKIPPROMPT command to forward scripts
+/* Add SKIPPROMPT command to forward scripts */
 
-// Version 1.0.4.1
+/* Version 1.0.4.1 */
 
-// Non - Beta Release
-// Fix possible crash/corruption with long B2 messages
+/* Non - Beta Release */
+/* Fix possible crash/corruption with long B2 messages */
 
-// Version 1.0.4.2
+/* Version 1.0.4.2 */
 
-// Add @winlink.org to the B2 From addresss if it is just a callsign
-// Route Flood Bulls on TO as well as @
+/* Add @winlink.org to the B2 From addresss if it is just a callsign */
+/* Route Flood Bulls on TO as well as @ */
 
-// Version 1.0.4.3
+/* Version 1.0.4.3 */
 
-// Handle Packet Addresses from RMS Express
-// Fix for Housekeeping B$ messages
+/* Handle Packet Addresses from RMS Express */
+/* Fix for Housekeeping B$ messages */
 
-// Version 1.0.4.4
+/* Version 1.0.4.4 */
 
-// Remove B2 header and all but the Body part from messages forwared using MBL
-// Fix handling of ;FW: from RMS Express
+/* Remove B2 header and all but the Body part from messages forwared using MBL */
+/* Fix handling of ;FW: from RMS Express */
 
-// Version 1.0.4.5
+/* Version 1.0.4.5 */
 
-// Disable Paging on forwarding sessions.
-// Kill Msgs sent to RMS Exxpress
-// Add Name to Chat *** Joined msg
+/* Disable Paging on forwarding sessions. */
+/* Kill Msgs sent to RMS Exxpress */
+/* Add Name to Chat *** Joined msg */
 
-// Version 1.0.4.6
+/* Version 1.0.4.6 */
 
-// Pass smtp:winlink.org messages from Airmail to local user check
-// Only apply local user check to RMS: messages @winlink.org
-// Check locally input smtp: messages for local winlink.org users
-// Provide facility to allow only one connect on a port
+/* Pass smtp:winlink.org messages from Airmail to local user check */
+/* Only apply local user check to RMS: messages @winlink.org */
+/* Check locally input smtp: messages for local winlink.org users */
+/* Provide facility to allow only one connect on a port */
 
-// Version 1.0.4.8
+/* Version 1.0.4.8 */
 
-//	Only reset last listed on L or LR commands.
+/*	Only reset last listed on L or LR commands. */
 
-// Version 1.0.4.9
+/* Version 1.0.4.9 */
 
-// Fix error in handling smtp: messages to winlink.org addresses from Airmail
+/* Fix error in handling smtp: messages to winlink.org addresses from Airmail */
 
-// Version 1.0.4.10
+/* Version 1.0.4.10 */
 
-// Fix Badwords processing
-// Add Connect Script PAUSE command
+/* Fix Badwords processing */
+/* Add Connect Script PAUSE command */
 
-// Version 1.0.4.11
+/* Version 1.0.4.11 */
 
-// Suppress display and listing of held messages
-// Add option to exclude SYSOP messages from LM, KM, etc
-// Fix crash whan receiving messages with long lines via plain text forwarding
+/* Suppress display and listing of held messages */
+/* Add option to exclude SYSOP messages from LM, KM, etc */
+/* Fix crash whan receiving messages with long lines via plain text forwarding */
 
-// Version 1.0.4.12 Jul 2010
+/* Version 1.0.4.12 Jul 2010 */
 
-// Route P messages on AT
-// Allow Applications above 8
+/* Route P messages on AT */
+/* Allow Applications above 8 */
 
-// Version 1.0.4.13 Aug 2010
+/* Version 1.0.4.13 Aug 2010 */
 
-// Fix TidyString for addresses of form John Wiseman <john.wiseman@ntlworld.com>
-// Add Try/Except around socket routines
+/* Fix TidyString for addresses of form John Wiseman <john.wiseman@ntlworld.com> */
+/* Add Try/Except around socket routines */
 
-// Version 1.0.4.14 Aug 2010
+/* Version 1.0.4.14 Aug 2010 */
 
-// Trap "Error - TNC Not Ready" in forward script response
-// Fix restart after program error
-// Add INFO command
-// Add SYSOP-configurable HELP Text.
+/* Trap "Error - TNC Not Ready" in forward script response */
+/* Fix restart after program error */
+/* Add INFO command */
+/* Add SYSOP-configurable HELP Text. */
 
-// Version 1.0.4.15 Aug 2010
+/* Version 1.0.4.15 Aug 2010 */
 
-// Semaphore Connect/Disconnect
-// Semaphore RemoveTempBIDS
+/* Semaphore Connect/Disconnect */
+/* Semaphore RemoveTempBIDS */
 
-// Version 1.0.4.16 Aug 2010
+/* Version 1.0.4.16 Aug 2010 */
 
-// Remove prompt after receiving unrecognised line in MBL mode. (for MSYS)
+/* Remove prompt after receiving unrecognised line in MBL mode. (for MSYS) */
 
-// Version 1.0.4.17 Aug 2010
+/* Version 1.0.4.17 Aug 2010 */
 
-// Fix receiving multiple messages in FBB Uncompressed Mode
-// Try to trap phantom chat node connections
-// Add delay to close
+/* Fix receiving multiple messages in FBB Uncompressed Mode */
+/* Try to trap phantom chat node connections */
+/* Add delay to close */
 
 
-// Version 1.0.4.18 Aug 2010
+/* Version 1.0.4.18 Aug 2010 */
 
-// Add "Send SYSTEM messages to SYSOP Call" Option
-// set fwd bit on local winlink.org msgs if user is a BBS
-// add winlink.org to from address of messages from WL2K that don't already have an @ 
+/* Add "Send SYSTEM messages to SYSOP Call" Option */
+/* set fwd bit on local winlink.org msgs if user is a BBS */
+/* add winlink.org to from address of messages from WL2K that don't already have an @  */
 
-// Version 1.0.4.19 Sept 2010
+/* Version 1.0.4.19 Sept 2010 */
 
-// Build a B2 From: address if possible, so RMS Express can reply to packet messages.
-// Fix handling of addresses from WL2K with SSID's
-// L@ now only matches up to length of input string.
-// Remove "Type H for help" from login prompt.
+/* Build a B2 From: address if possible, so RMS Express can reply to packet messages. */
+/* Fix handling of addresses from WL2K with SSID's */
+/* L@ now only matches up to length of input string. */
+/* Remove "Type H for help" from login prompt. */
 
-// Version 1.0.4.20 Sept 2010
+/* Version 1.0.4.20 Sept 2010 */
 
-// Process FBB 'E' response
-// Handle FROM addresses with an @BBS
-// Fix FROM addresses with @ on end.
-// Extend delay before close after sending FQ on winmor/pactor sessions.
+/* Process FBB 'E' response */
+/* Handle FROM addresses with an @BBS */
+/* Fix FROM addresses with @ on end. */
+/* Extend delay before close after sending FQ on winmor/pactor sessions. */
 
-// Version 1.0.4.21 Sept 2010
+/* Version 1.0.4.21 Sept 2010 */
 
-// Fix handling B2 From: with an HA
-// Add "Expert User" welcome message.
+/* Fix handling B2 From: with an HA */
+/* Add "Expert User" welcome message. */
 
-// Version 1.0.4.22 Sept 2010
+/* Version 1.0.4.22 Sept 2010 */
 
-// Version 1.0.4.23 Oct 2010
+/* Version 1.0.4.23 Oct 2010 */
 
-// Add Dup message supression
-// Dont change B2 from if going to RMS
+/* Add Dup message supression */
+/* Dont change B2 from if going to RMS */
 
-// Version 1.0.4.24 Oct 2010
+/* Version 1.0.4.24 Oct 2010 */
 
-// Add "Save Registry Config" command
-// Add forwarding on wildcarded TO for NTS
-// Add option to force text mode forwarding
-// Define new users as a temporaty BBS if SID received in reply to Name prompt
-// Reduce delay before sending close after sending FQ on pactor sessions
-// Fix processing of MIME boundary from GMail
+/* Add "Save Registry Config" command */
+/* Add forwarding on wildcarded TO for NTS */
+/* Add option to force text mode forwarding */
+/* Define new users as a temporaty BBS if SID received in reply to Name prompt */
+/* Reduce delay before sending close after sending FQ on pactor sessions */
+/* Fix processing of MIME boundary from GMail */
 
-// Send /ex instead of ctrl/z for text mode forwarding
-// Send [WL2K-BPQ... SID if user flagged as RMS Express
-// Fix Chat Map reporting when more than one AXIP port
-// Add Message State D for NTS Messages
-// Forward messages in priority order - T, P, B
-// Add Reject and Hold Filters
-// Fix holding messages to local RMS users when received as part of a multiple addressee message
+/* Send /ex instead of ctrl/z for text mode forwarding */
+/* Send [WL2K-BPQ... SID if user flagged as RMS Express */
+/* Fix Chat Map reporting when more than one AXIP port */
+/* Add Message State D for NTS Messages */
+/* Forward messages in priority order - T, P, B */
+/* Add Reject and Hold Filters */
+/* Fix holding messages to local RMS users when received as part of a multiple addressee message */
 
-// Version 1.0.4.25 Nov 2010
+/* Version 1.0.4.25 Nov 2010 */
 
-// Renumbered for release
-// Add option to save Registry Config during Housekeeping
+/* Renumbered for release */
+/* Add option to save Registry Config during Housekeeping */
 
-// Version 1.0.4.26 Nov 2010
+/* Version 1.0.4.26 Nov 2010 */
 
-// Fix F> loop when doing MBL forwarding between BPQ BBSes
-// Allow multiple To: addresses, separated by ;
-// Allow Houskeeping Lifetime Overrides to apply to Unsent Messages.
-// Set Unforwarded Bulls to status '$'
-// Accept MARS and USA as continent codes for MARS Packet Addresses
-// Add option to send Non-delivery notifications.
+/* Fix F> loop when doing MBL forwarding between BPQ BBSes */
+/* Allow multiple To: addresses, separated by ; */
+/* Allow Houskeeping Lifetime Overrides to apply to Unsent Messages. */
+/* Set Unforwarded Bulls to status '$' */
+/* Accept MARS and USA as continent codes for MARS Packet Addresses */
+/* Add option to send Non-delivery notifications. */
 
-// Version 1.0.4.27 Dec 2010
+/* Version 1.0.4.27 Dec 2010 */
 
-// Add MSGTYPES fwd file option
+/* Add MSGTYPES fwd file option */
 
-// Version 1.0.4.28 Dec 2010
+/* Version 1.0.4.28 Dec 2010 */
 
-// Renumbered to for release
+/* Renumbered to for release */
 
-// Version 1.0.4.30 Dec 2010
+/* Version 1.0.4.30 Dec 2010 */
 
-// Fix rescan requeuing where bull was rejected by a BBS
-// Fiz flagging bulls received by NNTP with $ if they need to be forwarded.
-// Add Chat Keepalive option.
-// Fix bug in non-delivery notification.
+/* Fix rescan requeuing where bull was rejected by a BBS */
+/* Fiz flagging bulls received by NNTP with $ if they need to be forwarded. */
+/* Add Chat Keepalive option. */
+/* Fix bug in non-delivery notification. */
 
-// Version 1.0.4.32 Jan 2011
+/* Version 1.0.4.32 Jan 2011 */
 
-// Allow "Send from Clipboard" to send to rms: or smtp:
-// Allow messages received via SMTP to be bulls (TO preceeded by bull/) or NTS (to nnnnn@NTSXX or nnnnn@NTSXX.NTS)
-// Fix corruption of messages converted to B2 if body contains binary data
-// Fix occasional program error when forwarding B2 messages
-// Limit FBB protocol data blocks to 250 to try to fix restart problem.
-// Add F2 to F5 to open windows.
+/* Allow "Send from Clipboard" to send to rms: or smtp: */
+/* Allow messages received via SMTP to be bulls (TO preceeded by bull/) or NTS (to nnnnn@NTSXX or nnnnn@NTSXX.NTS) */
+/* Fix corruption of messages converted to B2 if body contains binary data */
+/* Fix occasional program error when forwarding B2 messages */
+/* Limit FBB protocol data blocks to 250 to try to fix restart problem. */
+/* Add F2 to F5 to open windows. */
 
-// Version 1.0.4.33 Jan 2011
+/* Version 1.0.4.33 Jan 2011 */
 
-// Fix holding old bulls with forwarding info.
+/* Fix holding old bulls with forwarding info. */
 
-// Version 1.0.4.33 Jan 2011
+/* Version 1.0.4.33 Jan 2011 */
 
-// Prevent transfer restarting after a program error.
-// Allow Housekeeping to kill held messages.
+/* Prevent transfer restarting after a program error. */
+/* Allow Housekeeping to kill held messages. */
 
-// Version 1.0.4.35 Jan 2011
+/* Version 1.0.4.35 Jan 2011 */
 
-// Add Size limits for P and T messages to MSGTYPES command
-// Fix Error in MBL processing when blank lines received (introduced in .33)
-// Trap possible PE in Send_MON_Datagram
-// Don't use paging on chat sessions
+/* Add Size limits for P and T messages to MSGTYPES command */
+/* Fix Error in MBL processing when blank lines received (introduced in .33) */
+/* Trap possible PE in Send_MON_Datagram */
+/* Don't use paging on chat sessions */
 
-// Version 1.0.4.36 Jan 2011
+/* Version 1.0.4.36 Jan 2011 */
 
-// Fix error after handling first FBB block.
-// Add $X and $x welcome message options.
+/* Fix error after handling first FBB block. */
+/* Add $X and $x welcome message options. */
 
-// Version 1.0.4.37 Jan 2011
+/* Version 1.0.4.37 Jan 2011 */
 
-// Change L command not to list the last message if no new ones are available
-// Add LC I I@ IH IZ commands
-// Add option to send warning to sysop if forwarded P or T message has nowhere to go
-// Fixes for Winpack Compressed Download
-// Fix Houskeeping when "Apply Overrides to Unsent Bulls" is set.
-// Add console copy/paste.
-// Add "No Bulls" Option.
-// Add "Mail For" Beacon.
-// Tidied up Tab order in config dialogs to help text-to-speech programs.
-// Limit MaxMsgno to 99000.
+/* Change L command not to list the last message if no new ones are available */
+/* Add LC I I@ IH IZ commands */
+/* Add option to send warning to sysop if forwarded P or T message has nowhere to go */
+/* Fixes for Winpack Compressed Download */
+/* Fix Houskeeping when "Apply Overrides to Unsent Bulls" is set. */
+/* Add console copy/paste. */
+/* Add "No Bulls" Option. */
+/* Add "Mail For" Beacon. */
+/* Tidied up Tab order in config dialogs to help text-to-speech programs. */
+/* Limit MaxMsgno to 99000. */
 
-// Version 1.0.4.38 Feb 2011
+/* Version 1.0.4.38 Feb 2011 */
 
-// Renumbered for release
+/* Renumbered for release */
 
-// Version 1.0.4.40 April 2011
+/* Version 1.0.4.40 April 2011 */
 
-// Add POLLRMS command
+/* Add POLLRMS command */
 
-// Changes for Vista/Win7 (registry key change)
-// Workaround for changes to RMS Express
-// Fix AUTH bug in SMTP server
-// Add filter to Edit Messages dialog
+/* Changes for Vista/Win7 (registry key change) */
+/* Workaround for changes to RMS Express */
+/* Fix AUTH bug in SMTP server */
+/* Add filter to Edit Messages dialog */
 
-// Version 1.0.4.41 April 2011
+/* Version 1.0.4.41 April 2011 */
 
-// Extend B2 proposals to other BPQMail systems so Reject Filter will work.
-// Add Edit User Command
-// Use internal Registry Save routine instead of Regedit
-// Fix Start Forward/All
-// Allow Winpack Compressed Upload/Download if PMS flag set (as well as BBS flag) 
-// Add FWD SYSOP command
-// Fix security on POLLRMS command
-// Add AUTH command
-// Leave selection in same place after Delete User
-// Combine SMTP server messages to multiple WL2K addresses into one message to WL2k
-// Add option to show name as well as call on Chat messages
-// Fix program error if you try to define more than 80 BBS's
+/* Extend B2 proposals to other BPQMail systems so Reject Filter will work. */
+/* Add Edit User Command */
+/* Use internal Registry Save routine instead of Regedit */
+/* Fix Start Forward/All */
+/* Allow Winpack Compressed Upload/Download if PMS flag set (as well as BBS flag)  */
+/* Add FWD SYSOP command */
+/* Fix security on POLLRMS command */
+/* Add AUTH command */
+/* Leave selection in same place after Delete User */
+/* Combine SMTP server messages to multiple WL2K addresses into one message to WL2k */
+/* Add option to show name as well as call on Chat messages */
+/* Fix program error if you try to define more than 80 BBS's */
 
-// Version 1.0.4.45 October 2011
+/* Version 1.0.4.45 October 2011 */
 
-// Changes to program error reporting.
-// BBS "Returh to Node" command added
-// Move config to "Standard" location (BPQ Directory/BPQMailChat) .
-// Fix crash if "Edit Message" clicked with no message selected.
+/* Changes to program error reporting. */
+/* BBS "Returh to Node" command added */
+/* Move config to "Standard" location (BPQ Directory/BPQMailChat) . */
+/* Fix crash if "Edit Message" clicked with no message selected. */
 
-// Version 1.0.4.46 October 2011
+/* Version 1.0.4.46 October 2011 */
 
-//	Fix BaseDir test when BaseDir ends with \ or /
-//  Fix long BaseDir values (>50 chars)
+/*	Fix BaseDir test when BaseDir ends with \ or / */
+/*  Fix long BaseDir values (>50 chars) */
 
-// Version 1.4.47.1 January 2012
+/* Version 1.4.47.1 January 2012 */
 
-//  Call CloseBPQ32 on exit
-//  Add option to flash window instead of sounding bell on Chat Connects
-//  Add ShowRMS SYSOP command
-//	Update WP with I records from R: lines
-//	Send WP Updates
-//  Fix Paclen on Pactor-like sessions
-//	Fix SID and Prompt when RMS Express User is set
-//  Try to stop loop in Program Error/Restarting code
-//  Trap "UNABLE TO CONNECT" response in connect script
-//  Add facility to print messages or save them to a text file
+/*  Call CloseBPQ32 on exit */
+/*  Add option to flash window instead of sounding bell on Chat Connects */
+/*  Add ShowRMS SYSOP command */
+/*	Update WP with I records from R: lines */
+/*	Send WP Updates */
+/*  Fix Paclen on Pactor-like sessions */
+/*	Fix SID and Prompt when RMS Express User is set */
+/*  Try to stop loop in Program Error/Restarting code */
+/*  Trap "UNABLE TO CONNECT" response in connect script */
+/*  Add facility to print messages or save them to a text file */
 
-// Version 1.4.48.1 January 2012
+/* Version 1.4.48.1 January 2012 */
 
-//	Add Send Message (as well as Send from Clipboard)
-//	Fix Email From: Address when forwaring using B2
-//	Send WP from BBSCALL not SYSOPCALL
-//  Send Chat Map reports via BPQ32.dll
+/*	Add Send Message (as well as Send from Clipboard) */
+/*	Fix Email From: Address when forwaring using B2 */
+/*	Send WP from BBSCALL not SYSOPCALL */
+/*  Send Chat Map reports via BPQ32.dll */
 
 
-// Version 1.4.49.1 February 2012
+/* Version 1.4.49.1 February 2012 */
 
 
-//	Fix Setting Paclink mode on SNOS connects
-//	Remove creation of debugging file for each message
-//	Add Message Export and Import functions
-//	All printing of more than one message at a time
-//	Add command to toggle "Expert" status
+/*	Fix Setting Paclink mode on SNOS connects */
+/*	Remove creation of debugging file for each message */
+/*	Add Message Export and Import functions */
+/*	All printing of more than one message at a time */
+/*	Add command to toggle "Expert" status */
 
-// Version 1.4.50.1 February 2012
+/* Version 1.4.50.1 February 2012 */
 
-//  Fix forwarding to RMS Express users
-//  Route messages received via B2 to an Internet email address to RMS
-//  Add Reverse Poll interval
-//  Add full FROM address to POP3 messages
-//	Include HOMEBBS command in Help
+/*  Fix forwarding to RMS Express users */
+/*  Route messages received via B2 to an Internet email address to RMS */
+/*  Add Reverse Poll interval */
+/*  Add full FROM address to POP3 messages */
+/*	Include HOMEBBS command in Help */
 
 
-// Version 1.4.51.1 June 2012
+/* Version 1.4.51.1 June 2012 */
 
-//  Allow bulls to be sent from RMS Express.
-//  Handle BASE64 and Quoted-printable encoding of single part messages
-//	Work round for RMS Express "All proposals rejected" Bug.
+/*  Allow bulls to be sent from RMS Express. */
+/*  Handle BASE64 and Quoted-printable encoding of single part messages */
+/*	Work round for RMS Express "All proposals rejected" Bug. */
 
-// Version 1.4.52.1 August 2012
+/* Version 1.4.52.1 August 2012 */
 
-//  Fix size limit on B2 To List when sending to multiple dests
-//  Fix initialisation of DIRMES.SYS control record 
-//	Allow use of Tracker and UZ7HO ports for UI messages
+/*  Fix size limit on B2 To List when sending to multiple dests */
+/*  Fix initialisation of DIRMES.SYS control record  */
+/*	Allow use of Tracker and UZ7HO ports for UI messages */
 
-// Version 1.4.53.1 September 2012
+/* Version 1.4.53.1 September 2012 */
 
-//	Fix crash if R: line with out a CR found.
+/*	Fix crash if R: line with out a CR found. */
 
-// Version 1.4.54.1 ?? 2012
+/* Version 1.4.54.1 ?? 2012 */
 
-//	Add configurable prompts
-//	Fix KISS-Only Test
-//	Send EHLO instead of HELO when Authentication is needed on SMTP session
-//	Add option to use local tome for bbs forwarding config
-//	Allow comment lines (; or @) or single space in fwd scripts
-//  Fix loss of forwarding info if SAVE is clicked before selecting a call
+/*	Add configurable prompts */
+/*	Fix KISS-Only Test */
+/*	Send EHLO instead of HELO when Authentication is needed on SMTP session */
+/*	Add option to use local tome for bbs forwarding config */
+/*	Allow comment lines (; or @) or single space in fwd scripts */
+/*  Fix loss of forwarding info if SAVE is clicked before selecting a call */
 
-// Version 1.4.55.1 June 2013
+/* Version 1.4.55.1 June 2013 */
 
-// Add option to remove users that have not connected for a long time.
-// Add l@ smtp:
-// Fix From: sent to POP3 Client when meaages is from RMS
-// Display Email From on Manage Messages
+/* Add option to remove users that have not connected for a long time. */
+/* Add l@ smtp: */
+/* Fix From: sent to POP3 Client when meaages is from RMS */
+/* Display Email From on Manage Messages */
 
-// Version 1.4.56.1 July 2013
+/* Version 1.4.56.1 July 2013 */
 
-// Add timeout
-// Verify prompts
-// Add IDLETIME command
+/* Add timeout */
+/* Verify prompts */
+/* Add IDLETIME command */
 
 
 
-// Version 1.4.57.1
+/* Version 1.4.57.1 */
 
-//	Change default IDLETIME
-//	Fix display of BBS's in Web "Manage Messages"
-//	Add separate househeeping lifetines for T messages
-//  Don't change flag on forwarded or delivered messages if they sre subsequently read
-//  Speed up processing, mainly to stop RMS Express timing out when connecting via Telnet
-//  Don't append winlink.org to RMS Express or Paclink addresses if RMS is not configured
-//	Fix receiving NTS messages via B2
-//	Add option to send "Mail For", but not FBB Headers
-//	Fix corruption caused with Subject longer than 60 bytes reveived from Winlink systems
-//	Fix Endian bug in FBB Compression code
+/*	Change default IDLETIME */
+/*	Fix display of BBS's in Web "Manage Messages" */
+/*	Add separate househeeping lifetines for T messages */
+/*  Don't change flag on forwarded or delivered messages if they sre subsequently read */
+/*  Speed up processing, mainly to stop RMS Express timing out when connecting via Telnet */
+/*  Don't append winlink.org to RMS Express or Paclink addresses if RMS is not configured */
+/*	Fix receiving NTS messages via B2 */
+/*	Add option to send "Mail For", but not FBB Headers */
+/*	Fix corruption caused with Subject longer than 60 bytes reveived from Winlink systems */
+/*	Fix Endian bug in FBB Compression code */
 
 
-// Version 1.4.58.1
+/* Version 1.4.58.1 */
 
-//  Change control of appending winlink.org to RMS Express or Paclink addresses to a user flag
-//	Lookup HomeBBS and WP for calls without a via received from RMS Express or Paclink 
-//	Treat call@bpq as request to look up address in Home BBS/WP for messages received from RMS Express or Paclink 
-//	Collect stats by message type
-//	Fix Non-Delivery notifications to SMTP messages
-//	Add Message Type Stats to BBS Trafic Report
-//	Add "Batch forward to email"
-//	Add EXPORT command
-//	Allow more BBS records
-//	Allow lower case connect scripts
-//  Fix POP3 LIST command
-//	Fix MIME Multipart Alternate with first part Base64 or Quoted Printable encoding
-//	Fix duplicates of SP SYSOP@WW Messages
-//	Add command line option (tidymail) to delete redundant Mail files
-//	Add command line option (nohomebbs) to suppress HomeBBS prompt
+/*  Change control of appending winlink.org to RMS Express or Paclink addresses to a user flag */
+/*	Lookup HomeBBS and WP for calls without a via received from RMS Express or Paclink  */
+/*	Treat call@bpq as request to look up address in Home BBS/WP for messages received from RMS Express or Paclink  */
+/*	Collect stats by message type */
+/*	Fix Non-Delivery notifications to SMTP messages */
+/*	Add Message Type Stats to BBS Trafic Report */
+/*	Add "Batch forward to email" */
+/*	Add EXPORT command */
+/*	Allow more BBS records */
+/*	Allow lower case connect scripts */
+/*  Fix POP3 LIST command */
+/*	Fix MIME Multipart Alternate with first part Base64 or Quoted Printable encoding */
+/*	Fix duplicates of SP SYSOP@WW Messages */
+/*	Add command line option (tidymail) to delete redundant Mail files */
+/*	Add command line option (nohomebbs) to suppress HomeBBS prompt */
 
-// 59 April 2014
+/* 59 April 2014 */
 
-//	Add FLARQ Mail Mode
-//	Fix possible crash saving restart data
-//	Add script command ADDLF for connect scripts over Telnet
-//	Add recogniton of URONODE connected message
-//	Add option to stop Name prompt
-//	Add new RMS Express users with "RMS Express User" flag set
-//	Validate HTML Pages
-//	Add NTS swap file
-//	Add basic File list and read functions
-//	Fix Traffic report
+/*	Add FLARQ Mail Mode */
+/*	Fix possible crash saving restart data */
+/*	Add script command ADDLF for connect scripts over Telnet */
+/*	Add recogniton of URONODE connected message */
+/*	Add option to stop Name prompt */
+/*	Add new RMS Express users with "RMS Express User" flag set */
+/*	Validate HTML Pages */
+/*	Add NTS swap file */
+/*	Add basic File list and read functions */
+/*	Fix Traffic report */
 
-// 60
+/* 60 */
 
-//	Fix security hole in readfile
+/*	Fix security hole in readfile */
 
-// 61 August 2014
-//	Set Messages to NTS:nnnnn@NTSXX to type 'T' and remove NTS
-//	Dont treat "Attempting downlink" as a failure
-//	Add option to read messages during a list
-//	Fix crash during message renumber on MAC
-//	Timeout response to SID to try to avoid hang on an incomplete connection.
-//	Save config in file instead of registry
-//	Fix Manage Messages "EXPORT" option and check filename on EXPORT command
-//	Fix reverse forward prompt in MBL mode.
-//	Fix From address in POP3 messages where path is @winlink.org
-//	Fix possible program error in T message procesing
-//	Add MaxAge param (for incoming Bulls)
+/* 61 August 2014 */
+/*	Set Messages to NTS:nnnnn@NTSXX to type 'T' and remove NTS */
+/*	Dont treat "Attempting downlink" as a failure */
+/*	Add option to read messages during a list */
+/*	Fix crash during message renumber on MAC */
+/*	Timeout response to SID to try to avoid hang on an incomplete connection. */
+/*	Save config in file instead of registry */
+/*	Fix Manage Messages "EXPORT" option and check filename on EXPORT command */
+/*	Fix reverse forward prompt in MBL mode. */
+/*	Fix From address in POP3 messages where path is @winlink.org */
+/*	Fix possible program error in T message procesing */
+/*	Add MaxAge param (for incoming Bulls) */
 
 
-//62 November 2014
-//	Add ZIP and Permit Bulls flag to Manage Users 
-//	Allow users to kill their own B and anyone to kill T messages
-//	Improve saving of "Last Listed"
-//	Fix LL when paging
-//	Send Date received in R: Line (should fix B2 message restarts)
-//	Fix occasional crash in terminal part line processing
-//	Add "SKIPCON" forwarding command to handle nodes that include "Connected" in their CTEXT
-//	Fix possible retry loop when message is deferred (FBB '=' response);
-//	Don't remove Attachments from received bulls.
+/*62 November 2014 */
+/*	Add ZIP and Permit Bulls flag to Manage Users  */
+/*	Allow users to kill their own B and anyone to kill T messages */
+/*	Improve saving of "Last Listed" */
+/*	Fix LL when paging */
+/*	Send Date received in R: Line (should fix B2 message restarts) */
+/*	Fix occasional crash in terminal part line processing */
+/*	Add "SKIPCON" forwarding command to handle nodes that include "Connected" in their CTEXT */
+/*	Fix possible retry loop when message is deferred (FBB '=' response); */
+/*	Don't remove Attachments from received bulls. */
 
-//63 Feb 2015
+/*63 Feb 2015 */
 
-//	Fix creating Bulls from RMS Express messages.
-//	Fix PE if message with no To: received.
-//	Fix setting "RMS Express User" flag on new connects from RMS Express 
-//	Fix deleting 'T' messages downloaded by RMS Express
-//	Include MPS messages in count of messages to forward.
-//	Add new Welcome Message variable $F for messages to forward
-//	Fix setting Type in B2 header when usong NTS: or BULL: 
-//	Remove trailing spaces from BID when Creating Message from Clipboard.
-//	Improved handling of FBB B1/B2 Restarts.
+/*	Fix creating Bulls from RMS Express messages. */
+/*	Fix PE if message with no To: received. */
+/*	Fix setting "RMS Express User" flag on new connects from RMS Express  */
+/*	Fix deleting 'T' messages downloaded by RMS Express */
+/*	Include MPS messages in count of messages to forward. */
+/*	Add new Welcome Message variable $F for messages to forward */
+/*	Fix setting Type in B2 header when usong NTS: or BULL:  */
+/*	Remove trailing spaces from BID when Creating Message from Clipboard. */
+/*	Improved handling of FBB B1/B2 Restarts. */
 
-//64 September 2015
+/*64 September 2015 */
 
-//	Fix Message Type in msgs from RMS Express to Internet
-//	Reopen Monitor window if open when program list closed
-//	Only apply NTS alias file to NTS Messages
-//	Fix failure to store some encrypted ISP passwords
-//	Allow EDITUSER to change "RMS Express User" flag
-//	Fix reporting of Config File errors
-//	Fix Finding MPS Messages (First to Forward was being used incorrectly)
-//	Add "Save Attachment" to Web Mgmt Interface
-//	Support Secure Signon on Forwarding sessions to CMS
-//	Save Forwarding config when BBS flag on user is cleared
-//	Pass internally generated SYSOP messages through routing process
-//	Add POP3 TOP command.
-//	Don't set 'T' messages to 'Y' when read.
-//	Add optional temporary connect script on "FWD NOW" command
-//	Add automatic import facility
-//	Accept RMS mail to BBS Call even if "Poll RMS" not set.
+/*	Fix Message Type in msgs from RMS Express to Internet */
+/*	Reopen Monitor window if open when program list closed */
+/*	Only apply NTS alias file to NTS Messages */
+/*	Fix failure to store some encrypted ISP passwords */
+/*	Allow EDITUSER to change "RMS Express User" flag */
+/*	Fix reporting of Config File errors */
+/*	Fix Finding MPS Messages (First to Forward was being used incorrectly) */
+/*	Add "Save Attachment" to Web Mgmt Interface */
+/*	Support Secure Signon on Forwarding sessions to CMS */
+/*	Save Forwarding config when BBS flag on user is cleared */
+/*	Pass internally generated SYSOP messages through routing process */
+/*	Add POP3 TOP command. */
+/*	Don't set 'T' messages to 'Y' when read. */
+/*	Add optional temporary connect script on "FWD NOW" command */
+/*	Add automatic import facility */
+/*	Accept RMS mail to BBS Call even if "Poll RMS" not set. */
 
-// 65 November 2015
+/* 65 November 2015 */
 
-//	Fix loading Housekeeping value for forwarded bulls.
-//	Fix re-using Fwd script override in timer driven forwarding.
-//	Add ampr.org handling
-//	Add "Dont forward" match on TO address for NTS
-//	Allow listing a combinatiom of state and type, such as LNT or LPF
-//	Fix handling ISP messages from gmail without a '+'
-//	Add basic WebMail support
+/*	Fix loading Housekeeping value for forwarded bulls. */
+/*	Fix re-using Fwd script override in timer driven forwarding. */
+/*	Add ampr.org handling */
+/*	Add "Dont forward" match on TO address for NTS */
+/*	Allow listing a combinatiom of state and type, such as LNT or LPF */
+/*	Fix handling ISP messages from gmail without a '+' */
+/*	Add basic WebMail support */
 
-// 66
+/* 66 */
 
-//	Autoimport messages as Dummy Call, not SYSOP Call
-//	Add "My Messages" display option to WebMail
-//	Create .csv extract of User List during hourekeeping.
-//	Fix processing of NTS Alising of @ Addresses
-//	Don't reroute Delivered NTS Messages
-//	Add option to stop users killing T messages
-//	Add multicast Receive
-//	Fix initialising new message database format field
-//	Fix "Forward Messages to BBS Call" option.
-//	Add Filter WP Bulls option and allow multiple WP "TO" addresses
-//	Fix deleting P WP messages for other stations
-//	Fix saving blank lines in forwarding config
-//	Fix paging on L@ and l<
-//	Fix removing DELETE from IMPORT XXX DELETE and allow multiple IMPORT lines in script
-//	Run DeleteRedundantMessages before renumbering messages
-//	Connect script now tries ELSE lines if prompt not received from remote BBS
-//	Send connecting call instead of BBS Name when connecting to CMS server.
-//	Add BID filter to Manage Messages
-//	Fix handling of over long suject lines in IMPORT
-//	Allow comments before ELSE in connect script
-//	Add Copy and Clear to Multicast Window
-//	Fix possible duplicate messages with MBL forwarding
-//	Set "Permit EMail" on IMPORT dummy User.
-//	Fix repeated running of housekeeping if clock is stepped forward.
-//	Fix corruption of CMS Pass field by Web interface
-//	Kill B2 WP bulls if FilterWPBulls set
-//	Include Message Type in BPQ B2 proposal extensions
+/*	Autoimport messages as Dummy Call, not SYSOP Call */
+/*	Add "My Messages" display option to WebMail */
+/*	Create .csv extract of User List during hourekeeping. */
+/*	Fix processing of NTS Alising of @ Addresses */
+/*	Don't reroute Delivered NTS Messages */
+/*	Add option to stop users killing T messages */
+/*	Add multicast Receive */
+/*	Fix initialising new message database format field */
+/*	Fix "Forward Messages to BBS Call" option. */
+/*	Add Filter WP Bulls option and allow multiple WP "TO" addresses */
+/*	Fix deleting P WP messages for other stations */
+/*	Fix saving blank lines in forwarding config */
+/*	Fix paging on L@ and l< */
+/*	Fix removing DELETE from IMPORT XXX DELETE and allow multiple IMPORT lines in script */
+/*	Run DeleteRedundantMessages before renumbering messages */
+/*	Connect script now tries ELSE lines if prompt not received from remote BBS */
+/*	Send connecting call instead of BBS Name when connecting to CMS server. */
+/*	Add BID filter to Manage Messages */
+/*	Fix handling of over long suject lines in IMPORT */
+/*	Allow comments before ELSE in connect script */
+/*	Add Copy and Clear to Multicast Window */
+/*	Fix possible duplicate messages with MBL forwarding */
+/*	Set "Permit EMail" on IMPORT dummy User. */
+/*	Fix repeated running of housekeeping if clock is stepped forward. */
+/*	Fix corruption of CMS Pass field by Web interface */
+/*	Kill B2 WP bulls if FilterWPBulls set */
+/*	Include Message Type in BPQ B2 proposal extensions */
 
-//  6.0.14.1 July 2017
+/*  6.0.14.1 July 2017 */
 
-//	Fix corruption of BBSNumber if RMS Ex User and BBS both checked
-//	Tread B messages without an AT as Flood.
-//	Make sure Message headers are always saved to disk when a message status changes
-//	Reject message instead of failing session if TO address too long in FBB forwarding
-//	Fix error when FBB restart data exactly fills a packet.
-//	Fix possible generation of msg number zero in send nondlivery notification 
-//	Fix problem with Web "Manage Messages" when stray message number zero appears
-//	Fix Crash in AMPR forward when host missing from VIA
-//	Fix possible addition of an spurious password entry to the ;FW: line when connecting to CMS
-//	Fix test for Status "D" in forward check.
-//	Don't cancel AUTH on SMTP RSET
-//	Fix "nowhere to go" message on some messages sent to smtp addresses
-//	Add @ from Home BBS or WP is not spcified in "Send from Clipboard"
+/*	Fix corruption of BBSNumber if RMS Ex User and BBS both checked */
+/*	Tread B messages without an AT as Flood. */
+/*	Make sure Message headers are always saved to disk when a message status changes */
+/*	Reject message instead of failing session if TO address too long in FBB forwarding */
+/*	Fix error when FBB restart data exactly fills a packet. */
+/*	Fix possible generation of msg number zero in send nondlivery notification  */
+/*	Fix problem with Web "Manage Messages" when stray message number zero appears */
+/*	Fix Crash in AMPR forward when host missing from VIA */
+/*	Fix possible addition of an spurious password entry to the ;FW: line when connecting to CMS */
+/*	Fix test for Status "D" in forward check. */
+/*	Don't cancel AUTH on SMTP RSET */
+/*	Fix "nowhere to go" message on some messages sent to smtp addresses */
+/*	Add @ from Home BBS or WP is not spcified in "Send from Clipboard" */
 
-//	6.0.15.1 Feb 2018
+/*	6.0.15.1 Feb 2018 */
 
-//	Fix PE if Filename missing from FILE connect script command
-//	Suppress reporting errors after receiving FQ
-//	Fix problem caused by trailing spaces on callsign in WP database
-//	Support mixed case WINLINK Passwords
+/*	Fix PE if Filename missing from FILE connect script command */
+/*	Suppress reporting errors after receiving FQ */
+/*	Fix problem caused by trailing spaces on callsign in WP database */
+/*	Support mixed case WINLINK Passwords */
 
-// 6.0.16.1 March 2018
+/* 6.0.16.1 March 2018 */
 
-//	Make sure messages sent to WL2K don;'t have @ on from: address
-//  If message to saildocs add R: line as an X header instead of to body
-//	Close session if more than 4 Invalid Commmad responses sent
-//	Report TOP in POP3 CAPA list. Allows POP3 to work with Windows Mail client
+/*	Make sure messages sent to WL2K don;'t have @ on from: address */
+/*  If message to saildocs add R: line as an X header instead of to body */
+/*	Close session if more than 4 Invalid Commmad responses sent */
+/*	Report TOP in POP3 CAPA list. Allows POP3 to work with Windows Mail client */
 
-// 6.0.17.1 November 2018
+/* 6.0.17.1 November 2018 */
 
-//	Add source routing using ! eg sp g8bpq@winlink.org!gm8bpq to send via RMS on gm8bpq
-//	Accept an internet email address without rms: or smtp: 
-//	Fix "Forward messages for BBS Call" when TO isn't BBS Call
-//	Accept NNTP commands in either case
-//  Add NNTP BODY command
-//	Timeout POP or SMTP TCP connections that are open too long
-//  Add YAPP support
-//  Fix connect script when Node CTEXT contains "} BBS "
-//	Fix handling null H Route
-//	Detect and correct duplicate BBS Numbers
-//	Fix problem if BBS requests FBB blocked forwarding without compression (ie SID of F without B)
-//	Fix crash if YAPP entered without filenmame and send BBS prompt after YAPP error messages
-//	Add support for Winlink HTML Forms to WebMail interface
-//	Update B2 header when using NTS alias file with B2 messages
+/*	Add source routing using ! eg sp g8bpq@winlink.org!gm8bpq to send via RMS on gm8bpq */
+/*	Accept an internet email address without rms: or smtp:  */
+/*	Fix "Forward messages for BBS Call" when TO isn't BBS Call */
+/*	Accept NNTP commands in either case */
+/*  Add NNTP BODY command */
+/*	Timeout POP or SMTP TCP connections that are open too long */
+/*  Add YAPP support */
+/*  Fix connect script when Node CTEXT contains "} BBS " */
+/*	Fix handling null H Route */
+/*	Detect and correct duplicate BBS Numbers */
+/*	Fix problem if BBS requests FBB blocked forwarding without compression (ie SID of F without B) */
+/*	Fix crash if YAPP entered without filenmame and send BBS prompt after YAPP error messages */
+/*	Add support for Winlink HTML Forms to WebMail interface */
+/*	Update B2 header when using NTS alias file with B2 messages */
 
-// 6.0.18.1 January 2019
+/* 6.0.18.1 January 2019 */
 
-//	Ensure callsigns in WP database are upper case.
-//	Various fixes for Webmail
-//	Fix sending direct to ampr.org addresses
-//	Use SYSOP Call as default for Webmail if set
-//	Preparations for 64 bit version
+/*	Ensure callsigns in WP database are upper case. */
+/*	Various fixes for Webmail */
+/*	Fix sending direct to ampr.org addresses */
+/*	Use SYSOP Call as default for Webmail if set */
+/*	Preparations for 64 bit version */
 
 
-// 6.0.19.1 September 2019
+/* 6.0.19.1 September 2019 */
 
-//	Trap missing HTML reply Template or HTML files
-//	Fix case problems in HTML Templates
-//	Fix setting To call on reply to HTML messages
-//  More preparations for 64 bit including saving WP info as a text file.
-//	Set "RMS Express User" when a new user connects using PAT
-//	Increace maximum length on Forwarding Alias string in Web interface
-//	Expand multiaddress messages from Winlink Express if "Don't add @Winlink.org" set or no RMS BBS
-//	Fix program error if READ used without a filename
-//	Trap reject messages from Winlink CMS
-//	Fix "delete to recycle bin" on Linux
-//	Handle Radio Only Messages (-T or -R suffix on calling station)
-//	Fix program error on saving empty Alias list on Web Forwarding page
-//	Add REQDIR and REQFIL
-//	Experimental Blocked Uncompressed forwarding
-//	Security fix for YAPP
-//	Fix WebMail Cancel Send Message
-//	Fix processing Hold Message response from Winlink Express
+/*	Trap missing HTML reply Template or HTML files */
+/*	Fix case problems in HTML Templates */
+/*	Fix setting To call on reply to HTML messages */
+/*  More preparations for 64 bit including saving WP info as a text file. */
+/*	Set "RMS Express User" when a new user connects using PAT */
+/*	Increace maximum length on Forwarding Alias string in Web interface */
+/*	Expand multiaddress messages from Winlink Express if "Don't add @Winlink.org" set or no RMS BBS */
+/*	Fix program error if READ used without a filename */
+/*	Trap reject messages from Winlink CMS */
+/*	Fix "delete to recycle bin" on Linux */
+/*	Handle Radio Only Messages (-T or -R suffix on calling station) */
+/*	Fix program error on saving empty Alias list on Web Forwarding page */
+/*	Add REQDIR and REQFIL */
+/*	Experimental Blocked Uncompressed forwarding */
+/*	Security fix for YAPP */
+/*	Fix WebMail Cancel Send Message */
+/*	Fix processing Hold Message response from Winlink Express */
 
-// 6.0.20.1 April 2020
+/* 6.0.20.1 April 2020 */
 
-//	Improvments to YAPP
-//	Add Copy forwarding config
-//	Add Next and Previous buttons to Webmail message read screen
-//	Move HTML templates from HTMLPages to inline code.
-//	Fix Paclen on YAPP send
-//	Fix bug in handling "RMS Express User"
-//	Fix WINPACK compressed forwarding
-//	Add option to send P messages to more than one BBS
-//	Add "Default to Don't Add WINLINK.ORG" Config option
-//	Re-read Badwords.sys during Housekeeping
-//	Add BID Hold and Reject Filters
-//	On SMTP Send try HELO if EHLO rejected
-//	Allow SID response timeout to be configured per BBS
-//	Fix sending bulls with PAT
-//  Set "Forward Messages to BBS Call" when routing Bulls on TO
-//	Add option to send Mail For Message to APRS
-//	Fix WP update
-//	Fix Holding messages from Webmail Interface
-//	Add RMR command
-//	Add REROUTEMSGS BBS SYSOP command
-//	Disable null passwords and check Exclude flag in Webmail Signin
-//	Add basic Webmail logging 
+/*	Improvments to YAPP */
+/*	Add Copy forwarding config */
+/*	Add Next and Previous buttons to Webmail message read screen */
+/*	Move HTML templates from HTMLPages to inline code. */
+/*	Fix Paclen on YAPP send */
+/*	Fix bug in handling "RMS Express User" */
+/*	Fix WINPACK compressed forwarding */
+/*	Add option to send P messages to more than one BBS */
+/*	Add "Default to Don't Add WINLINK.ORG" Config option */
+/*	Re-read Badwords.sys during Housekeeping */
+/*	Add BID Hold and Reject Filters */
+/*	On SMTP Send try HELO if EHLO rejected */
+/*	Allow SID response timeout to be configured per BBS */
+/*	Fix sending bulls with PAT */
+/*  Set "Forward Messages to BBS Call" when routing Bulls on TO */
+/*	Add option to send Mail For Message to APRS */
+/*	Fix WP update */
+/*	Fix Holding messages from Webmail Interface */
+/*	Add RMR command */
+/*	Add REROUTEMSGS BBS SYSOP command */
+/*	Disable null passwords and check Exclude flag in Webmail Signin */
+/*	Add basic Webmail logging  */
 
-// 6.0.21.1    December 2020
+/* 6.0.21.1    December 2020 */
 
-//	Remove nulls from displayed messages.
-//	Fix Holding messages from SMTP and POP3 Interfaces
-//	Various fixes for handling messages to/from Internet email addresses
-//	Fix saving Email From field in Manage Messages
-//	Fix sending WL2K traffic reports via TriMode.
-//	Fix removing successive CR from Webmail Message display
-//	Fix Wildcarded @ forwarding
-//	Fix message type when receiving NTS Msgs form Airmail
-//	Fix address on SERVICE messages from Winlink
-//	Add multiple TO processing to Webmail non-template messages
-//	Don't backup config file if reading it fails
-//	Include Port and Freq on Connected log record
-//	Make sure welcome mesages don't end in >
-//  Allow flagging unread T messages as Delivered
-//  Replace \ with # in forward script so commands starting with # can be sent
-//  Fix forwarding NTS on TO field
-//	Fix possible crash in text mode forwarding
-//	Allow decimals of days in P message lifetimes and allow Houskeeping interval to be configured
-//	Add DOHOUSEKEEPING sysop command
-//  Add MARS continent code
-//	Try to trap 'zombie' BBS Sessions
-//	On Linux if "Delete to Recycle Bin" is set move deleted messages and logs to directory Deleted under current directory.
-//	Fix corruption of message length when reading R2 message via Read command
-//	Fix paging on List command and add new combinations of List options
-//	Fix NNTP list and LC command when bulls are killed
+/*	Remove nulls from displayed messages. */
+/*	Fix Holding messages from SMTP and POP3 Interfaces */
+/*	Various fixes for handling messages to/from Internet email addresses */
+/*	Fix saving Email From field in Manage Messages */
+/*	Fix sending WL2K traffic reports via TriMode. */
+/*	Fix removing successive CR from Webmail Message display */
+/*	Fix Wildcarded @ forwarding */
+/*	Fix message type when receiving NTS Msgs form Airmail */
+/*	Fix address on SERVICE messages from Winlink */
+/*	Add multiple TO processing to Webmail non-template messages */
+/*	Don't backup config file if reading it fails */
+/*	Include Port and Freq on Connected log record */
+/*	Make sure welcome mesages don't end in > */
+/*  Allow flagging unread T messages as Delivered */
+/*  Replace \ with # in forward script so commands starting with # can be sent */
+/*  Fix forwarding NTS on TO field */
+/*	Fix possible crash in text mode forwarding */
+/*	Allow decimals of days in P message lifetimes and allow Houskeeping interval to be configured */
+/*	Add DOHOUSEKEEPING sysop command */
+/*  Add MARS continent code */
+/*	Try to trap 'zombie' BBS Sessions */
+/*	On Linux if "Delete to Recycle Bin" is set move deleted messages and logs to directory Deleted under current directory. */
+/*	Fix corruption of message length when reading R2 message via Read command */
+/*	Fix paging on List command and add new combinations of List options */
+/*	Fix NNTP list and LC command when bulls are killed */
 
-//  6.0.22.1       August 2021
+/*  6.0.22.1       August 2021 */
 
-//	Fix flagging messages with attachments as read.
-//	Fix possible corruption of WP database and subsequent crash on reloading.
-//	Fix format of Web Manage Messages display
-//	Include SETNEXTMESSAGENUMBER in SYSOP Help Message
-//	Fix occasional "Incoming Connect from SWITCH"
-//	Fix L> with numeric dests
-//	Improved diagnostic for MailTCP select() error.
-//	Clear "RMS Express User"  if user is changed to a BBS
-//	Fix saving Window positions on exit
-//	Fix parsing ReplyTemplate name in Webmail
-//	Handle multiple addressees for WebMail Forms messages to packet stations
-//	Add option to allow only known users to connect
-//	Add basic callsign validation to From address
-//	Add option to forward a user's messages to Winlink
-//	Move User config to main config file.
-//	Update message status whne reading a Forms Webmail message
-//	Speed up killing multiple messages
-//	Allow SendWL2KFW as well as the (incorrect)SendWL2KPM command
+/*	Fix flagging messages with attachments as read. */
+/*	Fix possible corruption of WP database and subsequent crash on reloading. */
+/*	Fix format of Web Manage Messages display */
+/*	Include SETNEXTMESSAGENUMBER in SYSOP Help Message */
+/*	Fix occasional "Incoming Connect from SWITCH" */
+/*	Fix L> with numeric dests */
+/*	Improved diagnostic for MailTCP select() error. */
+/*	Clear "RMS Express User"  if user is changed to a BBS */
+/*	Fix saving Window positions on exit */
+/*	Fix parsing ReplyTemplate name in Webmail */
+/*	Handle multiple addressees for WebMail Forms messages to packet stations */
+/*	Add option to allow only known users to connect */
+/*	Add basic callsign validation to From address */
+/*	Add option to forward a user's messages to Winlink */
+/*	Move User config to main config file. */
+/*	Update message status whne reading a Forms Webmail message */
+/*	Speed up killing multiple messages */
+/*	Allow SendWL2KFW as well as the (incorrect)SendWL2KPM command */
 
-//  6.0.23.1  June 2022
+/*  6.0.23.1  June 2022 */
 
-//	Fix crash when ; added to call in send commands
-//	Allow smtp/ override for messages from RMS Express to send via ISP gateway
-//	Send Internet email from RMS Express to ISP Gateway if enabled and RMS BBS not configured 
-//	Recompiled for Web Interface changes in Node
-//  Add RMS Relay SYNC Mode (.17)
-//	Add Protocol changes for Relay RO forwarding
-//	Add SendWL2KPM command to connect script to allow users other than RMS to send ;FW: string to RMS Relay
-//	Fix B2 Header Date in Webmail message with sttachments.
-//	Fix bug when using YAPP with VARA (.27)
-//	Allow SendWL2KFW as well as the (incorrect)SendWL2KPM command
-//	Add mechsnism to send bbs log records to qttermtcp. (32)
-//	Add MFJ forwarding Mode (No @BBS on send)
-//	Fix handling CR/LF split over packet boundaries
-//	Add Header and Footers for Webmail Send (42)
-//	Fix Maintenance Interval in LinBPQ (53)
-//	Add RMS: to valid from addresses (.56)
-//	Fix Web management on Android deviced (.58)
-//	Disconnect immediately if "Invalid Command" "*** Protocol Error" or "Already Connected" received (.70)
-//	Check Badword and Reject filters before processing WP Messages
+/*	Fix crash when ; added to call in send commands */
+/*	Allow smtp/ override for messages from RMS Express to send via ISP gateway */
+/*	Send Internet email from RMS Express to ISP Gateway if enabled and RMS BBS not configured  */
+/*	Recompiled for Web Interface changes in Node */
+/*  Add RMS Relay SYNC Mode (.17) */
+/*	Add Protocol changes for Relay RO forwarding */
+/*	Add SendWL2KPM command to connect script to allow users other than RMS to send ;FW: string to RMS Relay */
+/*	Fix B2 Header Date in Webmail message with sttachments. */
+/*	Fix bug when using YAPP with VARA (.27) */
+/*	Allow SendWL2KFW as well as the (incorrect)SendWL2KPM command */
+/*	Add mechsnism to send bbs log records to qttermtcp. (32) */
+/*	Add MFJ forwarding Mode (No @BBS on send) */
+/*	Fix handling CR/LF split over packet boundaries */
+/*	Add Header and Footers for Webmail Send (42) */
+/*	Fix Maintenance Interval in LinBPQ (53) */
+/*	Add RMS: to valid from addresses (.56) */
+/*	Fix Web management on Android deviced (.58) */
+/*	Disconnect immediately if "Invalid Command" "*** Protocol Error" or "Already Connected" received (.70) */
+/*	Check Badword and Reject filters before processing WP Messages */
 
-//  6.0.24.1  ?? 2022
+/*  6.0.24.1  ?? 2022 */
 
-//	Fix ' in Webmail subject (8)
-//	Change web buttons to white on black when pressed (10)
-//	Add auto-refresh option to Webmail index page (25)
-//	Fix displaying help and info files with crlf line endings on Linux (28)
-//	Improve validation of extended FC message (32)
-//	Improve WP check for SYSTEM as a callsign (33)
-//	Improvements to RMS Relay SYNC mode (47)
-//	Fix BID Hold and Reject filters
-//	Fix Webmail auto-refresh when page exceeds 64K bytes (54)
-//	Fix Webmail send when using both headers/footers and attachmonts (55)
-//	Fix R: line corruption on some 64 bit builds
-//	Dont drop empty lines inm TEXTFORWARDING (61)
-//	Dont wait for body prompt for TEXTFORWARDING for SID [PMS-3.2-C$] (62)
-//	Add forwarding mode SETCALLTOSENDER for PMS Systems that don't accept < in SP (63)
-//	QtTerm Monitoring fixed for 63 port version of BPQ (69)
+/*	Fix ' in Webmail subject (8) */
+/*	Change web buttons to white on black when pressed (10) */
+/*	Add auto-refresh option to Webmail index page (25) */
+/*	Fix displaying help and info files with crlf line endings on Linux (28) */
+/*	Improve validation of extended FC message (32) */
+/*	Improve WP check for SYSTEM as a callsign (33) */
+/*	Improvements to RMS Relay SYNC mode (47) */
+/*	Fix BID Hold and Reject filters */
+/*	Fix Webmail auto-refresh when page exceeds 64K bytes (54) */
+/*	Fix Webmail send when using both headers/footers and attachmonts (55) */
+/*	Fix R: line corruption on some 64 bit builds */
+/*	Dont drop empty lines inm TEXTFORWARDING (61) */
+/*	Dont wait for body prompt for TEXTFORWARDING for SID [PMS-3.2-C$] (62) */
+/*	Add forwarding mode SETCALLTOSENDER for PMS Systems that don't accept < in SP (63) */
+/*	QtTerm Monitoring fixed for 63 port version of BPQ (69) */
 
 
 #include "bpqmail.h"
@@ -1142,15 +1142,15 @@ INT_PTR CALLBACK WPEditDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM
 
 VOID SetupNTSAliases(char * FN);
 
-HKEY REGTREE = HKEY_LOCAL_MACHINE;		// Default
+HKEY REGTREE = HKEY_LOCAL_MACHINE;		/* Default */
 char * REGTREETEXT = "HKEY_LOCAL_MACHINE";
 
-// Global Variables:
-HINSTANCE hInst;								// current instance
-TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
-TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
+/* Global Variables: */
+HINSTANCE hInst;								/* current instance */
+TCHAR szTitle[MAX_LOADSTRING];					/* The title bar text */
+TCHAR szWindowClass[MAX_LOADSTRING];			/* the main window class name */
 
-extern int LastVer[4];							// In case we need to do somthing the first time a version is run
+extern int LastVer[4];							/* In case we need to do somthing the first time a version is run */
 
 UINT BPQMsg;
 
@@ -1159,10 +1159,10 @@ HWND hWndSess;
 RECT MainRect;
 HMENU hActionMenu;
 static HMENU hMenu;
-HMENU hDisMenu;									// Disconnect Menu Handle
-HMENU hFWDMenu;									// Forward Menu Handle
+HMENU hDisMenu;									/* Disconnect Menu Handle */
+HMENU hFWDMenu;									/* Forward Menu Handle */
 
-int SessX, SessY, SessWidth;					// Params for Session Window
+int SessX, SessY, SessWidth;					/* Params for Session Window */
 
 char szBuff[80];
 
@@ -1172,42 +1172,42 @@ int _MYTIMEZONE = 0;
 
 ConnectionInfo Connections[MaxSockets+1];
 
-//struct SEM AllocSemaphore = {0, 0};
-//struct SEM ConSemaphore = {0, 0};
-//struct SEM OutputSEM = {0, 0};
+/*struct SEM AllocSemaphore = {0, 0}; */
+/*struct SEM ConSemaphore = {0, 0}; */
+/*struct SEM OutputSEM = {0, 0}; */
 
-//struct UserInfo ** UserRecPtr=NULL;
-//int NumberofUsers=0;
+/*struct UserInfo ** UserRecPtr=NULL; */
+/*int NumberofUsers=0; */
 
-//struct UserInfo * BBSChain = NULL;					// Chain of users that are BBSes
+/*struct UserInfo * BBSChain = NULL;					// Chain of users that are BBSes */
 
-//struct MsgInfo ** MsgHddrPtr=NULL;
-//int NumberofMessages=0;
+/*struct MsgInfo ** MsgHddrPtr=NULL; */
+/*int NumberofMessages=0; */
 
-//int FirstMessageIndextoForward=0;					// Lowest Message wirh a forward bit set - limits search
+/*int FirstMessageIndextoForward=0;					// Lowest Message wirh a forward bit set - limits search */
 
-//BIDRec ** BIDRecPtr=NULL;
-//int NumberofBIDs=0;
+/*BIDRec ** BIDRecPtr=NULL; */
+/*int NumberofBIDs=0; */
 
 extern BIDRec ** TempBIDRecPtr;
-//int NumberofTempBIDs=0;
+/*int NumberofTempBIDs=0; */
 
-//WPRec ** WPRecPtr=NULL;
-//int NumberofWPrecs=0;
+/*WPRec ** WPRecPtr=NULL; */
+/*int NumberofWPrecs=0; */
 
 extern char ** BadWords;
-//int NumberofBadWords=0;
+/*int NumberofBadWords=0; */
 extern char * BadFile;
 
-//int LatestMsg = 0;
-//struct SEM MsgNoSemaphore = {0, 0};					// For locking updates to LatestMsg
-//int HighestBBSNumber = 0;
+/*int LatestMsg = 0; */
+/*struct SEM MsgNoSemaphore = {0, 0};					// For locking updates to LatestMsg */
+/*int HighestBBSNumber = 0; */
 
-//int MaxMsgno = 60000;
-//int BidLifetime = 60;
-//int MaintInterval = 24;
-//int MaintTime = 0;
-//int UserLifetime = 0;
+/*int MaxMsgno = 60000; */
+/*int BidLifetime = 60; */
+/*int MaintInterval = 24; */
+/*int MaintTime = 0; */
+/*int UserLifetime = 0; */
 
 
 BOOL cfgMinToTray;
@@ -1235,7 +1235,7 @@ ULONG ChatApplMask;
 
 int BBSApplNum;
 
-//int	StartStream=0;
+/*int	StartStream=0; */
 int	NumberofStreams;
 int MaxStreams;
 
@@ -1280,7 +1280,7 @@ char NTSAliasesPath[MAX_PATH];
 extern char NTSAliasesName[MAX_PATH];
 
 char BaseDir[MAX_PATH];
-char BaseDirRaw[MAX_PATH];			// As set in registry - may contain %NAME%
+char BaseDirRaw[MAX_PATH];			/* As set in registry - may contain %NAME% */
 
 char MailDir[MAX_PATH];
 
@@ -1301,26 +1301,26 @@ extern int ForwardToMe;
 
 extern int MailForInterval;
 
-char zeros[NBMASK];						// For forward bitmask tests
+char zeros[NBMASK];						/* For forward bitmask tests */
 
-time_t MaintClock;						// Time to run housekeeping
+time_t MaintClock;						/* Time to run housekeeping */
 
-struct MsgInfo * MsgnotoMsg[100000];	// Message Number to Message Slot List.
+struct MsgInfo * MsgnotoMsg[100000];	/* Message Number to Message Slot List. */
 
-// Filter Params
+/* Filter Params */
 
-char ** RejFrom;					// Reject on FROM Call
-char ** RejTo;						// Reject on TO Call
-char ** RejAt;						// Reject on AT Call
-char ** RejBID;						// Reject on BID 
+char ** RejFrom;					/* Reject on FROM Call */
+char ** RejTo;						/* Reject on TO Call */
+char ** RejAt;						/* Reject on AT Call */
+char ** RejBID;						/* Reject on BID  */
 
-char ** HoldFrom;					// Hold on FROM Call
-char ** HoldTo;						// Hold on TO Call
-char ** HoldAt;						// Hold on AT Call
-char ** HoldBID;					// Hold on BID
+char ** HoldFrom;					/* Hold on FROM Call */
+char ** HoldTo;						/* Hold on TO Call */
+char ** HoldAt;						/* Hold on AT Call */
+char ** HoldBID;					/* Hold on BID */
 
 
-// Send WP Params
+/* Send WP Params */
 
 BOOL SendWP;
 char SendWPVIA[81];
@@ -1333,7 +1333,7 @@ int ProgramErrors = 0;
 UCHAR BPQDirectory[260] = "";
 
 
-// Forward declarations of functions included in this code module:
+/* Forward declarations of functions included in this code module: */
 ATOM				MyRegisterClass(HINSTANCE hInstance);
 ATOM				RegisterMainWindowClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int);
@@ -1423,16 +1423,16 @@ void myInvalidParameterHandler(const wchar_t* expression,
 	}
 }
 
-// If program gets too many program errors, it will restart itself  and shut down
+/* If program gets too many program errors, it will restart itself  and shut down */
 
 VOID CheckProgramErrors()
 {
-	STARTUPINFO  SInfo;			// pointer to STARTUPINFO 
-    PROCESS_INFORMATION PInfo; 	// pointer to PROCESS_INFORMATION 
+	STARTUPINFO  SInfo;			/* pointer to STARTUPINFO  */
+    PROCESS_INFORMATION PInfo; 	/* pointer to PROCESS_INFORMATION  */
 	char ProgName[256];
 
 	if (Restarting)
-		exit(0);				// Make sure can't loop in restarting
+		exit(0);				/* Make sure can't loop in restarting */
 
 	ProgramErrors++;
 
@@ -1487,7 +1487,7 @@ VOID WriteMiniDump()
 
 	if((hFile != NULL) && (hFile != INVALID_HANDLE_VALUE))
 	{
-		// Create the minidump
+		/* Create the minidump */
 
 		ret = MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(),
 			hFile, MiniDumpNormal, 0, 0, 0 );
@@ -1504,9 +1504,9 @@ VOID WriteMiniDump()
 
 void GetSemaphore(struct SEM * Semaphore, int ID)
 {
-	//
-	//	Wait for it to be free
-	//
+	/* */
+	/*	Wait for it to be free */
+	/* */
 #ifdef WIN32
 	if (Semaphore->Flag != 0)
 	{
@@ -1519,18 +1519,18 @@ loop1:
 		Sleep(10);
 	}
 
-	//
-	//	try to get semaphore
-	//
+	/* */
+	/*	try to get semaphore */
+	/* */
 
 	_asm{
 
 	mov	eax,1
 	mov ebx, Semaphore
-	xchg [ebx],eax		// this instruction is locked
+	xchg [ebx],eax		/* this instruction is locked */
 	
 	cmp	eax,0
-	jne loop1			// someone else got it - try again
+	jne loop1			/* someone else got it - try again */
 ;
 ;	ok, weve got the semaphore
 ;
@@ -1576,7 +1576,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	CmdLine = _strdup(lpCmdLine);
 	_strlwr(CmdLine);
 
-	if (_stricmp(lpCmdLine, "Wait") == 0)				// If AutoRestart then Delay 60 Secs
+	if (_stricmp(lpCmdLine, "Wait") == 0)				/* If AutoRestart then Delay 60 Secs */
 	{	
 		hWnd = CreateWindow("STATIC", "Mail Restarting after Failure - Please Wait", 0,
 		CW_USEDEFAULT, 100, 550, 70,
@@ -1597,17 +1597,17 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	__try {
 
-	// Trap CRT Errors
+	/* Trap CRT Errors */
 	
 	newHandler = myInvalidParameterHandler;
 	oldHandler = _set_invalid_parameter_handler(newHandler);
 
-	// Initialize global strings
+	/* Initialize global strings */
 	LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 	LoadString(hInstance, IDC_BPQMailChat, szWindowClass, MAX_LOADSTRING);
 	MyRegisterClass(hInstance);
 
-	// Perform application initialization:
+	/* Perform application initialization: */
 
 	if (!InitInstance (hInstance, nCmdShow))
 	{
@@ -1616,7 +1616,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_BPQMailChat));
 
-	// Main message loop:
+	/* Main message loop: */
 
 	Logprintf(LOG_DEBUG_X, NULL, '!', "Program Starting");
 	Logprintf(LOG_BBS, NULL, '!', "BPQMail Starting");
@@ -1665,7 +1665,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	ShowWindow(hWnd, nCmdShow);
 
-	Sleep(1000);				// A bit of time for links to close
+	Sleep(1000);				/* A bit of time for links to close */
 
 	DestroyWindow(hWnd);
 
@@ -1676,11 +1676,11 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	if (hMonitor)
 	{
 		DestroyWindow(hMonitor);
-		hMonitor = (HWND)1;					// For status Save
+		hMonitor = (HWND)1;					/* For status Save */
 	}
 
 
-//	SaveUserDatabase();
+/*	SaveUserDatabase(); */
 	SaveMessageDatabase();
 	SaveBIDDatabase();
 
@@ -1698,7 +1698,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 			DeleteTrayMenuItem(hMonitor);
 	}
 
-	// Free all allocated memory
+	/* Free all allocated memory */
 
 	for (n = 0; n <= NumberofUsers; n++)
 	{
@@ -1820,29 +1820,29 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	}
 	My__except_Routine("Close Processing");
 
-	CloseBPQ32();				// Close Ext Drivers if last bpq32 process
+	CloseBPQ32();				/* Close Ext Drivers if last bpq32 process */
 
 	return (int) msg.wParam;
 }
 
 
 
-//
-//  FUNCTION: MyRegisterClass()
-//
-//  PURPOSE: Registers the window class.
-//
-//  COMMENTS:
-//
-//    This function and its usage are only necessary if you want this code
-//    to be compatible with Win32 systems prior to the 'RegisterClassEx'
-//    function that was added to Windows 95. It is important to call this function
-//    so that the application will get 'well formed' small icons associated
-//    with it.
-//
-//
+/* */
+/*  FUNCTION: MyRegisterClass() */
+/* */
+/*  PURPOSE: Registers the window class. */
+/* */
+/*  COMMENTS: */
+/* */
+/*    This function and its usage are only necessary if you want this code */
+/*    to be compatible with Win32 systems prior to the 'RegisterClassEx' */
+/*    function that was added to Windows 95. It is important to call this function */
+/*    so that the application will get 'well formed' small icons associated */
+/*    with it. */
+/* */
+/* */
 #define BGCOLOUR RGB(236,233,216)
-//#define BGCOLOUR RGB(245,245,245)
+/*#define BGCOLOUR RGB(245,245,245) */
 
 HBRUSH bgBrush;
 
@@ -1870,16 +1870,16 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 }
 
 
-//
-//   FUNCTION: InitInstance(HINSTANCE, int)
-//
-//   PURPOSE: Saves instance handle and creates main window
-//
-//   COMMENTS:
-//
-//        In this function, we save the instance handle in a global variable and
-//        create and display the main program window.
-//
+/* */
+/*   FUNCTION: InitInstance(HINSTANCE, int) */
+/* */
+/*   PURPOSE: Saves instance handle and creates main window */
+/* */
+/*   COMMENTS: */
+/* */
+/*        In this function, we save the instance handle in a global variable and */
+/*        create and display the main program window. */
+/* */
 
 HWND hWnd;
 
@@ -1891,7 +1891,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
 	char Title[80];
 	WSADATA WsaData;
-	HMENU hTopMenu;		// handle of menu 
+	HMENU hTopMenu;		/* handle of menu  */
 	HKEY hKey=0;
 	int retCode;
 	RECT InitRect;
@@ -1914,7 +1914,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 		}
 	}
 
-	// See if running under WINE
+	/* See if running under WINE */
 
 	retCode = RegOpenKeyEx (HKEY_LOCAL_MACHINE, "SOFTWARE\\Wine",  0, KEY_QUERY_VALUE, &hKey);
 
@@ -1941,12 +1941,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 		{
 			PORTVEC = (struct _EXTPORTDATA * )GetPortTableEntryFromSlot(n);
 
-			if (PORTVEC->PORTCONTROL.PORTTYPE == 16)		// EXTERNAL
+			if (PORTVEC->PORTCONTROL.PORTTYPE == 16)		/* EXTERNAL */
 			{
 				if (_memicmp(PORTVEC->PORT_DLL_NAME, "TELNET", 6) == 0)
 					KISSOnly = FALSE;
 
-				if (PORTVEC->PORTCONTROL.PROTOCOL != 10)	// Pactor/WINMOR
+				if (PORTVEC->PORTCONTROL.PROTOCOL != 10)	/* Pactor/WINMOR */
 					KISSOnly = FALSE;
 
 				if (AXIPPort == 0)
@@ -1989,7 +1989,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	SessY = SessRect.top -InitRect.top;
 	SessWidth = SessRect.right - SessRect.left;
 
-   	// Get handles for updating menu items
+   	/* Get handles for updating menu items */
 
 	hTopMenu=GetMenu(MainWnd);
 	hActionMenu=GetSubMenu(hTopMenu,0);
@@ -2027,12 +2027,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return FALSE;
 }
 
-//
-//  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
-//
-//  PURPOSE:  Processes messages for the main window.
-//
-//
+/* */
+/*  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM) */
+/* */
+/*  PURPOSE:  Processes messages for the main window. */
+/* */
+/* */
 
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -2060,18 +2060,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		if (lParam & BPQDataAvail)
 		{
-			//	Dont trap error at this level - let Node error handler pick it up
-//			__try
-//			{
+			/*	Dont trap error at this level - let Node error handler pick it up */
+/*			__try */
+/*			{ */
 				DoReceivedData(wParam);
-//			}
-//			My__except_Routine("DoReceivedData")
+/*			} */
+/*			My__except_Routine("DoReceivedData") */
 			return 0;
 		}
 		if (lParam & BPQStateChange)
 		{
-			//	Get current Session State. Any state changed is ACK'ed
-			//	automatically. See BPQHOST functions 4 and 5.
+			/*	Get current Session State. Any state changed is ACK'ed */
+			/*	automatically. See BPQHOST functions 4 and 5. */
 	
 			__try
 			{
@@ -2079,7 +2079,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		
 				if (change == 1)
 				{
-					if (state == 1) // Connected	
+					if (state == 1) /* Connected	 */
 					{
 						GetSemaphore(&ConSemaphore, 0);
 						__try {Connected(wParam);}
@@ -2134,7 +2134,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
  			
 	case WM_TIMER:
 
-		if (wParam == 1)		// Slow = 10 secs
+		if (wParam == 1)		/* Slow = 10 secs */
 		{
 			__try
 			{
@@ -2147,7 +2147,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				FWDTimerProc();
 				if (MaintClock < NOW)
 				{
-					while (MaintClock < NOW)		// in case large time step
+					while (MaintClock < NOW)		/* in case large time step */
 						MaintClock += MaintInterval * 3600;
 
 					Debugprintf("|Enter HouseKeeping");
@@ -2155,7 +2155,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				}
 				tm = gmtime(&NOW);	
 
-				if (tm->tm_wday == 0)		// Sunday
+				if (tm->tm_wday == 0)		/* Sunday */
 				{
 					if (GenerateTrafficReport && (LastTrafficTime + 86400) < NOW)
 					{
@@ -2202,7 +2202,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		if (wParam == (WPARAM)hFWDMenu)
 		{
-			// Set up Forward Menu
+			/* Set up Forward Menu */
 
 			struct UserInfo * user;
 			char MenuLine[30];
@@ -2221,7 +2221,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		if (wParam == (WPARAM)hDisMenu)
 		{
-			// Set up Disconnect Menu
+			/* Set up Disconnect Menu */
 
 			CIRCUIT * conn;
 			char MenuLine[30];
@@ -2247,7 +2247,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_COMMAND:
 		wmId    = LOWORD(wParam);
 		wmEvent = HIWORD(wParam);
-		// Parse the menu selections:
+		/* Parse the menu selections: */
 
 		if (wmEvent == LBN_DBLCLK)
 
@@ -2255,7 +2255,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		if (wmId >= IDM_DISCONNECT && wmId < IDM_DISCONNECT+MaxSockets+1)
 		{
-			// disconnect user
+			/* disconnect user */
 
 			conn=&Connections[wmId-IDM_DISCONNECT];
 		
@@ -2399,19 +2399,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
-		// TODO: Add any drawing code here...
+		/* TODO: Add any drawing code here... */
 		EndPaint(hWnd, &ps);
 		break;
 
 	case WM_DESTROY:
 
-		GetWindowRect(MainWnd,	&MainRect);	// For save soutine
+		GetWindowRect(MainWnd,	&MainRect);	/* For save soutine */
 		if (ConsHeader[0]->hConsole)
-			GetWindowRect(ConsHeader[0]->hConsole, &ConsHeader[0]->ConsoleRect);	// For save soutine
+			GetWindowRect(ConsHeader[0]->hConsole, &ConsHeader[0]->ConsoleRect);	/* For save soutine */
 		if (ConsHeader[1]->hConsole)
-			GetWindowRect(ConsHeader[1]->hConsole, &ConsHeader[1]->ConsoleRect);	// For save soutine
+			GetWindowRect(ConsHeader[1]->hConsole, &ConsHeader[1]->ConsoleRect);	/* For save soutine */
 		if (hMonitor)
-			GetWindowRect(hMonitor,	&MonitorRect);	// For save soutine
+			GetWindowRect(hMonitor,	&MonitorRect);	/* For save soutine */
 
 		KillTimer(hWnd,1);
 		KillTimer(hWnd,2);
@@ -2484,7 +2484,7 @@ INT_PTR CALLBACK SendMsgDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 	
 			GetDlgItemText(hDlg, IDC_ATTACHMENTS, FileList, 32767);
 
-			// if there are attachments, check that they can be opened ane read
+			/* if there are attachments, check that they can be opened ane read */
 
 			n = 0;
 		
@@ -2508,7 +2508,7 @@ INT_PTR CALLBACK SendMsgDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 
 				FileName[n] = 0;
 				
-				// read the files
+				/* read the files */
 
 				Files = n;
 				n = 0;
@@ -2556,7 +2556,7 @@ INT_PTR CALLBACK SendMsgDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			{		
 				if (LookupBID(BID))
 				{
-					// Duplicate bid
+					/* Duplicate bid */
 
 					MessageBox(NULL, "Duplicate BID", "BPQMail", MB_ICONERROR);
 					return TRUE;
@@ -2565,7 +2565,7 @@ INT_PTR CALLBACK SendMsgDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 
 			Msg = AllocateMsgRecord();
 		
-			// Set number here so they remain in sequence
+			/* Set number here so they remain in sequence */
 		
 			Msg->number = ++LatestMsg;
 			MsgnotoMsg[Msg->number] = Msg;
@@ -2574,7 +2574,7 @@ INT_PTR CALLBACK SendMsgDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 
 			Vptr = strlop(Destcopy, '@');
 
-			if (Vptr  == 0 && strchr(Destcopy, '!')) // Bang route without @
+			if (Vptr  == 0 && strchr(Destcopy, '!')) /* Bang route without @ */
 			{
 				Vptr = strchr(Destcopy, '!');
 				strcpy(Msg->via, Vptr);
@@ -2612,17 +2612,17 @@ INT_PTR CALLBACK SendMsgDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			}
 			else if (Vptr)
 			{
-				// If looks like a valid email address, treat as such
+				/* If looks like a valid email address, treat as such */
 
 				int tolen = (Vptr - Destcopy) - 1;
 
 				if (tolen > 6 || !CheckifPacket(Vptr))
 				{
-					// Assume Email address
+					/* Assume Email address */
 
 					Vptr = HDest;
 
-					if (FindRMS() || strchr(Vptr, '!')) // have RMS or source route
+					if (FindRMS() || strchr(Vptr, '!')) /* have RMS or source route */
 						strcpy(Msg->to, "RMS");
 					else if (ISP_Gateway_Enabled)
 						Msg->to[0] = 0;
@@ -2662,7 +2662,7 @@ gotAddr:
 
 			MsgLen = SendDlgItemMessage(hDlg, IDC_EDIT1, WM_GETTEXTLENGTH, 0 ,0);
 
-			MailBuffer = malloc(MsgLen + TotalFileSize + 2000);		// Allow for a B2 Header if attachments
+			MailBuffer = malloc(MsgLen + TotalFileSize + 2000);		/* Allow for a B2 Header if attachments */
 
 			if (Files)
 			{
@@ -2671,16 +2671,16 @@ gotAddr:
 						
 				char Type[16] = "Private";
 					
-				// Get Type
+				/* Get Type */
 	
 				if (Msg->type == 'B')
 					strcpy(Type, "Bulletin");
 				else if (Msg->type == 'T')
 					strcpy(Type, "Traffic");
 
-				// Create a B2 Message
+				/* Create a B2 Message */
 
-				// B2 Header
+				/* B2 Header */
 
 				NewMsg = MailBuffer + 1000;
 
@@ -2689,15 +2689,15 @@ gotAddr:
 				sprintf(DateString, "%04d/%02d/%02d %02d:%02d",
 					tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday, tm->tm_hour, tm->tm_min);
 
-				// Remove last Source Route
+				/* Remove last Source Route */
 
 				if (strchr(HDest, '!'))
 				{
 					char * bang = HDest + strlen(HDest);
 	
-					while (*(--bang) != '!');		// Find last !
+					while (*(--bang) != '!');		/* Find last ! */
 
-					*(bang) = 0;					// remove it;
+					*(bang) = 0;					/* remove it; */
 				}
 		
 				NewMsg += sprintf(NewMsg,
@@ -2711,7 +2711,7 @@ gotAddr:
 				{
 					char * p = FileName[n], * q;
 
-					// Remove any path
+					/* Remove any path */
 
 					q = strchr(p, '\\');
 					
@@ -2771,7 +2771,7 @@ gotAddr:
 
 			MatchMessagetoBBSList(Msg, 0);
 
-			BuildNNTPList(Msg);				// Build NNTP Groups list
+			BuildNNTPList(Msg);				/* Build NNTP Groups list */
 
 			SaveMessageDatabase();
 			SaveBIDDatabase();
@@ -2803,14 +2803,14 @@ gotAddr:
 			Ofn.nMaxFileTitle = 0; 
 			Ofn.lpstrInitialDir = (LPSTR)NULL; 
 			Ofn.Flags = OFN_SHOWHELP | OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT |  OFN_EXPLORER; 
-			Ofn.lpstrTitle = NULL;//; 
+			Ofn.lpstrTitle = NULL;/*;  */
 
 			if (GetOpenFileName(&Ofn))
 			{
-				// if one is selected, a single string is returned, if more than one, a single
-				// path, followed by all the strings, duuble null terminated.
+				/* if one is selected, a single string is returned, if more than one, a single */
+				/* path, followed by all the strings, duuble null terminated. */
 
-				char * Names[101];			// Allow up to 100 names
+				char * Names[101];			/* Allow up to 100 names */
 				int n = 0;
 				char * ptr = FileNames;
 
@@ -2828,7 +2828,7 @@ gotAddr:
 
 				if (n == 1)
 				{
-					// Single Select
+					/* Single Select */
 
 					strcat(FullFileNames, FileNames);
 				}
@@ -2903,7 +2903,7 @@ INT_PTR CALLBACK ClpMsgDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM
 
 }
 
-// Message handler for about box.
+/* Message handler for about box. */
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
@@ -3038,11 +3038,11 @@ BOOL Initialise()
 	_MYTIMEZONE = timezone;
 	_MYTIMEZONE = TimeZoneInformation.Bias * 60;
 
-	//	Register message for posting by BPQDLL
+	/*	Register message for posting by BPQDLL */
 
 	BPQMsg = RegisterWindowMessage(BPQWinMsg);
 
-	// See if we need to warn of possible problem with BaseDir moved by installer
+	/* See if we need to warn of possible problem with BaseDir moved by installer */
 
 	strcpy(BPQDirectory, GetBPQDirectory());
 
@@ -3057,7 +3057,7 @@ BOOL Initialise()
 		ptr1++;
 	}
 
-	// Make Sure BASEDIR Exists
+	/* Make Sure BASEDIR Exists */
 
 	Attrs = GetFileAttributes(BaseDir);
 
@@ -3094,7 +3094,7 @@ BOOL Initialise()
 
 	initUTF8();
 
-	// Set up file and directory names
+	/* Set up file and directory names */
 		
 	strcpy(UserDatabasePath, BaseDir);
 	strcat(UserDatabasePath, "\\");
@@ -3124,7 +3124,7 @@ BOOL Initialise()
 	strcat(MailDir, "\\");
 	strcat(MailDir, "Mail");
 
-	CreateDirectory(MailDir, NULL);		// Just in case
+	CreateDirectory(MailDir, NULL);		/* Just in case */
 
 	strcpy(ConfigName, BaseDir);
 	strcat(ConfigName, "\\");
@@ -3132,7 +3132,7 @@ BOOL Initialise()
 
 	UsingingRegConfig = FALSE;
 
-	//	if config file exists use it else try to get from Registry
+	/*	if config file exists use it else try to get from Registry */
 
 	if (stat(ConfigName, &STAT) == -1)
 	{
@@ -3168,7 +3168,7 @@ BOOL Initialise()
 		return FALSE;
 	}
 
-	// Got a Config File
+	/* Got a Config File */
 	
 	if (MainRect.right < 100 || MainRect.bottom < 100)
 	{
@@ -3186,7 +3186,7 @@ BOOL Initialise()
 	ShowWindow(GetDlgItem(MainWnd, 902), SW_HIDE);
 	ShowWindow(GetDlgItem(MainWnd, 903), SW_HIDE);
 
-	// Make backup copies of Databases
+	/* Make backup copies of Databases */
 	
 	CopyBIDDatabase();
 	CopyMessageDatabase();
@@ -3206,12 +3206,12 @@ BOOL Initialise()
 
 	UsingingRegConfig = FALSE;
 
-	// Make sure SYSOPCALL is set
+	/* Make sure SYSOPCALL is set */
 
 	if (SYSOPCall[0] == 0)
 		strcpy(SYSOPCall, BBSName);
 
-	// Make sure there is a user record for the BBS, with BBS bit set.
+	/* Make sure there is a user record for the BBS, with BBS bit set. */
 
 	user = LookupCall(BBSName);
 		
@@ -3223,13 +3223,13 @@ BOOL Initialise()
 
 	if ((user->flags & F_BBS) == 0)
 	{
-		// Not Defined as a BBS
+		/* Not Defined as a BBS */
 
 		if (SetupNewBBS(user))
 			user->flags |= F_BBS;
 	}
 
-	// if forwarding AMPR mail make sure User/BBS AMPR exists
+	/* if forwarding AMPR mail make sure User/BBS AMPR exists */
 
 	if (SendAMPRDirect)
 	{
@@ -3246,7 +3246,7 @@ BOOL Initialise()
 
 		if ((user->flags & F_BBS) == 0)
 		{
-			// Not Defined as a BBS
+			/* Not Defined as a BBS */
 
 			if (SetupNewBBS(user))
 				user->flags |= F_BBS;
@@ -3257,7 +3257,7 @@ BOOL Initialise()
 			SaveUserDatabase();
 	}
 
-	// Allocate Streams
+	/* Allocate Streams */
 
 	for (i=0; i < MaxStreams; i++)
 	{
@@ -3278,7 +3278,7 @@ BOOL Initialise()
 
 	InitialiseNNTP();
 
-	SetupListenSet();		// Master set of listening sockets
+	SetupListenSet();		/* Master set of listening sockets */
 
 	if (BBSApplNum)
 	{
@@ -3292,10 +3292,10 @@ BOOL Initialise()
 		AddTrayMenuItem(MainWnd, "Mail Server");
 	}
 	
-	SetTimer(hWnd,1,10000,NULL);	// Slow Timer (10 Secs)
-	SetTimer(hWnd,2,100,NULL);		// Send to Node and TCP Poll (100 ms)
+	SetTimer(hWnd,1,10000,NULL);	/* Slow Timer (10 Secs) */
+	SetTimer(hWnd,2,100,NULL);		/* Send to Node and TCP Poll (100 ms) */
 
-	// Calulate time to run Housekeeping
+	/* Calulate time to run Housekeeping */
 	{
 		struct tm *tm;
 		time_t now;
@@ -3339,7 +3339,7 @@ BOOL Initialise()
 
 	RefreshMainWindow();
 
-//	CreateWPReport();
+/*	CreateWPReport(); */
 
 	CreatePipeThread();
 	GetPGConfig();
@@ -3419,7 +3419,7 @@ int MatchMessagetoBBSList(struct MsgInfo * Msg, CIRCUIT * conn)
 
 	if (Msg->type == 'P')
 	{
-		// P messages are only sent to one BBS, but check the TO and AT of all BBSs before routing on HA
+		/* P messages are only sent to one BBS, but check the TO and AT of all BBSs before routing on HA */
 
 		for (bbs = BBSChain; bbs; bbs = bbs->BBSNext)
 		{		
@@ -3427,9 +3427,9 @@ int MatchMessagetoBBSList(struct MsgInfo * Msg, CIRCUIT * conn)
 			
 			if (CheckBBSToList(Msg, bbs, ForwardingInfo))
 			{
-				if (_stricmp(bbs->Call, BBSName) != 0)			// Dont forward to ourself - already here!
+				if (_stricmp(bbs->Call, BBSName) != 0)			/* Dont forward to ourself - already here! */
 				{
-					if ((conn == NULL) || (_stricmp(conn->UserPointer->Call, bbs->Call) != 0)) // Dont send back
+					if ((conn == NULL) || (_stricmp(conn->UserPointer->Call, bbs->Call) != 0)) /* Dont send back */
 					{
 						set_fwd_bit(Msg->fbbs, bbs->BBSNumber);
 						ForwardingInfo->MsgCount++;
@@ -3445,9 +3445,9 @@ int MatchMessagetoBBSList(struct MsgInfo * Msg, CIRCUIT * conn)
 			
 			if (CheckBBSAtList(Msg, ForwardingInfo, ATBBS))
 			{
-				if (_stricmp(bbs->Call, BBSName) != 0)			// Dont forward to ourself - already here!
+				if (_stricmp(bbs->Call, BBSName) != 0)			/* Dont forward to ourself - already here! */
 				{
-					if ((conn == NULL) || (_stricmp(conn->UserPointer->Call, bbs->Call) != 0)) // Dont send back
+					if ((conn == NULL) || (_stricmp(conn->UserPointer->Call, bbs->Call) != 0)) /* Dont send back */
 					{
 						set_fwd_bit(Msg->fbbs, bbs->BBSNumber);
 						ForwardingInfo->MsgCount++;
@@ -3463,9 +3463,9 @@ int MatchMessagetoBBSList(struct MsgInfo * Msg, CIRCUIT * conn)
 			
 			if (CheckBBSHList(Msg, bbs, ForwardingInfo, ATBBS, HRoute))
 			{
-				if (_stricmp(bbs->Call, BBSName) != 0)			// Dont forward to ourself - already here!
+				if (_stricmp(bbs->Call, BBSName) != 0)			/* Dont forward to ourself - already here! */
 				{
-					if ((conn == NULL) || (_stricmp(conn->UserPointer->Call, bbs->Call) != 0)) // Dont send back
+					if ((conn == NULL) || (_stricmp(conn->UserPointer->Call, bbs->Call) != 0)) /* Dont send back */
 					{
 						set_fwd_bit(Msg->fbbs, bbs->BBSNumber);
 						ForwardingInfo->MsgCount++;
@@ -3478,7 +3478,7 @@ int MatchMessagetoBBSList(struct MsgInfo * Msg, CIRCUIT * conn)
 		return FALSE;
 	}
 
-	// Bulls go to all matching BBSs, so the order of checking doesn't matter
+	/* Bulls go to all matching BBSs, so the order of checking doesn't matter */
 
 	for (bbs = BBSChain; bbs; bbs = bbs->BBSNext)
 	{		
@@ -3486,9 +3486,9 @@ int MatchMessagetoBBSList(struct MsgInfo * Msg, CIRCUIT * conn)
 
 		if (CheckABBS(Msg, bbs, ForwardingInfo, ATBBS, HRoute))		
 		{
-			if (_stricmp(bbs->Call, BBSName) != 0)			// Dont forward to ourself - already here!
+			if (_stricmp(bbs->Call, BBSName) != 0)			/* Dont forward to ourself - already here! */
 			{
-				if ((conn == NULL) || (_stricmp(conn->UserPointer->Call, bbs->Call) != 0)) // Dont send back
+				if ((conn == NULL) || (_stricmp(conn->UserPointer->Call, bbs->Call) != 0)) /* Dont send back */
 				{
 					set_fwd_bit(Msg->fbbs, bbs->BBSNumber);
 					ForwardingInfo->MsgCount++;
@@ -3506,10 +3506,10 @@ BOOL CheckABBS(struct MsgInfo * Msg, struct UserInfo * bbs, struct	BBSForwarding
 	char ** HRoutes;
 	int i, j;
 
-	if (strcmp(ATBBS, bbs->Call) == 0)					// @BBS = BBS
+	if (strcmp(ATBBS, bbs->Call) == 0)					/* @BBS = BBS */
 		return TRUE;
 
-	// Check TO distributions
+	/* Check TO distributions */
 
 	if (ForwardingInfo->TOCalls)
 	{
@@ -3524,7 +3524,7 @@ BOOL CheckABBS(struct MsgInfo * Msg, struct UserInfo * bbs, struct	BBSForwarding
 		}
 	}
 
-	// Check AT distributions
+	/* Check AT distributions */
 
 	if (ForwardingInfo->ATCalls)
 	{
@@ -3540,7 +3540,7 @@ BOOL CheckABBS(struct MsgInfo * Msg, struct UserInfo * bbs, struct	BBSForwarding
 	}
 	if ((HRoute) &&	(ForwardingInfo->Haddresses))
 	{
-		// Match on Routes
+		/* Match on Routes */
 
 		HRoutes = ForwardingInfo->Haddresses;
 
@@ -3549,9 +3549,9 @@ BOOL CheckABBS(struct MsgInfo * Msg, struct UserInfo * bbs, struct	BBSForwarding
 			i = strlen(HRoutes[0]) - 1;
 			j = strlen(HRoute) - 1;
 
-			while ((i >= 0) && (j >= 0))				// Until one string rus out
+			while ((i >= 0) && (j >= 0))				/* Until one string rus out */
 			{
-				if (HRoutes[0][i--] != HRoute[j--])	// Compare backwards
+				if (HRoutes[0][i--] != HRoute[j--])	/* Compare backwards */
 					goto next;
 			}
 
@@ -3570,7 +3570,7 @@ BOOL CheckBBSToList(struct MsgInfo * Msg, struct UserInfo * bbs, struct	BBSForwa
 {
 	char ** Calls;
 
-	// Check TO distributions
+	/* Check TO distributions */
 
 	if (ForwardingInfo->TOCalls)
 	{
@@ -3591,9 +3591,9 @@ BOOL CheckBBSAtList(struct MsgInfo * Msg, struct	BBSForwardingInfo * ForwardingI
 {
 	char ** Calls;
 
-	// Check AT distributions
+	/* Check AT distributions */
 
-	if (strcmp(ATBBS, bbs->Call) == 0)			// @BBS = BBS
+	if (strcmp(ATBBS, bbs->Call) == 0)			/* @BBS = BBS */
 		return TRUE;
 
 	if (ForwardingInfo->ATCalls)
@@ -3618,7 +3618,7 @@ BOOL CheckBBSHList(struct MsgInfo * Msg, struct UserInfo * bbs, struct	BBSForwar
 
 	if ((HRoute) &&	(ForwardingInfo->Haddresses))
 	{
-		// Match on Routes
+		/* Match on Routes */
 
 		HRoutes = ForwardingInfo->Haddresses;
 
@@ -3627,9 +3627,9 @@ BOOL CheckBBSHList(struct MsgInfo * Msg, struct UserInfo * bbs, struct	BBSForwar
 			i = strlen(HRoutes[0]) - 1;
 			j = strlen(HRoute) - 1;
 
-			while ((i >= 0) && (j >= 0))				// Until one string rus out
+			while ((i >= 0) && (j >= 0))				/* Until one string rus out */
 			{
-				if (HRoutes[0][i--] != HRoute[j--])	// Compare backwards
+				if (HRoutes[0][i--] != HRoute[j--])	/* Compare backwards */
 					goto next;
 			}
 
@@ -3645,11 +3645,11 @@ BOOL CheckBBSHList(struct MsgInfo * Msg, struct UserInfo * bbs, struct	BBSForwar
 
 char * strlop(char * buf, char delim)
 {
-	// Terminate buf at delim, and return rest of string
+	/* Terminate buf at delim, and return rest of string */
 
 	char * ptr;
 
-	if (buf == NULL) return NULL;		// Protect
+	if (buf == NULL) return NULL;		/* Protect */
 
 	ptr = strchr(buf, delim);
 

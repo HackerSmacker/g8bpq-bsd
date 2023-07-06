@@ -62,9 +62,9 @@
 
 #define BPQBASE 40100
 
-#define IDM_FIRSTCHILD   50000 // used in structure when creating mdi client area for the main frame 
+#define IDM_FIRSTCHILD   50000 /* used in structure when creating mdi client area for the main frame  */
 
-//	Port monitoring flags use BPQBASE -> BPQBASE+100
+/*	Port monitoring flags use BPQBASE -> BPQBASE+100 */
 struct ConsoleInfo 
 {
 	struct ConsoleInfo * next;
@@ -75,7 +75,7 @@ struct ConsoleInfo
 	HWND hConsole;
 	HWND hwndInput;
 	HWND hwndOutput;
-	HMENU hMenu;		// handle of menu 
+	HMENU hMenu;		/* handle of menu  */
 	RECT ConsoleRect;
 	RECT OutputRect;
 	int CharWidth;
@@ -86,41 +86,41 @@ struct ConsoleInfo
 	char kbbuf[INPUTLEN];
 	int kbptr;
 
-	int readbufflen;		// Current Length
-	char * readbuff;		// Malloc'ed
+	int readbufflen;		/* Current Length */
+	char * readbuff;		/* Malloc'ed */
 	char * KbdStack[MAXSTACK];
 
 	int StackIndex;
 
-//	BOOL Bells;
-//	BOOL FlashOnBell;		// Flash instead of Beep
+/*	BOOL Bells; */
+/*	BOOL FlashOnBell;		// Flash instead of Beep */
 	BOOL StripLF;
 
-//	BOOL WarnWrap;
-//	BOOL FlashOnConnect;
-//	BOOL WrapInput;
-//	BOOL CloseWindowOnBye;
+/*	BOOL WarnWrap; */
+/*	BOOL FlashOnConnect; */
+/*	BOOL WrapInput; */
+/*	BOOL CloseWindowOnBye; */
 
 	unsigned int WrapLen;
 	int WarnLen;
 	int maxlinelen;
 
 	int PartLinePtr;
-	int PartLineIndex;		// Listbox index of (last) incomplete line
+	int PartLineIndex;		/* Listbox index of (last) incomplete line */
 
-	DWORD dwCharX;      // average width of characters 
-	DWORD dwCharY;      // height of characters 
-	DWORD dwClientX;    // width of client area 
-	DWORD dwClientY;    // height of client area 
-	DWORD dwLineLen;    // line length 
-	int nCaretPosX; // horizontal position of caret 
-	int nCaretPosY; // vertical position of caret 
+	DWORD dwCharX;      /* average width of characters  */
+	DWORD dwCharY;      /* height of characters  */
+	DWORD dwClientX;    /* width of client area  */
+	DWORD dwClientY;    /* height of client area  */
+	DWORD dwLineLen;    /* line length  */
+	int nCaretPosX; /* horizontal position of caret  */
+	int nCaretPosY; /* vertical position of caret  */
 
-	COLORREF FGColour;		// Text Colour
-	COLORREF BGColour;		// Background Colour
-	COLORREF DefaultColour;	// Default Text Colour
+	COLORREF FGColour;		/* Text Colour */
+	COLORREF BGColour;		/* Background Colour */
+	COLORREF DefaultColour;	/* Default Text Colour */
 
-	int CurrentLine;				// Line we are writing to in circular buffer.
+	int CurrentLine;				/* Line we are writing to in circular buffer. */
 
 	int Index;
 	BOOL SendHeader;
@@ -134,8 +134,8 @@ struct ConsoleInfo
 	int CurrentColour;
 	int Thumb;
 	int FirstTime;
-	BOOL Scrolled;				// Set if scrolled back
-	int RTFHeight;				// Height of RTF control in pixels 
+	BOOL Scrolled;				/* Set if scrolled back */
+	int RTFHeight;				/* Height of RTF control in pixels  */
 
 	BOOL CONNECTED;
 	int SlowTimer;

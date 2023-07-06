@@ -17,9 +17,9 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-// Mail and Chat Server for BPQ32 Packet Switch
-//
-// White Pages Database Support Routines
+/* Mail and Chat Server for BPQ32 Packet Switch */
+/* */
+/* White Pages Database Support Routines */
 
 #include "bpqmail.h"
 
@@ -99,13 +99,13 @@ VOID GetWPDatabase()
 	int i = 1;
 	struct stat STAT;
 
-	// If WP info is in main config file, use it
+	/* If WP info is in main config file, use it */
 
 	group = config_lookup (&cfg, "WP");
 
 	if (group)
 	{
-		// Set up control record
+		/* Set up control record */
 
 		WPRecPtr = malloc(sizeof(void *));
 		WPRecPtr[0] = zalloc(sizeof(WPRec));
@@ -122,7 +122,7 @@ VOID GetWPDatabase()
 
 			GetStringValue(group, Key, Record);
 
-			if (Record[0] == 0)			// End of List
+			if (Record[0] == 0)			/* End of List */
 				return;
 
 			memset(&WPRec, 0, sizeof(WPRec));
@@ -197,13 +197,13 @@ VOID GetWPDatabase()
 			{
 				WP->last_seen = atol(ptr);
 
-				// Check Call
+				/* Check Call */
 
-				for (n = 1; n < strlen(WP->callsign); n++)		// skip first which may also be digit
+				for (n = 1; n < strlen(WP->callsign); n++)		/* skip first which may also be digit */
 				{
 					if (isdigit(WP->callsign[n]))
 					{
-						// Has a digit. Check Last is not digit
+						/* Has a digit. Check Last is not digit */
 
 						if (isalpha(WP->callsign[strlen(WP->callsign) - 1]))
 						{
@@ -223,7 +223,7 @@ WPOK:;
 		return;
 	}
 
-	// If text format exists use it
+	/* If text format exists use it */
 
 	strcpy(CfgName, WPDatabasePath);
 	strlop(CfgName, '.');
@@ -245,7 +245,7 @@ WPOK:;
 		goto tryOld;
 	}
 
-	// Set up control record
+	/* Set up control record */
 
 	WPRecPtr = malloc(sizeof(void *));
 	WPRecPtr[0] = zalloc(sizeof(WPRec));
@@ -260,7 +260,7 @@ WPOK:;
 
 		wpgroup = config_lookup(&wpcfg, Key);
 
-		if (wpgroup == NULL)			// End of List
+		if (wpgroup == NULL)			/* End of List */
 		{
 			config_destroy(&wpcfg);
 			return;
@@ -320,7 +320,7 @@ tryOld:
 
 	if (Handle == NULL)
 	{
-		// Initialise a new File
+		/* Initialise a new File */
 
 		WPRecPtr = malloc(sizeof(void *));
 		WPRecPtr[0] = malloc(sizeof(WPRec));
@@ -331,18 +331,18 @@ tryOld:
 	}
 
 
-	// Get First Record
+	/* Get First Record */
 
 	ReadLen = fread(&WPRec, 1, sizeof(WPRec), Handle);
 
 	if (ReadLen == 0)
 	{
-		// Duff file
+		/* Duff file */
 
 		memset(&WPRec, 0, sizeof(WPRec));
 	}
 
-	// Set up control record
+	/* Set up control record */
 
 	WPRecPtr = malloc(sizeof(void *));
 	WPRecPtr[0] = malloc(sizeof(WPRec));
@@ -406,7 +406,7 @@ VOID CopyWPDatabase()
 
 VOID SaveWPDatabase()
 {
-//	SaveConfig(ConfigName);			// WP config is now in main config file
+/*	SaveConfig(ConfigName);			// WP config is now in main config file */
 
 	int i;
 	config_setting_t *root, *group;
@@ -494,7 +494,7 @@ char * FormatWPDate(time_t Datim)
 
 int Do_WP_Sel_Changed(HWND hDlg)
 {
-	// Update WP display with newly selected rec
+	/* Update WP display with newly selected rec */
 
 	WPRec *  WP;
 	int Sel = SendDlgItemMessage(hDlg, IDC_WP, CB_GETCURSEL, 0, 0);
@@ -603,7 +603,7 @@ VOID Do_Delete_WPRec(HWND hDlg)
 
 	for (n = CurrentWPIndex; n < NumberofWPrecs; n++)
 	{
-		WPRecPtr[n] = WPRecPtr[n+1];		// move down all following entries
+		WPRecPtr[n] = WPRecPtr[n+1];		/* move down all following entries */
 	}
 	
 	NumberofWPrecs--;
@@ -672,7 +672,7 @@ INT_PTR CALLBACK WPEditDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM
 
 		case IDC_WP:
 
-			// Msg Selection Changed
+			/* Msg Selection Changed */
 
 			Do_WP_Sel_Changed(hDlg);
 
@@ -697,9 +697,9 @@ INT_PTR CALLBACK WPEditDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM
 
 VOID GetWPBBSInfo(char * Rline)
 {
-	// Update WP with /I records for each R: Line
+	/* Update WP with /I records for each R: Line */
 
-	// R:111206/1636Z 29130@N9PMO.#SEWI.WI.USA.NOAM [Racine, WI] FBB7.00i
+	/* R:111206/1636Z 29130@N9PMO.#SEWI.WI.USA.NOAM [Racine, WI] FBB7.00i */
 
 	struct tm rtime;
 	time_t RLineTime;
@@ -719,7 +719,7 @@ VOID GetWPBBSInfo(char * Rline)
 
 	if (Rline[10] == '/')
 	{
-		// Dodgy 4 char year
+		/* Dodgy 4 char year */
 	
 		sscanf(&Rline[2], "%04d%02d%02d/%02d%02d",
 				&rtime.tm_year, &rtime.tm_mon, &rtime.tm_mday, &rtime.tm_hour, &rtime.tm_min);
@@ -732,35 +732,35 @@ VOID GetWPBBSInfo(char * Rline)
 			&rtime.tm_year, &rtime.tm_mon, &rtime.tm_mday, &rtime.tm_hour, &rtime.tm_min);
 
 		if (rtime.tm_year < 90)
-			rtime.tm_year += 100;		// Range 1990-2089
+			rtime.tm_year += 100;		/* Range 1990-2089 */
 		rtime.tm_mon--;
 	}
 
-	// Otherwise leave date as zero, which should be rejected
+	/* Otherwise leave date as zero, which should be rejected */
 
 	if ((RLineTime = mktime(&rtime)) != (time_t)-1 )
 	{
 		Age = (time(NULL) - RLineTime)/86400;
 
 		if ( Age < -1)
-			return;			// in the future
+			return;			/* in the future */
 		
 		if (Age > BidLifetime || Age > MaxAge)
-			return;			// Too old
+			return;			/* Too old */
 	}
 
 	ptr1 = strchr(Rline, '@'); 
 	ptr2 = strchr(Rline, '\r');
 
 	if (!ptr1)
-		return;			// Duff
+		return;			/* Duff */
 
 	if (*++ptr1 == ':')
-		ptr1++;			// Format 2
+		ptr1++;			/* Format 2 */
 
 
 	if (ptr2 == NULL)
-		return;			// No CR on end
+		return;			/* No CR on end */
 	
 	RLen = ptr2 - ptr1;
 
@@ -794,7 +794,7 @@ VOID GetWPBBSInfo(char * Rline)
 
 	if (!WP)
 	{
-		// Not Found
+		/* Not Found */
 
 		WP = AllocateWPRecord();
 
@@ -820,7 +820,7 @@ VOID GetWPBBSInfo(char * Rline)
 	if (WP->last_modif >= RLineTime	|| WP->Type != 'I')
 		return;
 
-	// Update 2nd if changed
+	/* Update 2nd if changed */
 
 	if (strcmp(WP->secnd_homebbs , ATBBS) != 0)
 	{
@@ -848,11 +848,11 @@ VOID GetWPInfoFromRLine(char * From, char * FirstRLine, time_t RLineTime)
 	information is the date shown on this R: header line.
 	*/
 
-	// R:930101/0000 1530@KA6FUB.#NOCAL.CA.USA.NOAM
+	/* R:930101/0000 1530@KA6FUB.#NOCAL.CA.USA.NOAM */
 
-	// R:930101/0000 @:KA6FUB.#NOCAL.CA.USA.NOAM #:1530
+	/* R:930101/0000 @:KA6FUB.#NOCAL.CA.USA.NOAM #:1530 */
 
-	// The FirstRLine pointer points to the message, so shouldnt be changed
+	/* The FirstRLine pointer points to the message, so shouldnt be changed */
 
 	WPRec * WP;
 	char ATBBS[200];
@@ -865,10 +865,10 @@ VOID GetWPInfoFromRLine(char * From, char * FirstRLine, time_t RLineTime)
 		return;
 
 	if (!ptr1)
-		return;			// Duff
+		return;			/* Duff */
 
 	if (*++ptr1 == ':')
-		ptr1++;			// Format 2
+		ptr1++;			/* Format 2 */
 
 	RLen = ptr2 - ptr1;
 
@@ -890,7 +890,7 @@ VOID GetWPInfoFromRLine(char * From, char * FirstRLine, time_t RLineTime)
 
 	if (!WP)
 	{
-		// Not Found
+		/* Not Found */
 
 		WP = AllocateWPRecord();
 
@@ -910,7 +910,7 @@ VOID GetWPInfoFromRLine(char * From, char * FirstRLine, time_t RLineTime)
 	if (WP->last_modif >= RLineTime)
 		return;
 
-	// Update 2nd if changed
+	/* Update 2nd if changed */
 
 	if (strcmp(WP->secnd_homebbs , ATBBS) != 0)
 	{
@@ -940,7 +940,7 @@ VOID ProcessWPMsg(char * MailBuffer, int Size, char * FirstRLine)
 	{
 		ptr2 = strchr(ptr1, '\r');
 
-		if (ptr2 == 0)	//  No CR in buffer
+		if (ptr2 == 0)	/*  No CR in buffer */
 			return;
 
 		WPLen =	ptr2 - ptr1;
@@ -958,7 +958,7 @@ VOID ProcessWPMsg(char * MailBuffer, int Size, char * FirstRLine)
 			char * Context;
 			char seps[] = " \r";
 
-			// Make copy of string, as strtok messes with it
+			/* Make copy of string, as strtok messes with it */
 			
 			memcpy(WPLine, ptr1, WPLen);
 			WPLine[WPLen] = 0;
@@ -970,7 +970,7 @@ VOID ProcessWPMsg(char * MailBuffer, int Size, char * FirstRLine)
 			zip = strtok_s(NULL, seps, &Context);
 			ZIP = strtok_s(NULL, seps, &Context);
 			Name = strtok_s(NULL, seps, &Context);
-			QTH = strtok_s(NULL, "\r", &Context);			// QTH may have spaces
+			QTH = strtok_s(NULL, "\r", &Context);			/* QTH may have spaces */
 
 			if (Date == 0 || Call == 0 || AT == 0 || ZIP == 0 || Name == 0 || QTH == 0)
 				return;
@@ -1047,7 +1047,7 @@ it will not be replaced. This flag will be used in case the WP update messages a
 
 					if (WP)
 					{
-						// Found, so update 
+						/* Found, so update  */
 
 						DoWPUpdate(WP, Type, Name, HA, QTH, ZIP, WPDate);
 					}
@@ -1093,7 +1093,7 @@ it will not be replaced. This flag will be used in case the WP update messages a
 
 VOID DoWPUpdate(WPRec * WP, char Type, char * Name, char * HA, char * QTH, char * ZIP, time_t WPDate)
 {
-	// First Update any unknown field
+	/* First Update any unknown field */
 
 	if(Name)
 		if (WP->name == NULL) {strcpy(WP->name, Name); WP->last_modif = WPDate; WP->changed = TRUE;}
@@ -1112,12 +1112,12 @@ VOID DoWPUpdate(WPRec * WP, char Type, char * Name, char * HA, char * QTH, char 
 	WP->last_seen = WPDate;
 	WP->seen++;
 
-	// Now Update Temp Fields if update is newer than original
+	/* Now Update Temp Fields if update is newer than original */
 
 	if (WP->last_modif >= WPDate)
 		return;
 
-	if (Type == 'U')					// Definitive Update
+	if (Type == 'U')					/* Definitive Update */
 	{
 		if (strcmp(WP->first_homebbs , HA) != 0)
 		{
@@ -1161,7 +1161,7 @@ VOID DoWPUpdate(WPRec * WP, char Type, char * Name, char * HA, char * QTH, char 
 		return;
 	}
 
-	// Non-Definitive - only update second copy
+	/* Non-Definitive - only update second copy */
 
 	if (strcmp(WP->secnd_homebbs , HA) != 0) {strcpy(WP->secnd_homebbs, HA); WP->last_modif = WPDate; WP->Type = Type;}
 
@@ -1193,7 +1193,7 @@ VOID UpdateWPWithUserInfo(struct UserInfo * user)
 		strcpy(WP->callsign, user->Call);
 	}
 
-	// Update Record
+	/* Update Record */
 
 	if (user->HomeBBS[0])
 	{
@@ -1231,7 +1231,7 @@ VOID UpdateWPWithUserInfo(struct UserInfo * user)
 
 VOID DoWPLookup(ConnectionInfo * conn, struct UserInfo * user, char Type, char *Param)
 {
-	// Process the I call command
+	/* Process the I call command */
 
 	WPRec * ptr = NULL;
 	int i;
@@ -1259,7 +1259,7 @@ VOID DoWPLookup(ConnectionInfo * conn, struct UserInfo * user, char Type, char *
 		
 		return;
 
-	case'@':			// AT BBS
+	case'@':			/* AT BBS */
 
 		for (i=1; i <= NumberofWPrecs; i++)
 		{
@@ -1274,7 +1274,7 @@ VOID DoWPLookup(ConnectionInfo * conn, struct UserInfo * user, char Type, char *
 			}
 		}
 		
-	case'H':			// Hierarchic Element
+	case'H':			/* Hierarchic Element */
 
 		for (i=1; i <= NumberofWPrecs; i++)
 		{
@@ -1301,7 +1301,7 @@ VOID DoWPLookup(ConnectionInfo * conn, struct UserInfo * user, char Type, char *
 		}
 		return;
 
-	case'Z':			// ZIP
+	case'Z':			/* ZIP */
 
 		for (i=1; i <= NumberofWPrecs; i++)
 		{
@@ -1343,7 +1343,7 @@ On 111121 N0JAL @ N0JAL.OR.USA.NOAM zip ? Sai Damascus, Oregon CN85sj
 
 VOID UpdateWP()
 {
-	// If 2nd copy of info has been unchanged for 30 days, copy to active fields
+	/* If 2nd copy of info has been unchanged for 30 days, copy to active fields */
 
 	WPRec * ptr = NULL;
 	int i;
@@ -1355,24 +1355,24 @@ VOID UpdateWP()
 	char HDest[61] = "WP";
 	char WPMsgType = 'P';
 	time_t NOW = time(NULL);
-	time_t UpdateLimit = NOW - (86400 * 30);	// 30 days
-	LASTWPSendTime = NOW - (86400 * 5);		// 5 days max
+	time_t UpdateLimit = NOW - (86400 * 30);	/* 30 days */
+	LASTWPSendTime = NOW - (86400 * 5);		/* 5 days max */
 
 	for (i=1; i <= NumberofWPrecs; i++)
 	{
 		ptr = WPRecPtr[i];
 
-		// DO we have a new field, and if so is it different?
+		/* DO we have a new field, and if so is it different? */
 
 		if ((ptr->secnd_homebbs[0] && _stricmp(ptr->first_homebbs, ptr->secnd_homebbs))
 			|| (ptr->secnd_qth[0] && _stricmp(ptr->first_qth, ptr->secnd_qth))
 			|| (ptr->secnd_zip[0] && _stricmp(ptr->first_zip, ptr->secnd_zip)))
 		{
-			// Have new data
+			/* Have new data */
 
 			if (ptr->last_modif < UpdateLimit)
 			{
-				// Stable for 30 days
+				/* Stable for 30 days */
 
 				if (ptr->secnd_homebbs[0])
 					strcpy(ptr->first_homebbs, ptr->secnd_homebbs);
@@ -1390,7 +1390,7 @@ VOID UpdateWP()
 
 int CreateWPMessage()
 {
-	// Include all messages with Type of U whach have changed since LASTWPSendTime
+	/* Include all messages with Type of U whach have changed since LASTWPSendTime */
 
 	WPRec * ptr = NULL;
 	int i;
@@ -1407,13 +1407,13 @@ int CreateWPMessage()
 	int WriteLen=0;
 	char ** To = SendWPAddrs;
 
-	LASTWPSendTime = time(NULL) - (86400 * 5);		// 5 days max
+	LASTWPSendTime = time(NULL) - (86400 * 5);		/* 5 days max */
 
 	for (i=1; i <= NumberofWPrecs; i++)
 	{
 		ptr = WPRecPtr[i];
 
-//		if (ptr->last_modif > LASTWPSendTime && ptr->Type == 'U' && ptr->first_homebbs[0])
+/*		if (ptr->last_modif > LASTWPSendTime && ptr->Type == 'U' && ptr->first_homebbs[0]) */
 		if (ptr->changed && ptr->last_modif > LASTWPSendTime && ptr->first_homebbs[0])
 		{
 			tm = gmtime(&ptr->last_modif);
@@ -1443,7 +1443,7 @@ int CreateWPMessage()
 		
 		Msg = AllocateMsgRecord();
 
-		// Set number here so they remain in sequence
+		/* Set number here so they remain in sequence */
 		
 		Msg->number = ++LatestMsg;
 		Msg->length = MsgLen;
@@ -1493,7 +1493,7 @@ int CreateWPMessage()
 
 		MatchMessagetoBBSList(Msg, 0);
 
-		BuildNNTPList(Msg);				// Build NNTP Groups list
+		BuildNNTPList(Msg);				/* Build NNTP Groups list */
 
 		To++;
 	}
@@ -1520,10 +1520,10 @@ VOID CreateWPReport()
 	if (hFile == NULL)
 		return;
 
-//	len = sprintf(Line, "    Call    Connects  Connects  Messages   Messages   Bytes      Bytes     Rejected  Rejected\r\n");
-//	WriteFile(hFile, Line, len, &written, NULL);
-//	len = sprintf(Line, "               In        Out     Rxed        Sent     Rxed       Sent         In         Out\r\n\r\n");
-//	WriteFile(hFile, Line, len, &written, NULL);
+/*	len = sprintf(Line, "    Call    Connects  Connects  Messages   Messages   Bytes      Bytes     Rejected  Rejected\r\n"); */
+/*	WriteFile(hFile, Line, len, &written, NULL); */
+/*	len = sprintf(Line, "               In        Out     Rxed        Sent     Rxed       Sent         In         Out\r\n\r\n"); */
+/*	WriteFile(hFile, Line, len, &written, NULL); */
 		
 
 	for (i=1; i <= NumberofWPrecs; i++)

@@ -1281,11 +1281,11 @@ char * get_mobilesrf()
 
 		"<p align=center><font size=4>'*' after a callsign means that it was heard via a digi</font></p>"
 
-		//		"<table width=80% align=center>"
-		//		"<tr>"
-		//		"<td align=center><font size=4>The list only includes callsigns heard on RF, direct or via digipeaters.<br> It does not include callsigns heard on the internet,<br> or heard as third-party RF traffic via IGATEs.</font></td>"
-		//		"</tr>"
-		//		"</table>"
+		/*		"<table width=80% align=center>" */
+		/*		"<tr>" */
+		/*		"<td align=center><font size=4>The list only includes callsigns heard on RF, direct or via digipeaters.<br> It does not include callsigns heard on the internet,<br> or heard as third-party RF traffic via IGATEs.</font></td>" */
+		/*		"</tr>" */
+		/*		"</table>" */
 
 		"<p align=center><font size=4>There are ##TABLE_COUNT## callsigns in the list,<BR>click a callsign to get an information page for that station.</font></p>"
 
@@ -1350,11 +1350,11 @@ char * get_objrf()
 
 		"<p align=center><font size=4>'*' after a callsign means that it was heard via a digi</font></p>"
 
-		//		"<table width=80% align=center>"
-		//		"<tr>"
-		//		"<td align=center><font size=4>The list only includes callsigns heard on RF, direct or via digipeaters.<br> It does not include callsigns heard on the internet,<br> or heard as third-party RF traffic via IGATEs.</font></td>"
-		//		"</tr>"
-		//		"</table>"
+		/*		"<table width=80% align=center>" */
+		/*		"<tr>" */
+		/*		"<td align=center><font size=4>The list only includes callsigns heard on RF, direct or via digipeaters.<br> It does not include callsigns heard on the internet,<br> or heard as third-party RF traffic via IGATEs.</font></td>" */
+		/*		"</tr>" */
+		/*		"</table>" */
 
 		"<p align=center><font size=4>There are ##TABLE_COUNT## callsigns in the list,<BR>click a callsign to get an information page for that station.</font></p>"
 
@@ -1419,11 +1419,11 @@ char * get_wxrf()
 
 		"<p align=center><font size=4>'*' after a callsign means that it was heard via a digi</font></p>"
 
-		//		"<table width=80% align=center>"
-		//		"<tr>"
-		//		"<td align=center><font size=4>The list only includes callsigns heard on RF, direct or via digipeaters.<br> It does not include callsigns heard on the internet,<br> or heard as third-party RF traffic via IGATEs.</font></td>"
-		//		"</tr>"
-		//		"</table>"
+		/*		"<table width=80% align=center>" */
+		/*		"<tr>" */
+		/*		"<td align=center><font size=4>The list only includes callsigns heard on RF, direct or via digipeaters.<br> It does not include callsigns heard on the internet,<br> or heard as third-party RF traffic via IGATEs.</font></td>" */
+		/*		"</tr>" */
+		/*		"</table>" */
 
 		"<p align=center><font size=4>There are ##TABLE_COUNT## callsigns in the list,<BR>click a callsign to get an information page for that station.</font></p>"
 

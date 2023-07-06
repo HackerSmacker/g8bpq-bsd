@@ -1,7 +1,7 @@
-//------------------------------------------
-//  PNGFILE.H -- Header File for pngfile.c
-//------------------------------------------
-//#define byte	short
+/*------------------------------------------ */
+/*  PNGFILE.H -- Header File for pngfile.c */
+/*------------------------------------------ */
+/*#define byte	short */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

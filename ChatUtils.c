@@ -1,7 +1,7 @@
-// Chat Server for BPQ32 Packet Switch
-//
-//
-// Based on MailChat Version 1.4.48.1
+/* Chat Server for BPQ32 Packet Switch */
+/* */
+/* */
+/* Based on MailChat Version 1.4.48.1 */
 
 
 #define _CRT_SECURE_NO_DEPRECATE 
@@ -63,23 +63,23 @@ int Connected(int Stream)
 		{
 			if (conn->Active)
 			{
-				// Probably an outgoing connect
+				/* Probably an outgoing connect */
 		
 				if (conn->rtcflags == p_linkini)
 				{
 					conn->paclen = 236;
 
-					// Run first line of connect script
+					/* Run first line of connect script */
 
 					ProcessChatConnectScript(conn, ConnectedMsg, 15);
 					return 0;
 
-//					nprintf(conn, "c %s\r", conn->u.link->call);
+/*					nprintf(conn, "c %s\r", conn->u.link->call); */
 				}
 				return 0;
 			}
 	
-			memset(conn, 0, sizeof(ChatCIRCUIT));		// Clear everything
+			memset(conn, 0, sizeof(ChatCIRCUIT));		/* Clear everything */
 			conn->Active = TRUE;
 			conn->BPQStream = Stream;
 
@@ -88,11 +88,11 @@ int Connected(int Stream)
 
 			conn->paclen = paclen;
 
-			strlop(callsign, ' ');		// Remove trailing spaces
+			strlop(callsign, ' ');		/* Remove trailing spaces */
 
 			memcpy(conn->Callsign, callsign, 10);
 
-			strlop(callsign, '-');		// Remove any SSID
+			strlop(callsign, '-');		/* Remove any SSID */
 
 			user = zalloc(sizeof(struct UserInfo));
 
@@ -102,34 +102,34 @@ int Connected(int Stream)
 
 			n=sprintf_s(Msg, sizeof(Msg), "Incoming Connect from %s", user->Call);
 			
-			// Send SID and Prompt
+			/* Send SID and Prompt */
 
 			ChatWriteLogLine(conn, '|',Msg, n, LOG_CHAT);
 			conn->Flags |= CHATMODE;
 
 			nodeprintf(conn, ChatSID, Ver[0], Ver[1], Ver[2], Ver[3]);
 
-			// See if from a defined node
+			/* See if from a defined node */
 				
 			for (link = link_hd; link; link = link->next)
 			{
 				if (matchi(conn->Callsign, link->call))
 				{
 					conn->rtcflags = p_linkwait;
-					return 0;						// Wait for *RTL
+					return 0;						/* Wait for *RTL */
 				}
 			}
 
-			// See if from a previously known node
+			/* See if from a previously known node */
 
-			// I'm not sure this is safe. If it really is from a node the *RTL will be rejected
-			// Actually this protects against repeated attempts from a node that isn't configured. Maybe leave as is
+			/* I'm not sure this is safe. If it really is from a node the *RTL will be rejected */
+			/* Actually this protects against repeated attempts from a node that isn't configured. Maybe leave as is */
 
 			node = knownnode_find(conn->Callsign);
 
 			if (node)
 			{
-				// A node is trying to link, but we don't have it defined - close
+				/* A node is trying to link, but we don't have it defined - close */
 
 				Logprintf(LOG_CHAT, conn, '!', "Node %s connected, but is not defined as a Node - closing",
 					conn->Callsign);
@@ -204,7 +204,7 @@ int Disconnected (int Stream)
 			{
 				if (conn->Flags & CHATLINK && conn->u.link)
 				{
-					// if running connect script, clear script active
+					/* if running connect script, clear script active */
 
 					if (conn->u.link->flags & p_linkini)
 					{
@@ -235,7 +235,7 @@ int Disconnected (int Stream)
 				conn->UserPointer = NULL;	
 			}
 
-//			RefreshMainWindow();
+/*			RefreshMainWindow(); */
 			return 0;
 		}
 	}
@@ -261,20 +261,20 @@ int DoReceivedData(int Stream)
 		{
 			do
 			{ 
-				// May have several messages per packet, or message split over packets
+				/* May have several messages per packet, or message split over packets */
 
-				if (conn->InputLen + 1000 > 10000)	// Shouldnt have lines longer  than this in text mode
-					conn->InputLen = 0;				// discard	
+				if (conn->InputLen + 1000 > 10000)	/* Shouldnt have lines longer  than this in text mode */
+					conn->InputLen = 0;				/* discard	 */
 				
 				GetMsg(Stream, &conn->InputBuffer[conn->InputLen], &InputLen, &count);
 
 				if (InputLen == 0) return 0;
 
-				if (conn->DebugHandle)				// Receiving a Compressed Message
+				if (conn->DebugHandle)				/* Receiving a Compressed Message */
 					WriteFile(conn->DebugHandle, &conn->InputBuffer[conn->InputLen],
 						InputLen, &Written, NULL);
 
-				conn->Watchdog = 900;				// 15 Minutes
+				conn->Watchdog = 900;				/* 15 Minutes */
 
 				conn->InputLen += InputLen;
 
@@ -282,11 +282,11 @@ int DoReceivedData(int Stream)
 
 			loop:
 
-				if (conn->InputLen == 1 && conn->InputBuffer[0] == 0)		// Single Null
+				if (conn->InputLen == 1 && conn->InputBuffer[0] == 0)		/* Single Null */
 				{
 					conn->InputLen = 0;
 
-					if (conn->u.user->circuit && conn->u.user->circuit->rtcflags & p_user)	// Local User
+					if (conn->u.user->circuit && conn->u.user->circuit->rtcflags & p_user)	/* Local User */
 						conn->u.user->lastmsgtime = time(NULL);
 
 					return 0;
@@ -294,7 +294,7 @@ int DoReceivedData(int Stream)
 
 				ptr = memchr(conn->InputBuffer, '\r', conn->InputLen);
 
-				if (ptr)	//  CR in buffer
+				if (ptr)	/*  CR in buffer */
 				{
 					user = conn->UserPointer;
 				
@@ -302,11 +302,11 @@ int DoReceivedData(int Stream)
 					
 					if (++ptr == ptr2)
 					{
-						// Usual Case - single meg in buffer
+						/* Usual Case - single meg in buffer */
 
 						__try
 						{
-							if (conn->rtcflags == p_linkini)		// Chat Connect
+							if (conn->rtcflags == p_linkini)		/* Chat Connect */
 								ProcessChatConnectScript(conn, conn->InputBuffer, conn->InputLen);
 							else
 								ProcessLine(conn, user, conn->InputBuffer, conn->InputLen);
@@ -324,7 +324,7 @@ int DoReceivedData(int Stream)
 					}
 					else
 					{
-						// buffer contains more that 1 message
+						/* buffer contains more that 1 message */
 
 						MsgLen = conn->InputLen - (ptr2-ptr);
 
@@ -348,7 +348,7 @@ int DoReceivedData(int Stream)
 
 						if (*ptr == 0 || *ptr == '\n')
 						{
-							/// CR LF or CR Null
+							/*/ CR LF or CR Null */
 
 							ptr++;
 							conn->InputLen--;
@@ -364,9 +364,9 @@ int DoReceivedData(int Stream)
 				}
 				else
 				{
-					// no cr - testing.. 
+					/* no cr - testing..  */
 
-//					Debugprintf("Test");
+/*					Debugprintf("Test"); */
 				}
 				}
 			} while (count > 0);
@@ -375,7 +375,7 @@ int DoReceivedData(int Stream)
 		}
 	}
 
-	// Socket not found
+	/* Socket not found */
 
 	return 0;
 
@@ -402,7 +402,7 @@ VOID SendWelcomeMsg(int Stream, ChatCIRCUIT * conn, struct UserInfo * user)
 {
 		if (!rtloginu (conn, TRUE))
 		{
-			// Already connected - close
+			/* Already connected - close */
 			
 			ChatFlush(conn);
 			Sleep(1000);
@@ -445,7 +445,7 @@ VOID ProcessLine(ChatCIRCUIT * conn, struct UserInfo * user, char* Buffer, int l
 		return;
 	}
 
-	//	Send if possible
+	/*	Send if possible */
 
 	ChatFlush(conn);
 }
@@ -462,7 +462,7 @@ VOID SendUnbuffered(int stream, char * msg, int len)
 
 void TrytoSend()
 {
-	// call Flush on any connected streams with queued data
+	/* call Flush on any connected streams with queued data */
 
 	ChatCIRCUIT * conn;
 	struct ConsoleInfo * Cons;
@@ -629,7 +629,7 @@ VOID SaveChatConfigFile(char * File)
 {
 	config_setting_t *root, *group;
 
-	//	Get rid of old config before saving
+	/*	Get rid of old config before saving */
 	
 	config_init(&cfg);
 
@@ -697,9 +697,9 @@ VOID SaveChatConfig(HWND hDlg)
 
 	GetMultiLineDialog(hDlg, IDC_ChatNodes);
 	
-	// Show dialog box now - gives time for links to close
+	/* Show dialog box now - gives time for links to close */
 	
-	// reinitialise other nodes list. rtlink messes with the string so pass copy
+	/* reinitialise other nodes list. rtlink messes with the string so pass copy */
 
 	node_close();
 
@@ -712,11 +712,11 @@ VOID SaveChatConfig(HWND hDlg)
 
 	Sleep(2);
 			
-	// Dont call removelinks - they may still be attached to a circuit. Just clear header
+	/* Dont call removelinks - they may still be attached to a circuit. Just clear header */
 
 	link_hd = NULL;
 
-	// Set up other nodes list. rtlink messes with the string so pass copy
+	/* Set up other nodes list. rtlink messes with the string so pass copy */
 	
 	Save = ptr1 = strtok_s(_strdup(OtherNodesList), "\r\n", &Context);
 
@@ -727,29 +727,29 @@ VOID SaveChatConfig(HWND hDlg)
 	}
 
 
-//	if (strchr(ptr1, '|') == 0)		// No script
+/*	if (strchr(ptr1, '|') == 0)		// No script */
 
-//	while (*ptr1)
-//	{
-//		if (*ptr1 == '\r')
-//		{
-//			while (*(ptr1+2) == '\r')			// Blank line
-//				ptr1+=2;
+/*	while (*ptr1) */
+/*	{ */
+/*		if (*ptr1 == '\r') */
+/*		{ */
+/*			while (*(ptr1+2) == '\r')			// Blank line */
+/*				ptr1+=2; */
 
-//			*++ptr1 = 32;
-//		}
-//		*ptr2++=*ptr1++;
-//	}
+/*			*++ptr1 = 32; */
+/*		} */
+/*		*ptr2++=*ptr1++; */
+/*	} */
 
-//	*ptr2++ = 0;
+/*	*ptr2++ = 0; */
 
 
 	free(Save);
 
-	if (user_hd)			// Any Users?
-		makelinks();		// Bring up links
+	if (user_hd)			/* Any Users? */
+		makelinks();		/* Bring up links */
 
-	SaveChatConfigFile(ChatConfigName);				// Commit to file
+	SaveChatConfigFile(ChatConfigName);				/* Commit to file */
 	GetChatConfig(ChatConfigName);
 
 }

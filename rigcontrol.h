@@ -18,17 +18,17 @@ struct TimeScan
 
 struct ScanEntry
 {
-	//	Holds info for one frequency change. May Need to set Feeq, Mode, Repeater Split, Pactor/Winmor Bandwidth
+	/*	Holds info for one frequency change. May Need to set Feeq, Mode, Repeater Split, Pactor/Winmor Bandwidth */
 
-	double Freq;		// In case needed to report to WL2K
-	int Dwell;			// Dwell Time on this freq
-	char Bandwidth;		// W/N For WINMOR
-	char RPacketMode;	// Robust or Normal for Tracker
-	char HFPacketMode;	// Robust or Normal for Tracker
-	char PMaxLevel;		// Pactor Max Level
-	char PMinLevel;		// Pactor Max Level
+	double Freq;		/* In case needed to report to WL2K */
+	int Dwell;			/* Dwell Time on this freq */
+	char Bandwidth;		/* W/N For WINMOR */
+	char RPacketMode;	/* Robust or Normal for Tracker */
+	char HFPacketMode;	/* Robust or Normal for Tracker */
+	char PMaxLevel;		/* Pactor Max Level */
+	char PMinLevel;		/* Pactor Max Level */
 	char Antenna;
-//	char Supress;		// Dont report this one to WL2K
+/*	char Supress;		// Dont report this one to WL2K */
 	char ARDOPMode[6];
 	char VARAMode;
 	char * Cmd1;
@@ -41,9 +41,9 @@ struct ScanEntry
 	int Cmd4Len;
 	char * PollCmd;
 	int PollCmdLen;
-	char APPL[13];		// Autoconnect APPL for this Freq
-	char APPLCALL[10];	// Callsign for autoconnect application
-	char Cmd1Msg[100];	// Space for commands
+	char APPL[13];		/* Autoconnect APPL for this Freq */
+	char APPLCALL[10];	/* Callsign for autoconnect application */
+	char Cmd1Msg[100];	/* Space for commands */
 	char Cmd2Msg[16];
 	char Cmd3Msg[16];
 	char Cmd4Msg[16];
@@ -64,45 +64,45 @@ struct TNCINFO;
 
 struct RIGINFO
 {
-//	struct TRANSPORTENTRY * AttachedSession;
+/*	struct TRANSPORTENTRY * AttachedSession; */
 
-	void * BPQtoRADIO_Q;			// Frames from switch for radio
+	void * BPQtoRADIO_Q;			/* Frames from switch for radio */
 
-	UINT BPQPort;				// Port this radio is attached to. Bit Map, as may be more than one port controlling radio
-//	int PortNum;				// Number of port that defined this rig
-	int Interlock;				// Interlock group for this Radio
-	int IC735;					// Old ICOM with shorter freq message
-	int ICF8101;				// ICOM Land Mobile IC-F8101
-	char * CM108Device;			// Device to open for CM108 GPIO PTT
+	UINT BPQPort;				/* Port this radio is attached to. Bit Map, as may be more than one port controlling radio */
+/*	int PortNum;				// Number of port that defined this rig */
+	int Interlock;				/* Interlock group for this Radio */
+	int IC735;					/* Old ICOM with shorter freq message */
+	int ICF8101;				/* ICOM Land Mobile IC-F8101 */
+	char * CM108Device;			/* Device to open for CM108 GPIO PTT */
 
-	struct _EXTPORTDATA * PortRecord[32]; // BPQ32 port record(s) for this rig (null terminated list)
+	struct _EXTPORTDATA * PortRecord[32]; /* BPQ32 port record(s) for this rig (null terminated list) */
 
 	UCHAR RigAddr;
-	uint64_t ScanStopped;			// Scanning enabled if zero. Bits used for interlocked scanning (eg winmor/pactor on same port
+	uint64_t ScanStopped;			/* Scanning enabled if zero. Bits used for interlocked scanning (eg winmor/pactor on same port */
 	int ScanCounter;
-	int PollCounter;			// Don't poll too often;
-	int ScanFreq;				// Scan Rate
+	int PollCounter;			/* Don't poll too often; */
+	int ScanFreq;				/* Scan Rate */
 
-	BOOL OKtoChange;			// Can Change
-	BOOL WaitingForPermission;	//
+	BOOL OKtoChange;			/* Can Change */
+	BOOL WaitingForPermission;	/* */
 
-	BOOL RIGOK;					// RIG is reponding
+	BOOL RIGOK;					/* RIG is reponding */
 
-	int Session;				// BPQ L4 Record Number
+	int Session;				/* BPQ L4 Record Number */
 	int	DebugDelay;	
 
 	char RigName[10];
 
-	struct TimeScan ** TimeBands;	// List of TimeBands/Frequencies
+	struct TimeScan ** TimeBands;	/* List of TimeBands/Frequencies */
 	int NumberofBands;
 
-	char * FreqText;			// Frequency list in text format
+	char * FreqText;			/* Frequency list in text format */
 
-	// Frequency list is a block of ScanEntry structs, each holding Set Freq/Mode commands in link format, null terminated
+	/* Frequency list is a block of ScanEntry structs, each holding Set Freq/Mode commands in link format, null terminated */
 
 	struct ScanEntry ** FreqPtr;
 
-	int PTTMode;				// PTT Control Flags.
+	int PTTMode;				/* PTT Control Flags. */
 
 	#define PTTRTS		1
 	#define PTTDTR		2
@@ -111,13 +111,13 @@ struct RIGINFO
 	#define PTTHAMLIB	16
 	#define PTTFLRIG	32
 
-	int PTTTimer;				// PTT Timer watchdog (limits PTT ON to PTT OFF time
+	int PTTTimer;				/* PTT Timer watchdog (limits PTT ON to PTT OFF time */
 
 	#define PTTLimit 200
 
-	int repeatPTTOFFTimer;		// On ICOM radios send a second PTT OFF command after 30 secs
+	int repeatPTTOFFTimer;		/* On ICOM radios send a second PTT OFF command after 30 secs */
 
-	struct RIGPORTINFO * PORT;		// For PTT Routines
+	struct RIGPORTINFO * PORT;		/* For PTT Routines */
 
 	HWND hLabel;
 	HWND hCAT;
@@ -136,9 +136,9 @@ struct RIGINFO
 	char WEB_PTT;
 
 	double RigFreq;
-	char Valchar[15];			// Freq as char string
-	char CurrentBandWidth;		// bandwidth as character
-	int Passband;				// Filter bandwidth
+	char Valchar[15];			/* Freq as char string */
+	char CurrentBandWidth;		/* bandwidth as character */
+	int Passband;				/* Filter bandwidth */
 	char ModeString[16];
 
 	char PTTOn[60];
@@ -153,33 +153,33 @@ struct RIGINFO
 	HANDLE PTTCATHandles[4];
 	struct TNCINFO * PTTCATTNC[4];
 
-	int RealMux[4];		// BPQ Virtual or Real
+	int RealMux[4];		/* BPQ Virtual or Real */
 
-	int TSMenu;			// Menu number for ACC?USB switching on TS590S/SG
+	int TSMenu;			/* Menu number for ACC?USB switching on TS590S/SG */
 	BOOL RIG_DEBUG;
 
-	int HAMLIBPORT;		// Port Number for HAMLIB (rigctld) Emulator
+	int HAMLIBPORT;		/* Port Number for HAMLIB (rigctld) Emulator */
 
 	SOCKET ListenSocket;
 
 	struct HAMLIBSOCK * Sockets;
 
-	long long txOffset;		// Used primarily with transverters
+	long long txOffset;		/* Used primarily with transverters */
 	long long rxOffset;
-	long long pttOffset;	// Used to set tx freq to corresponding rx freq (for split freq)
-	long long txFreq;		// Used in preference to Rx Freq + pttOffset if set
-	int rxError;			// RX Frequency Error
-	int txError;			// TX Calibration Error
+	long long pttOffset;	/* Used to set tx freq to corresponding rx freq (for split freq) */
+	long long txFreq;		/* Used in preference to Rx Freq + pttOffset if set */
+	int rxError;			/* RX Frequency Error */
+	int txError;			/* TX Calibration Error */
 	int PTTSetsFreq;
 	int defaultFreq;
 
 	char * reportFreqs;
 
-	long long lastSetFreq;	// Last freq we set (saves recalulating ptt string if not changed
+	long long lastSetFreq;	/* Last freq we set (saves recalulating ptt string if not changed */
 
 };
 
-// PortType Equates
+/* PortType Equates */
 
 #define ICOM 1
 #define YAESU 2
@@ -195,12 +195,12 @@ struct RIGINFO
 #define DUMMY 12
 #define FT990 13
 #define HAMLIB 14
-#define FT991A 15			// 991A is a varient of FT2000 but easier to have own type
+#define FT991A 15			/* 991A is a varient of FT2000 but easier to have own type */
 #define RTLUDP 16
 #define FLRIG 17
 #define SDRRADIO 18
 
-// Yease seem to have lots of variants of the same model
+/* Yease seem to have lots of variants of the same model */
 
 #define FT1000D	1
 #define FT1000MP 2 
@@ -208,40 +208,40 @@ struct RIGINFO
 
 struct RIGPORTINFO
 {
-	int PortType;				// ICOM, Yaesu, Etc
-	int YaesuVariant;			// Yaesu seems to have lots of incompatible subtypes
+	int PortType;				/* ICOM, Yaesu, Etc */
+	int YaesuVariant;			/* Yaesu seems to have lots of incompatible subtypes */
 	char IOBASE[80];
-	char PTTIOBASE[80];			// Port for Hardware PTT - may be same as control port.
+	char PTTIOBASE[80];			/* Port for Hardware PTT - may be same as control port. */
 	int SPEED;
 	char * HIDDevice; 
-	struct RIGINFO Rigs[10];	// Rigs off a port
-	char * InitPtr;				// Next Command
-	int CmdSent;				// Last Command sent
-	int CmdStream;				// Stream last command was issued o
-	int	ConfiguredRigs;			// Radios on this interface
-	int CurrentRig;				// Radio last accessed.
+	struct RIGINFO Rigs[10];	/* Rigs off a port */
+	char * InitPtr;				/* Next Command */
+	int CmdSent;				/* Last Command sent */
+	int CmdStream;				/* Stream last command was issued o */
+	int	ConfiguredRigs;			/* Radios on this interface */
+	int CurrentRig;				/* Radio last accessed. */
 
-	int Timeout;				// Timeout response counter
+	int Timeout;				/* Timeout response counter */
 	int Retries;
-	BOOL PORTOK;				// PORT is reponding
+	BOOL PORTOK;				/* PORT is reponding */
 
-	int Closed;					// CLOSE command received
+	int Closed;					/* CLOSE command received */
 
-	HANDLE hDevice;					// COM device Handle
+	HANDLE hDevice;					/* COM device Handle */
 	int ReopenDelay;
-	struct TNCINFO * PTC;			// Set to TNC record address if using an SCS PTC Radio Port
-	SOCKET remoteSock;				// Socket for use with WINMORCONROL
-	struct sockaddr remoteDest;		// Dest for above
-	HANDLE hPTTDevice;				// May use a different port for PTT
-	UCHAR TXBuffer[500];			// Last message sent - saved for Retry
-	int TXLen;						// Len of last sent
-	UCHAR RXBuffer[500];			// Message being received - may not arrive all at once
-	int RXLen;						// Data in RXBUffer
-	BOOL AutoPoll;					// set if last command was a Timer poll 
-	// Local ScanStruct for Interactive Commands
-	struct ScanEntry * FreqPtr;		// Block we are currently sending.
+	struct TNCINFO * PTC;			/* Set to TNC record address if using an SCS PTC Radio Port */
+	SOCKET remoteSock;				/* Socket for use with WINMORCONROL */
+	struct sockaddr remoteDest;		/* Dest for above */
+	HANDLE hPTTDevice;				/* May use a different port for PTT */
+	UCHAR TXBuffer[500];			/* Last message sent - saved for Retry */
+	int TXLen;						/* Len of last sent */
+	UCHAR RXBuffer[500];			/* Message being received - may not arrive all at once */
+	int RXLen;						/* Data in RXBUffer */
+	BOOL AutoPoll;					/* set if last command was a Timer poll  */
+	/* Local ScanStruct for Interactive Commands */
+	struct ScanEntry * FreqPtr;		/* Block we are currently sending. */
 	struct ScanEntry ScanEntry;	
-	int CONNECTED;					// for HAMLIB
+	int CONNECTED;					/* for HAMLIB */
 	int CONNECTING;
 	int Alerted;
 };

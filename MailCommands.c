@@ -104,7 +104,7 @@ VOID DoEditUserCmd(CIRCUIT * conn, struct UserInfo * user, char * Arg1, char * C
 	if (Arg1 == NULL)
 		goto UDisplay;
 					
-	// A set of flags to change +Flag or -Flag
+	/* A set of flags to change +Flag or -Flag */
 		
 	while(Arg1 && strlen(Arg1) > 2)
 	{
@@ -134,7 +134,7 @@ VOID DoEditUserCmd(CIRCUIT * conn, struct UserInfo * user, char * Arg1, char * C
 
 	SaveUserDatabase();
 
-	// Drop through to display
+	/* Drop through to display */
 UDisplay:
 
 	if (EUser->flags & F_Excluded)
@@ -227,7 +227,7 @@ VOID DoPollRMSCmd(CIRCUIT * conn, struct UserInfo * user, char * Arg1, char * Co
 Loop:
 	if (Arg1)
 	{
-		// Update	
+		/* Update	 */
 		if (_stricmp(Arg1, "Enable") == 0)
 		{
 			RMSUser->flags |= F_POLLRMS;
@@ -242,7 +242,7 @@ Loop:
 		}
 		else if (strlen(Arg1) > 2)
 		{
-			// Callsign - if SYSOP, following commands apply to selected user
+			/* Callsign - if SYSOP, following commands apply to selected user */
 
 			if (conn->sysop == 0)
 			{
@@ -270,7 +270,7 @@ Loop:
 			goto Display;
 		}
 	
-		// A list of SSID's to poll
+		/* A list of SSID's to poll */
 
 		RMSUser->RMSSSIDBits = 0;
 
@@ -284,7 +284,7 @@ Loop:
 		}
 	}
 
-	// Drop through to display
+	/* Drop through to display */
 
 Display:
 	strcpy(RMSLine, "Polling for calls");
@@ -451,7 +451,7 @@ VOID DoExportCmd(CIRCUIT * conn, struct UserInfo * user, char * Arg1, char * Con
 		return;
 	}
 
-//	SetFilePointer(Handle, 0, 0, FILE_END);
+/*	SetFilePointer(Handle, 0, 0, FILE_END); */
 
 	ForwardMessagetoFile(Msg, Handle);
 
@@ -537,7 +537,7 @@ VOID DoFwdCmd(CIRCUIT * conn, struct UserInfo * user, char * Arg1, char * Contex
 
 		if (Context && Context[0])
 		{
-			// a bbs name - list all messages queued to it
+			/* a bbs name - list all messages queued to it */
 
 			strlop(Context, '\r');
 
@@ -598,14 +598,14 @@ VOID DoFwdCmd(CIRCUIT * conn, struct UserInfo * user, char * Arg1, char * Contex
 
 		if (Context && Context[0])
 		{
-			// Temp Connect Script to use
+			/* Temp Connect Script to use */
 
 			char * ptr1;
 			char * MultiString = NULL;
 			const char * ptr;
 			int Count = 0;
 
-			Value = zalloc(sizeof(void *));				// always NULL entry on end even if no values
+			Value = zalloc(sizeof(void *));				/* always NULL entry on end even if no values */
 			Value[0] = NULL;
 
 			ptr = Context;

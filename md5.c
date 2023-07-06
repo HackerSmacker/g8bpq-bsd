@@ -47,7 +47,7 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
    need to worry about whether the system supplies an MD5 library, as
    this file is only about 3k of object code.  */
 
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
+#define WIN32_LEAN_AND_MEAN		/* Exclude rarely-used stuff from Windows headers */
 
 #define _CRT_SECURE_NO_DEPRECATE
 

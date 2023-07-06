@@ -17,9 +17,9 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-// Mail and Chat Server for BPQ32 Packet Switch
-//
-// White Pages Database Support Routines
+/* Mail and Chat Server for BPQ32 Packet Switch */
+/* */
+/* White Pages Database Support Routines */
 
 #include "bpqmail.h"
 
@@ -28,11 +28,11 @@ VOID ReleaseSock(SOCKET sock);
 
 struct NNTPRec * FirstNNTPRec = NULL;
 
-//int NumberofNNTPRecs=0;
+/*int NumberofNNTPRecs=0; */
 
 SOCKET nntpsock;
 
-extern SocketConn * Sockets;		// Chain of active sockets
+extern SocketConn * Sockets;		/* Chain of active sockets */
 
 int NNTPInPort = 0;
 
@@ -74,27 +74,27 @@ VOID BuildNNTPList(struct MsgInfo * Msg)
 
 	if (REC == NULL)
 	{
-		// New Group. Allocate a record, and put at correct place in chain (alpha order)
+		/* New Group. Allocate a record, and put at correct place in chain (alpha order) */
 
 		GetSemaphore(&AllocSemaphore, 0);
 
 		REC = zalloc(sizeof (struct NNTPRec));
 		OLDREC = FirstNNTPRec;
 
-		if (OLDREC == 0)					// First record
+		if (OLDREC == 0)					/* First record */
 		{
 			FirstNNTPRec = REC;
 			goto DoneIt;
 		}
 		else
 		{
-			// Follow chain till we find one with a later name
+			/* Follow chain till we find one with a later name */
 
 			while(OLDREC)
 			{
 				if (strcmp(OLDREC->NewsGroup, FullGroup) > 0)
 				{
-					// chain in here
+					/* chain in here */
 
 					REC->Next = OLDREC;
 					if (PREVREC)
@@ -111,7 +111,7 @@ VOID BuildNNTPList(struct MsgInfo * Msg)
 				}
 			}
 
-			// Run off end - chain to PREVREC
+			/* Run off end - chain to PREVREC */
 
 			PREVREC->Next = REC;
 		}
@@ -134,7 +134,7 @@ void RebuildNNTPList()
 	struct MsgInfo * Msg;
 	int i;
 
-	// Free old list
+	/* Free old list */
 
 	while (NNTPREC)
 	{
@@ -173,7 +173,7 @@ nextline:
 			return Path;
 
 		if (*++ptr1 == ':')
-			ptr1++;			// Format 2
+			ptr1++;			/* Format 2 */
 
 		*(ptr5) = 0;
 		
@@ -198,8 +198,8 @@ char * FormatNNTPDateAndTime(time_t Datim)
 	struct tm *tm;
 	static char Date[30];
 
-	// Fri, 19 Nov 82 16:14:55 GMT
-	// A#asctime gives Wed Jan 02 02:03:55 1980\n\0.
+	/* Fri, 19 Nov 82 16:14:55 GMT */
+	/* A#asctime gives Wed Jan 02 02:03:55 1980\n\0. */
 
 	tm = gmtime(&Datim);
 
@@ -225,11 +225,11 @@ int CreateNNTPMessage(char * From, char * To, char * MsgTitle, time_t Date, char
 	BIDRec * BIDRec;
 	char * Via;
 
-	// Allocate a message Record slot
+	/* Allocate a message Record slot */
 
 	Msg = AllocateMsgRecord();
 		
-	// Set number here so they remain in sequence
+	/* Set number here so they remain in sequence */
 		
 	Msg->number = ++LatestMsg;
 	MsgnotoMsg[Msg->number] = Msg;
@@ -262,14 +262,14 @@ int CreateNNTPMessage(char * From, char * To, char * MsgTitle, time_t Date, char
 	strcpy(Msg->title, MsgTitle);
 	strcpy(Msg->via, Via);
 
-	// Set up forwarding bitmap
+	/* Set up forwarding bitmap */
 
 	MatchMessagetoBBSList(Msg, 0);
 
 	if (memcmp(Msg->fbbs, zeros, NBMASK) != 0)
-		Msg->status = '$';				// Has forwarding
+		Msg->status = '$';				/* Has forwarding */
 
-	BuildNNTPList(Msg);				// Build NNTP Groups list
+	BuildNNTPList(Msg);				/* Build NNTP Groups list */
 
 	return CreateSMTPMessageFile(MsgBody, Msg);
 		
@@ -290,13 +290,13 @@ VOID ProcessNNTPServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 	{
 		if(memcmp(Buffer, ".\r\n", 3) == 0)
 		{
-			// File Message
+			/* File Message */
 
 			char * ptr1, * ptr2;
 			int linelen, MsgLen;
 			char MsgFrom[62], MsgTo[62], Msgtitle[62];
 
-			// Scan headers for From: To: and Subject: Line (Headers end at blank line)
+			/* Scan headers for From: To: and Subject: Line (Headers end at blank line) */
 
 			ptr1 = sockptr->MailBuffer;
 		Loop:
@@ -310,9 +310,9 @@ VOID ProcessNNTPServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 
 			linelen = (int)(ptr2 - ptr1);
 
-			// From: "John Wiseman" <john.wiseman@ntlworld.com>
-			// To: <G8BPQ@g8bpq.org.uk>
-			//<To: <gm8bpq+g8bpq@googlemail.com>
+			/* From: "John Wiseman" <john.wiseman@ntlworld.com> */
+			/* To: <G8BPQ@g8bpq.org.uk> */
+			/*<To: <gm8bpq+g8bpq@googlemail.com> */
 
 
 			if (_memicmp(ptr1, "From:", 5) == 0)
@@ -351,14 +351,14 @@ VOID ProcessNNTPServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 
 				memset(&rtime, 0, sizeof(struct tm));
 
-				// Date: Tue, 9 Jun 2009 20:54:55 +0100
+				/* Date: Tue, 9 Jun 2009 20:54:55 +0100 */
 
-				ptr1 = strtok_s(&ptr1[5], seps, &Context);	// Skip Day
-				ptr1 = strtok_s(NULL, seps, &Context);		// Day
+				ptr1 = strtok_s(&ptr1[5], seps, &Context);	/* Skip Day */
+				ptr1 = strtok_s(NULL, seps, &Context);		/* Day */
 
 				rtime.tm_mday = atoi(ptr1);
 
-				ptr1 = strtok_s(NULL, seps, &Context);		// Month
+				ptr1 = strtok_s(NULL, seps, &Context);		/* Month */
 
 				for (i=0; i < 12; i++)
 				{
@@ -397,9 +397,9 @@ VOID ProcessNNTPServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 				}
 			}
 
-			if (linelen)			// Not Null line
+			if (linelen)			/* Not Null line */
 			{
-				ptr1 = ptr2 + 2;		// Skip crlf
+				ptr1 = ptr2 + 2;		/* Skip crlf */
 				goto Loop;
 			}
 
@@ -524,7 +524,7 @@ VOID ProcessNNTPServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 		struct MsgInfo * Msg;
 		int MsgNo ;
 
-		// Either currently selected, or a param follows
+		/* Either currently selected, or a param follows */
 
 		if (REC == NULL && Buffer[10] == 0)
 		{
@@ -592,7 +592,7 @@ VOID ProcessNNTPServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 		return;
 	}
 
-	//NEWGROUPS YYMMDD HHMMSS [GMT] [<distributions>]
+	/*NEWGROUPS YYMMDD HHMMSS [GMT] [<distributions>] */
 	
 	if(_memicmp(Buffer, "NEWGROUPS", 9) == 0)
 	{
@@ -805,7 +805,7 @@ VOID ProcessNNTPServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 			return;
 		}
 
-		// XHDR subject nnnn-nnnn
+		/* XHDR subject nnnn-nnnn */
 
 		fields = sscanf(&Buffer[5], "%s %d-%d", &Header[0], &MsgStart, &MsgEnd);
 
@@ -908,7 +908,7 @@ VOID ProcessNNTPServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 				sprintf(FullGroup, "%s.%s", Msg->to, Msg->via );
 				if (_stricmp(FullGroup, REC->NewsGroup) == 0)
 				{
-					 // subject, author, date, message-id, references, byte count, and line count. 
+					 /* subject, author, date, message-id, references, byte count, and line count.  */
 					sockprintf(sockptr, "%d\t%s\t%s\t%s\t%s\t%s\t%d\t%d",
 						MsgNo, Msg->title, Msg->from, FormatNNTPDateAndTime((time_t)Msg->datecreated), Msg->bid,
 						"", Msg->length, Msg->length);
@@ -976,9 +976,9 @@ VOID ProcessNNTPServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 
 	if(memcmp(Buffer, "DATE", 4) == 0)
 	{
-		//This command returns a one-line response code of 111 followed by the
-		//GMT date and time on the server in the form YYYYMMDDhhmmss.
-	    //  111 YYYYMMDDhhmmss
+		/*This command returns a one-line response code of 111 followed by the */
+		/*GMT date and time on the server in the form YYYYMMDDhhmmss. */
+	    /*  111 YYYYMMDDhhmmss */
 
 		struct tm *tm;
 		char Date[32];
@@ -1013,9 +1013,9 @@ int NNTP_Read(SocketConn * sockptr, SOCKET sock)
 	char * ptr, * ptr2;
 	char Buffer[2000];
 
-	// May have several messages per packet, or message split over packets
+	/* May have several messages per packet, or message split over packets */
 
-	if (sockptr->InputLen > 1000)	// Shouldnt have lines longer  than this in text mode
+	if (sockptr->InputLen > 1000)	/* Shouldnt have lines longer  than this in text mode */
 	{
 		sockptr->InputLen=0;
 	}
@@ -1029,7 +1029,7 @@ int NNTP_Read(SocketConn * sockptr, SOCKET sock)
 		closesocket(sock);
 		ReleaseSock(sock);
 
-		return 0;					// Does this mean closed?
+		return 0;					/* Does this mean closed? */
 	}
 
 	sockptr->InputLen += InputLen;
@@ -1038,21 +1038,21 @@ loop:
 	
 	ptr = memchr(sockptr->TCPBuffer, '\n', sockptr->InputLen);
 
-	if (ptr)	//  CR in buffer
+	if (ptr)	/*  CR in buffer */
 	{
 		ptr2 = &sockptr->TCPBuffer[sockptr->InputLen];
-		ptr++;				// Assume LF Follows CR
+		ptr++;				/* Assume LF Follows CR */
 
 		if (ptr == ptr2)
 		{
-			// Usual Case - single meg in buffer
+			/* Usual Case - single meg in buffer */
 	
 			ProcessNNTPServerMessage(sockptr, sockptr->TCPBuffer, sockptr->InputLen);
 			sockptr->InputLen=0;	
 		}
 		else
 		{
-			// buffer contains more that 1 message
+			/* buffer contains more that 1 message */
 
 			MsgLen = sockptr->InputLen - (int)(ptr2-ptr);
 
@@ -1082,7 +1082,7 @@ int NNTP_Accept(SOCKET SocketId)
 
 	addrlen=sizeof(struct sockaddr);
 
-		//   Allocate a Socket entry
+		/*   Allocate a Socket entry */
 
 	sockptr=zalloc(sizeof(SocketConn)+100);
 
@@ -1095,7 +1095,7 @@ int NNTP_Accept(SOCKET SocketId)
 	{
 		Logprintf(LOG_TCP, NULL, '|', "NNTP accept() failed Error %d", WSAGetLastError());
 
-		// get rid of socket record
+		/* get rid of socket record */
 
 		Sockets = sockptr->Next;
 		free(sockptr);
@@ -1179,7 +1179,7 @@ int NNTP_Data(int sock, int error, int eventcode)
 */
 VOID ReleaseNNTPSock(SOCKET sock)
 {
-	// remove and free the socket record
+	/* remove and free the socket record */
 
 	SocketConn * sockptr, * lastptr;
 
@@ -1219,7 +1219,7 @@ VOID SendFromQueue(SocketConn * sockptr)
 
 	if (bytessent == bytestosend)
 	{
-		//	All Sent
+		/*	All Sent */
 
 		free(sockptr->SendBuffer);
 		sockptr->SendBuffer = NULL;

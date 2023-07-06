@@ -1,6 +1,6 @@
-//
-// Prototypes for BPQ32 Node Functions
-//
+/* */
+/* Prototypes for BPQ32 Node Functions */
+/* */
 
 #define DllImport
 
@@ -28,7 +28,7 @@ int GetListeningPortsPID(int Port);
 
 void * InitializeExtDriver(PEXTPORTDATA PORTVEC);
 
-VOID PutLengthinBuffer(PDATAMESSAGE buff, USHORT datalen);			// Needed for arm5 portability
+VOID PutLengthinBuffer(PDATAMESSAGE buff, USHORT datalen);			/* Needed for arm5 portability */
 int GetLengthfromBuffer(PDATAMESSAGE buff);	
 int IntDecodeFrame(MESSAGE * msg, char * buffer, time_t Stamp, uint64_t Mask, BOOL APRS, BOOL MCTL);
 int IntSetTraceOptionsEx(uint64_t mask, int mtxparam, int mcomparam, int monUIOnly);
@@ -127,7 +127,7 @@ VOID CLEAROUTLINK(struct _LINKTABLE * LINK);
 VOID TellINP3LinkGone(struct ROUTE * Route);
 VOID CLEARACTIVEROUTE(struct ROUTE * ROUTE, int Reason);
 
-// Reason Equates
+/* Reason Equates */
 
 #define NORMALCLOSE 0
 #define RETRIEDOUT 1
@@ -181,10 +181,10 @@ int Convert1252toUTF8(unsigned char * MsgPtr, int len, unsigned char * UTF);
 int TrytoGuessCode(unsigned char * Char, int Len);
 
 
-#define CMD_TO_APPL	1	// PASS COMMAND TO APPLICATION
-#define MSG_TO_USER	2	// SEND 'CONNECTED' TO USER
-#define MSG_TO_APPL	4	//	SEND 'CONECTED' TO APPL
-#define CHECK_FOR_ESC 8	// Look for ^d (^D) to disconnect session)
+#define CMD_TO_APPL	1	/* PASS COMMAND TO APPLICATION */
+#define MSG_TO_USER	2	/* SEND 'CONNECTED' TO USER */
+#define MSG_TO_APPL	4	/*	SEND 'CONECTED' TO APPL */
+#define CHECK_FOR_ESC 8	/* Look for ^d (^D) to disconnect session) */
 
 #define	UI	3
 #define	SABM 0x2F
@@ -196,7 +196,7 @@ int TrytoGuessCode(unsigned char * Char, int Len);
 #define	RNR	5
 #define	REJ	9
 
-// V2.2 Types
+/* V2.2 Types */
 
 #define	SREJ 0x0D
 #define SABME 0x6F
@@ -205,9 +205,9 @@ int TrytoGuessCode(unsigned char * Char, int Len);
 
 #define SUPPORT2point2 1
 
-// XID Optional Functions
+/* XID Optional Functions */
 
-#define OPMustHave 0x02A080		// Sync TEST 16 bit FCS Extended Address
+#define OPMustHave 0x02A080		/* Sync TEST 16 bit FCS Extended Address */
 #define OPSREJ 4
 #define OPSREJMult 0x200000
 #define OPREJ 2
@@ -237,10 +237,10 @@ extern struct ROUTE * NEIGHBOURS;
 extern int  ROUTE_LEN;
 extern int  MAXNEIGHBOURS;
 
-extern struct DEST_LIST * DESTS;				// NODE LIST
+extern struct DEST_LIST * DESTS;				/* NODE LIST */
 extern struct DEST_LIST * ENDDESTLIST;
 extern int  DEST_LIST_LEN;
-extern int  MAXDESTS;			// MAX NODES IN SYSTEM
+extern int  MAXDESTS;			/* MAX NODES IN SYSTEM */
 
 extern struct _LINKTABLE * LINKS;
 extern int	LINK_TABLE_LEN; 
@@ -248,16 +248,16 @@ extern int	MAXLINKS;
 
 
 
-extern char	MYCALL[]; //		DB	7 DUP (0)	; NODE CALLSIGN (BIT SHIFTED)
-extern char	MYALIASTEXT[]; //	{"      "	; NODE ALIAS (KEEP TOGETHER)
+extern char	MYCALL[]; /*		DB	7 DUP (0)	; NODE CALLSIGN (BIT SHIFTED) */
+extern char	MYALIASTEXT[]; /*	{"      "	; NODE ALIAS (KEEP TOGETHER) */
 
 extern UCHAR	MYCALLWITHALIAS[13];
 extern APPLCALLS APPLCALLTABLE[NumberofAppls];
 
-extern UCHAR MYNODECALL[];				// NODE CALLSIGN (ASCII)
-extern UCHAR MYNETROMCALL[];			// NETROM CALLSIGN (ASCII)
+extern UCHAR MYNODECALL[];				/* NODE CALLSIGN (ASCII) */
+extern UCHAR MYNETROMCALL[];			/* NETROM CALLSIGN (ASCII) */
 
-extern UCHAR NETROMCALL[];				// NETORM CALL (AX25)
+extern UCHAR NETROMCALL[];				/* NETORM CALL (AX25) */
 
 extern VOID * FREE_Q;
 
@@ -265,37 +265,37 @@ extern struct PORTCONTROL * PORTTABLE;
 extern int	NUMBEROFPORTS;
 
 
-extern int OBSINIT;				// INITIAL OBSOLESCENCE VALUE
-extern int OBSMIN;					// MINIMUM TO BROADCAST
-extern int L3INTERVAL;			// "NODES" INTERVAL IN MINS
-extern int IDINTERVAL;			// "ID" BROADCAST INTERVAL
-extern int BTINTERVAL;			// "BT" BROADCAST INTERVAL
-extern int MINQUAL;				// MIN QUALITY FOR AUTOUPDATES
-extern int HIDENODES;				// N * COMMAND SWITCH
-extern int BBSQUAL;				// QUALITY OF BBS RELATIVE TO NODE
+extern int OBSINIT;				/* INITIAL OBSOLESCENCE VALUE */
+extern int OBSMIN;					/* MINIMUM TO BROADCAST */
+extern int L3INTERVAL;			/* "NODES" INTERVAL IN MINS */
+extern int IDINTERVAL;			/* "ID" BROADCAST INTERVAL */
+extern int BTINTERVAL;			/* "BT" BROADCAST INTERVAL */
+extern int MINQUAL;				/* MIN QUALITY FOR AUTOUPDATES */
+extern int HIDENODES;				/* N * COMMAND SWITCH */
+extern int BBSQUAL;				/* QUALITY OF BBS RELATIVE TO NODE */
 
-extern int NUMBEROFBUFFERS;		// PACKET BUFFERS
-extern int PACLEN;				//MAX PACKET SIZE
+extern int NUMBEROFBUFFERS;		/* PACKET BUFFERS */
+extern int PACLEN;				/*MAX PACKET SIZE */
 
-//	L2 SYSTEM TIMER RUNS AT 3 HZ
+/*	L2 SYSTEM TIMER RUNS AT 3 HZ */
 
-extern int T3;				// LINK VALIDATION TIMER (3 MINS) (+ a bit to reduce RR collisions)
+extern int T3;				/* LINK VALIDATION TIMER (3 MINS) (+ a bit to reduce RR collisions) */
 
-extern int L2KILLTIME;		// IDLE LINK TIMER (16 MINS)	
-extern int L3LIVES;				// MAX L3 HOPS
-extern int L4N2;					// LEVEL 4 RETRY COUNT
-extern int L4LIMIT;			// IDLE SESSION LIMIT - 15 MINS
-extern int L4DELAY;				// L4 DELAYED ACK TIMER
+extern int L2KILLTIME;		/* IDLE LINK TIMER (16 MINS)	 */
+extern int L3LIVES;				/* MAX L3 HOPS */
+extern int L4N2;					/* LEVEL 4 RETRY COUNT */
+extern int L4LIMIT;			/* IDLE SESSION LIMIT - 15 MINS */
+extern int L4DELAY;				/* L4 DELAYED ACK TIMER */
 	
-extern int BBS;					// INCLUDE BBS SUPPORT
-extern int NODE;					// INCLUDE SWITCH SUPPORT
+extern int BBS;					/* INCLUDE BBS SUPPORT */
+extern int NODE;					/* INCLUDE SWITCH SUPPORT */
 
-extern int FULL_CTEXT;				// CTEXT ON ALL CONNECTS IF NZ
+extern int FULL_CTEXT;				/* CTEXT ON ALL CONNECTS IF NZ */
 
 
-// Although externally streams are numbered 1 to 64, internally offsets are 0 - 63
+/* Although externally streams are numbered 1 to 64, internally offsets are 0 - 63 */
 
-extern BPQVECSTRUC DUMMYVEC;					// Needed to force correct order of following
+extern BPQVECSTRUC DUMMYVEC;					/* Needed to force correct order of following */
 
 extern BPQVECSTRUC BPQHOSTVECTOR[BPQHOSTSTREAMS + 5];
 
@@ -310,27 +310,27 @@ extern char * INFOMSG;
 extern char * CTEXTMSG;
 extern int CTEXTLEN;
 
-extern UCHAR MYALIAS[7];				// ALIAS IN AX25 FORM
+extern UCHAR MYALIAS[7];				/* ALIAS IN AX25 FORM */
 extern UCHAR BBSALIAS[7];
 
-extern VOID * TRACE_Q;				// TRANSMITTED FRAMES TO BE TRACED
+extern VOID * TRACE_Q;				/* TRANSMITTED FRAMES TO BE TRACED */
 
-extern char HEADERCHAR;				// CHAR FOR _NODE HEADER MSGS
+extern char HEADERCHAR;				/* CHAR FOR _NODE HEADER MSGS */
 
-extern int AUTOSAVE;				// AUTO SAVE NODES ON EXIT FLAG
-extern int L4APPL;					// Application for BBSCALL/ALIAS connects
-extern int CFLAG;					// C =HOST Command
+extern int AUTOSAVE;				/* AUTO SAVE NODES ON EXIT FLAG */
+extern int L4APPL;					/* Application for BBSCALL/ALIAS connects */
+extern int CFLAG;					/* C =HOST Command */
 
-extern VOID * IDMSG_Q;				// ID/BEACONS WAITING TO BE SENT
+extern VOID * IDMSG_Q;				/* ID/BEACONS WAITING TO BE SENT */
 
 extern struct DATAMESSAGE BTHDDR;
 extern struct _MESSAGE IDHDDR;
 
 extern VOID * IDMSG;
 
-extern int	L3TIMER;					// TIMER FOR 'NODES' MESSAGE
-extern int	IDTIMER;					// TIMER FOR ID MESSAGE
-extern int	BTTIMER;					// TIMER FOR BT MESSAGE
+extern int	L3TIMER;					/* TIMER FOR 'NODES' MESSAGE */
+extern int	IDTIMER;					/* TIMER FOR ID MESSAGE */
+extern int	BTTIMER;					/* TIMER FOR BT MESSAGE */
 
 extern int STATSTIME;
 
@@ -382,7 +382,7 @@ extern UCHAR MUIONLY;
 extern UCHAR MTX;
 extern uint64_t MMASK;
 
-extern UCHAR NODECALL[];			//  NODES in ax.25
+extern UCHAR NODECALL[];			/*  NODES in ax.25 */
 
 extern int L4CONNECTSOUT;
 extern int L4CONNECTSIN;
@@ -394,14 +394,14 @@ extern int L3FRAMES;
 
 extern char * PortConfig[];
 extern struct SEM Semaphore;
-extern UCHAR AuthorisedProgram;			// Local Variable. Set if Program is on secure list
+extern UCHAR AuthorisedProgram;			/* Local Variable. Set if Program is on secure list */
 
 extern int REALTIMETICKS;
 
 extern time_t CurrentSecs;
 extern time_t lastSlowSecs;
 
-// SNMP Variables
+/* SNMP Variables */
 
 extern int InOctets[64];
 extern int OutOctets[64];
@@ -410,12 +410,12 @@ extern BOOL CloseAllNeeded;
 extern int CloseOnError;
 
 extern char * PortConfig[70];
-extern struct TNCINFO * TNCInfo[70];		// Records are Malloc'd
+extern struct TNCINFO * TNCInfo[70];		/* Records are Malloc'd */
 
-#define MaxBPQPortNo 63		// Port 64 reserved for BBS Mon
+#define MaxBPQPortNo 63		/* Port 64 reserved for BBS Mon */
 #define MAXBPQPORTS 63
 
-// IP, APRS use port ocnfig slots above the real port range
+/* IP, APRS use port ocnfig slots above the real port range */
 
 #define IPConfigSlot MaxBPQPortNo + 1
 #define PortMapConfigSlot MaxBPQPortNo + 2
@@ -423,10 +423,10 @@ extern struct TNCINFO * TNCInfo[70];		// Records are Malloc'd
 
 
 extern char * UIUIDigi[MaxBPQPortNo + 1];
-extern char UIUIDEST[MaxBPQPortNo + 1][11];		// Dest for Beacons
-extern UCHAR FN[MaxBPQPortNo + 1][256];			// Filename
-extern int Interval[MaxBPQPortNo + 1];			// Beacon Interval (Mins)
-extern char Message[MaxBPQPortNo + 1][1000];		// Beacon Text
+extern char UIUIDEST[MaxBPQPortNo + 1][11];		/* Dest for Beacons */
+extern UCHAR FN[MaxBPQPortNo + 1][256];			/* Filename */
+extern int Interval[MaxBPQPortNo + 1];			/* Beacon Interval (Mins) */
+extern char Message[MaxBPQPortNo + 1][1000];		/* Beacon Text */
 
-extern int MinCounter[MaxBPQPortNo + 1];			// Interval Countdown
+extern int MinCounter[MaxBPQPortNo + 1];			/* Interval Countdown */
 extern BOOL SendFromFile[MaxBPQPortNo + 1];

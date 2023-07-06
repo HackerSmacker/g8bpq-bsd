@@ -1,4 +1,4 @@
-// Includes code from MiniUPnPc, used subject to the following conditions:
+/* Includes code from MiniUPnPc, used subject to the following conditions: */
 
 /*
 

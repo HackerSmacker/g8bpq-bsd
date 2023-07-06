@@ -1,7 +1,7 @@
-// CmdLineAuth.cpp : Defines the entry point for the console application.
-//
+/* CmdLineAuth.cpp : Defines the entry point for the console application. */
+/* */
 
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
+#define WIN32_LEAN_AND_MEAN		/* Exclude rarely-used stuff from Windows headers */
 #define _CRT_SECURE_NO_DEPRECATE 
 
 #define _USE_32BIT_TIME_T
@@ -16,7 +16,7 @@
 
 VOID CreateOneTimePassword(char * KeyPhrase)
 {
-	// Create a time dependent One Time Password from the KeyPhrase
+	/* Create a time dependent One Time Password from the KeyPhrase */
 
 	time_t NOW = time(NULL);
 	unsigned char Hash[16];
@@ -26,7 +26,7 @@ VOID CreateOneTimePassword(char * KeyPhrase)
 	long long Val;
 	int PassCode;
 
-	NOW = NOW/30;							// Only Change every 30 secs
+	NOW = NOW/30;							/* Only Change every 30 secs */
 
 	sprintf(Key, "%s%x", KeyPhrase, NOW);
 

@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-// Module for writing ADIF compatible log records
+/* Module for writing ADIF compatible log records */
 
 #define WIN32_LEAN_AND_MEAN
 #define _CRT_SECURE_NO_WARNINGS
@@ -104,9 +104,9 @@ VOID CountMessages(ADIF * ADIF)
 {
 	while (ADIF->FBBIndex)
 	{
-		// We have messages
+		/* We have messages */
 
-		if (ADIF->FBBLen[ADIF->FBBIndex - 1])		// don't count rejected messages
+		if (ADIF->FBBLen[ADIF->FBBIndex - 1])		/* don't count rejected messages */
 		{
 			if (ADIF->Dirn == 'S')
 			{
@@ -126,17 +126,17 @@ VOID CountMessages(ADIF * ADIF)
 
 BOOL UpdateADIFRecord(ADIF * ADIF, char * Msg, char Dirn)
 {
-	// Entered each time a text message is received on CMS session
+	/* Entered each time a text message is received on CMS session */
 
-	// To get transfer stats we have to monitor the B2 protocol messages, tracking proposals, accept/reject and completion
+	/* To get transfer stats we have to monitor the B2 protocol messages, tracking proposals, accept/reject and completion */
 
 	size_t Len;
 
-	// Always keep info so we can sent as Winlink Session Record
-	// even if ADIF logging is disabled.
+	/* Always keep info so we can sent as Winlink Session Record */
+	/* even if ADIF logging is disabled. */
 
-//	if (ADIFLogEnabled == FALSE)
-//		return TRUE;
+/*	if (ADIFLogEnabled == FALSE) */
+/*		return TRUE; */
 
 	if (ADIF == NULL)
 		return TRUE;
@@ -144,10 +144,10 @@ BOOL UpdateADIFRecord(ADIF * ADIF, char * Msg, char Dirn)
 	if (ADIF->StartTime == 0)
 	{
 		ADIF->StartTime = time(NULL);
-//		ADIF->Mode = 49;				// Unused value (unforunately 0 = PKT1200)
+/*		ADIF->Mode = 49;				// Unused value (unforunately 0 = PKT1200) */
 	}
 
-	// Try to build complete lines
+	/* Try to build complete lines */
 
 	if (Dirn == 'R')
 	{
@@ -211,13 +211,13 @@ BOOL UpdateADIFRecord(ADIF * ADIF, char * Msg, char Dirn)
 
 		if (ADIF->LOC[0] == 0 && Msg[0] == ';' && stristr(Msg, "DE "))
 		{
-			// Look for ; GM8BPQ-10 DE G8BPQ (IO92KX)
-			// AirMail EA8URF de KG5VSG (GK86qo) QTC: 1 209 
+			/* Look for ; GM8BPQ-10 DE G8BPQ (IO92KX) */
+			/* AirMail EA8URF de KG5VSG (GK86qo) QTC: 1 209  */
 
 
-			// Paclink-Unix Sends
+			/* Paclink-Unix Sends */
 
-			//  ; VE7SPR-10 DE N7NIX QTC 1
+			/*  ; VE7SPR-10 DE N7NIX QTC 1 */
 
 			char * StartLoc = strchr(Msg, '(');
 			char * EndLoc = strchr(Msg, ')');
@@ -233,22 +233,22 @@ BOOL UpdateADIFRecord(ADIF * ADIF, char * Msg, char Dirn)
 		}
 	}
 
-	// Look for Proposals
+	/* Look for Proposals */
 
-	// FC EM 3909_GM8BPQ 3520 1266 0<cr>
+	/* FC EM 3909_GM8BPQ 3520 1266 0<cr> */
 
 	if (memcmp(Msg, "FC EM ", 6) == 0)
 	{
 		char * ptr, *Context;
 
-		// We need to detect first of a block of proposals so we can count any acked messages
+		/* We need to detect first of a block of proposals so we can count any acked messages */
 
-		if (ADIF->GotFC == 0)			// Last was not FC
-			CountMessages(ADIF);		// This acks last batch
+		if (ADIF->GotFC == 0)			/* Last was not FC */
+			CountMessages(ADIF);		/* This acks last batch */
 
 		ADIF->GotFC = 1;
 
-		ptr = strtok_s(&Msg[6], " \r", &Context);		// BID
+		ptr = strtok_s(&Msg[6], " \r", &Context);		/* BID */
 
 		if (ptr)
 		{
@@ -256,10 +256,10 @@ BOOL UpdateADIFRecord(ADIF * ADIF, char * Msg, char Dirn)
 
 			if (ptr)
 			{
-				ADIF->FBBLen[ADIF->FBBIndex] = atoi(ptr);		// Not really sure we need lengths, but no harm
+				ADIF->FBBLen[ADIF->FBBIndex] = atoi(ptr);		/* Not really sure we need lengths, but no harm */
 
 				if (ADIF->FBBIndex++ == 5)
-					ADIF->FBBIndex = 4;					// Proect ourselves
+					ADIF->FBBIndex = 4;					/* Proect ourselves */
 
 			}
 
@@ -272,22 +272,22 @@ BOOL UpdateADIFRecord(ADIF * ADIF, char * Msg, char Dirn)
 
 	if (memcmp(Msg, "FS ", 3) == 0)
 	{
-		// As we only count sent messages must check for rejections;
+		/* As we only count sent messages must check for rejections; */
 
-		// FS YYY<cr>
+		/* FS YYY<cr> */
 
 		int i = 0;
 		char c;
 
-		ADIF->GotFC = 0;				// Ready for next batch
+		ADIF->GotFC = 0;				/* Ready for next batch */
 
 		while (i < ADIF->FBBIndex)
 		{
 			c = Msg[i + 3];
 
-			if ((c == '-') || (c == 'N') || (c == 'R') || (c == 'E'))				// Not wanted
+			if ((c == '-') || (c == 'N') || (c == 'R') || (c == 'E'))				/* Not wanted */
 			{
-				ADIF->FBBLen[i] = 0;			// Clear corresponding length
+				ADIF->FBBLen[i] = 0;			/* Clear corresponding length */
 			}
 			i++;
 		}
@@ -299,9 +299,9 @@ BOOL UpdateADIFRecord(ADIF * ADIF, char * Msg, char Dirn)
 
 	if (strcmp(Msg, "FF<cr>") == 0 || strcmp(Msg, "FQ<cr>") == 0)
 	{
-		// Need to count any complete messages
+		/* Need to count any complete messages */
 
-		CountMessages(ADIF);			// This acks last batch
+		CountMessages(ADIF);			/* This acks last batch */
 
 		memcpy(ADIF->Termination, Msg, 2);
 		Msg[0] = 0;
@@ -360,11 +360,11 @@ BandLimits Bands[] =
 int FreqCount = sizeof(Bands)/sizeof(struct BandLimits);
 
 char ADIFModes [55][18] = {
-	"PKT", "PKT", "PKT", "PKT", "PKT", "PKT", "PKT", "", "", "", // 0 - 9
-	"", "PAC", "", "", "PAC/PAC2", "", "PAC/PAC3", "", "", "", "PAC/PAK4", // 10 - 20
-	"WINMOR", "WINMOR", "", "", "", "", "", "", "",				// 21 - 29
-	"Robust Packet", "", "", "", "", "", "", "", "", "",					// 30 - 39
-	"ARDOP", "ARDOP", "ARDOP", "ARDOP", "ARDOP", "", "", "", "", "",	// 40 - 49
+	"PKT", "PKT", "PKT", "PKT", "PKT", "PKT", "PKT", "", "", "", /* 0 - 9 */
+	"", "PAC", "", "", "PAC/PAC2", "", "PAC/PAC3", "", "", "", "PAC/PAK4", /* 10 - 20 */
+	"WINMOR", "WINMOR", "", "", "", "", "", "", "",				/* 21 - 29 */
+	"Robust Packet", "", "", "", "", "", "", "", "", "",					/* 30 - 39 */
+	"ARDOP", "ARDOP", "ARDOP", "ARDOP", "ARDOP", "", "", "", "", "",	/* 40 - 49 */
 	"VARA", "VARAFM", "VARAFM96", "VARA500", "VARA2750"};
 
 
@@ -422,7 +422,7 @@ BOOL WriteADIFRecord(ADIF * ADIF)
 
 	if (STAT.st_size == 0)
 	{
-		// New File - Write Header
+		/* New File - Write Header */
 
 		char Header[256];
 		int Len;
@@ -431,9 +431,9 @@ BOOL WriteADIFRecord(ADIF * ADIF)
 		fwrite(Header, 1, Len, Handle);
 	}
 
-	// Extract Info we need
+	/* Extract Info we need */
 
-	// Distance and Bearing
+	/* Distance and Bearing */
 
 	if (LOC[0] && ADIF->LOC[0])
 	{
@@ -446,24 +446,24 @@ BOOL WriteADIFRecord(ADIF * ADIF)
 
 	starttm = gmtime(&ADIF->StartTime);
 
-	//<call:6>VA2ROR
+	/*<call:6>VA2ROR */
 
 	fprintf(Handle, "<call:%d>%s", (int)strlen(ADIF->Call), ADIF->Call);
 
-	//<qso_date:8>20190201
-	//<time_on:6>140801
-	//<time_off:6>140958
+	/*<qso_date:8>20190201 */
+	/*<time_on:6>140801 */
+	/*<time_off:6>140958 */
 
 	fprintf(Handle, "<qso_date:8>%04d%02d%02d<time_on:6>%02d%02d%02d<time_off:6>%02d%02d%02d",
 		starttm->tm_year + 1900, starttm->tm_mon + 1, starttm->tm_mday,
 		starttm->tm_hour, starttm->tm_min, starttm->tm_sec,
 		endtm.tm_hour, endtm.tm_min, endtm.tm_sec);
 
-//<mode:0>
+/*<mode:0> */
 
 	if (ADIFModes[ADIF->Mode][0])
 	{
-		// Send Mode, and Submode if present
+		/* Send Mode, and Submode if present */
 
 		char Mode[32];
 		char * SubMode;
@@ -476,13 +476,13 @@ BOOL WriteADIFRecord(ADIF * ADIF)
 			fprintf(Handle, "<submode:%d>%s", (int)strlen(SubMode), SubMode);
 
 	}
-	//<gridsquare:6>JG28DK. Doc wants it even if empty
+	/*<gridsquare:6>JG28DK. Doc wants it even if empty */
 
 	fprintf(Handle, "<gridsquare:%d>%s", (int)strlen(ADIF->LOC), ADIF->LOC);
 	
 
-	//<band:3>20M
-	//<freq:9>14.109000
+	/*<band:3>20M */
+	/*<freq:9>14.109000 */
 	
 	if (ADIF->Freq > 1500)
 	{
@@ -510,10 +510,10 @@ BOOL WriteADIFRecord(ADIF * ADIF)
  
 
 
-	// Do Comment
+	/* Do Comment */
 
-	//0|2019-02-01 14:09:58|RMS Trimode|1.3.21.0|CMS|ZS1RS|VA2ROR|[AirMail-3.5.036-B2FHIM$]
-   //|Pactor 3|14109000|1957|311|FQ|1|0|4098|93|117|JG28DK|JF96HD
+	/*0|2019-02-01 14:09:58|RMS Trimode|1.3.21.0|CMS|ZS1RS|VA2ROR|[AirMail-3.5.036-B2FHIM$] */
+   /*|Pactor 3|14109000|1957|311|FQ|1|0|4098|93|117|JG28DK|JF96HD */
 
 	sprintf	(Date, "%04d-%02d-%02d %02d:%02d:%02d", 
 		endtm.tm_year + 1900, endtm.tm_mon + 1, endtm.tm_mday, endtm.tm_hour, endtm.tm_min, endtm.tm_sec);
@@ -548,7 +548,7 @@ BOOL WriteADIFRecord(ADIF * ADIF)
 
 VOID ADIFWriteFreqList()
 {
-	// Write info needed for RMS Analyser to a file in similar format to Trimode
+	/* Write info needed for RMS Analyser to a file in similar format to Trimode */
 
 	UCHAR Value[MAX_PATH];
 	FILE * Handle;
@@ -582,7 +582,7 @@ VOID ADIFWriteFreqList()
 		strcpy(Call, WL2KReport->BaseCall);
 		strcpy(Locator, WL2KReport->GridSquare);
 
-		// if freq not in list add it
+		/* if freq not in list add it */
 
 		i = 0;
 

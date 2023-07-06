@@ -1,30 +1,30 @@
 
-// Program to start or stop a Software TNC on a remote host
+/* Program to start or stop a Software TNC on a remote host */
 
-// Should work with ARDOP, WINMOR or VARA
+/* Should work with ARDOP, WINMOR or VARA */
 
-// Version 1. 0. 0. 1 June 2013
+/* Version 1. 0. 0. 1 June 2013 */
 
-// Version 1. 0. 2. 1 April 2018
+/* Version 1. 0. 2. 1 April 2018 */
 
-// Updated to support running programs with command line parameters
-// Add option to KILL by program name 
+/* Updated to support running programs with command line parameters */
+/* Add option to KILL by program name  */
 
-// Version 1. 0. 3. 1 April 2019
+/* Version 1. 0. 3. 1 April 2019 */
 
-//	Add remote rigcontrol feature
+/*	Add remote rigcontrol feature */
 
-// Version 1. 0. 3. 2 Feb 2020
+/* Version 1. 0. 3. 2 Feb 2020 */
 
-//	Fix Rigcontol
+/*	Fix Rigcontol */
 
-// Version 1. 0. 3. 3 Dec 2020
+/* Version 1. 0. 3. 3 Dec 2020 */
 
-//	Set working directory when starting TNC
+/*	Set working directory when starting TNC */
 
-// Version 1. 0. 3. 4 Jan 2021
+/* Version 1. 0. 3. 4 Jan 2021 */
 
-//	Add trace window
+/*	Add trace window */
 
 #define _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_DEPRECATE
@@ -45,7 +45,7 @@ HINSTANCE hInst;
 char AppName[] = "WinmorControl";
 char Title[80] = "WinmorControl";
 
-// Foward declarations of functions included in this code module:
+/* Foward declarations of functions included in this code module: */
 
 ATOM MyRegisterClass(CONST WNDCLASS*);
 BOOL InitApplication(HINSTANCE);
@@ -84,11 +84,11 @@ VOID __cdecl Debugprintf(const char * format, ...)
 
 char * strlop(char * buf, char delim)
 {
-	// Terminate buf at delim, and return rest of string
+	/* Terminate buf at delim, and return rest of string */
 
 	char * ptr;
 	
-	if (buf == NULL) return NULL;		// Protect
+	if (buf == NULL) return NULL;		/* Protect */
 	
 	ptr = strchr(buf, delim);
 
@@ -111,7 +111,7 @@ BOOL KillOldTNC(char * Path)
     if (!EnumProcesses(Processes, sizeof(Processes), &Needed))
         return FALSE;
     
-    // Calculate how many process identifiers were returned.
+    /* Calculate how many process identifiers were returned. */
 
     Count = Needed / sizeof(DWORD);
 
@@ -157,8 +157,8 @@ KillTNC(int PID)
 
 RestartTNC(char * Path)
 {
-	STARTUPINFO  SInfo;			// pointer to STARTUPINFO 
-    PROCESS_INFORMATION PInfo; 	// pointer to PROCESS_INFORMATION 
+	STARTUPINFO  SInfo;			/* pointer to STARTUPINFO  */
+    PROCESS_INFORMATION PInfo; 	/* pointer to PROCESS_INFORMATION  */
 	int i, n = 0;
 	char workingDirectory[256];
 
@@ -199,7 +199,7 @@ RestartTNC(char * Path)
 char * RigPort = NULL;
 char * RigSpeed = NULL;
 HANDLE RigHandle = 0;
-int RigType = 0;			// Flag for possible RTS/DTR
+int RigType = 0;			/* Flag for possible RTS/DTR */
 
 #define RTS 1
 #define DTR 2
@@ -210,7 +210,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	if (lpCmdLine[0])
 	{
-		// Port Name and Speed for Remote CAT
+		/* Port Name and Speed for Remote CAT */
 
 		RigPort = _strdup(lpCmdLine);
 		RigSpeed = strlop(RigPort, ':');
@@ -223,7 +223,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		return (FALSE);
 
 
-	// Main message loop:
+	/* Main message loop: */
 
 	while (GetMessage(&msg, NULL, 0, 0)) 
 	{
@@ -236,25 +236,25 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	return (msg.wParam);
 }
 
-//
+/* */
 
-//
-//  FUNCTION: InitApplication(HANDLE)
-//
-//  PURPOSE: Initializes window data and registers window class 
-//
-//  COMMENTS:
-//
-//       In this function, we initialize a window class by filling out a data
-//       structure of type WNDCLASS and calling either RegisterClass or 
-//       the internal MyRegisterClass.
-//
+/* */
+/*  FUNCTION: InitApplication(HANDLE) */
+/* */
+/*  PURPOSE: Initializes window data and registers window class  */
+/* */
+/*  COMMENTS: */
+/* */
+/*       In this function, we initialize a window class by filling out a data */
+/*       structure of type WNDCLASS and calling either RegisterClass or  */
+/*       the internal MyRegisterClass. */
+/* */
 BOOL InitApplication(HINSTANCE hInstance)
 {
     WNDCLASS  wc;
 
-	// Fill in window class structure with parameters that describe
-    // the main window.
+	/* Fill in window class structure with parameters that describe */
+    /* the main window. */
         wc.style         = CS_HREDRAW | CS_VREDRAW;
         wc.lpfnWndProc   = (WNDPROC)WndProc;
         wc.cbClsExtra    = 0;
@@ -264,26 +264,26 @@ BOOL InitApplication(HINSTANCE hInstance)
         wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
         wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
 
-//		wc.lpszMenuName =  MAKEINTRESOURCE(BPQMENU) ;
+/*		wc.lpszMenuName =  MAKEINTRESOURCE(BPQMENU) ; */
  
         wc.lpszClassName = AppName;
 
-        // Register the window class and return success/failure code.
+        /* Register the window class and return success/failure code. */
 
 		return RegisterClass(&wc);
       
 }
 
-//
-//   FUNCTION: InitInstance(HANDLE, int)
-//
-//   PURPOSE: Saves instance handle and creates main window 
-//
-//   COMMENTS:
-//
-//        In this function, we save the instance handle in a global variable and
-//        create and display the main program window.
-//
+/* */
+/*   FUNCTION: InitInstance(HANDLE, int) */
+/* */
+/*   PURPOSE: Saves instance handle and creates main window  */
+/* */
+/*   COMMENTS: */
+/* */
+/*        In this function, we save the instance handle in a global variable and */
+/*        create and display the main program window. */
+/* */
 
 HFONT FAR PASCAL MyCreateFont( void ) 
 { 
@@ -291,7 +291,7 @@ HFONT FAR PASCAL MyCreateFont( void )
     LOGFONT lf; 
     HFONT hfont; 
  
-    // Initialize members of the CHOOSEFONT structure.  
+    /* Initialize members of the CHOOSEFONT structure.   */
  
     cf.lStructSize = sizeof(CHOOSEFONT); 
     cf.hwndOwner = (HWND)NULL; 
@@ -309,13 +309,13 @@ HFONT FAR PASCAL MyCreateFont( void )
     cf.nSizeMin = 0; 
     cf.nSizeMax = 0; 
  
-    // Display the CHOOSEFONT common-dialog box.  
+    /* Display the CHOOSEFONT common-dialog box.   */
  
     ChooseFont(&cf); 
  
-    // Create a logical font based on the user's  
-    // selection and return a handle identifying  
-    // that font.  
+    /* Create a logical font based on the user's   */
+    /* selection and return a handle identifying   */
+    /* that font.   */
  
     hfont = CreateFontIndirect(cf.lpLogFont); 
     return (hfont); 
@@ -360,7 +360,7 @@ int ReadCOMBlock(HANDLE fd, char * Block, int MaxLength)
 	DWORD      dwLength;
 	BOOL	ret;
 
-	// only try to read number of bytes in queue
+	/* only try to read number of bytes in queue */
 
 	ret = ClearCommError(fd, &dwErrorFlags, &ComStat);
 
@@ -439,11 +439,11 @@ HANDLE OpenCOMPort(char * pPort, int speed, BOOL SetDTR, BOOL SetRTS, BOOL Quiet
 
 	sprintf( szPort, "\\\\.\\%s", pPort);
 	
-	// open COMM device
+	/* open COMM device */
 
 	fd = CreateFile( szPort, GENERIC_READ | GENERIC_WRITE,
-                  0,                    // exclusive access
-                  NULL,                 // no security attrs
+                  0,                    /* exclusive access */
+                  NULL,                 /* no security attrs */
                   OPEN_EXISTING,
                   FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,
                   NULL );
@@ -459,22 +459,22 @@ HANDLE OpenCOMPort(char * pPort, int speed, BOOL SetDTR, BOOL SetRTS, BOOL Quiet
 		return FALSE;
 	}
 
-	// setup device buffers
+	/* setup device buffers */
 
 	SetupComm(fd, 4096, 4096);
 
-	// purge any information in the buffer
+	/* purge any information in the buffer */
 
 	PurgeComm(fd, PURGE_TXABORT | PURGE_RXABORT |
                                       PURGE_TXCLEAR | PURGE_RXCLEAR ) ;
 
-	// set up for overlapped I/O
+	/* set up for overlapped I/O */
 
 	CommTimeOuts.ReadIntervalTimeout = 20;
 	CommTimeOuts.ReadTotalTimeoutMultiplier = 0 ;
 	CommTimeOuts.ReadTotalTimeoutConstant = 0 ;
 	CommTimeOuts.WriteTotalTimeoutMultiplier = 0 ;
-//     CommTimeOuts.WriteTotalTimeoutConstant = 0 ;
+/*     CommTimeOuts.WriteTotalTimeoutConstant = 0 ; */
 	CommTimeOuts.WriteTotalTimeoutConstant = 500 ;
 
 	SetCommTimeouts(fd, &CommTimeOuts);
@@ -489,7 +489,7 @@ HANDLE OpenCOMPort(char * pPort, int speed, BOOL SetDTR, BOOL SetRTS, BOOL Quiet
    dcb.StopBits = TWOSTOPBITS;
    dcb.StopBits = Stopbits;
 
-	// setup hardware flow control
+	/* setup hardware flow control */
 
 	dcb.fOutxDsrFlow = 0;
 	dcb.fDtrControl = DTR_CONTROL_DISABLE ;
@@ -497,7 +497,7 @@ HANDLE OpenCOMPort(char * pPort, int speed, BOOL SetDTR, BOOL SetRTS, BOOL Quiet
 	dcb.fOutxCtsFlow = 0;
 	dcb.fRtsControl = RTS_CONTROL_DISABLE ;
 
-	// setup software flow control
+	/* setup software flow control */
 
    dcb.fInX = dcb.fOutX = 0;
    dcb.XonChar = 0;
@@ -505,7 +505,7 @@ HANDLE OpenCOMPort(char * pPort, int speed, BOOL SetDTR, BOOL SetRTS, BOOL Quiet
    dcb.XonLim = 100 ;
    dcb.XoffLim = 100 ;
 
-   // other various settings
+   /* other various settings */
 
    dcb.fBinary = TRUE ;
    dcb.fParity = FALSE;
@@ -534,7 +534,7 @@ HANDLE OpenCOMPort(char * pPort, int speed, BOOL SetDTR, BOOL SetRTS, BOOL Quiet
 
 	txEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
-	// Start Read Thread
+	/* Start Read Thread */
 
 	_beginthread(CATThread, 0, 0);
 
@@ -547,11 +547,11 @@ VOID CloseCOMPort(HANDLE fd)
 {
 	SetCommMask(fd, 0);
 
-	// drop DTR
+	/* drop DTR */
 
 	COMClearDTR(fd);
 
-	// purge any outstanding reads/writes and close device handle
+	/* purge any outstanding reads/writes and close device handle */
 
 	PurgeComm(fd, PURGE_TXABORT | PURGE_RXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR ) ;
 
@@ -567,10 +567,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	BOOL bcopt=TRUE;
 	char Msg[255];
 	int ret, err;
-	WSADATA WsaData;            // receives data from WSAStartup
+	WSADATA WsaData;            /* receives data from WSAStartup */
 
 
-	hInst = hInstance; // Store instance handle in our global variable
+	hInst = hInstance; /* Store instance handle in our global variable */
 
 	WSAStartup(MAKEWORD(2, 0), &WsaData);
 
@@ -582,7 +582,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 		return (FALSE);
 	}
 		
-	// setup default font information
+	/* setup default font information */
 
    LFTTYFONT.lfHeight =			12;
    LFTTYFONT.lfWidth =          8 ;
@@ -600,7 +600,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    lstrcpy( LFTTYFONT.lfFaceName, "Fixedsys" ) ;
 
 	hFont = CreateFontIndirect(&LFTTYFONT) ;
-//	hFont = MyCreateFont();
+/*	hFont = MyCreateFont(); */
 
 	SetWindowText(hWnd,Title);
 
@@ -635,7 +635,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	}
 
-//	ioctlsocket (sock, FIONBIO, &param);
+/*	ioctlsocket (sock, FIONBIO, &param); */
  
 	setsockopt (sock,SOL_SOCKET,SO_BROADCAST,(const char FAR *)&bcopt,4);
 
@@ -648,7 +648,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	if (ret != 0)
 	{
-		//	Bind Failed
+		/*	Bind Failed */
 
 		err = WSAGetLastError();
 		sprintf(Msg, "Bind Failed for UDP socket - error code = %d", err);
@@ -679,7 +679,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 				COMSetDTR(RigHandle);
 		}
 		else
-			return FALSE;			// Open Failed
+			return FALSE;			/* Open Failed */
 	}
 
 	TimerHandle = SetTimer(hWnd, 1, 100, NULL);
@@ -708,7 +708,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	switch (message) 
 	{ 
-		case WSA_READ: // Notification on data socket
+		case WSA_READ: /* Notification on data socket */
 	
 			len = recvfrom(sock, Msg, 256, 0, &rx, &addrlen);
 
@@ -737,7 +737,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 			else
 			{
-				// Anything else is Rig Control
+				/* Anything else is Rig Control */
 	
 				len = WriteCOMBlock(RigHandle, Msg, len);
 			}
@@ -746,8 +746,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		case WM_SYSCOMMAND:
 
-		wmId    = LOWORD(wParam); // Remember, these are...
-		wmEvent = HIWORD(wParam); // ...different for Win32!
+		wmId    = LOWORD(wParam); /* Remember, these are... */
+		wmEvent = HIWORD(wParam); /* ...different for Win32! */
 
 		switch (wmId) { 
 
@@ -826,7 +826,7 @@ VOID CATThread()
 
 		if (ret && Length)
 		{
-			// got something so send to BPQ
+			/* got something so send to BPQ */
 
 			sendto(sock, RXBuffer, Length,  0, &rx, sizeof(struct sockaddr));
 		}

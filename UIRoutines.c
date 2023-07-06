@@ -17,9 +17,9 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-// Mail and Chat Server for BPQ32 Packet Switch
-//
-// UI Handling Routines
+/* Mail and Chat Server for BPQ32 Packet Switch */
+/* */
+/* UI Handling Routines */
 
 #include "bpqmail.h"
 
@@ -38,16 +38,16 @@ BOOL UIMF[33];
 BOOL UIHDDR[33];
 BOOL UINull[33];
 char * UIDigi[33];
-char * UIDigiAX[33];		// ax.25 version of digistring
-int UIDigiLen[33];			// Length of AX string
+char * UIDigiAX[33];		/* ax.25 version of digistring */
+int UIDigiLen[33];			/* Length of AX string */
 
 
 
 #pragma pack()
 
-PMESSAGEX DG_Q;					// Queue of messages to be sent to node
+PMESSAGEX DG_Q;					/* Queue of messages to be sent to node */
 
-struct SEM DGSemaphore = {0, 0}; // For locking access to DG_Q;
+struct SEM DGSemaphore = {0, 0}; /* For locking access to DG_Q; */
 
 VOID UnQueueRaw(void * Param);
 
@@ -152,13 +152,13 @@ VOID QueueRaw(int Port, PMESSAGEX AXMSG, int Len)
 
 	AXMSG->PORT = Port;
 	AXMSG->LENGTH = Len;
-	AXMSG->CHAIN = 0;					// Clear chain in new buffer
+	AXMSG->CHAIN = 0;					/* Clear chain in new buffer */
 
 	memcpy(AXCopy, AXMSG, Len + 10);
 
 	GetSemaphore(&DGSemaphore, 0);
 
-	if (DG_Q == 0)						// Empty
+	if (DG_Q == 0)						/* Empty */
 	{
 		DG_Q = AXCopy;
 		FreeSemaphore(&DGSemaphore);
@@ -168,9 +168,9 @@ VOID QueueRaw(int Port, PMESSAGEX AXMSG, int Len)
 	AXNext = DG_Q;
 
 	while (AXNext->CHAIN)
-		AXNext = AXNext->CHAIN;			// Chain to end of queue
+		AXNext = AXNext->CHAIN;			/* Chain to end of queue */
 
-	AXNext->CHAIN = AXCopy;				// New one on end
+	AXNext->CHAIN = AXCopy;				/* New one on end */
 
 	FreeSemaphore(&DGSemaphore);
 }
@@ -182,7 +182,7 @@ VOID SendMsgUI(struct MsgInfo * Msg)
 	int Mask = UIPortMask;
 	int NumPorts = GetNumberofPorts();
 
-	//12345 B 2053 TEST@ALL F6FBB 920325 This is the subject
+	/*12345 B 2053 TEST@ALL F6FBB 920325 This is the subject */
 
 	struct tm *tm = gmtime((time_t *)&Msg->datecreated);	
 	
@@ -201,14 +201,14 @@ VOID SendMsgUI(struct MsgInfo * Msg)
 
 VOID SendHeaders(int Number, int Port)
 {
-	// Send headers in response to a resync request
+	/* Send headers in response to a resync request */
 
 	char msg[256];
 	unsigned  len=0;
 	struct tm *tm;
 	struct MsgInfo * Msg;
 
-	//12345 B 2053 TEST@ALL F6FBB 920325 This is the subject
+	/*12345 B 2053 TEST@ALL F6FBB 920325 This is the subject */
 
 	while (Number <= LatestMsg)
 	{
@@ -292,16 +292,16 @@ static VOID Send_AX_Datagram(UCHAR * Msg, DWORD Len, UCHAR Port, UCHAR * HWADDR,
 
 	PMESSAGEX AXPTR = &AXMSG;
 
-	// Block includes the Msg Header (7 bytes), Len Does not!
+	/* Block includes the Msg Header (7 bytes), Len Does not! */
 
 	memcpy(AXPTR->DEST, HWADDR, 7);
 	memcpy(AXPTR->ORIGIN, MAILMYCALL, 7);
-	AXPTR->DEST[6] &= 0x7e;			// Clear End of Call
-	AXPTR->DEST[6] |= 0x80;			// set Command Bit
+	AXPTR->DEST[6] &= 0x7e;			/* Clear End of Call */
+	AXPTR->DEST[6] |= 0x80;			/* set Command Bit */
 
 	if (UIDigi[Port] && UIDigiAX[Port])
 	{
-		// This port has a digi string
+		/* This port has a digi string */
 
 		int DigiLen = UIDigiLen[Port];
 		UCHAR * ptr;
@@ -315,8 +315,8 @@ static VOID Send_AX_Datagram(UCHAR * Msg, DWORD Len, UCHAR Port, UCHAR * HWADDR,
 		Len += DigiLen;
 
 	}
-	AXPTR->ORIGIN[6] |= 1;			// Set End of Call
-	AXPTR->CTL = 3;		//UI
+	AXPTR->ORIGIN[6] |= 1;			/* Set End of Call */
+	AXPTR->CTL = 3;		/*UI */
 	AXPTR->PID = 0xf0;
 	memcpy(AXPTR->DATA, Msg, Len);
 
@@ -360,9 +360,9 @@ VOID ProcessUItoMe(char * msg, int len)
 
 VOID ProcessUItoFBB(char * msg, int len, int Port)
 {
-	// ? 0000006464
-	// The first 8 digits are the hexadecimal number of the requested start of the list
-	// (here 00002EE0 -> 12000) and the last two digits are the sum of the four bytes anded with FF (0E).
+	/* ? 0000006464 */
+	/* The first 8 digits are the hexadecimal number of the requested start of the list */
+	/* (here 00002EE0 -> 12000) and the last two digits are the sum of the four bytes anded with FF (0E). */
 
 	int Number, Sum, Sent = 0;
 	char cksum[3];
@@ -394,22 +394,22 @@ UCHAR * AdjustForDigis(PMESSAGEX * buff, int * len)
 
 	if ((buff1->ORIGIN[6] & 1) == 1)
 	{
-		// End of Call Set
+		/* End of Call Set */
 	
-		return 0;				// No Digis
+		return 0;				/* No Digis */
 	}
 
-	ptr1 = &buff1->ORIGIN[6];		// End of add 
+	ptr1 = &buff1->ORIGIN[6];		/* End of add  */
 	ptr = (UCHAR *)*buff;
 
-	while((*ptr1 & 1) == 0)			// End of address bit
+	while((*ptr1 & 1) == 0)			/* End of address bit */
 	{
 		ptr1 += 7;
 		ptr+= 7;
 	}
 
 	*buff = (PMESSAGEX)ptr;
-	return (&buff1->CTL);		// Start of Digi String
+	return (&buff1->CTL);		/* Start of Digi String */
 }
 VOID SeeifBBSUIFrame(PMESSAGEX buff, int len)
 {
@@ -418,23 +418,23 @@ VOID SeeifBBSUIFrame(PMESSAGEX buff, int len)
 	int Port = buff->PORT;
 	
 	if (Port > 128)
-		return;									// Only look at received frames
+		return;									/* Only look at received frames */
 
-	memcpy(From, buff->ORIGIN, 7);				// Save Origin and Dest before adjucting for Digis
+	memcpy(From, buff->ORIGIN, 7);				/* Save Origin and Dest before adjucting for Digis */
 	memcpy(To, buff->DEST, 7);
 
 	Digis = AdjustForDigis(&buff, &len);
 
 	if (Digis)
 	{
-		// Make sure all are actioned
+		/* Make sure all are actioned */
 	
 	DigiLoop:
 	
 		if ((Digis[6] & 0x80) == 0)
-			return;								// Not repeated
+			return;								/* Not repeated */
 		
-		if ((Digis[6] & 1) == 0)				// Not end of list
+		if ((Digis[6] & 1) == 0)				/* Not end of list */
 		{
 			Digis +=7;
 			goto DigiLoop;
@@ -447,9 +447,9 @@ VOID SeeifBBSUIFrame(PMESSAGEX buff, int len)
 	if (buff->PID != 0xf0)
 		return;
 
-//	if (memcmp(buff->ORIGIN, MAILMYCALL,6) == 0)		// From me?
-//		if (buff->ORIGIN[6] == (MAILMYCALL[6] | 1))		// Set End of Call
-//			return;
+/*	if (memcmp(buff->ORIGIN, MAILMYCALL,6) == 0)		// From me? */
+/*		if (buff->ORIGIN[6] == (MAILMYCALL[6] | 1))		// Set End of Call */
+/*			return; */
 
 	From[6] &= 0x7e;
 	To[6] &= 0x7e;
@@ -471,9 +471,9 @@ VOID SeeifBBSUIFrame(PMESSAGEX buff, int len)
 	return;
 }
 
-//	ConvToAX25(MYNODECALL, MAILMYCALL);
-//				len=ConvFromAX25(Routes->NEIGHBOUR_DIGI1,Portcall);
-//			Portcall[len]=0;
+/*	ConvToAX25(MYNODECALL, MAILMYCALL); */
+/*				len=ConvFromAX25(Routes->NEIGHBOUR_DIGI1,Portcall); */
+/*			Portcall[len]=0; */
 
 char MailForHeader[] = "Mail For:";
 
@@ -492,21 +492,21 @@ VOID ExpandMailFor()
 
 	while (ptr)
 	{
-		len = ptr - OldP;		// Chars before Backslash
+		len = ptr - OldP;		/* Chars before Backslash */
 		memcpy(NewP, OldP, len);
 		NewP += len;
 
 		switch (*++ptr)
 		{
-		case 'r': // Inserts a carriage return.
-		case 'R': // Inserts a carriage return.
+		case 'r': /* Inserts a carriage return. */
+		case 'R': /* Inserts a carriage return. */
 
 			pptr = CR;
 			break;
 
 		default:
 
-			pptr = Dollar;		// Just Copy Backslash
+			pptr = Dollar;		/* Just Copy Backslash */
 		}
 
 		len = strlen(pptr);
@@ -557,7 +557,7 @@ VOID SendMailForThread(VOID * Param)
 	{
 		ExpandMailFor();
 
-		if (MailForText[0])				// User supplied header
+		if (MailForText[0])				/* User supplied header */
 			strcpy(MailForMessage, MailForExpanded);
 		else
 			strcpy(MailForMessage, MailForHeader);
@@ -576,7 +576,7 @@ VOID SendMailForThread(VOID * Param)
 				{
 					SendMailFor(MailForMessage, TRUE);
 
-					if (MailForText[0])				// User supplied header
+					if (MailForText[0])				/* User supplied header */
 						strcpy(MailForMessage, MailForExpanded);
 					else
 						strcpy(MailForMessage, MailForHeader);

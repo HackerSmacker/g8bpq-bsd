@@ -72,7 +72,7 @@
 
 #define Vers 1,1,8,1
 #define Verstring "1.1.8.1\0"
-//#define SPECIALVERSION "Test 3"
+/*#define SPECIALVERSION "Test 3" */
 #define VerComments "Host Modes Emulator for G8BPQ Packet Switch\0"
 #define VerCopyright "Copyright © 2009-2019 John Wiseman G8BPQ\0"
 #define VerDesc "Host Modes Emulator for G8BPQ's 32 Bit Switch\0"

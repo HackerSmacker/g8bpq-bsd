@@ -98,7 +98,7 @@ int GetTickCount();
 #define FALSE 0
 #define FAR
 #define byte UCHAR
-//#define Byte UCHAR
+/*#define Byte UCHAR */
 #define Word WORD
 
 typedef DWORD   COLORREF;
@@ -122,7 +122,7 @@ typedef DWORD   COLORREF;
 
 #define HMENU UINT
 #define WNDPROC UINT
-#define __cdecl
+/* #define __cdecl */
 
 #define strtok_s strtok_r
 
@@ -201,7 +201,7 @@ int SendMsg(int stream, char * msg, int len);
 int SendRaw(int port, char * msg, int len);
 VOID md5(char *arg, unsigned char * checksum);
 
-//	Send Raw (KISS mode) frame to port (BPQHOST function 10)
+/*	Send Raw (KISS mode) frame to port (BPQHOST function 10) */
 
 int APIENTRY SendRaw(int port, char * msg, int len);
 

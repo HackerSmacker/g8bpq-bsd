@@ -30,9 +30,9 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 
 #include "bpq32.h"
 
-// Internal AGW Interface
+/* Internal AGW Interface */
 
-//#define VVICON 400
+/*#define VVICON 400 */
 
 struct AGWHeader
 {
@@ -49,7 +49,7 @@ struct AGWHeader
 
 struct AGWSocketConnectionInfo
 {
-	int Number;					// Number of record - for AGWConnections display
+	int Number;					/* Number of record - for AGWConnections display */
     SOCKET socket;
 	SOCKADDR_IN sin;  
 	BOOL SocketActive;
@@ -66,8 +66,8 @@ struct BPQConnectionInfo
 {    
     struct AGWSocketConnectionInfo * SocketIndex;
     int BPQStream;
-    unsigned char  CallKey[21];					// Port + two calls
-    BOOL Connecting;					// Set while waiting for connection to complete
+    unsigned char  CallKey[21];					/* Port + two calls */
+    BOOL Connecting;					/* Set while waiting for connection to complete */
     BOOL Listening;
     int ApplMask;   
 } ConInfoRec;
@@ -142,7 +142,7 @@ VOID Poll_AGW()
 	struct BPQConnectionInfo * Con;
 	struct AGWSocketConnectionInfo * sockptr;
 
-	// Look for incoming connects
+	/* Look for incoming connects */
 
 	fd_set readfd, writefd, exceptfd;
 	struct timeval timeout;
@@ -152,7 +152,7 @@ VOID Poll_AGW()
 	SOCKET maxsock;
 
 	timeout.tv_sec = 0;
-	timeout.tv_usec = 0;				// poll
+	timeout.tv_usec = 0;				/* poll */
 		
 	FD_ZERO(&readfd);
 
@@ -170,7 +170,7 @@ VOID Poll_AGW()
 		if (FD_ISSET((int)agwsock, &readfd))
 			AGWSocket_Accept(agwsock);
 
-	// look for data on any active sockets
+	/* look for data on any active sockets */
 
 	maxsock = 0;
 
@@ -178,7 +178,7 @@ VOID Poll_AGW()
 	FD_ZERO(&writefd);
 	FD_ZERO(&exceptfd);
 
-	// Check for data on active streams
+	/* Check for data on active streams */
 	
 	for (i = 0; i < CurrentConnections; i++)
 	{
@@ -191,7 +191,7 @@ VOID Poll_AGW()
 		{
 			if (state == 1)
 	
-			// Connected
+			/* Connected */
 			
 				AGWConnected(Con, Stream);	
 			else
@@ -199,12 +199,12 @@ VOID Poll_AGW()
 		}
 
 
-		if (Con->SocketIndex)		// Active Session
+		if (Con->SocketIndex)		/* Active Session */
 		{
 			AGWDoReceivedData(Stream);
 
-			//	Get current Session State. Any state changed is ACK'ed
-			//	automatically. See BPQHOST functions 4 and 5.
+			/*	Get current Session State. Any state changed is ACK'ed */
+			/*	automatically. See BPQHOST functions 4 and 5. */
 			
 			SessionState(Stream, &state, &change);
 	
@@ -212,7 +212,7 @@ VOID Poll_AGW()
 			{
 				if (state == 1)
 	
-				// Connected
+				/* Connected */
 			
 					AGWConnected(Con, Stream);	
 				else
@@ -250,7 +250,7 @@ VOID Poll_AGW()
 		{
 			if (retval)
 			{
-				// see who has data
+				/* see who has data */
 
 				for (n = 1; n <= MaxSockets; n++)
 				{
@@ -292,7 +292,7 @@ BOOL AGWAPIInit()
 	if (AGWPort == 0)
 		return FALSE;
 
-//	Create listening socket
+/*	Create listening socket */
 
 	agwsock = socket( AF_INET, SOCK_STREAM, 0);
 
@@ -330,7 +330,7 @@ BOOL AGWAPIInit()
 
 	SetUpHostSessions();
 
-	// Set up port List
+	/* Set up port List */
 
 	ptr = &AGWPorts[0];
 
@@ -348,7 +348,7 @@ BOOL AGWAPIInit()
 			ptr += sprintf(ptr, "%d", i);
 			memcpy(ptr, " with ", 6);
 			ptr+=6;
-			memcpy(ptr, PORT->PORTDESCRIPTION, 29);		// ";"
+			memcpy(ptr, PORT->PORTDESCRIPTION, 29);		/* ";" */
 			ptr+=29;
 
 			while (*(--ptr) == ' ') {}
@@ -363,7 +363,7 @@ BOOL AGWAPIInit()
 
 	*(ptr)=0;
 
-	AGWMONVECPTR->HOSTAPPLFLAGS = 0x80;		// Requext Monitoring
+	AGWMONVECPTR->HOSTAPPLFLAGS = 0x80;		/* Requext Monitoring */
 
 	return TRUE;
 }
@@ -403,7 +403,7 @@ extern BOOL AGWActive;
 
 VOID SHOWAGW(TRANSPORTENTRY * Session, char * Bufferptr, char * CmdTail, CMDX * CMD)
 {
-	//	DISPLAY AGW Session Status
+	/*	DISPLAY AGW Session Status */
 	
 	int i, con;
 	struct BPQConnectionInfo * Con;
@@ -536,32 +536,32 @@ int AGWConnected(struct BPQConnectionInfo * Con, int Stream)
 
 	if (ApplNum == 0) 
 	{
-		return 0; // Cant be an incomming connect
+		return 0; /* Cant be an incomming connect */
 	}
 	ApplCallPtr = GetApplCall(ApplNum);
 
 	if (ApplCallPtr != 0) memcpy(ApplCall,ApplCallPtr,10);
 
-	// Convert trailing spaces to nulls
+	/* Convert trailing spaces to nulls */
 	
 	for (i=9;i>0;i--)
 		if (ApplCall[i]==32)
 			ApplCall[i]=0;
 
-//   See if incomming connection
+/*   See if incomming connection */
 
 	if (Con->Listening)
 	{    
-		//	Allocate Session and send "c" Message
-		//
-		//	Find an AGW session
+		/*	Allocate Session and send "c" Message */
+		/* */
+		/*	Find an AGW session */
                           
 		for (sockptr=&Sockets[1]; sockptr <= &Sockets[CurrentSockets]; sockptr++)
 		{
 			if (sockptr->SocketActive &&
 				(memcmp(sockptr->CallSign1, ApplCall, 10) == 0) || (memcmp(sockptr->CallSign2, ApplCall, 10) == 0))
 			{
-				// Create Key
+				/* Create Key */
             
 				keyptr=(byte *)&Con->CallKey;
 
@@ -570,12 +570,12 @@ int AGWConnected(struct BPQConnectionInfo * Con, int Stream)
 				keyptr+=10;
 				memcpy(keyptr,ConnectingCall, 10);
                         		
-				// Make sure key is not already in use
+				/* Make sure key is not already in use */
 
 				for (i = 0; i < CurrentConnections; i++)
 				{
 					if (Con->BPQStream == Stream)
-						continue;		// Dont Check ourself!
+						continue;		/* Dont Check ourself! */
 
 					if (AGWConnections[i].SocketIndex == sockptr &&
 							memcmp(&Con->CallKey, &AGWConnections[i].CallKey,21) == 0)
@@ -602,17 +602,17 @@ int AGWConnected(struct BPQConnectionInfo * Con, int Stream)
 			
 		SendMsg(Stream, "No AGWPE Host Sessions available\r", 33);
 		Sleep (500);
-		Disconnect(Stream);   // disconnect
+		Disconnect(Stream);   /* disconnect */
 		return (0);
 	}
 	
-	// Not listening ??
+	/* Not listening ?? */
 
 	OutputDebugString("Inbound Connection on Outgoing Stream");
 
 	SendMsg(Stream, "AGWtoBPQ - Inbound Connection on Outgoing Stream\r", 49);
 	Sleep (500);
-	Disconnect(Stream);   // disconnect
+	Disconnect(Stream);   /* disconnect */
 	return (0);
 }
 
@@ -632,9 +632,9 @@ int AGWDisconnected(struct BPQConnectionInfo * Con, int Stream)
 		memcpy(&AGWTXHeader.callfrom,&key[11],10);
 		memcpy(&AGWTXHeader.callto,&key[1],10);
 
-		//   Send a "d" Message
+		/*   Send a "d" Message */
         
-		// DisMsg = "*** DISCONNECTED From Station "
+		/* DisMsg = "*** DISCONNECTED From Station " */
 
  		SendDisMsgtoAppl("*** DISCONNECTED From Station ", sockptr);
 		
@@ -661,8 +661,8 @@ int AGWDoReceivedData(int Stream)
 	byte Buffer[400];
 	int len,count;
 
-//Dim n As Integer, i As Integer, j As Integer, portcount As Integer
-//Dim start As Integer
+/*Dim n As Integer, i As Integer, j As Integer, portcount As Integer */
+/*Dim start As Integer */
 
 	do
 	{ 
@@ -688,7 +688,7 @@ int AGWDoMonitorData()
 	int Stamp, Frametype;
 	BOOL RXFlag, NeedAGW;
 
-	// Look for Monitor Data
+	/* Look for Monitor Data */
 
 	while (AGWMONVECPTR->HOSTTRACEQ)
 	{
@@ -715,9 +715,9 @@ int AGWDoMonitorData()
 
 		FreeSemaphore(&Semaphore);
 	
-//'   4 byte chain
-//'   1 byte port - top bit = transmit
-//'   2 byte length (LO-HI)
+/*'   4 byte chain */
+/*'   1 byte port - top bit = transmit */
+/*'   2 byte length (LO-HI) */
 
 		Port = Buffer[4];
 
@@ -742,16 +742,16 @@ int AGWDoMonitorData()
 
 		if (NeedAGW)
 		{
-			if (RXFlag || LoopMonFlag)    // only send txed frames if requested
+			if (RXFlag || LoopMonFlag)    /* only send txed frames if requested */
 			{
 				Length = InternalAGWDecodeFrame(Buffer, AGWBuffer,Stamp, &Frametype);
 	 
-				//
-				//   Decode frame and send to applications which have requested monitoring
-				//
+				/* */
+				/*   Decode frame and send to applications which have requested monitoring */
+				/* */
 				if (Length > 0)
 				{
-					AGWTXHeader.Port = Port - 1;       // AGW Ports start from 0
+					AGWTXHeader.Port = Port - 1;       /* AGW Ports start from 0 */
 
 					/*
 					* Patch by D. van der Locht      09-10-2020
@@ -799,16 +799,16 @@ int AGWDoMonitorData()
 
 		RawLen = RawLen - 6;
  
-		if (RXFlag || Loopflag) // Send transmitted frames if requested
+		if (RXFlag || Loopflag) /* Send transmitted frames if requested */
 		{
 
-        //
-        //  Send raw data to any sockets that have requested Raw frames
-        //
+        /* */
+        /*  Send raw data to any sockets that have requested Raw frames */
+        /* */
         
 			Buffer[6]=0;
        
-			AGWTXHeader.Port = Port - 1;       // AGW Ports start from 0
+			AGWTXHeader.Port = Port - 1;       /* AGW Ports start from 0 */
 			AGWTXHeader.DataKind = 'K';
         
 			AGWTXHeader.DataLength = RawLen;
@@ -833,9 +833,9 @@ int DeleteConnection(struct BPQConnectionInfo * Con)
 	int i;
 	int con;
 
-	//
-	//	remove specified session
-	//
+	/* */
+	/*	remove specified session */
+	/* */
 
     SetAppl(Con->BPQStream, 0, 0);
 
@@ -843,7 +843,7 @@ int DeleteConnection(struct BPQConnectionInfo * Con)
  
     DeallocateStream(Con->BPQStream);
 
-//   move all down one
+/*   move all down one */
 
 	con = (int)(Con - &AGWConnections[0]);
 	
@@ -935,7 +935,7 @@ int AGWSocket_Accept(SOCKET SocketId)
 	struct AGWSocketConnectionInfo * sockptr;
 	SOCKET sock;
 
-//   Find a free Socket
+/*   Find a free Socket */
 
 	for (n = 1; n <= MaxSockets; n++)
 	{
@@ -962,7 +962,7 @@ int AGWSocket_Accept(SOCKET SocketId)
 			sockptr->MsgDataLength = 0;
 			sockptr->Number = n;
 
-			if (CurrentSockets < n) CurrentSockets=n;  //Record max used to save searching all entries
+			if (CurrentSockets < n) CurrentSockets=n;  /*Record max used to save searching all entries */
 
 			ShowApps();
 
@@ -970,7 +970,7 @@ int AGWSocket_Accept(SOCKET SocketId)
 		}
 	}
 
-	// Should accept, then immediately close
+	/* Should accept, then immediately close */
 
 	return 0;
 }
@@ -983,7 +983,7 @@ int SendtoSocket(SOCKET sock, char * Msg)
 
 	len = AGWTXHeader.DataLength;
 
-	// Make sure calls are null terminated
+	/* Make sure calls are null terminated */
 
 	n = 10;
 	ptr = &AGWTXHeader.callfrom[9];
@@ -1016,7 +1016,7 @@ int AGWDataSocket_Read(struct AGWSocketConnectionInfo * sockptr, SOCKET sock)
 
 	if (DataLength == SOCKET_ERROR || DataLength == 0)
 	{
-		// Failed or closed - clear connection
+		/* Failed or closed - clear connection */
 
 		AGWDataSocket_Disconnect(sockptr);
 		return 0;
@@ -1025,11 +1025,11 @@ int AGWDataSocket_Read(struct AGWSocketConnectionInfo * sockptr, SOCKET sock)
 
 	if (sockptr->GotHeader)
 	{
-		// Received a header, without sufficient data bytes
+		/* Received a header, without sufficient data bytes */
    
 		if (DataLength < sockptr->MsgDataLength)
 		{
-			// Fiddle - seem to be problems somtimes with un-Neagled hosts
+			/* Fiddle - seem to be problems somtimes with un-Neagled hosts */
         
 			Sleep(500);
 
@@ -1038,7 +1038,7 @@ int AGWDataSocket_Read(struct AGWSocketConnectionInfo * sockptr, SOCKET sock)
 		
 		if (DataLength >= sockptr->MsgDataLength)
 		{
-			//   Read Data and Process Command
+			/*   Read Data and Process Command */
     
 			i=recv(sock, AGWMessage, sockptr->MsgDataLength, 0);
 
@@ -1047,12 +1047,12 @@ int AGWDataSocket_Read(struct AGWSocketConnectionInfo * sockptr, SOCKET sock)
 			sockptr->GotHeader = FALSE;
 		}
 
-		// Not Enough Data - wait
+		/* Not Enough Data - wait */
 
 	}
-	else	// Not got header
+	else	/* Not got header */
 	{
-		if (DataLength > 35)//         A header
+		if (DataLength > 35)/*         A header */
 		{
 			i=recv(sock,(char *)&sockptr->AGWRXHeader, 36, 0);
             
@@ -1076,12 +1076,12 @@ int AGWDataSocket_Read(struct AGWSocketConnectionInfo * sockptr, SOCKET sock)
 			}
 			else
 			{
-				sockptr->GotHeader = TRUE;            // Wait for data
+				sockptr->GotHeader = TRUE;            /* Wait for data */
 			}
 
 		} 
 		
-		// not got 36 bytes
+		/* not got 36 bytes */
 
 	}
 	
@@ -1107,17 +1107,17 @@ int ProcessAGWCommand(struct AGWSocketConnectionInfo * sockptr)
 	int AGWYReply = 0;
 	int state, change;
 
-	// if we have hidden some ports then the port in the AGW packet will be an index into the visible ports,
-	// not the real port number
+	/* if we have hidden some ports then the port in the AGW packet will be an index into the visible ports, */
+	/* not the real port number */
 
 	switch (sockptr->AGWRXHeader.DataKind)
 	{
 	case 'C':
 	case 'v':
 
-        //   Connect or Connect with Digis
+        /*   Connect or Connect with Digis */
         
-        //   Create Session Key from port and callsign pair
+        /*   Create Session Key from port and callsign pair */
 
 		AGWGetSessionKey(key, sockptr);
             
@@ -1138,17 +1138,17 @@ int ProcessAGWCommand(struct AGWSocketConnectionInfo * sockptr)
         Connection->SocketIndex = sockptr;
         Connection->Connecting = TRUE;
         
-        Connect(Stream);				// Connect
+        Connect(Stream);				/* Connect */
 		SessionState(Stream, &state, &change);
         
 		ConvToAX25(sockptr->CallSign1, AXCall);
-		ChangeSessionCallsign(Stream, AXCall);		// Prevent triggering incoming connect code
+		ChangeSessionCallsign(Stream, AXCall);		/* Prevent triggering incoming connect code */
 
         DisplaySessions();
         
         if (memcmp(ToCall,"SWITCH",6) == 0)
 		{
-			//  Just connect to command level on switch
+			/*  Just connect to command level on switch */
 
 			SendConMsgtoAppl(FALSE, Connection, ToCall);
 			Connection->Connecting = FALSE;
@@ -1156,17 +1156,17 @@ int ProcessAGWCommand(struct AGWSocketConnectionInfo * sockptr)
 		else
 		{
 
-			// Need to convert port index (used by AGW) to port number
+			/* Need to convert port index (used by AGW) to port number */
 
 			conport=GetPortNumber(VisiblePortToRealPort[key[0]-48]);
 
 			sprintf(ConnectMsg,"C %d %s",conport,ToCall);
 
-			// if 'v' command add digis
+			/* if 'v' command add digis */
 
 			if (sockptr->AGWRXHeader.DataLength)
 			{
-				// Have digis
+				/* Have digis */
 
 				char * Digis = AGWMessage;
 				int nDigis = Digis[0];
@@ -1182,7 +1182,7 @@ int ProcessAGWCommand(struct AGWSocketConnectionInfo * sockptr)
 
 			strcat(ConnectMsg, "\r");
 
-			// Send C command to Node
+			/* Send C command to Node */
 
 			SendMsg(Stream, ConnectMsg, (int)strlen(ConnectMsg));
 		}
@@ -1195,9 +1195,9 @@ int ProcessAGWCommand(struct AGWSocketConnectionInfo * sockptr)
         
 	case 'D':
    
-        //   Send Data
-        //
-        //   Create Session Key from port and callsign pair
+        /*   Send Data */
+        /* */
+        /*   Create Session Key from port and callsign pair */
 		
         AGWGetSessionKey(key, sockptr);
 
@@ -1214,7 +1214,7 @@ int ProcessAGWCommand(struct AGWSocketConnectionInfo * sockptr)
   
 	case 'd':
 
-    //   Disconnect
+    /*   Disconnect */
             
         memcpy(AGWTXHeader.callto,sockptr->AGWRXHeader.callfrom,10);
         memcpy(AGWTXHeader.callfrom,sockptr->AGWRXHeader.callto,10);
@@ -1232,8 +1232,8 @@ int ProcessAGWCommand(struct AGWSocketConnectionInfo * sockptr)
 			}
 		}
 
-		// There is confusion about the correct ordring of calls in the "d" packet. AGW appears to accept either,
-		//	so I will too.
+		/* There is confusion about the correct ordring of calls in the "d" packet. AGW appears to accept either, */
+		/*	so I will too. */
 
 		memset(&key[1],0,20);
 		strcpy(&key[1],sockptr->AGWRXHeader.callto);
@@ -1253,13 +1253,13 @@ int ProcessAGWCommand(struct AGWSocketConnectionInfo * sockptr)
 
 	case 'R':
     
-    //   Version
+    /*   Version */
     
         memset(&AGWTXHeader,0,36);
     
         AGWTXHeader.DataKind = 'R';
 
-        AGWTXHeader.DataLength = 8;       // Length
+        AGWTXHeader.DataLength = 8;       /* Length */
     
         SendtoSocket(sockptr->socket, (char *)&AGWVersion[0]);
 
@@ -1268,14 +1268,14 @@ int ProcessAGWCommand(struct AGWSocketConnectionInfo * sockptr)
 
 	case 'G':
 
-        //   Port info. String is in AGWPorts
+        /*   Port info. String is in AGWPorts */
         
         
         memset(&AGWTXHeader,0,36);
 
         AGWTXHeader.DataKind = 'G';
 
-        AGWTXHeader.DataLength =(int)strlen(AGWPorts)+1;     // Length
+        AGWTXHeader.DataLength =(int)strlen(AGWPorts)+1;     /* Length */
     
         SendtoSocket(sockptr->socket, AGWPorts);
 
@@ -1284,7 +1284,7 @@ int ProcessAGWCommand(struct AGWSocketConnectionInfo * sockptr)
     
 	case 'k':
 
-       //   Toggle Raw receive
+       /*   Toggle Raw receive */
 
         sockptr->RawFlag = !sockptr->RawFlag;
         
@@ -1292,7 +1292,7 @@ int ProcessAGWCommand(struct AGWSocketConnectionInfo * sockptr)
 
 	case 'K':
 
-        // Send Raw Frame
+        /* Send Raw Frame */
 
 		SendRaw(sockptr->AGWRXHeader.Port+1,&AGWMessage[1], sockptr->MsgDataLength - 1);
         
@@ -1300,14 +1300,14 @@ int ProcessAGWCommand(struct AGWSocketConnectionInfo * sockptr)
 
 	case 'm':
      
-       //   Toggle Monitor receive
+       /*   Toggle Monitor receive */
     
         sockptr->MonFlag = !sockptr->MonFlag;
 		return 0;
     
   
 	case 'M':
-	case 'V':         // Send UNProto Frame "V" includes Via string
+	case 'V':         /* Send UNProto Frame "V" includes Via string */
   
    
         ConvToAX25(sockptr->AGWRXHeader.callto,TXMessage);
@@ -1316,29 +1316,29 @@ int ProcessAGWCommand(struct AGWSocketConnectionInfo * sockptr)
 		Digis=0;
         MsgStart = 0;
 
-        if (sockptr->AGWRXHeader.DataKind == 'V')	// Unproto with VIA string
+        if (sockptr->AGWRXHeader.DataKind == 'V')	/* Unproto with VIA string */
 		{        
-            Digis = AGWMessage[0];                 // Number of digis
+            Digis = AGWMessage[0];                 /* Number of digis */
                     
 			for (j = 1; j<= Digis; j++)
 			{
-				ConvToAX25(&AGWMessage[(j - 1) * 10 + 1],&TXMessage[7+(j*7)]);      // No "last" bit
+				ConvToAX25(&AGWMessage[(j - 1) * 10 + 1],&TXMessage[7+(j*7)]);      /* No "last" bit */
 			}
 
-			// set end of call 
+			/* set end of call  */
 
-           MsgStart = Digis * 10 + 1;                // UI Data follows digis in message
+           MsgStart = Digis * 10 + 1;                /* UI Data follows digis in message */
  		}
    
 		TXMessageptr=&TXMessage[13+(Digis*7)];
 
-		*(TXMessageptr++) |= 1;		// set last bit
+		*(TXMessageptr++) |= 1;		/* set last bit */
         
-		*(TXMessageptr++) = 3;     // UI
+		*(TXMessageptr++) = 3;     /* UI */
 
         if (sockptr->AGWRXHeader.PID == 0)
 
-            *(TXMessageptr++) = 240;		 // PID
+            *(TXMessageptr++) = 240;		 /* PID */
 		else
             *(TXMessageptr++) = sockptr->AGWRXHeader.PID; 
    
@@ -1352,7 +1352,7 @@ int ProcessAGWCommand(struct AGWSocketConnectionInfo * sockptr)
 
 	case 'X':
  
-        //   Register Callsign
+        /*   Register Callsign */
         
 		memset(&AGWTXHeader,0,36);
 		
@@ -1366,7 +1366,7 @@ int ProcessAGWCommand(struct AGWSocketConnectionInfo * sockptr)
 
         AGWTXHeader.DataKind = 'X';
         
-        AGWTXHeader.DataLength = 1;      // Length
+        AGWTXHeader.DataLength = 1;      /* Length */
              
         AGWRegReply[0] = 1;
 
@@ -1380,9 +1380,9 @@ int ProcessAGWCommand(struct AGWSocketConnectionInfo * sockptr)
    
 	case 'Y':
     
-        //   Session Status
+        /*   Session Status */
         
-        //   Create Session Key from port and callsign pair
+        /*   Create Session Key from port and callsign pair */
         
         AGWGetSessionKey(key, sockptr);
 
@@ -1393,7 +1393,7 @@ int ProcessAGWCommand(struct AGWSocketConnectionInfo * sockptr)
 				memcpy(&AGWTXHeader,&sockptr->AGWRXHeader,36);
 
 				AGWYReply = CountFramesQueuedOnStream(AGWConnections[con].BPQStream);
-				AGWTXHeader.DataLength = 4;      // Length
+				AGWTXHeader.DataLength = 4;      /* Length */
 				SendtoSocket(sockptr->socket, (char *)&AGWYReply);
 
 				return 0;
@@ -1405,8 +1405,8 @@ int ProcessAGWCommand(struct AGWSocketConnectionInfo * sockptr)
 
 	default:
     
-        //If Debugging Then Print #10, "Unknown Message "; Chr$(Sockets(Index).AGWRXHeader(4))
-       // Debug.Print "Unknown Message "; Chr$(Sockets(Index).AGWRXHeader(4))
+        /*If Debugging Then Print #10, "Unknown Message "; Chr$(Sockets(Index).AGWRXHeader(4)) */
+       /* Debug.Print "Unknown Message "; Chr$(Sockets(Index).AGWRXHeader(4)) */
         
 		return 0;
 
@@ -1419,7 +1419,7 @@ int ProcessAGWCommand(struct AGWSocketConnectionInfo * sockptr)
 int AGWGetSessionKey(char * key, struct AGWSocketConnectionInfo * sockptr)
 {
 
-//   Create Session Key from port and callsign pair
+/*   Create Session Key from port and callsign pair */
         
   
 
@@ -1441,12 +1441,12 @@ int SendDataToAppl(int Stream, byte * Buffer, int Length)
 	char key[21];
 	struct AGWSocketConnectionInfo * sockptr;
 
-//Dim i As Long, Length As Long, con As Long, key As String, hilen As Long, lolen As Long
-//Dim Index As Integer, ConMsg As String, DisMsg As String
-//Dim BytesSent As Long
+/*Dim i As Long, Length As Long, con As Long, key As String, hilen As Long, lolen As Long */
+/*Dim Index As Integer, ConMsg As String, DisMsg As String */
+/*Dim BytesSent As Long */
 
 
-	//'   Find Connection number and call pair
+	/*'   Find Connection number and call pair */
 
 	for (con = 0; con < CurrentConnections; con++)
 	{
@@ -1456,7 +1456,7 @@ int SendDataToAppl(int Stream, byte * Buffer, int Length)
 
 			if (key[0] == 32)
 			{
-				//Debug.Print "Data on Unconnected Session"
+				/*Debug.Print "Data on Unconnected Session" */
 
 				Disconnect(Stream);
 				return (0);
@@ -1466,8 +1466,8 @@ int SendDataToAppl(int Stream, byte * Buffer, int Length)
 			
 			if (sockptr == 0)
 			{
-				// No connection, but have a key - wot's going on!!
-				// Probably best to clear out connection
+				/* No connection, but have a key - wot's going on!! */
+				/* Probably best to clear out connection */
 
 				Disconnect(Stream);
 
@@ -1482,7 +1482,7 @@ int SendDataToAppl(int Stream, byte * Buffer, int Length)
 			if (AGWConnections[con].Connecting)
 			{
 
-            //   See if *** Connected message
+            /*   See if *** Connected message */
 
 				i = strstr(Buffer, "Connected to");
             
@@ -1626,9 +1626,9 @@ int AGWAPITerminate()
 	int con, State, Change, n;
 	struct BPQConnectionInfo * Connection;
 	struct AGWSocketConnectionInfo * sockptr;
-//
-//   Release all streams
-//
+/* */
+/*   Release all streams */
+/* */
 	for (con = 0; con < CurrentConnections; con++)
 	{
 		Connection=&AGWConnections[con];
@@ -1647,7 +1647,7 @@ int AGWAPITerminate()
 
 	CurrentConnections = 0;
 
-	// Close Listening socket and any connections
+	/* Close Listening socket and any connections */
 	
 	shutdown(agwsock, 2);
 	closesocket(agwsock);

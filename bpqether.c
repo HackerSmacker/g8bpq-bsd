@@ -17,40 +17,40 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-// Only used on Windows. Linux uses linether.c
+/* Only used on Windows. Linux uses linether.c */
 
-//
-//	DLL to provide BPQEther support for G8BPQ switch in a 
-//	32bit environment,
-//
-//	Uses BPQ EXTERNAL interface
-//
-//	Uses WINPACAP library
+/* */
+/*	DLL to provide BPQEther support for G8BPQ switch in a  */
+/*	32bit environment, */
+/* */
+/*	Uses BPQ EXTERNAL interface */
+/* */
+/*	Uses WINPACAP library */
 
-//	Version 1.0 December 2005
+/*	Version 1.0 December 2005 */
 
-//  Version 1.1	January 2006
-//
-//		Get config file location from Node (will check bpq directory)
+/*  Version 1.1	January 2006 */
+/* */
+/*		Get config file location from Node (will check bpq directory) */
 
-//  Version 1.2	October 2006
+/*  Version 1.2	October 2006 */
 
-//		Write diagnostics to BPQ console window instead of STDOUT
+/*		Write diagnostics to BPQ console window instead of STDOUT */
 
-//	Version 1.3 February 2008
+/*	Version 1.3 February 2008 */
 
-//		Changes for dynamic unload of bpq32.dll
+/*		Changes for dynamic unload of bpq32.dll */
 
-// Version 1.3.1 Spetmber 2010
+/* Version 1.3.1 Spetmber 2010 */
 
-//		Add option to get config from bpq32.dll
+/*		Add option to get config from bpq32.dll */
 
 
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include <stdio.h>
 
-//#include <time.h>
+/*#include <time.h> */
 
 #include "CHeaders.h"
 #include <process.h>
@@ -58,8 +58,8 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 
 #include "../CommonSource/bpq32.h"
 
-//#include "packet32.h"
-//#include "ntddndis.h"
+/*#include "packet32.h" */
+/*#include "ntddndis.h" */
  
 typedef struct PCAPStruct
 {
@@ -77,13 +77,13 @@ typedef struct PCAPStruct
 
 PCAPINFO * PCAPInfo[32];
 
-//PPCAPINFO PCAPInfo[16]={0};
+/*PPCAPINFO PCAPInfo[16]={0}; */
 
 UCHAR EthDest[7]={01,'B','P','Q',0,0};
 
 char EtherType[10]="0x08FF";
 
-//pcap_t *adhandle;
+/*pcap_t *adhandle; */
 
 struct tagMSG Msg;
 
@@ -130,30 +130,30 @@ static size_t ExtProc(int fn, int port, PMESSAGE buff)
 	u_char *pkt_data;
 	PPCAPINFO PCAP = PCAPInfo[port];
 
-	//	char dcall[10],scall[10];
+	/*	char dcall[10],scall[10]; */
 
 	if (PCAP ==NULL)
 		return 0;
 
 	if (PCAP->adhandle == 0)
 	{
-		// No handle. 
+		/* No handle.  */
 		
 		if (PCAP->Adapter[0])	
 		{
-			// Try reopening periodically
+			/* Try reopening periodically */
 			
 			PCAP->pcap_reopen_delay --;
 			
 			if (PCAP->pcap_reopen_delay < 0)
 				if (OpenPCAP(PCAP) == FALSE)
-					PCAP->pcap_reopen_delay = 300;	// Retry every 30 seconds
+					PCAP->pcap_reopen_delay = 300;	/* Retry every 30 seconds */
 		}
 		return 0;
 	}
 	switch (fn)
 	{
-	case 1:				// poll
+	case 1:				/* poll */
 
 		res = pcap_next_exx(PCAP->adhandle, &header, &pkt_data);
 
@@ -163,26 +163,26 @@ static size_t ExtProc(int fn, int port, PMESSAGE buff)
 
 		if (res == -1)
 		{
-			// Failed - try to reopen
+			/* Failed - try to reopen */
 			
 			if (OpenPCAP(PCAP) == FALSE)
 				PCAP->pcap_reopen_delay = 300;
 			return 0;
 		}
 
-		// The message has the 14 Byte Etherent II header, followed
-		// by a length field and the ax.25 packet.
+		/* The message has the 14 Byte Etherent II header, followed */
+		/* by a length field and the ax.25 packet. */
 
-		// The length seems to include the length field and an extra
-		// 3 bytes. I can;t remember if this is a bug or I had a good reason at the time
+		/* The length seems to include the length field and an extra */
+		/* 3 bytes. I can;t remember if this is a bug or I had a good reason at the time */
 
 
 		if (PCAP->RLIRX)
 		{
-		//	RLI MODE - An extra 3 bytes before len, seem to be 00 00 41
+		/*	RLI MODE - An extra 3 bytes before len, seem to be 00 00 41 */
 			len=pkt_data[18]*256 + pkt_data[17];
 
-			if ((len < 16) || (len > 320)) return 0; // Probably BPQ Mode Frame
+			if ((len < 16) || (len > 320)) return 0; /* Probably BPQ Mode Frame */
 
 			len-=3;
 		
@@ -194,15 +194,15 @@ static size_t ExtProc(int fn, int port, PMESSAGE buff)
 		{
 			len=pkt_data[15]*256 + pkt_data[14];
 
-			if ((len < 16) || (len > 320)) return 0; // Probably RLI Mode Frame
+			if ((len < 16) || (len > 320)) return 0; /* Probably RLI Mode Frame */
 
 			memcpy(&buff->DEST, &pkt_data[16], len);
 		
-			// The DATAMESSAGE struct has a chain word, port and length 
-			// field - 7 bytes on 32 bit and 11 on 64. MSGHDDRLIN 
-			// has this value
+			/* The DATAMESSAGE struct has a chain word, port and length  */
+			/* field - 7 bytes on 32 bit and 11 on 64. MSGHDDRLIN  */
+			/* has this value */
 
-			// We take off 5 - 2 for length and 3 for who knows why
+			/* We take off 5 - 2 for length and 3 for who knows why */
 
 			len += (MSGHDDRLEN - 5);
 		}
@@ -212,14 +212,14 @@ static size_t ExtProc(int fn, int port, PMESSAGE buff)
 		return 1;
 
 		
-	case 2:				// send
+	case 2:				/* send */
 		
  		if (PCAP->RLITX)
 		
-		//	RLI MODE - An extra 3 bytes before len, seem to be 00 00 41
+		/*	RLI MODE - An extra 3 bytes before len, seem to be 00 00 41 */
 		{
 
-			txlen = GetLengthfromBuffer((PDATAMESSAGE)buff); // 2 for CRC
+			txlen = GetLengthfromBuffer((PDATAMESSAGE)buff); /* 2 for CRC */
 			txlen -= 2;
 			txbuff[16]=0x41;
 			txbuff[17]=(txlen & 0xff);
@@ -254,16 +254,16 @@ static size_t ExtProc(int fn, int port, PMESSAGE buff)
 		
 		if (txlen < 60) txlen = 60;
 
-		// Send down the packet 
+		/* Send down the packet  */
 
-		if (pcap_sendpacketx(PCAP->adhandle,	// Adapter
-			txbuff,				// buffer with the packet
-			txlen				// size
+		if (pcap_sendpacketx(PCAP->adhandle,	/* Adapter */
+			txbuff,				/* buffer with the packet */
+			txlen				/* size */
 			) != 0)
 		{
 
-	//		n=sprintf(buf,"\nError sending the packet: \n", pcap_geterrx(PCAPInfo[port].adhandle));		
-	//		WritetoConsole(buf);
+	/*		n=sprintf(buf,"\nError sending the packet: \n", pcap_geterrx(PCAPInfo[port].adhandle));		 */
+	/*		WritetoConsole(buf); */
 			
 			return 3;
 		}
@@ -272,15 +272,15 @@ static size_t ExtProc(int fn, int port, PMESSAGE buff)
 		return (0);
 
 
-	case 3:				// CHECK IF OK TO SEND
+	case 3:				/* CHECK IF OK TO SEND */
 
-		return (0);		// OK	
+		return (0);		/* OK	 */
 
-	case 4:				// reinit
+	case 4:				/* reinit */
 
 		return 0;
 
-	case 5:				// reinit
+	case 5:				/* reinit */
 
 		return 0;
 	}
@@ -291,21 +291,21 @@ static size_t ExtProc(int fn, int port, PMESSAGE buff)
 
 void * ETHERExtInit(struct PORTCONTROL *  PortEntry)
 {
-	//	Can have multiple ports, each mapping to a different Ethernet Adapter
+	/*	Can have multiple ports, each mapping to a different Ethernet Adapter */
 	
-	//	The Adapter number is in IOADDR
+	/*	The Adapter number is in IOADDR */
 
 	int Port = PortEntry->PORTNUMBER;
 	PPCAPINFO PCAP;
 	char buf[80];
 
-	if (InitPCAP())		// Make sure pcap is installed
+	if (InitPCAP())		/* Make sure pcap is installed */
 	{
 		WritetoConsole("BPQEther ");
 
-		//
-		//	Read config first, to get UDP info if needed
-		//
+		/* */
+		/*	Read config first, to get UDP info if needed */
+		/* */
 
 		PCAP = PCAPInfo[Port] = zalloc(sizeof(struct PCAPStruct));
 
@@ -330,10 +330,10 @@ InitPCAP()
 	u_long param=1;
 	BOOL bcopt=TRUE;
 
-//	Use LoadLibrary/GetProcADDR to get round link problem
+/*	Use LoadLibrary/GetProcADDR to get round link problem */
 
 	if (PcapDriver)
-		return TRUE;						// Already loaded
+		return TRUE;						/* Already loaded */
 
 	PcapDriver=LoadLibrary(Dllname);
 
@@ -403,12 +403,12 @@ int OpenPCAP(PPCAPINFO PCAP)
 	int n;
 
 	/* Open the adapter */
-	if ((PCAP->adhandle= pcap_open_livex(PCAP->Adapter,	// name of the device
-							 65536,			// portion of the packet to capture. 
-											// 65536 grants that the whole packet will be captured on all the MACs.
-							 PCAP->Promiscuous,	// promiscuous mode (nonzero means promiscuous)
-							 1,				// read timeout
-							 errbuf			// error buffer
+	if ((PCAP->adhandle= pcap_open_livex(PCAP->Adapter,	/* name of the device */
+							 65536,			/* portion of the packet to capture.  */
+											/* 65536 grants that the whole packet will be captured on all the MACs. */
+							 PCAP->Promiscuous,	/* promiscuous mode (nonzero means promiscuous) */
+							 1,				/* read timeout */
+							 errbuf			/* error buffer */
 							 )) == NULL)
 	{
 		return FALSE;
@@ -428,7 +428,7 @@ int OpenPCAP(PPCAPINFO PCAP)
 	sprintf(packet_filter,"ether[12:2]=0x%x",
 		ntohs(PCAP->EtherType));
 
-	//compile the filter
+	/*compile the filter */
 	if (pcap_compilex(PCAP->adhandle, &fcode, packet_filter, 1, netmask) <0 )
 	{	
 		n=sprintf(buf,"Unable to compile the packet filter. Check the syntax.\n");
@@ -438,7 +438,7 @@ int OpenPCAP(PPCAPINFO PCAP)
 		return FALSE;
 	}
 	
-	//set the filter
+	/*set the filter */
 
 	if (pcap_setfilterx(PCAP->adhandle, &fcode)<0)
 	{
@@ -455,9 +455,9 @@ int OpenPCAP(PPCAPINFO PCAP)
 
 static BOOL ReadConfigFile(int Port)
 {
-//TYPE	1	08FF                            # Ethernet Type
-//ETH	1	FF:FF:FF:FF:FF:FF				#	Target Ethernet AddrMAP G8BPQ-7 10.2.77.1                  # IP 93 for compatibility
-//ADAPTER	1	\Device\NPF_{21B601E8-8088-4F7D-96 29-EDE2A9243CF4}	# Adapter Name
+/*TYPE	1	08FF                            # Ethernet Type */
+/*ETH	1	FF:FF:FF:FF:FF:FF				#	Target Ethernet AddrMAP G8BPQ-7 10.2.77.1                  # IP 93 for compatibility */
+/*ADAPTER	1	\Device\NPF_{21B601E8-8088-4F7D-96 29-EDE2A9243CF4}	# Adapter Name */
 
 	char buf[256],errbuf[256];
 	char * Config;
@@ -465,13 +465,13 @@ static BOOL ReadConfigFile(int Port)
 
 	Config = PortConfig[Port];
 
-	PCAP->Promiscuous = 1;				// Defaults
+	PCAP->Promiscuous = 1;				/* Defaults */
 	PCAP->EtherType=htons(0x08FF);
 	memset(PCAP->EthDest, 0xff, 6); 
 
 	if (Config)
 	{
-		// Using config from bpq32.cfg
+		/* Using config from bpq32.cfg */
 
 		char * ptr1 = Config, * ptr2;
 
@@ -483,7 +483,7 @@ static BOOL ReadConfigFile(int Port)
 			ptr1 = ptr2 + 2;
 			ptr2 = strchr(ptr1, 13);
 
-			strcpy(errbuf,buf);			// save in case of error
+			strcpy(errbuf,buf);			/* save in case of error */
 	
 			if (!ProcessLine(buf, Port, FALSE))
 			{
@@ -518,9 +518,9 @@ static int ProcessLine(char * buf, int Port, BOOL CheckPort)
 
 	if(ptr == NULL) return (TRUE);
 
-	if(*ptr =='#') return (TRUE);			// comment
+	if(*ptr =='#') return (TRUE);			/* comment */
 
-	if(*ptr ==';') return (TRUE);			// comment
+	if(*ptr ==';') return (TRUE);			/* comment */
 
 	if (CheckPort)
 	{
@@ -530,13 +530,13 @@ static int ProcessLine(char * buf, int Port, BOOL CheckPort)
 
 		port = atoi(p_port);
 
-		if (Port != port) return TRUE;		// Not for us
+		if (Port != port) return TRUE;		/* Not for us */
 	}
 
 	if(_stricmp(ptr,"ADAPTER") == 0)
 	{
-		IP_ADAPTER_INFO AdapterInfo[16];       // Allocate information for up to 16 NICs
-		DWORD dwBufLen = sizeof(AdapterInfo);  // Save memory size of buffer
+		IP_ADAPTER_INFO AdapterInfo[16];       /* Allocate information for up to 16 NICs */
+		DWORD dwBufLen = sizeof(AdapterInfo);  /* Save memory size of buffer */
 		DWORD dwStatus = GetAdaptersInfo(AdapterInfo, &dwBufLen);
  
 		PIP_ADAPTER_INFO pAdapterInfo = AdapterInfo;
@@ -545,7 +545,7 @@ static int ProcessLine(char * buf, int Port, BOOL CheckPort)
 		
 		strcpy(PCAP->Adapter, p_Adapter);
 
-		// Look for MAC Address
+		/* Look for MAC Address */
 		
 		do
 		{
@@ -555,9 +555,9 @@ static int ProcessLine(char * buf, int Port, BOOL CheckPort)
 				break;
 			}
 
-			pAdapterInfo = pAdapterInfo->Next;    // Progress through linked list
+			pAdapterInfo = pAdapterInfo->Next;    /* Progress through linked list */
 
-		} while(pAdapterInfo);                    // Terminate if last adapter
+		} while(pAdapterInfo);                    /* Terminate if last adapter */
 
 		return (TRUE);
 	}
@@ -651,7 +651,7 @@ static int ProcessLine(char * buf, int Port, BOOL CheckPort)
 		PCAP->EthDest[5]=f;
 
 
-	//	strcpy(Adapter,p_Adapter);
+	/*	strcpy(Adapter,p_Adapter); */
 
 		return (TRUE);
 	}
@@ -673,14 +673,14 @@ static int ProcessLine(char * buf, int Port, BOOL CheckPort)
 		PCAP->EthSource[4]=e;
 		PCAP->EthSource[5]=f;
 
-	//	strcpy(Adapter,p_Adapter);
+	/*	strcpy(Adapter,p_Adapter); */
 
 		return (TRUE);
 
 	}
-	//
-	//	Bad line
-	//
+	/* */
+	/*	Bad line */
+	/* */
 	return (FALSE);
 	
 }

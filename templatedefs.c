@@ -1,8 +1,8 @@
-// Inline definitions of stuff from HTMLPages
+/* Inline definitions of stuff from HTMLPages */
 
-// These save users having to update HTMLPages every time something changes
+/* These save users having to update HTMLPages every time something changes */
 
-// Doing it as functions instead of static text allows edit and continue debugging
+/* Doing it as functions instead of static text allows edit and continue debugging */
 
 #define BTNCOLOUR "red"
 
@@ -560,7 +560,7 @@ char * MsgPagetxt()
 		"{\r\n"
 		"position: absolute;\r\n"
 		"width: 110px;\r\n"
-//		"height: 103px;\r\n"
+/*		"height: 103px;\r\n" */
 		"border:2px solid;\r\n"
 		"font-family: monospace;\r\n"
 		"}\r\n"

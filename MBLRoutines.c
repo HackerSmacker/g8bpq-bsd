@@ -17,9 +17,9 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-// Mail and Chat Server for BPQ32 Packet Switch
-//
-// MBL-Style Forwarding Routines
+/* Mail and Chat Server for BPQ32 Packet Switch */
+/* */
+/* MBL-Style Forwarding Routines */
 
 #include "bpqmail.h"
 
@@ -27,9 +27,9 @@ VOID ProcessMBLLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 {
 	Buffer[len] = 0;
 
-	// Winpack can send a second SID to switch to upload mode
+	/* Winpack can send a second SID to switch to upload mode */
 
-	if (Buffer[0] == '[' && Buffer[len-2] == ']')		// SID
+	if (Buffer[0] == '[' && Buffer[len-2] == ']')		/* SID */
 	{
 		if (user->flags & (F_PMS))
 		{
@@ -37,7 +37,7 @@ VOID ProcessMBLLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 			
 			if (conn->BBSFlags & FBBForwarding)
 			{
-				conn->FBBIndex = 0;		// ready for first block;
+				conn->FBBIndex = 0;		/* ready for first block; */
 				conn->FBBChecksum = 0;
 				memset(&conn->FBBHeaders[0], 0, 5 * sizeof(struct FBBHeaderLine));
 			}
@@ -50,7 +50,7 @@ VOID ProcessMBLLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 
 	if (Buffer[0] == 6 && Buffer[1] == 5)
 	{
-		// ?? Sally send these after a failed tranfer
+		/* ?? Sally send these after a failed tranfer */
 
 		memmove(Buffer, &Buffer[2], len);
 		len-=2;
@@ -59,7 +59,7 @@ VOID ProcessMBLLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 
 	if (_memicmp(Buffer, "F< ", 3) == 0)
 	{
-		// FBB Compressed request from system using UI Messages
+		/* FBB Compressed request from system using UI Messages */
 
 		int Number = atoi(&Buffer[3]);
 		struct MsgInfo * Msg = FindMessageByNumber(Number);
@@ -81,10 +81,10 @@ VOID ProcessMBLLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 
 		if (Msg)
 		{
-			conn->BBSFlags |= FBBCompressed;	// Needs compression
+			conn->BBSFlags |= FBBCompressed;	/* Needs compression */
 			SendCompressed(conn, Msg);
 			FBBputs(conn, ">\r");
-			Msg->status = 'Y';					// Mark as read
+			Msg->status = 'Y';					/* Mark as read */
 			SaveMessageDatabase();
 		}
 		else
@@ -99,9 +99,9 @@ VOID ProcessMBLLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 		return;
 	}
 
-	if (Buffer[0] == 'S')				//Send
+	if (Buffer[0] == 'S')				/*Send */
 	{
-		// SB WANT @ ALLCAN < N6ZFJ $4567_N0ARY
+		/* SB WANT @ ALLCAN < N6ZFJ $4567_N0ARY */
 
 		char * Cmd;
 		char * To = NULL;
@@ -119,7 +119,7 @@ VOID ProcessMBLLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 		{
 			nodeprintfEx(conn, "NO - BULLS NOT ACCEPTED\r");
 			if (conn->BBSFlags & OUTWARDCONNECT)
-				nodeprintfEx(conn, "F>\r");				// if Outward connect must be reverse forward
+				nodeprintfEx(conn, "F>\r");				/* if Outward connect must be reverse forward */
 			else
 				nodeprintfEx(conn, ">\r");
 
@@ -159,12 +159,12 @@ VOID ProcessMBLLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 
 		if (BID && LookupTempBID(BID))
 		{
-			// Being received from another BBS
+			/* Being received from another BBS */
 
 			nodeprintfEx(conn, "NO - BID\r");
 
 			if (conn->BBSFlags & OUTWARDCONNECT)
-				nodeprintfEx(conn, "F>\r");				// if Outward connect must be reverse forward
+				nodeprintfEx(conn, "F>\r");				/* if Outward connect must be reverse forward */
 			else
 				nodeprintfEx(conn, ">\r");
 
@@ -176,36 +176,36 @@ VOID ProcessMBLLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 	}
 
 
-	if (Buffer[0] == 'N')				// Not wanted
+	if (Buffer[0] == 'N')				/* Not wanted */
 	{
 		if (conn->FwdMsg)
 		{
-			// Zap the entry
+			/* Zap the entry */
 
 			clear_fwd_bit(conn->FwdMsg->fbbs, user->BBSNumber);
 			set_fwd_bit(conn->FwdMsg->forw, user->BBSNumber);
 			conn->UserPointer->ForwardingInfo->MsgCount--;
 
-			//  Only mark as forwarded if sent to all BBSs that should have it
+			/*  Only mark as forwarded if sent to all BBSs that should have it */
 			
 			if (memcmp(conn->FwdMsg->fbbs, zeros, NBMASK) == 0)
 			{
-				conn->FwdMsg->status = 'F';			// Mark as forwarded
+				conn->FwdMsg->status = 'F';			/* Mark as forwarded */
 				conn->FwdMsg->datechanged=time(NULL);
 			}
 
-			conn->FwdMsg->Locked = 0;	// Unlock
+			conn->FwdMsg->Locked = 0;	/* Unlock */
 		}
 
 		return;
 	}
 
-	if (Buffer[0] == 'O')				// Need it (OK)
+	if (Buffer[0] == 'O')				/* Need it (OK) */
 	{
 		struct tm * tm;
 		time_t now;
 		char * MsgBytes;
-		char * MsgPtr;			// In case updated for B2
+		char * MsgPtr;			/* In case updated for B2 */
 		int MsgLen;
 
 		if (!conn->FwdMsg)
@@ -224,18 +224,18 @@ VOID ProcessMBLLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 		MsgPtr = MsgBytes;
 		MsgLen = conn->FwdMsg->length;
 
-		// If a B2 Message, remove B2 Header
+		/* If a B2 Message, remove B2 Header */
 
 		if (conn->FwdMsg->B2Flags & B2Msg)
 		{		
-			// Remove all B2 Headers, and all but the first part.
+			/* Remove all B2 Headers, and all but the first part. */
 					
 			MsgPtr = strstr(MsgBytes, "Body:");
 			
 			if (MsgPtr)
 			{
 				MsgLen = atoi(&MsgPtr[5]);
-				MsgPtr= strstr(MsgBytes, "\r\n\r\n");		// Blank Line after headers
+				MsgPtr= strstr(MsgBytes, "\r\n\r\n");		/* Blank Line after headers */
 	
 				if (MsgPtr)
 					MsgPtr +=4;
@@ -257,7 +257,7 @@ VOID ProcessMBLLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 			tm->tm_year-100, tm->tm_mon+1, tm->tm_mday, tm->tm_hour, tm->tm_min,
 			conn->FwdMsg->number, BBSName, HRoute, RlineVer);
 
-		if (memcmp(MsgPtr, "R:", 2) != 0)    // No R line, so must be our message
+		if (memcmp(MsgPtr, "R:", 2) != 0)    /* No R line, so must be our message */
 			BBSputs(conn, "\r");
 
 		QueueMsg(conn, MsgPtr, MsgLen);
@@ -276,9 +276,9 @@ VOID ProcessMBLLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 
 	if (_stricmp(Buffer, "F>\r") == 0)
 	{
-		// Reverse forward request
+		/* Reverse forward request */
 
-		// If we have just sent a nessage, Flag it as sent
+		/* If we have just sent a nessage, Flag it as sent */
 
 		if (conn->FBBMsgsSent)
 		{
@@ -286,32 +286,32 @@ VOID ProcessMBLLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 			clear_fwd_bit(conn->FwdMsg->fbbs, user->BBSNumber);
 			set_fwd_bit(conn->FwdMsg->forw, user->BBSNumber);
 
-			//  Only mark as forwarded if sent to all BBSs that should have it
+			/*  Only mark as forwarded if sent to all BBSs that should have it */
 			
 			if (memcmp(conn->FwdMsg->fbbs, zeros, NBMASK) == 0)
 			{
-				conn->FwdMsg->status = 'F';			// Mark as forwarded
+				conn->FwdMsg->status = 'F';			/* Mark as forwarded */
 				conn->FwdMsg->datechanged=time(NULL);
 			}
 
-			conn->FwdMsg->Locked = 0;	// Unlock
+			conn->FwdMsg->Locked = 0;	/* Unlock */
 
 			conn->UserPointer->ForwardingInfo->MsgCount--;
 		}
 
-		// Send Message or Disconnect
+		/* Send Message or Disconnect */
 
 		if (FindMessagestoForward(conn))
 		{
 			struct MsgInfo * Msg;
 				
-			// Send S line and wait for response - SB WANT @ USA < W8AAA $1029_N0XYZ 
+			/* Send S line and wait for response - SB WANT @ USA < W8AAA $1029_N0XYZ  */
 
 			Msg = conn->FwdMsg;
 
 			if (conn->BBSFlags & MFJMODE)
 			{
-				// No @ BBS to MFJ TNC
+				/* No @ BBS to MFJ TNC */
 
 				nodeprintfEx(conn, "S%c %s < %s $%s\r", Msg->type, Msg->to, Msg->from, Msg->bid);
 			}
@@ -333,7 +333,7 @@ VOID ProcessMBLLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 
 	if (Buffer[len-2] == '>')
 	{
-		// If we have just sent a message, Flag it as sent
+		/* If we have just sent a message, Flag it as sent */
 
 		if (conn->FBBMsgsSent)
 		{
@@ -342,24 +342,24 @@ VOID ProcessMBLLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 			clear_fwd_bit(conn->FwdMsg->fbbs, user->BBSNumber);
 			set_fwd_bit(conn->FwdMsg->forw, user->BBSNumber);
 
-			//  Only mark as forwarded if sent to all BBSs that should have it
+			/*  Only mark as forwarded if sent to all BBSs that should have it */
 			
 			if (memcmp(conn->FwdMsg->fbbs, zeros, NBMASK) == 0)
 			{
-				conn->FwdMsg->status = 'F';			// Mark as forwarded
+				conn->FwdMsg->status = 'F';			/* Mark as forwarded */
 				conn->FwdMsg->datechanged=time(NULL);
 			}
 
 			conn->UserPointer->ForwardingInfo->MsgCount--;
 		}
 
-		// Send Message or request reverse using MBL-style forwarding
+		/* Send Message or request reverse using MBL-style forwarding */
 
 		if (FindMessagestoForward(conn))
 		{
 			struct MsgInfo * Msg;
 				
-			// Send S line and wait for response - SB WANT @ USA < W8AAA $1029_N0XYZ 
+			/* Send S line and wait for response - SB WANT @ USA < W8AAA $1029_N0XYZ  */
 
 			Msg = conn->FwdMsg;
 		
@@ -377,7 +377,7 @@ VOID ProcessMBLLine(CIRCUIT * conn, struct UserInfo * user, UCHAR* Buffer, int l
 		}
 	}
 
-	// Winpack after doing ocmpressed downloads sends KM or B
+	/* Winpack after doing ocmpressed downloads sends KM or B */
 
 	if (_stricmp(Buffer, "*** DONE\r") == 0 || _stricmp(Buffer, "*** What?\r") == 0 
 		|| _stricmp(Buffer, "B\r") == 0)

@@ -17,9 +17,9 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-// Mail and Chat Server for BPQ32 Packet Switch
-//
-//	Housekeeping Module
+/* Mail and Chat Server for BPQ32 Packet Switch */
+/* */
+/*	Housekeeping Module */
 
 #include "bpqmail.h"
 
@@ -42,8 +42,8 @@ double PNF = 30;
 
 int BF = 30;
 int BNF = 30;
-//int AP;
-//int AB;
+/*int AP; */
+/*int AB; */
 int NTSD = 30;
 int NTSF = 30;
 int NTSU = 30;
@@ -82,7 +82,7 @@ void DeletetoRecycle(char * FN)
 	SHFileOperation(&FileOp);
 #else
 
-	// On Linux move to Deleted under current directory
+	/* On Linux move to Deleted under current directory */
 
 	char newName[256];
 	char oldName[256];
@@ -91,7 +91,7 @@ void DeletetoRecycle(char * FN)
 
 	char * old = FN;
 
-	mkdir("Deleted", S_IRWXU | S_IRWXG | S_IRWXO);		// Make sure exists
+	mkdir("Deleted", S_IRWXU | S_IRWXG | S_IRWXO);		/* Make sure exists */
 
 	while(strchr(old, '/'))
 	{
@@ -139,7 +139,7 @@ VOID * GetOverrides(config_setting_t * group, char * ValueName)
 
 	config_setting_t *setting;
 
-	Value = zalloc(sizeof(void *));				// always NULL entry on end even if no values
+	Value = zalloc(sizeof(void *));				/* always NULL entry on end even if no values */
 	Value[0] = NULL;
 
 	setting = config_setting_get_member (group, ValueName);
@@ -184,7 +184,7 @@ VOID * RegGetOverrides(HKEY hKey, char * ValueName)
 	char * Val;
 
 
-	Value = zalloc(sizeof(void *));				// always NULL entry on end even if no values
+	Value = zalloc(sizeof(void *));				/* always NULL entry on end even if no values */
 
 	Value[0] = NULL;
 
@@ -306,7 +306,7 @@ VOID DoHouseKeeping(BOOL Manual)
 	SaveConfig(ConfigName);
 	GetConfig(ConfigName);
 
-	GetBadWordFile();			// Reread Badwords
+	GetBadWordFile();			/* Reread Badwords */
 
 #ifndef LINBPQ
 
@@ -352,7 +352,7 @@ VOID ExpireMessages()
 
 	if (NTSU == 0)
 	{
-		// Assume all unset
+		/* Assume all unset */
 
 		NTSD = 30;
 		NTSU = 30;
@@ -367,7 +367,7 @@ VOID ExpireMessages()
 	{
 		Msg = MsgHddrPtr[n];
 
-		// If from the future, Kill it
+		/* If from the future, Kill it */
 
 		if (Msg->datecreated > Future)
 		{
@@ -384,7 +384,7 @@ VOID ExpireMessages()
 			case 'N':
 			case 'H':
 
-				// Is it unforwarded or unread?
+				/* Is it unforwarded or unread? */
 
 				if (memcmp(Msg->fbbs, zeros, NBMASK) == 0)
 				{
@@ -463,7 +463,7 @@ VOID ExpireMessages()
 			BLimit = BF;
 			BNFLimit = now - BNF*86400;
 
-			// Check FROM Overrides
+			/* Check FROM Overrides */
 
 			if (LTFROM)
 			{
@@ -480,7 +480,7 @@ VOID ExpireMessages()
 				}
 			}
 
-			// Check TO Overrides
+			/* Check TO Overrides */
 
 			if (LTTO)
 			{
@@ -497,7 +497,7 @@ VOID ExpireMessages()
 				}
 			}
 
-			// Check AT Overrides
+			/* Check AT Overrides */
 
 			if (LTAT)
 			{
@@ -519,7 +519,7 @@ VOID ExpireMessages()
 			BFLimit = now - BLimit*86400;
 
 			if (OverrideUnsent)
-				if (BLimit != BF)		// Have we an override?
+				if (BLimit != BF)		/* Have we an override? */
 					BNFLimit = BFLimit;
 
 			switch (Msg->status)
@@ -567,7 +567,7 @@ BOOL RemoveKilledMessages()
 	FirstMessageIndextoForward = 0;
 
 	NewMsgHddrPtr = zalloc((NumberofMessages+1) * sizeof(void *));
-	NewMsgHddrPtr[0] = MsgHddrPtr[0];		// Copy Control Record
+	NewMsgHddrPtr[0] = MsgHddrPtr[0];		/* Copy Control Record */
 
 	i = 0;
 
@@ -635,7 +635,7 @@ VOID Renumber_Messages()
 
 	if (!NewNumber) return;
 
-	DeleteRedundantMessages();		// Make sure there aren't any old mail files, or renumber may fail
+	DeleteRedundantMessages();		/* Make sure there aren't any old mail files, or renumber may fail */
 
     memset(NewNumber, 0, s);
 
@@ -644,16 +644,16 @@ VOID Renumber_Messages()
 		MsgnotoMsg[i] = NULL;
 	}
 
-	i = 0;		// New Message Number
+	i = 0;		/* New Message Number */
 
 	for (n = 1; n <= NumberofMessages; n++)
 	{
 		Msg = MsgHddrPtr[n];
 
-		NewNumber[Msg->number] = ++i;		// Save so we can update users' last listed count
+		NewNumber[Msg->number] = ++i;		/* Save so we can update users' last listed count */
 
-		// New will always be >= old unless something has gone horribly wrong,
-		// so can rename in place without risk of losing a message
+		/* New will always be >= old unless something has gone horribly wrong, */
+		/* so can rename in place without risk of losing a message */
 
 		if (Msg->number < i)
 		{
@@ -706,7 +706,7 @@ VOID Renumber_Messages()
 
 			if (j == 0)
 			{
-				// Last listed has gone. Find next above
+				/* Last listed has gone. Find next above */
 
 				while(++lastmsg < 65536)
 				{
@@ -717,7 +717,7 @@ VOID Renumber_Messages()
 					}
 				}
 
-				// Not found, so use latest
+				/* Not found, so use latest */
 
 				user->lastmsg = i;
 				break;
@@ -746,7 +746,7 @@ BOOL ExpireBIDs()
 	int i, n;
 
 	NewBIDRecPtr = zalloc((NumberofBIDs + 1) * sizeof(BIDRec));
-	NewBIDRecPtr[0] = BIDRecPtr[0];		// Copy Control Record
+	NewBIDRecPtr[0] = BIDRecPtr[0];		/* Copy Control Record */
 
 	i = 0;
 
@@ -754,7 +754,7 @@ BOOL ExpireBIDs()
 	{
 		BID = BIDRecPtr[n];
 
-//		Debugprintf("%d %d", BID->u.timestamp, now - BID->u.timestamp);
+/*		Debugprintf("%d %d", BID->u.timestamp, now - BID->u.timestamp); */
 
 		if ((now - BID->u.timestamp) < BidLifetime)
 			NewBIDRecPtr[++i] = BID;
@@ -807,8 +807,8 @@ int DeleteLogFiles()
    int Age;
    UCHAR * ptr;
 
-   // Prepare string for use with FindFile functions.  First, copy the
-   // string to a buffer, then append '\*' to the directory name.
+   /* Prepare string for use with FindFile functions.  First, copy the */
+   /* string to a buffer, then append '\*' to the directory name. */
 
 
 	ptr = GetLogDirectory();
@@ -816,7 +816,7 @@ int DeleteLogFiles()
 	strcpy(szDir, ptr);
    strcat(szDir, "/logs/Log_*.txt");
 
-   // Find the first file in the directory.
+   /* Find the first file in the directory. */
 
    hFind = FindFirstFile(szDir, &ffd);
 
@@ -825,7 +825,7 @@ int DeleteLogFiles()
       return dwError;
    } 
    
-   // List all the files in the directory with some info about them.
+   /* List all the files in the directory with some info about them. */
 
    do
    {
@@ -919,14 +919,14 @@ VOID SendNonDeliveryMessage(struct MsgInfo * OldMsg, BOOL Unread, int Age)
 	char * Via;
 	struct UserInfo * FromUser;
 
-	// Try to create a from Address. ( ? check RMS)
+	/* Try to create a from Address. ( ? check RMS) */
 
 	strcpy(From, OldMsg->from);
 
 	if (strcmp(From, "SYSTEM") == 0)
-		return;							// Don't send non-deliverys SYSTEM messages
+		return;							/* Don't send non-deliverys SYSTEM messages */
 
-	//	Dont send NDN for NDN
+	/*	Dont send NDN for NDN */
 
 	if (strcmp(OldMsg->title, "Non-delivery Notification") == 0)
 		return;
@@ -1023,12 +1023,12 @@ VOID CreateBBSTrafficReport()
 
 	int	ConnectsIn;
 	int ConnectsOut;
-//	int MsgsReceived;
-//	int MsgsSent;
-//	int MsgsRejectedIn;
-//	int MsgsRejectedOut;
-//	int BytesForwardedIn;
-//	int BytesForwardedOut;
+/*	int MsgsReceived; */
+/*	int MsgsSent; */
+/*	int MsgsRejectedIn; */
+/*	int MsgsRejectedOut; */
+/*	int BytesForwardedIn; */
+/*	int BytesForwardedOut; */
 	int TotMsgsReceived[4] = {0,0,0,0};
 	int TotMsgsSent[4] = {0,0,0,0};
 

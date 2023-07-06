@@ -38,7 +38,7 @@
 #define lib_pcap_h
 
 #ifdef WIN32
-//#include "pcap-stdinc.h"
+/*#include "pcap-stdinc.h" */
 #else /* WIN32 */
 #include <sys/types.h>
 #include <sys/time.h>

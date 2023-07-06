@@ -1,7 +1,7 @@
-//{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
-// Used by KernelScript1.rc
-//
+/*{{NO_DEPENDENCIES}} */
+/* Microsoft Developer Studio generated include file. */
+/* Used by KernelScript1.rc */
+/* */
 #define ID_ADDRIG                       3
 #define ID_ADDTIME                      4
 #define IDD_DIALOG1                     101
@@ -122,8 +122,8 @@
 #define IDM_FIRSTCHILD                  50000
 #define TRAYBASEID                      60000
 
-// Next default values for new objects
-// 
+/* Next default values for new objects */
+/*  */
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1

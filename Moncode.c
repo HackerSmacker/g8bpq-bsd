@@ -19,7 +19,7 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 
 
 
-// Monitor Code - from moncode.asm
+/* Monitor Code - from moncode.asm */
 
 #pragma data_seg("_BPQDATA")
 
@@ -34,11 +34,11 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 #include "CHeaders.h"
 #include "tncinfo.h"
 
-//	MSGFLAG contains CMD/RESPONSE BITS
+/*	MSGFLAG contains CMD/RESPONSE BITS */
 
-#define	CMDBIT	4		// CURRENT MESSAGE IS A COMMAND
-#define	RESP 2		// CURRENT MSG IS RESPONSE
-#define	VER1 1 		// CURRENT MSG IS VERSION 1
+#define	CMDBIT	4		/* CURRENT MESSAGE IS A COMMAND */
+#define	RESP 2		/* CURRENT MSG IS RESPONSE */
+#define	VER1 1 		/* CURRENT MSG IS VERSION 1 */
 
 
 #define	UI	3
@@ -51,7 +51,7 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 #define	RNR	5
 #define	REJ	9
 
-#define	PFBIT 0x10		// POLL/FINAL BIT IN CONTROL BYTE
+#define	PFBIT 0x10		/* POLL/FINAL BIT IN CONTROL BYTE */
 
 #define	NETROM_PID 0xCF
 #define	IP_PID 0xCC
@@ -70,13 +70,13 @@ char * DISPLAYARPDATAGRAM(UCHAR * Datagram, UCHAR * Output);
 DllExport int APIENTRY SetTraceOptions(int mask, int mtxparam, int mcomparam)
 {
 
-//	Sets the tracing options for DecodeFrame. Mask is a bit
-//	mask of ports to monitor (ie 101 binary will monitor ports
-//	1 and 3). MTX enables monitoring on transmitted frames. MCOM
-//	enables monitoring of protocol control frames (eg SABM, UA, RR),
-//	as well as info frames.
+/*	Sets the tracing options for DecodeFrame. Mask is a bit */
+/*	mask of ports to monitor (ie 101 binary will monitor ports */
+/*	1 and 3). MTX enables monitoring on transmitted frames. MCOM */
+/*	enables monitoring of protocol control frames (eg SABM, UA, RR), */
+/*	as well as info frames. */
 
-//  *** For external use only, supports portnum up to 31 ***
+/*  *** For external use only, supports portnum up to 31 *** */
 
 	MMASK = mask;
 	MTX = mtxparam;
@@ -88,13 +88,13 @@ DllExport int APIENTRY SetTraceOptions(int mask, int mtxparam, int mcomparam)
 DllExport int APIENTRY SetTraceOptions64(uint64_t mask, int mtxparam, int mcomparam, int monUIOnly)
 {
 
-//	Sets the tracing options for DecodeFrame. Mask is a bit
-//	mask of ports to monitor (ie 101 binary will monitor ports
-//	1 and 3). MTX enables monitoring on transmitted frames. MCOM
-//	enables monitoring of protocol control frames (eg SABM, UA, RR),
-//	as well as info frames.
+/*	Sets the tracing options for DecodeFrame. Mask is a bit */
+/*	mask of ports to monitor (ie 101 binary will monitor ports */
+/*	1 and 3). MTX enables monitoring on transmitted frames. MCOM */
+/*	enables monitoring of protocol control frames (eg SABM, UA, RR), */
+/*	as well as info frames. */
 
-//  *** For external use only, supports portnum up to 63 ***
+/*  *** For external use only, supports portnum up to 63 *** */
 
 	MMASK = mask;
 	MTX = mtxparam;
@@ -106,13 +106,13 @@ DllExport int APIENTRY SetTraceOptions64(uint64_t mask, int mtxparam, int mcompa
 DllExport int APIENTRY SetTraceOptionsEx(int mask, int mtxparam, int mcomparam, int monUIOnly)
 {
 
-//  *** For external use only, supports portnum up to 31 ***
+/*  *** For external use only, supports portnum up to 31 *** */
 
-//	Sets the tracing options for DecodeFrame. Mask is a bit
-//	mask of ports to monitor (ie 101 binary will monitor ports
-//	1 and 3). MTX enables monitoring on transmitted frames. MCOM
-//	enables monitoring of protocol control frames (eg SABM, UA, RR),
-//	as well as info frames.
+/*	Sets the tracing options for DecodeFrame. Mask is a bit */
+/*	mask of ports to monitor (ie 101 binary will monitor ports */
+/*	1 and 3). MTX enables monitoring on transmitted frames. MCOM */
+/*	enables monitoring of protocol control frames (eg SABM, UA, RR), */
+/*	as well as info frames. */
 
 
 	MMASK = mask;
@@ -126,11 +126,11 @@ DllExport int APIENTRY SetTraceOptionsEx(int mask, int mtxparam, int mcomparam, 
 int IntSetTraceOptionsEx(uint64_t mask, int mtxparam, int mcomparam, int monUIOnly)
 {
 
-//	Sets the tracing options for DecodeFrame. Mask is a bit
-//	mask of ports to monitor (ie 101 binary will monitor ports
-//	1 and 3). MTX enables monitoring on transmitted frames. MCOM
-//	enables monitoring of protocol control frames (eg SABM, UA, RR),
-//	as well as info frames.
+/*	Sets the tracing options for DecodeFrame. Mask is a bit */
+/*	mask of ports to monitor (ie 101 binary will monitor ports */
+/*	1 and 3). MTX enables monitoring on transmitted frames. MCOM */
+/*	enables monitoring of protocol control frames (eg SABM, UA, RR), */
+/*	as well as info frames. */
 
 
 	MMASK = mask;
@@ -161,7 +161,7 @@ int IntDecodeFrame(MESSAGE * msg, char * buffer, time_t Stamp, uint64_t Mask, BO
 	char CRCHAR[3] = "  ";
 	char PFCHAR[3] = "  ";
 	int Port;
-	int MSGFLAG = 0;		//CR and V1 flags
+	int MSGFLAG = 0;		/*CR and V1 flags */
 	char * Output = buffer;
 	int HH, MM, SS;
 	char TR = 'R';
@@ -173,7 +173,7 @@ int IntDecodeFrame(MESSAGE * msg, char * buffer, time_t Stamp, uint64_t Mask, BO
 
 	size_t MsgLen = msg->LENGTH;
 
-	// MINI mode is for Node Listen (remote monitor) Mode. Keep info to minimum
+	/* MINI mode is for Node Listen (remote monitor) Mode. Keep info to minimum */
 /*
 KO6IZ*>K7TMG-1:
 /ex
@@ -184,37 +184,37 @@ W0TX*>KC6OAR>KB9KC>ID:
 W0TX/R DRC/D W0TX-2/G W0TX-1/B W0TX-7/N
 KC6OAR*>ID:
 */
-	// Check Port
+	/* Check Port */
 
 	Port = msg->PORT;
 	
 	if (Port & 0x80)
 	{
 		if (MTX == 0)
-			return 0;							//	TRANSMITTED FRAME - SEE IF MTX ON
+			return 0;							/*	TRANSMITTED FRAME - SEE IF MTX ON */
 		
 		TR = 'T';
 	}
 
 	Port &= 0x7F;
 
-	if ((((uint64_t)1 << (Port - 1)) & Mask) == 0)		// Check MMASK
+	if ((((uint64_t)1 << (Port - 1)) & Mask) == 0)		/* Check MMASK */
 		return 0;
 	
 
-	// We now pass Text format monitoring from non-ax25 drivers through this code
-	// As a valid ax.25 address must have bottom bit set flag plain text messages
-	// with hex 01.
+	/* We now pass Text format monitoring from non-ax25 drivers through this code */
+	/* As a valid ax.25 address must have bottom bit set flag plain text messages */
+	/* with hex 01. */
 
-	//	GET THE CONTROL BYTE, TO SEE IF THIS FRAME IS TO BE DISPLAYED
+	/*	GET THE CONTROL BYTE, TO SEE IF THIS FRAME IS TO BE DISPLAYED */
 
 	if (msg->DEST[0] == 1)
 	{
-		// Just copy text (Null Terminated) to output
+		/* Just copy text (Null Terminated) to output */
 
-		// Need Timestamp and T/R
+		/* Need Timestamp and T/R */
 
-		Stamp = Stamp % 86400;		// Secs
+		Stamp = Stamp % 86400;		/* Secs */
 		HH = (int)(Stamp / 3600);
 
 		Stamp -= HH * 3600;
@@ -222,7 +222,7 @@ KC6OAR*>ID:
 
 		SS = (int)(Stamp - MM * 60);
 
-		// Add Port: unless Mail Mon (port 64)
+		/* Add Port: unless Mail Mon (port 64) */
 
 		Output += sprintf((char *)Output, "%02d:%02d:%02d%c ", HH, MM, SS, TR);
 
@@ -240,29 +240,29 @@ KC6OAR*>ID:
 		return (int)strlen(buffer);
 	}
 
-	n = 8;						// MAX DIGIS
-	ptr = &msg->ORIGIN[6];	// End of Address bit
+	n = 8;						/* MAX DIGIS */
+	ptr = &msg->ORIGIN[6];	/* End of Address bit */
 
 	while ((*ptr & 1) == 0)
 	{
-		//	MORE TO COME
+		/*	MORE TO COME */
 	
 		ptr += 7;
 		n--;
 
 		if (n == 0)
 		{
-			return 0;						// Corrupt - no end of address bit
+			return 0;						/* Corrupt - no end of address bit */
 		}
 	}
 
-	// Reached End of digis
+	/* Reached End of digis */
 
-	Work = ptr - &msg->ORIGIN[6];			// Work is length of digis
+	Work = ptr - &msg->ORIGIN[6];			/* Work is length of digis */
 
 	MsgLen -= Work;
 
-	ADJBUFFER = (MESSAGE *)((UCHAR *)msg + Work);			// ADJBUFFER points to CTL, etc. allowing for digis
+	ADJBUFFER = (MESSAGE *)((UCHAR *)msg + Work);			/* ADJBUFFER points to CTL, etc. allowing for digis */
 
 	CTL = ADJBUFFER->CTL;
 
@@ -280,13 +280,13 @@ KC6OAR*>ID:
 	}
 	else
 	{
-		if (((CTL & 2) && MINI) == 0)		// Want Control (but not super unless MCOM
+		if (((CTL & 2) && MINI) == 0)		/* Want Control (but not super unless MCOM */
 			if (MCOM == 0)
-				return 0;						// Dont do control
+				return 0;						/* Dont do control */
 	}
 
 
-	Stamp = Stamp % 86400;		// Secs
+	Stamp = Stamp % 86400;		/* Secs */
 	HH = (int)(Stamp / 3600);
 
 	Stamp -= HH * 3600;
@@ -294,7 +294,7 @@ KC6OAR*>ID:
 
 	SS = (int)(Stamp - MM * 60);
 
-	// Add Port: if MINI mode and monitoring more than one port
+	/* Add Port: if MINI mode and monitoring more than one port */
 
 	if (MINI == 0)
 		Output += sprintf((char *)Output, "%02d:%02d:%02d%c ", HH, MM, SS, TR);
@@ -307,14 +307,14 @@ KC6OAR*>ID:
 
 	Output += sprintf((char *)Output, "%s>%s", From, To);
 
-	//	Display any Digi-Peaters   
+	/*	Display any Digi-Peaters    */
 
-	n = 8;					// Max number of digi-peaters
-	ptr = &msg->ORIGIN[6];	// End of Address bit
+	n = 8;					/* Max number of digi-peaters */
+	ptr = &msg->ORIGIN[6];	/* End of Address bit */
 
 	while ((*ptr & 1) == 0)
 	{
-		//	MORE TO COME
+		/*	MORE TO COME */
 
 		From[ConvFromAX25(ptr + 1, From)] = 0;
 		Output += sprintf((char *)Output, ",%s", From);
@@ -325,36 +325,36 @@ KC6OAR*>ID:
 		if (n == 0)
 			break;
 
-		// See if digi actioned - put a * on last actioned
+		/* See if digi actioned - put a * on last actioned */
 
 		if (*ptr & 0x80)
 		{
-			if (*ptr & 1)						// if last address, must need *
+			if (*ptr & 1)						/* if last address, must need * */
 				*(Output++) = '*';
 			else
-				if ((ptr[7] & 0x80) == 0)		// Repeased by next?
-					*(Output++) = '*';			// No, so need *
+				if ((ptr[7] & 0x80) == 0)		/* Repeased by next? */
+					*(Output++) = '*';			/* No, so need * */
 		}
 	}		
 	
 	if (MINI == 0)
 		Output += sprintf((char *)Output, " Port=%d ", Port);
 
-	// Set up CR and PF
+	/* Set up CR and PF */
 
 	CRCHAR[0] = 0;
 	PFCHAR[0] = 0;
 
 	if (msg->DEST[6] & 0x80)
 	{
-		if (msg->ORIGIN[6] & 0x80)			//	Both set, assume V1
+		if (msg->ORIGIN[6] & 0x80)			/*	Both set, assume V1 */
 			MSGFLAG |= VER1;
 		else
 		{
 			MSGFLAG |= CMDBIT;
 			CRCHAR[0] = ' ';
 			CRCHAR[1] = 'C';
-			if (PF)							// If FP set
+			if (PF)							/* If FP set */
 			{
 				PFCHAR[0] = ' ';
 				PFCHAR[1] = 'P';
@@ -363,24 +363,24 @@ KC6OAR*>ID:
 	}
 	else
 	{
-		if (msg->ORIGIN[6] & 0x80)			//	Only Origin Set
+		if (msg->ORIGIN[6] & 0x80)			/*	Only Origin Set */
 		{
 			MSGFLAG |= RESP;
 			CRCHAR[0] = ' ';
 			CRCHAR[1] = 'R';
-			if (PF)							// If FP set
+			if (PF)							/* If FP set */
 			{
 				PFCHAR[0] = ' ';
 				PFCHAR[1] = 'F';
 			}
 		}
 		else
-			MSGFLAG |= VER1;				// Neither, assume V1
+			MSGFLAG |= VER1;				/* Neither, assume V1 */
 	}
 
-	if ((CTL & 1) == 0)						// I frame
+	if ((CTL & 1) == 0)						/* I frame */
 	{
-		int NS = (CTL >> 1) & 7;			// ISOLATE RECEIVED N(S)
+		int NS = (CTL >> 1) & 7;			/* ISOLATE RECEIVED N(S) */
 		int NR = (CTL >> 5) & 7;
 
 		Info = 1;
@@ -390,14 +390,14 @@ KC6OAR*>ID:
 	}
 	else if (CTL == 3)
 	{
-		//	Un-numbered Information Frame 
+		/*	Un-numbered Information Frame  */
 
 		Output += sprintf((char *)Output, "<UI%s>", CRCHAR);
 		Info = 1;
 	}
 	else if (CTL & 2)
 	{
-		// UN Numbered
+		/* UN Numbered */
 				
 		char SUP[6] = "??";
 
@@ -455,7 +455,7 @@ KC6OAR*>ID:
 	}
 	else
 	{
-		// Super
+		/* Super */
 
 		int NR = (CTL >> 5) & 7;
 		char SUP[5] = "??";
@@ -491,7 +491,7 @@ KC6OAR*>ID:
 
 	if (XIDFLAG)
 	{
-		// Decode and display XID
+		/* Decode and display XID */
 
 		UCHAR * ptr = &ADJBUFFER->PID;
 
@@ -503,9 +503,9 @@ KC6OAR*>ID:
 			int xidlen = *(ptr++) << 8;
 			xidlen += *ptr++;
 		
-			// XID is set of Type, Len, Value n-tuples
+			/* XID is set of Type, Len, Value n-tuples */
 
-// G8BPQ-2>G8BPQ:(XID cmd, p=1) Half-Duplex SREJ modulo-128 I-Field-Length-Rx=256 Window-Size-Rx=32 Ack-Timer=3000 Retries=10
+/* G8BPQ-2>G8BPQ:(XID cmd, p=1) Half-Duplex SREJ modulo-128 I-Field-Length-Rx=256 Window-Size-Rx=32 Ack-Timer=3000 Retries=10 */
 
 
 			while (xidlen > 0)
@@ -523,18 +523,18 @@ KC6OAR*>ID:
 				}
 				switch(Type)
 				{
-				case 2:				//Bin fields
+				case 2:				/*Bin fields */
 				case 3:
 
 					Output += sprintf((char *)Output, " %d=%x", Type, value);
 					break;
 
-				case 6:				//RX Size
+				case 6:				/*RX Size */
 
 					Output += sprintf((char *)Output, " RX Paclen=%d", value / 8);
 					break;
 
-				case 8:				//RX Window
+				case 8:				/*RX Window */
 
 					Output += sprintf((char *)Output, " RX Window=%d", value);
 					break;
@@ -544,11 +544,11 @@ KC6OAR*>ID:
 	}
 	if (Info)
 	{
-		// We have an info frame
+		/* We have an info frame */
 
 		switch (ADJBUFFER->PID)
 		{
-		case 0xF0:		// Normal Data
+		case 0xF0:		/* Normal Data */
 		{
 			char Infofield[257];
 			char * ptr1 = Infofield;
@@ -559,17 +559,17 @@ KC6OAR*>ID:
 			MsgLen = MsgLen - (19 + sizeof(void *));
 
 			if (MsgLen < 0 || MsgLen > 257)
-				return 0;				// Duff
+				return 0;				/* Duff */
 
 			while (MsgLen--)
 			{
 				C = *(ptr2++);
 
 				if (APRS)
-					*(ptr1++) = C;		// MIC-E needs all chars
+					*(ptr1++) = C;		/* MIC-E needs all chars */
 				else
 				{
-					// Convert to printable
+					/* Convert to printable */
 
 					C &= 0x7F;
 
@@ -603,13 +603,13 @@ KC6OAR*>ID:
 			Output = DISPLAYARPDATAGRAM(&ADJBUFFER->L2DATA[0], Output);
 			break;
 
-		case 8:					// Fragmented IP
+		case 8:					/* Fragmented IP */
 
-			n = ADJBUFFER->L2DATA[0];	// Frag Count
+			n = ADJBUFFER->L2DATA[0];	/* Frag Count */
 
 			Output += sprintf((char *)Output, "<Fragmented IP %02x>\r", n);
 
-			if (ADJBUFFER->L2DATA[0] & 0x80)	// First Frag - Display Header
+			if (ADJBUFFER->L2DATA[0] & 0x80)	/* First Frag - Display Header */
 			{
 				Output = DISPLAYIPDATAGRAM((IPMSG *)&ADJBUFFER->L2DATA[2], Output, (int)MsgLen - 1);
 			}
@@ -624,7 +624,7 @@ KC6OAR*>ID:
 	return (int)(Output - buffer);
 
 }
-//      Display NET/ROM data                                                 
+/*      Display NET/ROM data                                                  */
 
 char * DISPLAY_NETROM(MESSAGE * ADJBUFFER, UCHAR * Output, int MsgLen)
 {
@@ -636,12 +636,12 @@ char * DISPLAY_NETROM(MESSAGE * ADJBUFFER, UCHAR * Output, int MsgLen)
 
  	if (ADJBUFFER->L2DATA[0] == NODES_SIG)
 	{
-		// Display NODES
+		/* Display NODES */
 
 
-		// If an INP3 RIF (type <> UI) decode as such
+		/* If an INP3 RIF (type <> UI) decode as such */
 	
-		if (ADJBUFFER->CTL != 3)		// UI
+		if (ADJBUFFER->CTL != 3)		/* UI */
 			return DisplayINP3RIF(&ADJBUFFER->L2DATA[1], Output, MsgLen - 24);
 
 		memcpy(Alias, ++ptr, 6);
@@ -650,9 +650,9 @@ char * DISPLAY_NETROM(MESSAGE * ADJBUFFER, UCHAR * Output, int MsgLen)
 	
 		Output += sprintf((char *)Output, " NODES broadcast from %s\r", Alias);
 
-		MsgLen -= 30;					//Header, mnemonic and signature length
+		MsgLen -= 30;					/*Header, mnemonic and signature length */
 
-		while(MsgLen > 20)				// Entries are 21 bytes
+		while(MsgLen > 20)				/* Entries are 21 bytes */
 		{
 			Dest[ConvFromAX25(ptr, Dest)] = 0;
 			ptr +=7;
@@ -669,7 +669,7 @@ char * DISPLAY_NETROM(MESSAGE * ADJBUFFER, UCHAR * Output, int MsgLen)
 		return Output;
 	}
 
-	//	Display normal NET/ROM transmissions 
+	/*	Display normal NET/ROM transmissions  */
 
 	Output += sprintf((char *)Output, " NET/ROM\r  ");
 
@@ -685,7 +685,7 @@ char * DISPLAY_NETROM(MESSAGE * ADJBUFFER, UCHAR * Output, int MsgLen)
 	RXNO = *(ptr++);
 	OpCode = Flags = *(ptr++);
 
-	OpCode &= 15;				// Remove Flags
+	OpCode &= 15;				/* Remove Flags */
 
 	Output += sprintf((char *)Output, "%s to %s ttl %d cct=%02X%02X ", Dest, Node, TTL, Index, ID );
 	MsgLen -= 20;
@@ -702,7 +702,7 @@ char * DISPLAY_NETROM(MESSAGE * ADJBUFFER, UCHAR * Output, int MsgLen)
 
 		Output += sprintf((char *)Output, "<CON REQ> w=%d %s at %s", Window, Dest, Node);
 
-		if (MsgLen > 38)				// BPQ Extended Params
+		if (MsgLen > 38)				/* BPQ Extended Params */
 		{
 			short Timeout = (SHORT)*ptr;
 			Output += sprintf((char *)Output, " t/o %d", Timeout);
@@ -712,7 +712,7 @@ char * DISPLAY_NETROM(MESSAGE * ADJBUFFER, UCHAR * Output, int MsgLen)
 
 	case L4CACK:
 
-		if (Flags & L4BUSY)				// BUSY RETURNED
+		if (Flags & L4BUSY)				/* BUSY RETURNED */
 			return Output + sprintf((char *)Output, " <CON NAK> - BUSY");
 
 		return Output + sprintf((char *)Output, " <CON ACK> w=%d my cct=%02X%02X", ptr[1], TXNO, RXNO);
@@ -746,13 +746,13 @@ char * DISPLAY_NETROM(MESSAGE * ADJBUFFER, UCHAR * Output, int MsgLen)
 			MsgLen = MsgLen - (19 + sizeof(void *));
 
 			if (MsgLen < 0 || MsgLen > 257)
-				return Output;				// Duff
+				return Output;				/* Duff */
 
 			while (MsgLen--)
 			{
 				C = *(ptr++);
 
-				// Convert to printable
+				/* Convert to printable */
 
 				C &= 0x7F;
 
@@ -788,9 +788,9 @@ char * DISPLAY_NETROM(MESSAGE * ADJBUFFER, UCHAR * Output, int MsgLen)
 
 	case 0:
 
-		//	OPcode zero is used for several things
+		/*	OPcode zero is used for several things */
 
-		if (Index == 0x0c && ID == 0x0c)	// IP	
+		if (Index == 0x0c && ID == 0x0c)	/* IP	 */
 		{
 			*(Output++) = 13;
 			*(Output++) = ' ';
@@ -798,7 +798,7 @@ char * DISPLAY_NETROM(MESSAGE * ADJBUFFER, UCHAR * Output, int MsgLen)
 			return Output;
 		}
 	
-		if (Index == 0 && ID == 1)			// NRR	
+		if (Index == 0 && ID == 1)			/* NRR	 */
 		{
 			Output += sprintf((char *)Output, " <Record Route>\r");
 
@@ -853,12 +853,12 @@ UCHAR * DISPLAYIPDATAGRAM(IPMSG * IP, UCHAR * Output, int MsgLen)
 
 	if (FRAGWORD)
 	{
-		// If nonzero, check which bits are set 
+		/* If nonzero, check which bits are set  */
 
-		//Bit 0: reserved, must be zero
-		//Bit 1: (DF) 0 = May Fragment,  1 = Don't Fragment.
-		//Bit 2: (MF) 0 = Last Fragment, 1 = More Fragments.
-		//Fragment Offset:  13 bits
+		/*Bit 0: reserved, must be zero */
+		/*Bit 1: (DF) 0 = May Fragment,  1 = Don't Fragment. */
+		/*Bit 2: (MF) 0 = Last Fragment, 1 = More Fragments. */
+		/*Fragment Offset:  13 bits */
 
 		if (FRAGWORD & (1 << 14))
 			Output += sprintf((char *)Output, "DF ");
@@ -871,7 +871,7 @@ UCHAR * DISPLAYIPDATAGRAM(IPMSG * IP, UCHAR * Output, int MsgLen)
 		if (FRAGWORD)
 		{
 			Output += sprintf((char *)Output, "Offset %d ", FRAGWORD * 8);
-			return Output;			// Cant display proto fields
+			return Output;			/* Cant display proto fields */
 		}
 	}
 
@@ -944,11 +944,11 @@ char * DISPLAYARPDATAGRAM(UCHAR * Datagram, UCHAR * Output)
 	UCHAR * ptr = Datagram;
 	char Dest[10];
 	
-	if (ptr[7] == 1)		// Request
+	if (ptr[7] == 1)		/* Request */
 		return Output + sprintf((char *)Output, " ARP Request who has %d.%d.%d.%d? Tell %d.%d.%d.%d",
 			ptr[26], ptr[27], ptr[28], ptr[29], ptr[15], ptr[16], ptr[17], ptr[18]);
 
-	// Response
+	/* Response */
 
 	Dest[ConvFromAX25(&ptr[8], Dest)] = 0;
 

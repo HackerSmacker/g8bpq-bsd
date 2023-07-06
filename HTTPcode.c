@@ -18,7 +18,7 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
 
-//#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
+/*#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers */
 
 #define _CRT_SECURE_NO_DEPRECATE
 
@@ -32,7 +32,7 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 #include "bpq32.h"
 #include "telnetserver.h"
 
-// This is needed to link with a lib built from source
+/* This is needed to link with a lib built from source */
 
 #ifdef WIN32
 #define ZEXPORT __stdcall
@@ -74,9 +74,9 @@ extern struct ROUTE * NEIGHBOURS;
 extern int  ROUTE_LEN;
 extern int  MAXNEIGHBOURS;
 
-extern struct DEST_LIST * DESTS;				// NODE LIST
+extern struct DEST_LIST * DESTS;				/* NODE LIST */
 extern int  DEST_LIST_LEN;
-extern int  MAXDESTS;			// MAX NODES IN SYSTEM
+extern int  MAXDESTS;			/* MAX NODES IN SYSTEM */
 
 extern struct _LINKTABLE * LINKS;
 extern int	LINK_TABLE_LEN; 
@@ -113,7 +113,7 @@ int ProcessChatSignon(struct TCPINFO * TCP, char * MsgPtr, char * Appl, char * R
 VOID APRSProcessHTTPMessage(SOCKET sock, char * MsgPtr, BOOL LOCAL, BOOL COOKIE);
 
 
-static struct HTTPConnectionInfo * SessionList;	// active term mode sessions
+static struct HTTPConnectionInfo * SessionList;	/* active term mode sessions */
 
 char Mycall[10];
 
@@ -128,11 +128,11 @@ char Index[] = "<html><head><title>%s's BPQ32 Web Server</title></head><body><P 
 char IndexNoAPRS[] = "<meta http-equiv=\"refresh\" content=\"0;url=/Node/NodeIndex.html\">"
 "<html><head></head><body></body></html>";
 
-//char APRSBit[] = "<td><a href=../aprs>APRS Pages</a></td>";
+/*char APRSBit[] = "<td><a href=../aprs>APRS Pages</a></td>"; */
 
-//char MailBit[] = "<td><a href=../Mail/Header>Mail Mgmt</a></td>"
-//				 "<td><a href=/Webmail>WebMail</a></td>";
-//char ChatBit[] = "<td><a href=../Chat/Header>Chat Mgmt</a></td>";
+/*char MailBit[] = "<td><a href=../Mail/Header>Mail Mgmt</a></td>" */
+/*				 "<td><a href=/Webmail>WebMail</a></td>"; */
+/*char ChatBit[] = "<td><a href=../Chat/Header>Chat Mgmt</a></td>"; */
 
 char Tail[] = "</body></html>";
 
@@ -234,7 +234,7 @@ char TermOutput[] = "<!DOCTYPE html><html><head>"
 "<div style=\"font-family:monospace;%s>\"";
 
 
-// font-family:monospace;background-color:black;color:lawngreen;font-size:12px
+/* font-family:monospace;background-color:black;color:lawngreen;font-size:12px */
 
 char TermOutputTail[] = "</div><script type=\"text/javascript\">\r\nsetTimeout(ScrollOutput, 1)</script></body></html>";
 
@@ -315,7 +315,7 @@ void UndoTransparency(char * input)
 
 	ptr1 = ptr2 = input;
 
-	// Convert any %xx constructs
+	/* Convert any %xx constructs */
 
 	while (1)
 	{
@@ -361,7 +361,7 @@ VOID PollSession(struct HTTPConnectionInfo * Session)
 	char c;
 	int Line;
 
-	// Poll Node
+	/* Poll Node */
 
 	SessionState(Session->Stream, &state, &change);
 
@@ -370,7 +370,7 @@ VOID PollSession(struct HTTPConnectionInfo * Session)
 		int Line = Session->LastLine++;
 		free(Session->ScreenLines[Line]);
 
-		if (state == 1)// Connected
+		if (state == 1)/* Connected */
 			Session->ScreenLines[Line] = _strdup("*** Connected<br>\r\n");
 		else
 			Session->ScreenLines[Line] = _strdup("*** Disconnected<br>\r\n");
@@ -389,7 +389,7 @@ VOID PollSession(struct HTTPConnectionInfo * Session)
 		{
 			GetMsg(Session->Stream, &Msg[0], &len, &count);
 
-			// replace cr with <br> and space with &nbsp;
+			/* replace cr with <br> and space with &nbsp; */
 
 
 			ptr1 = Msg;
@@ -397,7 +397,7 @@ VOID PollSession(struct HTTPConnectionInfo * Session)
 
 			if (Session->PartLine)
 			{
-				// Last line was incomplete - append to it
+				/* Last line was incomplete - append to it */
 
 				realLen = Session->PartLine;
 
@@ -424,14 +424,14 @@ VOID PollSession(struct HTTPConnectionInfo * Session)
 
 					strcpy(ptr2, "<br>\r\n");
 
-					// Write to screen
+					/* Write to screen */
 
 					Line = Session->LastLine++;
 					free(Session->ScreenLines[Line]);
 
 					LineLen = (int)strlen(Formatted);
 
-					// if line starts with a colour code, process it
+					/* if line starts with a colour code, process it */
 
 					if (Formatted[0] ==  0x1b && LineLen > 1)
 					{
@@ -461,8 +461,8 @@ VOID PollSession(struct HTTPConnectionInfo * Session)
 					memcpy(ptr2, "&nbsp;", 6);
 					ptr2 += 6;
 
-					// Make sure line isn't too long
-					// but beware of spaces expanded to &nbsp; - count chars in line
+					/* Make sure line isn't too long */
+					/* but beware of spaces expanded to &nbsp; - count chars in line */
 
 					if ((realLen) > 100)
 					{
@@ -499,9 +499,9 @@ VOID PollSession(struct HTTPConnectionInfo * Session)
 
 			if (ptr2 != &Formatted[0])
 			{
-				// Incomplete line
+				/* Incomplete line */
 
-				// Save to screen
+				/* Save to screen */
 
 				Line = Session->LastLine++;
 				free(Session->ScreenLines[Line]);
@@ -514,7 +514,7 @@ VOID PollSession(struct HTTPConnectionInfo * Session)
 				Session->PartLine = realLen;
 			}
 
-			//	strcat(Session->ScreenBuffer, Formatted);
+			/*	strcat(Session->ScreenBuffer, Formatted); */
 			Session->Changed = TRUE;
 
 		} while (count > 0);
@@ -524,12 +524,12 @@ VOID PollSession(struct HTTPConnectionInfo * Session)
 
 VOID HTTPTimer()
 {
-	// Run every tick. Check for status change and data available
+	/* Run every tick. Check for status change and data available */
 
-	struct HTTPConnectionInfo * Session = SessionList;	// active term mode sessions
+	struct HTTPConnectionInfo * Session = SessionList;	/* active term mode sessions */
 	struct HTTPConnectionInfo * PreviousSession = NULL;
 
-//	inf();
+/*	inf(); */
 
 	while (Session)
 	{
@@ -542,7 +542,7 @@ VOID HTTPTimer()
 			continue;
 		}
 
-		if (Session->KillTimer > 3000)		// Around 5 mins
+		if (Session->KillTimer > 3000)		/* Around 5 mins */
 		{
 			int i;
 			int Stream = Session->Stream;
@@ -557,7 +557,7 @@ VOID HTTPTimer()
 			DeallocateStream(Stream);
 
 			if (PreviousSession)
-				PreviousSession->Next = Session->Next;		// Remove from chain
+				PreviousSession->Next = Session->Next;		/* Remove from chain */
 			else
 				SessionList = Session->Next;
 
@@ -568,8 +568,8 @@ VOID HTTPTimer()
 
 		PollSession(Session);
 
-		//		if (Session->ResponseTimer == 0 && Session->Changed)
-		//			Debugprintf("Data to send but no outstanding GET");
+		/*		if (Session->ResponseTimer == 0 && Session->Changed) */
+		/*			Debugprintf("Data to send but no outstanding GET"); */
 
 		if (Session->ResponseTimer)
 		{
@@ -632,7 +632,7 @@ struct HTTPConnectionInfo * AllocateSession(SOCKET sock, char Mode)
 
 	if (Mode == 'T')
 	{
-		// Terminal
+		/* Terminal */
 
 		for (i = 0; i < 20; i++)
 			Session->ScreenLines[i] = _strdup("Scroll to end<br>");
@@ -691,7 +691,7 @@ void ProcessTermInput(SOCKET sock, char * MsgPtr, int MsgLen, char * Key)
 	}
 	else
 	{
-		char * input = strstr(MsgPtr, "\r\n\r\n");	// End of headers
+		char * input = strstr(MsgPtr, "\r\n\r\n");	/* End of headers */
 		char * end = &MsgPtr[MsgLen];
 		int Line = Session->LastLine++;
 		char * ptr1, * ptr2;
@@ -715,7 +715,7 @@ void ProcessTermInput(SOCKET sock, char * MsgPtr, int MsgLen, char * Key)
 		input += 10;
 		ptr1 = ptr2 = input;
 
-		// Convert any %xx constructs
+		/* Convert any %xx constructs */
 
 		while (ptr1 != end)
 		{
@@ -766,7 +766,7 @@ void ProcessTermInput(SOCKET sock, char * MsgPtr, int MsgLen, char * Key)
 			SessionControl(Stream, 1, 0);
 			if (BPQHOSTVECTOR[Session->Stream -1].HOSTSESSION == NULL)
 			{
-				//No L4 sessions free
+				/*No L4 sessions free */
 
 				ReplyLen = sprintf(_REPLYBUFFER, "%s", NoSessions);
 				HeaderLen = sprintf(Header, "HTTP/1.1 200 OK\r\nContent-Length: %d\r\nContent-Type: text/html\r\n\r\n", ReplyLen + (int)strlen(Tail));
@@ -824,7 +824,7 @@ int ProcessTermSignon(struct TNCINFO * TNC, SOCKET sock, char * MsgPtr, int MsgL
 	int ReplyLen;
 	char Header[256];
 	int HeaderLen;
-	char * input = strstr(MsgPtr, "\r\n\r\n");	// End of headers
+	char * input = strstr(MsgPtr, "\r\n\r\n");	/* End of headers */
 	char * user, * password, * Context, * Appl;
 	char NoApp[] = "";
 	struct TCPINFO * TCP = TNC->TCPInfo;
@@ -865,7 +865,7 @@ int ProcessTermSignon(struct TNCINFO * TNC, SOCKET sock, char * MsgPtr, int MsgL
 			if ((strcmp(password, USER->Password) == 0) &&
 				((_stricmp(user, USER->UserName) == 0 ) || (_stricmp(USER->UserName, "ANON") == 0)))
 			{
-				// ok
+				/* ok */
 
 				struct HTTPConnectionInfo * Session = AllocateSession(sock, 'T');
 
@@ -897,7 +897,7 @@ int ProcessTermSignon(struct TNCINFO * TNC, SOCKET sock, char * MsgPtr, int MsgL
 
 		if (i == TCP->NumberofUsers)
 		{
-			//   Not found
+			/*   Not found */
 
 			ReplyLen = sprintf(_REPLYBUFFER, TermSignon, Mycall, Mycall, Appl);
 			ReplyLen += sprintf(&_REPLYBUFFER[ReplyLen], "%s", PassError);
@@ -931,7 +931,7 @@ char * LookupKey(char * Key)
 
 int ProcessSpecialPage(char * Buffer, int FileSize)
 {
-	// replaces ##xxx### constructs with the requested data
+	/* replaces ##xxx### constructs with the requested data */
 
 	char * NewMessage = malloc(100000);
 	char * ptr1 = Buffer, * ptr2, * ptr3, * ptr4, * NewPtr = NewMessage;
@@ -940,7 +940,7 @@ int ProcessSpecialPage(char * Buffer, int FileSize)
 	int NewFileSize = FileSize;
 	char * StripPtr = ptr1;
 
-	// strip comments blocks
+	/* strip comments blocks */
 
 	while (ptr4 = strstr(ptr1, "<!--"))
 	{
@@ -970,7 +970,7 @@ loop:
 
 	if (ptr2)
 	{
-		PrevLen = (int)(ptr2 - ptr1);			// Bytes before special text
+		PrevLen = (int)(ptr2 - ptr1);			/* Bytes before special text */
 
 		ptr3 = strstr(ptr2+2, "##");
 
@@ -993,7 +993,7 @@ loop:
 			{
 				NewTextLen = (int)strlen(NewText);
 				NewFileSize = NewFileSize + NewTextLen - KeyLen;					
-				//	NewMessage = realloc(NewMessage, NewFileSize);
+				/*	NewMessage = realloc(NewMessage, NewFileSize); */
 
 				memcpy(NewPtr, ptr1, PrevLen);
 				NewPtr += PrevLen;
@@ -1005,16 +1005,16 @@ loop:
 			}
 			else
 			{
-				// Key not found, so just leave
+				/* Key not found, so just leave */
 
 				memcpy(NewPtr, ptr1, PrevLen + KeyLen);
 				NewPtr += (PrevLen + KeyLen);
 			}
 
-			ptr1 = ptr3;			// Continue scan from here
+			ptr1 = ptr3;			/* Continue scan from here */
 			BytesLeft = (int)(Buffer + FileSize - ptr3);
 		}
-		else		// Unmatched ##
+		else		/* Unmatched ## */
 		{
 			memcpy(NewPtr, ptr1, PrevLen + 2);
 			NewPtr += (PrevLen + 2);
@@ -1023,7 +1023,7 @@ loop:
 		goto loop;
 	}
 
-	// Copy Rest
+	/* Copy Rest */
 
 	memcpy(NewPtr, ptr1, BytesLeft);
 	NewMessage[NewFileSize] = 0;
@@ -1084,7 +1084,7 @@ int SendMessageFile(SOCKET sock, char * FN, BOOL OnlyifExists, int allowDeflate)
 			sprintf(MsgFile, "%s/HTML%s", BPQDirectory, FN);
 
 
-		// First see if file exists so we can override standard ones in code
+		/* First see if file exists so we can override standard ones in code */
 
 		if (stat(MsgFile, &STAT) == 0 && (hFile = fopen(MsgFile, "rb")))
 		{
@@ -1096,16 +1096,16 @@ int SendMessageFile(SOCKET sock, char * FN, BOOL OnlyifExists, int allowDeflate)
 
 			fclose(hFile);
 
-			//	ft.QuadPart -=  116444736000000000;
-			//	ft.QuadPart /= 10000000;
+			/*	ft.QuadPart -=  116444736000000000; */
+			/*	ft.QuadPart /= 10000000; */
 
-			//	ctime = ft.LowPart;
+			/*	ctime = ft.LowPart; */
 
 			FormatTime3(FileTimeString, STAT.st_ctime);
 		}
 		else
 		{
-			// See if it is a hard coded file
+			/* See if it is a hard coded file */
 
 			MsgBytes = GetStandardPage(&FN[1], &FileSize);
 
@@ -1118,7 +1118,7 @@ int SendMessageFile(SOCKET sock, char * FN, BOOL OnlyifExists, int allowDeflate)
 			}
 			else
 			{
-				if (OnlyifExists)					// Set if we dont want an error response if missing
+				if (OnlyifExists)					/* Set if we dont want an error response if missing */
 					return -1;
 
 				Len = sprintf(Header, "HTTP/1.1 404 Not Found\r\nContent-Length: 16\r\n\r\nPage not found\r\n");
@@ -1127,7 +1127,7 @@ int SendMessageFile(SOCKET sock, char * FN, BOOL OnlyifExists, int allowDeflate)
 			}
 		}
 
-		// if HTML file, look for ##...## substitutions
+		/* if HTML file, look for ##...## substitutions */
 
 		if ((strcmp(FN, "/") == 0 || strstr(FN, "htm" ) || strstr(FN, "HTM")) &&  strstr(MsgBytes, "##" ))
 		{
@@ -1175,11 +1175,11 @@ int SendMessageFile(SOCKET sock, char * FN, BOOL OnlyifExists, int allowDeflate)
 
 		Sent = send(sock, Compressed, FileSize, 0);
 
-		while (Sent != FileSize && Loops++ < 3000)				// 100 secs max
+		while (Sent != FileSize && Loops++ < 3000)				/* 100 secs max */
 		{	
-			if (Sent > 0)					// something sent
+			if (Sent > 0)					/* something sent */
 			{
-//				Debugprintf("%d out of %d sent", Sent, FileSize);
+/*				Debugprintf("%d out of %d sent", Sent, FileSize); */
 				FileSize -= Sent;
 				memmove(Compressed, &Compressed[Sent], FileSize);
 			}
@@ -1188,7 +1188,7 @@ int SendMessageFile(SOCKET sock, char * FN, BOOL OnlyifExists, int allowDeflate)
 			Sent = send(sock, Compressed, FileSize, 0);
 		}
 
-//		Debugprintf("%d out of %d sent %d loops", Sent, FileSize, Loops);
+/*		Debugprintf("%d out of %d sent %d loops", Sent, FileSize, Loops); */
 
 
 		free (MsgBytes);
@@ -1211,9 +1211,9 @@ VOID sendandcheck(SOCKET sock, const char * Buffer, int Len)
 	int Sent = send(sock, Buffer, Len, 0);
 	char * Copy = NULL;
 
-	while (Sent != Len && Loops++ < 300)					// 10 secs max
+	while (Sent != Len && Loops++ < 300)					/* 10 secs max */
 	{	
-		//		Debugprintf("%d out of %d sent %d Loops", Sent, Len, Loops);
+		/*		Debugprintf("%d out of %d sent %d Loops", Sent, Len, Loops); */
 
 		if (Copy == NULL)
 		{
@@ -1221,7 +1221,7 @@ VOID sendandcheck(SOCKET sock, const char * Buffer, int Len)
 			memcpy(Copy, Buffer, Len);
 		}
 
-		if (Sent > 0)					// something sent
+		if (Sent > 0)					/* something sent */
 		{
 			Len -= Sent;
 			memmove(Copy, &Copy[Sent], Len);
@@ -1243,7 +1243,7 @@ int RefreshTermWindow(struct TCPINFO * TCP, struct HTTPConnectionInfo * Session,
 	int HeaderLen, ReplyLen;
 	char Header[256];
 
-	PollSession(Session);			// See if anything received 
+	PollSession(Session);			/* See if anything received  */
 
 	if (Session->Changed)
 	{
@@ -1289,16 +1289,16 @@ int SetupNodeMenu(char * Buff, int LOCAL)
 
 	char NodeMenuHeader[] = "<html id=body><head><title>%s's BPQ32 Web Server</title>"
 	"<style type=\"text/css\">"
-	// The container <div> - needed to position the dropdown content
+	/* The container <div> - needed to position the dropdown content */
 	".dropdown {position: relative; display: inline-block;}"
-	// Dropdown Content (Hidden by Default)
+	/* Dropdown Content (Hidden by Default) */
 	".dropdown-content {display: none; position: absolute; left: -100px; background-color: #f1f1f1;"
 	" min-width: 120px; border: 1px solid; padding: 4px; z-index: 1;}"
-	// Links inside the dropdown
+	/* Links inside the dropdown */
 	".dropdown-content a {color: black; padding: 2px 2px; display: block;}"
-	// Change color of dropdown links on hover 
+	/* Change color of dropdown links on hover  */
 	".dropdown-content a:hover {background-color: #ddd}"
-	// Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button)
+	/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
 	".show {display:block;}"
 	"input.btn:active {background:black;color:white;} "
 	"submit.btn:active {background:black;color:white;} "
@@ -1307,7 +1307,7 @@ int SetupNodeMenu(char * Buff, int LOCAL)
 	"<script>\r\n"
 
 
-// Close the dropdown menu if the user clicks outside of it
+/* Close the dropdown menu if the user clicks outside of it */
 	"window.onclick = function(event) {console.log(event.target.id);"
 	" if (event.target.id == 'body') {"
 	"  var dropdowns = document.getElementsByClassName('dropdown-content');"
@@ -1319,9 +1319,9 @@ int SetupNodeMenu(char * Buff, int LOCAL)
     "  }}}}\r\n"
 
 	"function myShow() {document.getElementById('myDropdown').classList.add('show');}"
-//	"function myHide() {"
-//	" if (event.target.matches('.HTMLBodyElement'))"
-//	"{document.getElementById('myDropdown').classList.remove('show');}}"
+/*	"function myHide() {" */
+/*	" if (event.target.matches('.HTMLBodyElement'))" */
+/*	"{document.getElementById('myDropdown').classList.remove('show');}}" */
 
 
 	"function dev_win(URL,w,h,top,left){"
@@ -1420,14 +1420,14 @@ VOID SaveConfigFile(SOCKET sock , char * MsgPtr, char * Rest, int LOCAL)
 	char Backup2[MAX_PATH];
 	struct stat STAT;
 
-	input = strstr(MsgPtr, "\r\n\r\n");	// End of headers
+	input = strstr(MsgPtr, "\r\n\r\n");	/* End of headers */
 
 	if (input)
 	{
 		if (strstr(input, "Cancel=Cancel"))
 		{
 			ReplyLen = SetupNodeMenu(Reply, LOCAL);
-			//			ReplyLen = sprintf(Reply, "%s", "<html><script>window.close();</script></html>");
+			/*			ReplyLen = sprintf(Reply, "%s", "<html><script>window.close();</script></html>"); */
 			HeaderLen = sprintf(Header, "HTTP/1.1 200 OK\r\nContent-Length: %d\r\nContent-Type: text/html\r\n\r\n", ReplyLen + (int)strlen(Tail));
 			send(sock, Header, HeaderLen, 0);
 			send(sock, Reply, ReplyLen, 0);
@@ -1441,7 +1441,7 @@ VOID SaveConfigFile(SOCKET sock , char * MsgPtr, char * Rest, int LOCAL)
 		{
 			*ptr = 0;
 
-			// Undo any % transparency
+			/* Undo any % transparency */
 
 			ptr1 = ptr2 = input + 8;
 
@@ -1463,7 +1463,7 @@ VOID SaveConfigFile(SOCKET sock , char * MsgPtr, char * Rest, int LOCAL)
 					c = ' ';
 
 #ifndef WIN32
-				if (c != 13)				// Strip CR if Linux
+				if (c != 13)				/* Strip CR if Linux */
 #endif
 					*(ptr2++) = c;
 
@@ -1486,9 +1486,9 @@ VOID SaveConfigFile(SOCKET sock , char * MsgPtr, char * Rest, int LOCAL)
 				strcat(inputname, "bpq32.cfg");
 			}
 
-			// Make a backup of the config
+			/* Make a backup of the config */
 
-			// Keep 4 Generations
+			/* Keep 4 Generations */
 
 			strcpy(Backup2, inputname);
 			strcat(Backup2, ".bak.3");
@@ -1496,22 +1496,22 @@ VOID SaveConfigFile(SOCKET sock , char * MsgPtr, char * Rest, int LOCAL)
 			strcpy(Backup1, inputname);
 			strcat(Backup1, ".bak.2");
 
-			DeleteFile(Backup2);			// Remove old .bak.3
-			MoveFile(Backup1, Backup2);		// Move .bak.2 to .bak.3
+			DeleteFile(Backup2);			/* Remove old .bak.3 */
+			MoveFile(Backup1, Backup2);		/* Move .bak.2 to .bak.3 */
 
 			strcpy(Backup2, inputname);
 			strcat(Backup2, ".bak.1");
 
-			MoveFile(Backup2, Backup1);		// Move .bak.1 to .bak.2
+			MoveFile(Backup2, Backup1);		/* Move .bak.1 to .bak.2 */
 
 			strcpy(Backup1, inputname);
 			strcat(Backup1, ".bak");
 
-			MoveFile(Backup1, Backup2);		// Move .bak to .bak.1
+			MoveFile(Backup1, Backup2);		/* Move .bak to .bak.1 */
 
-			CopyFile(inputname, Backup1, FALSE);	// Copy to .bak
+			CopyFile(inputname, Backup1, FALSE);	/* Copy to .bak */
 
-			// Get length to compare with new length
+			/* Get length to compare with new length */
 
 			stat(inputname, &STAT);
 
@@ -1539,7 +1539,7 @@ VOID SaveConfigFile(SOCKET sock , char * MsgPtr, char * Rest, int LOCAL)
 	return;
 }
 
-// Compress using deflate. Caller must free output buffer after use
+/* Compress using deflate. Caller must free output buffer after use */
 
 unsigned char * Compressit(unsigned char * In, int Len, int * OutLen)
 {
@@ -1551,16 +1551,16 @@ unsigned char * Compressit(unsigned char * In, int Len, int * OutLen)
 	defstream.zfree = Z_NULL;
 	defstream.opaque = Z_NULL;
 
-	defstream.avail_in = Len; // size of input
-	defstream.next_in = (Bytef *)In; // input char array
+	defstream.avail_in = Len; /* size of input */
+	defstream.next_in = (Bytef *)In; /* input char array */
 
 	deflateInit(&defstream, Z_BEST_COMPRESSION);
 	maxSize = deflateBound(&defstream, Len);
 
 	Out = malloc(maxSize);
 
-	defstream.avail_out = maxSize; // size of output
-	defstream.next_out = (Bytef *)Out; // output char array
+	defstream.avail_out = maxSize; /* size of output */
+	defstream.next_out = (Bytef *)Out; /* output char array */
 
 	deflate(&defstream, Z_FINISH);
 	deflateEnd(&defstream);
@@ -1712,22 +1712,22 @@ int InnerProcessHTTPMessage(struct ConnectionInfo * conn)
 
 		if (WebSock)
 		{
-			// Websock connection request - Reply and remember state.
+			/* Websock connection request - Reply and remember state. */
 
 			char KeyMsg[128];
-			char Webx[] = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";	// Fixed UID
+			char Webx[] = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";	/* Fixed UID */
 			char Hash[64] = "";
-			char * Hash64;		// base 64 version
+			char * Hash64;		/* base 64 version */
 			char * ptr;
 
-			//Sec-WebSocket-Key: l622yZS3n+zI+hR6SVWkPw==
+			/*Sec-WebSocket-Key: l622yZS3n+zI+hR6SVWkPw== */
 
 			char ReplyMsg[] = 
 				"HTTP/1.1 101 Switching Protocols\r\n"
 				"Upgrade: websocket\r\n"
 				"Connection: Upgrade\r\n"
 				"Sec-WebSocket-Accept: %s\r\n"
-//				"Sec-WebSocket-Protocol: chat\r\n"
+/*				"Sec-WebSocket-Protocol: chat\r\n" */
 				"\r\n";
 
 			ptr = strstr(MsgPtr, "Sec-WebSocket-Key:");
@@ -1770,7 +1770,7 @@ int InnerProcessHTTPMessage(struct ConnectionInfo * conn)
 		strlop(Mycall, ' ');
 
 
-		// APRS process internally
+		/* APRS process internally */
 
 		if (_memicmp(Context, "/APRS/", 6) == 0 || _stricmp(Context, "/APRS") == 0)
 		{
@@ -1791,9 +1791,9 @@ int InnerProcessHTTPMessage(struct ConnectionInfo * conn)
 
 		}
 
-		// If for Mail or Chat, check for a session, and send login screen if necessary
+		/* If for Mail or Chat, check for a session, and send login screen if necessary */
 
-		// Moved here to simplify operation with both internal and external clients
+		/* Moved here to simplify operation with both internal and external clients */
 
 		if (_memicmp(Context, "/Mail/", 6) == 0)
 		{
@@ -1824,7 +1824,7 @@ int InnerProcessHTTPMessage(struct ConnectionInfo * conn)
 
 			if (_stricmp(NodeURL, "/Mail/Lost") == 0)
 			{
-				input = strstr(MsgPtr, "\r\n\r\n");	// End of headers
+				input = strstr(MsgPtr, "\r\n\r\n");	/* End of headers */
 
 				if (input && strstr(input, "Cancel=Exit"))
 				{
@@ -1840,9 +1840,9 @@ int InnerProcessHTTPMessage(struct ConnectionInfo * conn)
 
 			if (Key == 0 || Key[0] == 0)
 			{
-				// No Session 
+				/* No Session  */
 
-				// if not local send a signon screen, else create a user session
+				/* if not local send a signon screen, else create a user session */
 
 				if (LOCAL || COOKIE)
 				{
@@ -1944,7 +1944,7 @@ int InnerProcessHTTPMessage(struct ConnectionInfo * conn)
 
 			if (_stricmp(NodeURL, "/Chat/Lost") == 0)
 			{
-				input = strstr(MsgPtr, "\r\n\r\n");	// End of headers
+				input = strstr(MsgPtr, "\r\n\r\n");	/* End of headers */
 
 				if (input && strstr(input, "Cancel=Exit"))
 				{
@@ -1960,9 +1960,9 @@ int InnerProcessHTTPMessage(struct ConnectionInfo * conn)
 
 			if (Key == 0 || Key[0] == 0)
 			{
-				// No Session 
+				/* No Session  */
 
-				// if not local send a signon screen, else create a user session
+				/* if not local send a signon screen, else create a user session */
 
 				if (LOCAL || COOKIE)
 				{
@@ -2000,17 +2000,17 @@ int InnerProcessHTTPMessage(struct ConnectionInfo * conn)
 Returnit:
 				if (memcmp(Reply, "HTTP", 4) == 0)
 				{
-					// Full Header provided by appl - just send it
+					/* Full Header provided by appl - just send it */
 
-					// Send may block
+					/* Send may block */
 
 					Sent = send(sock, Reply, ReplyLen, 0);
 
-					while (Sent != ReplyLen && Loops++ < 3000)					// 100 secs max
+					while (Sent != ReplyLen && Loops++ < 3000)					/* 100 secs max */
 					{	
-						//			Debugprintf("%d out of %d sent %d Loops", Sent, InputLen, Loops);
+						/*			Debugprintf("%d out of %d sent %d Loops", Sent, InputLen, Loops); */
 
-						if (Sent > 0)					// something sent
+						if (Sent > 0)					/* something sent */
 						{
 							InputLen -= Sent;
 							memmove(Reply, &Reply[Sent], ReplyLen);
@@ -2023,12 +2023,12 @@ Returnit:
 					return 0;
 				}
 
-				// Add tail
+				/* Add tail */
 
 				strcpy(&Reply[ReplyLen], Tail);
 				ReplyLen += strlen(Tail);
 
-				// compress if allowed
+				/* compress if allowed */
 				
 				if (allowDeflate)
 					Compressed = Compressit(Reply, ReplyLen, &ReplyLen);
@@ -2061,23 +2061,23 @@ doHeader:
 			if (Session == 0)
 				Session = &Dummy;
 
-			Session->TNC = (void *)LOCAL;		// TNC only used for Web Terminal Sessions
+			Session->TNC = (void *)LOCAL;		/* TNC only used for Web Terminal Sessions */
 
 			ProcessMailHTTPMessage(Session, Method, Context, MsgPtr, _REPLYBUFFER, &ReplyLen, MsgLen);
 
 			if (memcmp(_REPLYBUFFER, "HTTP", 4) == 0)
 			{
-				// Full Header provided by appl - just send it
+				/* Full Header provided by appl - just send it */
 
-				// Send may block
+				/* Send may block */
 
 				Sent = send(sock, _REPLYBUFFER, ReplyLen, 0);
 
-				while (Sent != ReplyLen && Loops++ < 3000)					// 100 secs max
+				while (Sent != ReplyLen && Loops++ < 3000)					/* 100 secs max */
 				{	
-					//				Debugprintf("%d out of %d sent %d Loops", Sent, InputLen, Loops);
+					/*				Debugprintf("%d out of %d sent %d Loops", Sent, InputLen, Loops); */
 
-					if (Sent > 0)					// something sent
+					if (Sent > 0)					/* something sent */
 					{
 						InputLen -= Sent;
 						memmove(_REPLYBUFFER, &_REPLYBUFFER[Sent], ReplyLen);
@@ -2089,12 +2089,12 @@ doHeader:
 				return 0;
 			}
 
-			// Add tail
+			/* Add tail */
 
 			strcpy(&_REPLYBUFFER[ReplyLen], Tail);
 			ReplyLen += strlen(Tail);
 
-			// compress if allowed
+			/* compress if allowed */
 				
 			if (allowDeflate)
 				Compressed = Compressit(_REPLYBUFFER, ReplyLen, &ReplyLen);
@@ -2181,17 +2181,17 @@ doHeader:
 		*/
 #else
 
-		// Pass to MailChat if active
+		/* Pass to MailChat if active */
 
 		if ((_memicmp(Context, "/MAIL/", 6) == 0) || (_memicmp(Context, "/WebMail", 8) == 0))
 		{
-			// If for Mail, Pass to Mail Server via Named Pipe
+			/* If for Mail, Pass to Mail Server via Named Pipe */
 
 			HANDLE hPipe;
 
 			hPipe = CreateFile(MAILPipeFileName, GENERIC_READ | GENERIC_WRITE,
-				0,                    // exclusive access
-				NULL,                 // no security attrs
+				0,                    /* exclusive access */
+				NULL,                 /* no security attrs */
 				OPEN_EXISTING,
 				FILE_ATTRIBUTE_NORMAL, 
 				NULL );
@@ -2203,14 +2203,14 @@ doHeader:
 			}
 			else
 			{
-				//			int Sent;
+				/*			int Sent; */
 				int Loops = 0;
 				struct HTTPConnectionInfo Dummy = {0};
 
 				if (Session == 0)
 					Session = &Dummy;
 
-				Session->TNC = LOCAL;		// TNC is only used on Web Terminal Sessions so can reuse as LOCAL flag
+				Session->TNC = LOCAL;		/* TNC is only used on Web Terminal Sessions so can reuse as LOCAL flag */
 
 				WriteFile(hPipe, Session, sizeof (struct HTTPConnectionInfo), &InputLen, NULL);
 				WriteFile(hPipe, MsgPtr, MsgLen, &InputLen, NULL);
@@ -2234,8 +2234,8 @@ doHeader:
 			HANDLE hPipe;
 
 			hPipe = CreateFile(CHATPipeFileName, GENERIC_READ | GENERIC_WRITE,
-				0,                    // exclusive access
-				NULL,                 // no security attrs
+				0,                    /* exclusive access */
+				NULL,                 /* no security attrs */
 				OPEN_EXISTING,
 				FILE_ATTRIBUTE_NORMAL, 
 				NULL );
@@ -2247,7 +2247,7 @@ doHeader:
 			}
 			else
 			{
-				//			int Sent;
+				/*			int Sent; */
 				int Loops = 0;
 
 				WriteFile(hPipe, Session, sizeof (struct HTTPConnectionInfo), &InputLen, NULL);
@@ -2278,7 +2278,7 @@ doHeader:
 		{
 			if (_stricmp(NodeURL, "/Node/freqOffset") == 0)
 			{
-				char * input = strstr(MsgPtr, "\r\n\r\n");	// End of headers
+				char * input = strstr(MsgPtr, "\r\n\r\n");	/* End of headers */
 				int port = atoi(Context);
 
 				if (input == 0)
@@ -2298,7 +2298,7 @@ doHeader:
 #ifdef WIN32
 					sprintf(value, "%d", TNC->TXOffset);
 					MySetWindowText(TNC->xIDC_TXTUNEVAL, value);
-					SendMessage(TNC->xIDC_TXTUNE, TBM_SETPOS, (WPARAM) TRUE, (LPARAM) TNC->TXOffset);  // min. & max. positions
+					SendMessage(TNC->xIDC_TXTUNE, TBM_SETPOS, (WPARAM) TRUE, (LPARAM) TNC->TXOffset);  /* min. & max. positions */
 
 #endif
 				}
@@ -2307,7 +2307,7 @@ doHeader:
 
 			if (_stricmp(NodeURL, "/Node/PortAction") == 0)
 			{
-				char * input = strstr(MsgPtr, "\r\n\r\n");	// End of headers
+				char * input = strstr(MsgPtr, "\r\n\r\n");	/* End of headers */
 				int port = atoi(Context);
 
 				if (input == 0)
@@ -2373,7 +2373,7 @@ doHeader:
 			{
 				char Header[256];
 				int HeaderLen;
-				char * input = strstr(MsgPtr, "\r\n\r\n");	// End of headers
+				char * input = strstr(MsgPtr, "\r\n\r\n");	/* End of headers */
 				int Port;
 				char Param[100];
 #ifndef LINBPQ
@@ -2387,7 +2387,7 @@ doHeader:
 
 				if (LOCAL == FALSE && COOKIE == FALSE)
 				{
-					//	Send Not Authorized
+					/*	Send Not Authorized */
 
 					ReplyLen = SetupNodeMenu(_REPLYBUFFER, LOCAL);	
 					ReplyLen += sprintf(&_REPLYBUFFER[ReplyLen], "<br><B>Not authorized - please sign in</B>");
@@ -2412,7 +2412,7 @@ doHeader:
 
 				GetParam(input, "Port", &Param[0]);
 				Port = atoi(&Param[1]);
-				PORT = GetPortTableEntryFromPortNum(Port); // Need slot not number
+				PORT = GetPortTableEntryFromPortNum(Port); /* Need slot not number */
 				if (PORT)
 					Slot = PORT->PortSlot;
 
@@ -2483,7 +2483,7 @@ doHeader:
 
 			if (_stricmp(NodeURL, "/Node/CfgSave") == 0)
 			{
-				//	Save Config File
+				/*	Save Config File */
 
 				SaveConfigFile(sock, MsgPtr, Key, LOCAL);
 				return 0;
@@ -2523,12 +2523,12 @@ doHeader:
 					send(sock, Reply, ReplyLen, 0);
 					send(sock, Tail, (int)strlen(Tail), 0);
 
-					//				goto SendResp;
+					/*				goto SendResp; */
 
-					//				HeaderLen = sprintf(Header, "HTTP/1.1 200 OK\r\nContent-Length: %d\r\nContent-Type: text/html\r\n\r\n", ReplyLen + strlen(Tail));
-					//				send(sock, Header, HeaderLen, 0);
-					//				send(sock, _REPLYBUFFER, ReplyLen, 0);
-					//				send(sock, Tail, strlen(Tail), 0);
+					/*				HeaderLen = sprintf(Header, "HTTP/1.1 200 OK\r\nContent-Length: %d\r\nContent-Type: text/html\r\n\r\n", ReplyLen + strlen(Tail)); */
+					/*				send(sock, Header, HeaderLen, 0); */
+					/*				send(sock, _REPLYBUFFER, ReplyLen, 0); */
+					/*				send(sock, Tail, strlen(Tail), 0); */
 
 					return 1;
 				}
@@ -2541,12 +2541,12 @@ doHeader:
 
 		if (_stricmp(NodeURL, "/") == 0 || _stricmp(NodeURL, "/Index.html") == 0)
 		{		
-			// Send if present, else use default
+			/* Send if present, else use default */
 
-			Bufferlen = SendMessageFile(sock, NodeURL, TRUE, allowDeflate);		// return -1 if not found
+			Bufferlen = SendMessageFile(sock, NodeURL, TRUE, allowDeflate);		/* return -1 if not found */
 
 			if (Bufferlen != -1)
-				return 0;						// We've sent it
+				return 0;						/* We've sent it */
 			else
 			{	
 				if (APRSApplConnected)
@@ -2565,14 +2565,14 @@ doHeader:
 
 		else if (_stricmp(NodeURL, "/NodeMenu.html") == 0 || _stricmp(NodeURL, "/Node/NodeMenu.html") == 0)
 		{		
-			// Send if present, else use default
+			/* Send if present, else use default */
 
 			char Menu[] = "/NodeMenu.html";
 
-			Bufferlen = SendMessageFile(sock, Menu, TRUE, allowDeflate);		// return -1 if not found
+			Bufferlen = SendMessageFile(sock, Menu, TRUE, allowDeflate);		/* return -1 if not found */
 
 			if (Bufferlen != -1)
-				return 0;											// We've sent it
+				return 0;											/* We've sent it */
 		}
 
 		else if (_memicmp(NodeURL, "/aisdata.txt", 12) == 0)
@@ -2642,7 +2642,7 @@ doHeader:
 
 		else if (_memicmp(NodeURL, "/Icon", 5) == 0 && _memicmp(&NodeURL[10], ".png", 4) == 0)
 		{
-			// APRS internal Icon
+			/* APRS internal Icon */
 
 			char * Compressed;
 				
@@ -2666,13 +2666,13 @@ doHeader:
 
 		else if (_memicmp(NodeURL, "/NODE/", 6))
 		{
-			// Not Node, See if a local file
+			/* Not Node, See if a local file */
 
-			Bufferlen = SendMessageFile(sock, NodeURL, FALSE, allowDeflate);		// Send error if not found
+			Bufferlen = SendMessageFile(sock, NodeURL, FALSE, allowDeflate);		/* Send error if not found */
 			return 0;
 		}
 
-		// Node URL
+		/* Node URL */
 
 		{
 
@@ -2855,7 +2855,7 @@ doHeader:
 					"<body style=\"margin: 4;\" background=/background.jpg onload='myResize()' onresize='myResize()'>"
 					"<div id=outer style=\"width: 100%%; height: 100%%;\">"
 					"<form id = form><input name=input value=Back type=submit class='btn'>"
-//					"<form id = doDate><input type=date value=Date name='date'><input type='submit'>"
+/*					"<form id = doDate><input type=date value=Date name='date'><input type='submit'>" */
 					"</form>"
 					"<textarea id=log style=\"box-sizing: border-box; overflow: auto; white-space: pre; width: 100%%; height: auto\" name=Msg>%s</textarea>"
 					"</div>";
@@ -2879,7 +2879,7 @@ doHeader:
 
 				if (LOCAL == FALSE && COOKIE == FALSE)
 				{
-					//	Send Not Authorized
+					/*	Send Not Authorized */
 
 					char _REPLYBUFFER[4096];	
 					ReplyLen = SetupNodeMenu(_REPLYBUFFER, LOCAL);	
@@ -3009,7 +3009,7 @@ doHeader:
 
 				if (LOCAL == FALSE && COOKIE == FALSE)
 				{
-					//	Send Not Authorized
+					/*	Send Not Authorized */
 
 					char _REPLYBUFFER[4096];	
 					ReplyLen = SetupNodeMenu(_REPLYBUFFER, LOCAL);	
@@ -3082,7 +3082,7 @@ doHeader:
 				struct PORTCONTROL * PORT;
 				int PortSlot = 0;
 
-				PORT = GetPortTableEntryFromPortNum(PortNo); // Need slot not number
+				PORT = GetPortTableEntryFromPortNum(PortNo); /* Need slot not number */
 				if (PORT)
 					PortSlot = PORT->PortSlot;
 
@@ -3102,10 +3102,10 @@ doHeader:
 				int Protocol;
 				int PortType;
 
-				//		char PORTTYPE;	// H/W TYPE
-				// 0 = ASYNC, 2 = PC120, 4 = DRSI
-				// 6 = TOSH, 8 = QUAD, 10 = RLC100
-				// 12 = RLC400 14 = INTERNAL 16 = EXTERNAL
+				/*		char PORTTYPE;	// H/W TYPE */
+				/* 0 = ASYNC, 2 = PC120, 4 = DRSI */
+				/* 6 = TOSH, 8 = QUAD, 10 = RLC100 */
+				/* 12 = RLC400 14 = INTERNAL 16 = EXTERNAL */
 
 #define KISS 0
 #define NETROM 2
@@ -3114,9 +3114,9 @@ doHeader:
 #define WINMOR 10
 
 
-				// char PROTOCOL;	// PORT PROTOCOL
-				// 0 = KISS, 2 = NETROM, 4 = BPQKISS
-				//; 6 = HDLC, 8 = L2
+				/* char PROTOCOL;	// PORT PROTOCOL */
+				/* 0 = KISS, 2 = NETROM, 4 = BPQKISS */
+				/*; 6 = HDLC, 8 = L2 */
 
 
 				ReplyLen += sprintf(&_REPLYBUFFER[ReplyLen], PortStatsHddr, PortNo);
@@ -3139,7 +3139,7 @@ doHeader:
 				ReplyLen += sprintf(&_REPLYBUFFER[ReplyLen], PortStatsLine, "L2 Timeouts", Port->PORTCONTROL.L2TIMEOUTS);
 				ReplyLen += sprintf(&_REPLYBUFFER[ReplyLen], PortStatsLine, "REJ Frames Received", Port->PORTCONTROL.L2REJCOUNT);
 				ReplyLen += sprintf(&_REPLYBUFFER[ReplyLen], PortStatsLine, "RX out of Seq", Port->PORTCONTROL.L2OUTOFSEQ);
-				//		ReplyLen += sprintf(&_REPLYBUFFER[ReplyLen], PortStatsLine, "L2 Resequenced", Port->PORTCONTROL.L2RESEQ);
+				/*		ReplyLen += sprintf(&_REPLYBUFFER[ReplyLen], PortStatsLine, "L2 Resequenced", Port->PORTCONTROL.L2RESEQ); */
 				if (Protocol == HDLC)
 				{
 					ReplyLen += sprintf(&_REPLYBUFFER[ReplyLen], PortStatsLine, "Underrun", Port->PORTCONTROL.L2URUNC);
@@ -3156,8 +3156,8 @@ doHeader:
 				ReplyLen += sprintf(&_REPLYBUFFER[ReplyLen], PortStatsLine, "FRMRs Sent", Port->PORTCONTROL.L2FRMRTX);
 				ReplyLen += sprintf(&_REPLYBUFFER[ReplyLen], PortStatsLine, "FRMRs Received", Port->PORTCONTROL.L2FRMRRX);
 
-				//		DB	'Link Active %   '
-				//		DD	AVSENDING
+				/*		DB	'Link Active %   ' */
+				/*		DD	AVSENDING */
 
 			}
 
@@ -3194,7 +3194,7 @@ doHeader:
 						strcpy(DLL, "HDLC");
 
 
-					if (Port->TNC && Port->TNC->WebWindowProc)		// Has a Window
+					if (Port->TNC && Port->TNC->WebWindowProc)		/* Has a Window */
 					{
 						if (Port->UICAPABLE)
 							ReplyLen += sprintf(&_REPLYBUFFER[ReplyLen], PortLineWithBeaconAndDriver, Port->PORTNUMBER, DLL,
@@ -3206,7 +3206,7 @@ doHeader:
 						continue;
 					}
 
-					if (Port->PORTTYPE == 16 && Port->PROTOCOL == 10 && Port->UICAPABLE == 0)		// EXTERNAL, Pactor/WINMO
+					if (Port->PORTTYPE == 16 && Port->PROTOCOL == 10 && Port->UICAPABLE == 0)		/* EXTERNAL, Pactor/WINMO */
 						ReplyLen += sprintf(&_REPLYBUFFER[ReplyLen], SessionPortLine, Port->PORTNUMBER, DLL,
 						Port->PORTDESCRIPTION, Port->PORTNUMBER);
 					else
@@ -3658,26 +3658,26 @@ doHeader:
 					{
 						RHS[0] = MID[0] = 0;
 
-						if ((L4->L4CIRCUITTYPE & UPLINK) == 0)   //SHORT CMDS10A		; YES
+						if ((L4->L4CIRCUITTYPE & UPLINK) == 0)   /*SHORT CMDS10A		; YES */
 						{
-							// IF DOWNLINK, ONLY DISPLAY IF NO CROSSLINK
+							/* IF DOWNLINK, ONLY DISPLAY IF NO CROSSLINK */
 
-							if (L4->L4CROSSLINK == 0)	//jne 	CMDS60			; WILL PROCESS FROM OTHER END
+							if (L4->L4CROSSLINK == 0)	/*jne 	CMDS60			; WILL PROCESS FROM OTHER END */
 							{
-								// ITS A DOWNLINK WITH NO PARTNER - MUST BE A CLOSING SESSION
-								// DISPLAY TO THE RIGHT FOR NOW
+								/* ITS A DOWNLINK WITH NO PARTNER - MUST BE A CLOSING SESSION */
+								/* DISPLAY TO THE RIGHT FOR NOW */
 
 								strcpy(LHS, "(Closing) ");
 								DISPLAYCIRCUIT(L4, RHS);
 								goto CMDS50;
 							}
 							else
-								goto CMDS60;		// WILL PROCESS FROM OTHER END
+								goto CMDS60;		/* WILL PROCESS FROM OTHER END */
 						}
 
 						if (L4->L4CROSSLINK == 0)
 						{
-							// Single Entry
+							/* Single Entry */
 
 							DISPLAYCIRCUIT(L4, LHS);
 						}
@@ -3745,7 +3745,7 @@ CMDS60:
 			{
 				if (COOKIE && Session)
 				{
-					// Already signed in as sysop
+					/* Already signed in as sysop */
 
 					struct UserRec * USER = Session->USER;
 
@@ -3763,11 +3763,11 @@ CMDS60:
 						NewSession->TNC = conn->TNC;
 
 
-						//			if (Appl[0])
-						//			{
-						//				strcat(Appl, "\r");
-						//				SendMsg(Session->Stream, Appl, strlen(Appl));
-						//			}
+						/*			if (Appl[0]) */
+						/*			{ */
+						/*				strcat(Appl, "\r"); */
+						/*				SendMsg(Session->Stream, Appl, strlen(Appl)); */
+						/*			} */
 
 					}
 					else
@@ -3778,7 +3778,7 @@ CMDS60:
 				}
 				else if (LOCAL)
 				{
-					// connected to 127.0.0.1 so sign in using node call
+					/* connected to 127.0.0.1 so sign in using node call */
 
 					struct HTTPConnectionInfo * NewSession = AllocateSession(sock, 'T');
 
@@ -3802,10 +3802,10 @@ CMDS60:
 
 			else if (_stricmp(NodeURL, "/Node/Drivers") == 0)
 			{
-				int Bufferlen = SendMessageFile(sock, "/Drivers.htm", TRUE, allowDeflate);		// return -1 if not found
+				int Bufferlen = SendMessageFile(sock, "/Drivers.htm", TRUE, allowDeflate);		/* return -1 if not found */
 
 				if (Bufferlen != -1)
-					return 0;											// We've sent it
+					return 0;											/* We've sent it */
 			}
 
 			else if (_stricmp(NodeURL, "/Node/OutputScreen.html") == 0)
@@ -3818,22 +3818,22 @@ CMDS60:
 				}
 				else
 				{
-					Session->sock = sock;				// socket to reply on
+					Session->sock = sock;				/* socket to reply on */
 					ReplyLen = RefreshTermWindow(TCP, Session, _REPLYBUFFER);
 
-					if (ReplyLen == 0)		// Nothing new
+					if (ReplyLen == 0)		/* Nothing new */
 					{
-						//				Debugprintf("GET with no data avail - response held");
-						Session->ResponseTimer = 1200;		// Delay response for up to a minute
+						/*				Debugprintf("GET with no data avail - response held"); */
+						Session->ResponseTimer = 1200;		/* Delay response for up to a minute */
 					}
 					else
 					{
-						//				Debugprintf("GET - outpur sent, timer was %d, set to zero", Session->ResponseTimer);
+						/*				Debugprintf("GET - outpur sent, timer was %d, set to zero", Session->ResponseTimer); */
 						Session->ResponseTimer = 0;
 					}
 
 					Session->KillTimer = 0;
-					return 0;				// Refresh has sent any available output
+					return 0;				/* Refresh has sent any available output */
 				}
 			}
 
@@ -3897,7 +3897,7 @@ return 0;
 
 void ProcessHTTPMessage(void * conn)
 {
-	// conn is a malloc'ed copy to handle reused connections, so need to free it
+	/* conn is a malloc'ed copy to handle reused connections, so need to free it */
 
 	InnerProcessHTTPMessage((struct ConnectionInfo *)conn);
 	free(conn);
@@ -3918,7 +3918,7 @@ VOID FormatTime3(char * Time, time_t cTime)
 
 }
 
-// Sun, 06 Nov 1994 08:49:37 GMT
+/* Sun, 06 Nov 1994 08:49:37 GMT */
 
 int StatusProc(char * Buff)
 {
@@ -3954,7 +3954,7 @@ int StatusProc(char * Buff)
 
 		Mask = MaskCopy = Get_APPLMASK(i);
 
-		// if only one bit set, convert to number
+		/* if only one bit set, convert to number */
 
 		AppNumber = 0;
 		OneBits = 0;
@@ -3992,7 +3992,7 @@ int StatusProc(char * Buff)
 int ProcessNodeSignon(SOCKET sock, struct TCPINFO * TCP, char * MsgPtr, char * Appl, char * Reply, struct HTTPConnectionInfo ** Session, int LOCAL)
 {
 	int ReplyLen = 0;
-	char * input = strstr(MsgPtr, "\r\n\r\n");	// End of headers
+	char * input = strstr(MsgPtr, "\r\n\r\n");	/* End of headers */
 	char * user, * password, * Key;
 	char Header[256];
 	int HeaderLen;
@@ -4028,7 +4028,7 @@ int ProcessNodeSignon(SOCKET sock, struct TCPINFO * TCP, char * MsgPtr, char * A
 			{
 				if (strcmp(password, USER->Password) == 0 && USER->Secure)
 				{
-					// ok
+					/* ok */
 
 					Sess = *Session = AllocateSession(sock, 'N');
 					Sess->USER = USER;
@@ -4067,7 +4067,7 @@ int ProcessNodeSignon(SOCKET sock, struct TCPINFO * TCP, char * MsgPtr, char * A
 int ProcessMailSignon(struct TCPINFO * TCP, char * MsgPtr, char * Appl, char * Reply, struct HTTPConnectionInfo ** Session, BOOL WebMail, int LOCAL)
 {
 	int ReplyLen = 0;
-	char * input = strstr(MsgPtr, "\r\n\r\n");	// End of headers
+	char * input = strstr(MsgPtr, "\r\n\r\n");	/* End of headers */
 	char * user, * password, * Key;
 	struct HTTPConnectionInfo * NewSession;
 
@@ -4095,7 +4095,7 @@ int ProcessMailSignon(struct TCPINFO * TCP, char * MsgPtr, char * Appl, char * R
 			{
 				if (strcmp(password, USER->Password) == 0 && (USER->Secure || WebMail))
 				{
-					// ok
+					/* ok */
 
 					NewSession = AllocateSession(Appl[0], 'M');
 
@@ -4128,7 +4128,7 @@ int ProcessMailSignon(struct TCPINFO * TCP, char * MsgPtr, char * Appl, char * R
 int ProcessChatSignon(struct TCPINFO * TCP, char * MsgPtr, char * Appl, char * Reply, struct HTTPConnectionInfo ** Session, int LOCAL)
 {
 	int ReplyLen = 0;
-	char * input = strstr(MsgPtr, "\r\n\r\n");	// End of headers
+	char * input = strstr(MsgPtr, "\r\n\r\n");	/* End of headers */
 	char * user, * password, * Key;
 
 	if (input)
@@ -4157,7 +4157,7 @@ int ProcessChatSignon(struct TCPINFO * TCP, char * MsgPtr, char * Appl, char * R
 			{
 				if (strcmp(password, USER->Password) == 0 && USER->Secure)
 				{
-					// ok
+					/* ok */
 
 					*Session = AllocateSession(Appl[0], 'C');
 
@@ -4264,7 +4264,7 @@ BOOL SHA1PasswordHash(char * lpszPassword, char * Hash)
 	SHA1Input(&sha, lpszPassword, strlen(lpszPassword));
 	SHA1Result(&sha);
 
-	// swap byte order if little endian
+	/* swap byte order if little endian */
 	
 	for (i = 0; i < 5; i++)
 		sha.Message_Digest[i] = htonl(sha.Message_Digest[i]);
@@ -4284,7 +4284,7 @@ int BuildRigCtlPage(char * _REPLYBUFFER)
 
 	char Page[] =
 		"<html><meta http-equiv=expires content=0>\r\n"
-		//					"<meta http-equiv=refresh content=5>\r\n"
+		/*					"<meta http-equiv=refresh content=5>\r\n" */
 		"<head><title>Rigcontrol</title></head>\r\n"
 		"<style type=text/css>form{margin:0px; padding:0px; display:inline;}</style>"
 		"<body height: 580px;><h3>Rigcontrol</h3>\r\n"
@@ -4356,13 +4356,13 @@ void SendRigWebPage()
 							int RigMsgLen = strlen(RigWebPage);
 							char* ptr;
 
-							RigMsg[0] = 0x81;		// Fin, Data
-							RigMsg[1] = 126;		// Unmasked, Extended Len
+							RigMsg[0] = 0x81;		/* Fin, Data */
+							RigMsg[1] = 126;		/* Unmasked, Extended Len */
 							RigMsg[2] = RigMsgLen >> 8;
 							RigMsg[3] = RigMsgLen & 0xff;
 							strcpy(&RigMsg[4], RigWebPage);
 
-							// If secure session enable PTT button
+							/* If secure session enable PTT button */
 
 							if (sockptr->WebSecure)
 							{
@@ -4379,13 +4379,13 @@ void SendRigWebPage()
 	}
 }
 
-// Webmail web socket code
+/* Webmail web socket code */
 
 int ProcessWebmailWebSock(char * MsgPtr, char * OutBuffer);
 
 void ProcessWebmailWebSockThread(void * conn)
 {
-	// conn is a malloc'ed copy to handle reused connections, so need to free it
+	/* conn is a malloc'ed copy to handle reused connections, so need to free it */
 
 	struct ConnectionInfo * sockptr = (struct ConnectionInfo *)conn;
 	char * URL = sockptr->WebURL;
@@ -4401,13 +4401,13 @@ void ProcessWebmailWebSockThread(void * conn)
 
 	ReplyLen = ProcessWebmailWebSock(URL, _REPLYBUFFER);
 
-	// Send may block
+	/* Send may block */
 
 	Sent = send(sockptr->socket, _REPLYBUFFER, ReplyLen, 0);
 
-	while (Sent != ReplyLen && Loops++ < 3000)					// 100 secs max
+	while (Sent != ReplyLen && Loops++ < 3000)					/* 100 secs max */
 	{	
-		if (Sent > 0)					// something sent
+		if (Sent > 0)					/* something sent */
 		{
 			ReplyLen -= Sent;
 			memmove(_REPLYBUFFER, &_REPLYBUFFER[Sent], ReplyLen);
@@ -4418,7 +4418,7 @@ void ProcessWebmailWebSockThread(void * conn)
 	}
 	
 #else
-	// Send URL to BPQMail via Pipe. Just need a dummy session, as URL contains session key
+	/* Send URL to BPQMail via Pipe. Just need a dummy session, as URL contains session key */
 
 	HANDLE hPipe;
 	char Reply[250000];
@@ -4426,8 +4426,8 @@ void ProcessWebmailWebSockThread(void * conn)
 
 
 	hPipe = CreateFile(MAILPipeFileName, GENERIC_READ | GENERIC_WRITE,
-		0,                    // exclusive access
-		NULL,                 // no security attrs
+		0,                    /* exclusive access */
+		NULL,                 /* no security attrs */
 		OPEN_EXISTING,
 		FILE_ATTRIBUTE_NORMAL, 
 		NULL );
@@ -4451,15 +4451,15 @@ void ProcessWebmailWebSockThread(void * conn)
 
 	CloseHandle(hPipe);
 
-	// ?? do we need a thread to handle write which may block
+	/* ?? do we need a thread to handle write which may block */
 
 	Sent = send(sockptr->socket, Reply, ReplyLen, 0);
 
-	while (Sent != ReplyLen && Loops++ < 3000)					// 100 secs max
+	while (Sent != ReplyLen && Loops++ < 3000)					/* 100 secs max */
 	{	
-		//			Debugprintf("%d out of %d sent %d Loops", Sent, InputLen, Loops);
+		/*			Debugprintf("%d out of %d sent %d Loops", Sent, InputLen, Loops); */
 
-		if (Sent > 0)					// something sent
+		if (Sent > 0)					/* something sent */
 		{
 			InputLen -= Sent;
 			memmove(Reply, &Reply[Sent], ReplyLen);

@@ -1,6 +1,6 @@
- // Mail and Chat Server for BPQ32 Packet Switch
-//
-//	Console Window Module
+ /* Mail and Chat Server for BPQ32 Packet Switch */
+/* */
+/*	Console Window Module */
 
 #include "bpqmail.h"
 
@@ -23,7 +23,7 @@ extern int	NumberofStreams;
 extern ConnectionInfo Connections[];
 
 BOOL Bells;
-BOOL FlashOnBell;		// Flash instead of Beep
+BOOL FlashOnBell;		/* Flash instead of Beep */
 BOOL StripLF;
 
 BOOL WarnWrap;
@@ -39,36 +39,36 @@ RECT ConsoleRect;
 char chatMsg[] = "\rSysop wants to chat to you\r";
 char endChatMsg[] = "Sysop ended chat\r";
 
-//CIRCUIT * Console;
+/*CIRCUIT * Console; */
 HWND hConsole;
-//RECT ConsoleRect;
+/*RECT ConsoleRect; */
 
 COLORREF Colours[256] = {0,
-		RGB(0,0,0), RGB(0,0,128), RGB(0,0,192), RGB(0,0,255),				// 1 - 4
-		RGB(0,64,0), RGB(0,64,128), RGB(0,64,192), RGB(0,64,255),			// 5 - 8
-		RGB(0,128,0), RGB(0,128,128), RGB(0,128,192), RGB(0,128,255),		// 9 - 12
-		RGB(0,192,0), RGB(0,192,128), RGB(0,192,192), RGB(0,192,255),		// 13 - 16
-		RGB(0,255,0), RGB(0,255,128), RGB(0,255,192), RGB(0,255,255),		// 17 - 20
+		RGB(0,0,0), RGB(0,0,128), RGB(0,0,192), RGB(0,0,255),				/* 1 - 4 */
+		RGB(0,64,0), RGB(0,64,128), RGB(0,64,192), RGB(0,64,255),			/* 5 - 8 */
+		RGB(0,128,0), RGB(0,128,128), RGB(0,128,192), RGB(0,128,255),		/* 9 - 12 */
+		RGB(0,192,0), RGB(0,192,128), RGB(0,192,192), RGB(0,192,255),		/* 13 - 16 */
+		RGB(0,255,0), RGB(0,255,128), RGB(0,255,192), RGB(0,255,255),		/* 17 - 20 */
 
-		RGB(64,0,0), RGB(64,0,128), RGB(64,0,192), RGB(0,0,255),				// 17 
+		RGB(64,0,0), RGB(64,0,128), RGB(64,0,192), RGB(0,0,255),				/* 17  */
 		RGB(64,64,0), RGB(64,64,128), RGB(64,64,192), RGB(64,64,255),
 		RGB(64,128,0), RGB(64,128,128), RGB(64,128,192), RGB(64,128,255),
 		RGB(64,192,0), RGB(64,192,128), RGB(64,192,192), RGB(64,192,255),
 		RGB(64,255,0), RGB(64,255,128), RGB(64,255,192), RGB(64,255,255),
 
-		RGB(128,0,0), RGB(128,0,128), RGB(128,0,192), RGB(128,0,255),				// 33
+		RGB(128,0,0), RGB(128,0,128), RGB(128,0,192), RGB(128,0,255),				/* 33 */
 		RGB(128,64,0), RGB(128,64,128), RGB(128,64,192), RGB(128,64,255),
 		RGB(128,128,0), RGB(128,128,128), RGB(128,128,192), RGB(128,128,255),
 		RGB(128,192,0), RGB(128,192,128), RGB(128,192,192), RGB(128,192,255),
 		RGB(128,255,0), RGB(128,255,128), RGB(128,255,192), RGB(128,255,255),
 
-		RGB(192,0,0), RGB(192,0,128), RGB(192,0,192), RGB(192,0,255),				// 49
+		RGB(192,0,0), RGB(192,0,128), RGB(192,0,192), RGB(192,0,255),				/* 49 */
 		RGB(192,64,0), RGB(192,64,128), RGB(192,64,192), RGB(192,64,255),
 		RGB(192,128,0), RGB(192,128,128), RGB(192,128,192), RGB(192,128,255),
 		RGB(192,192,0), RGB(192,192,128), RGB(192,192,192), RGB(192,192,255),
 		RGB(192,255,0), RGB(192,255,128), RGB(192,255,192), RGB(192,2552,255),
 
-		RGB(255,0,0), RGB(255,0,128), RGB(255,0,192), RGB(255,0,255),				// 49
+		RGB(255,0,0), RGB(255,0,128), RGB(255,0,192), RGB(255,0,255),				/* 49 */
 		RGB(255,64,0), RGB(255,64,128), RGB(255,64,192), RGB(255,64,255),
 		RGB(255,128,0), RGB(255,128,128), RGB(255,128,192), RGB(255,128,255),
 		RGB(255,192,0), RGB(255,192,128), RGB(255,192,192), RGB(255,192,255),
@@ -108,7 +108,7 @@ BOOL CreateConsole(int Stream)
 	{
 		ShowWindow(Cinfo->hConsole, SW_SHOWNORMAL);
 		SetForegroundWindow(Cinfo->hConsole);
-		return FALSE;							// Already open
+		return FALSE;							/* Already open */
 	}
 
 	memset(Cinfo, 0, sizeof(struct ConsoleInfo));
@@ -173,7 +173,7 @@ BOOL CreateConsole(int Stream)
 		AppendMenu(trayMenu,MF_STRING,40000,"Copy");
 	}
 
-	// Set up RTF Header, including Colours String;
+	/* Set up RTF Header, including Colours String; */
 
 	memcpy(RTFColours, "{\\colortbl ;", 12);
 	n = 12;
@@ -188,13 +188,13 @@ BOOL CreateConsole(int Stream)
 	RTFColours[n] = 0;
 
 	strcpy(RTFHeader, "{\\rtf1\\deff0{\\fonttbl{\\f0\\fprq1 FixedSys;}}");
-//	strcpy(RTFHeader, "{\\rtf1\\deff0{\\fonttbl{\\f0\\fmodern\\fcharset204\\fprq1 FixedSys;}}");
+/*	strcpy(RTFHeader, "{\\rtf1\\deff0{\\fonttbl{\\f0\\fmodern\\fcharset204\\fprq1 FixedSys;}}"); */
 	strcat(RTFHeader, RTFColours);
 	strcat(RTFHeader, "\\viewkind4\\uc1\\pard\\f0");
 
 	RTFHddrLen = strlen(RTFHeader);
 
-	// Create a Rich Text Control 
+	/* Create a Rich Text Control  */
 
 	Cinfo->SendHeader = TRUE;
 	Cinfo->Finished = TRUE;
@@ -206,14 +206,14 @@ BOOL CreateConsole(int Stream)
 		WS_CHILD |  WS_VISIBLE | ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_NOHIDESEL | WS_VSCROLL | ES_READONLY,
 		6,145,290,130, hConsole, NULL, hInst, NULL);
 
-	// Register for Mouse Events for Copy/Paste
+	/* Register for Mouse Events for Copy/Paste */
 	
 	SendMessage(Cinfo->hwndOutput, EM_SETEVENTMASK, (WPARAM)0, (LPARAM)ENM_MOUSEEVENTS | ENM_SCROLLEVENTS | ENM_KEYEVENTS);
 	SendMessage(Cinfo->hwndOutput, EM_EXLIMITTEXT, 0, MAXLINES * LINELEN);
 
 	Cinfo->hwndInput = GetDlgItem(hConsole, 118); 
  
-	// Set our own WndProcs for the controls. 
+	/* Set our own WndProcs for the controls.  */
 
 	Cinfo->wpOrigInputProc = (WNDPROC) SetWindowLong(Cinfo->hwndInput, GWL_WNDPROC, (LONG) InputProc); 
 
@@ -256,7 +256,7 @@ BOOL CreateConsole(int Stream)
 	{
 		user = AllocateUserRecord(SYSOPCall);
 
-		if (user == NULL) return 0; //		Cant happen??
+		if (user == NULL) return 0; /*		Cant happen?? */
 	
 		user->Temp = zalloc(sizeof (struct TempUserInfo));
 	}
@@ -323,7 +323,7 @@ VOID CloseConsoleSupport(struct ConsoleInfo * Cinfo)
 	
 	if (Cinfo->CloseWindowOnBye)
 	{
-//		PostMessage(hConsole, WM_DESTROY, 0, 0);
+/*		PostMessage(hConsole, WM_DESTROY, 0, 0); */
 		DestroyWindow(Cinfo->hConsole);
 	}
 }
@@ -335,7 +335,7 @@ void MoveWindows(struct ConsoleInfo * Cinfo)
 
 	GetClientRect(Cinfo->hConsole, &rcClient); 
 
-	if (rcClient.bottom == 0)		// Minimised
+	if (rcClient.bottom == 0)		/* Minimised */
 		return;
 
 	Cinfo->ClientHeight = rcClient.bottom;
@@ -406,10 +406,10 @@ LRESULT CALLBACK ConsWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 		{
 			if(pF->msg == WM_VSCROLL)
 			{
-//				int Command = LOWORD(pF->wParam);
-//				int Pos = HIWORD(pF->wParam);
+/*				int Command = LOWORD(pF->wParam); */
+/*				int Pos = HIWORD(pF->wParam); */
 				
-//				Cinfo->Thumb = SendMessage(Cinfo->hwndOutput, EM_GETTHUMB, 0, 0);
+/*				Cinfo->Thumb = SendMessage(Cinfo->hwndOutput, EM_GETTHUMB, 0, 0); */
 
 				DoRefresh(Cinfo);
 				break;		
@@ -419,14 +419,14 @@ LRESULT CALLBACK ConsWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 			{
 				if (pF->wParam == VK_PRIOR || pF->wParam == VK_NEXT)
 				{
-//					Cinfo->Thumb = SendMessage(Cinfo->hwndOutput, EM_GETTHUMB, 0, 0);
+/*					Cinfo->Thumb = SendMessage(Cinfo->hwndOutput, EM_GETTHUMB, 0, 0); */
 					DoRefresh(Cinfo);
 				}
 			}
 			
 			if(pF->msg == WM_RBUTTONDOWN)
 			{
-				// Only allow popup if something is selected
+				/* Only allow popup if something is selected */
 
 				SendMessage(Cinfo->hwndOutput, EM_EXGETSEL , 0, (WPARAM)&Range);
 				if (Range.cpMin == Range.cpMax)
@@ -444,7 +444,7 @@ LRESULT CALLBACK ConsWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
  
             lpmis = (LPMEASUREITEMSTRUCT) lParam; 
  
-            // Set the height of the list box items. 
+            /* Set the height of the list box items.  */
  
             lpmis->itemHeight = 15; 
             return TRUE; 
@@ -453,7 +453,7 @@ LRESULT CALLBACK ConsWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
  
             lpdis = (LPDRAWITEMSTRUCT) lParam; 
  
-            // If there are no list box items, skip this message. 
+            /* If there are no list box items, skip this message.  */
  
             if (lpdis->itemID == -1) 
             { 
@@ -465,7 +465,7 @@ LRESULT CALLBACK ConsWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 				case ODA_SELECT: 
                 case ODA_DRAWENTIRE: 
  
-				  // if Chat Console, and message has a colour eacape, action it 
+				  /* if Chat Console, and message has a colour eacape, action it  */
 					
 					SendMessage(lpdis->hwndItem, LB_GETTEXT, lpdis->itemID, (LPARAM) tchBuffer); 
  
@@ -478,7 +478,7 @@ LRESULT CALLBACK ConsWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 						SetTextColor(lpdis->hDC,  Colours[tchBuffer[1] - 10]);
 						buf += 2;
 					}
-//					SetBkColor(lpdis->hDC, 0);
+/*					SetBkColor(lpdis->hDC, 0); */
 
                     TextOut(lpdis->hDC, 
                         6, 
@@ -486,7 +486,7 @@ LRESULT CALLBACK ConsWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
                         buf, 
                         strlen(buf)); 						
  
- //					SetTextColor(lpdis->hDC, OldColour);
+ /*					SetTextColor(lpdis->hDC, OldColour); */
 
                     break; 
 			}
@@ -501,12 +501,12 @@ LRESULT CALLBACK ConsWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
 	case WM_COMMAND:
 
-		wmId    = LOWORD(wParam); // Remember, these are...
-		wmEvent = HIWORD(wParam); // ...different for Win32!
+		wmId    = LOWORD(wParam); /* Remember, these are... */
+		wmEvent = HIWORD(wParam); /* ...different for Win32! */
 
 		if (wmId >= BBSUSERCHAT && wmId < BBSUSERCHAT + 63)
 		{
-			// Chat to user
+			/* Chat to user */
 
 			conn=&Connections[wmId-BBSUSERCHAT];
 		
@@ -517,7 +517,7 @@ LRESULT CALLBACK ConsWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 				SendUnbuffered(conn->BPQStream, chatMsg, strlen(chatMsg));
 
 
-//				Disconnect(conn->BPQStream);
+/*				Disconnect(conn->BPQStream); */
 			}
 		}
 
@@ -544,7 +544,7 @@ LRESULT CALLBACK ConsWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 			char * ptr;
 			CHARRANGE Range;
 
-			// Copy Rich Text Selection to Clipboard
+			/* Copy Rich Text Selection to Clipboard */
 	
 			SendMessage(Cinfo->hwndOutput, EM_EXGETSEL , 0, (WPARAM)&Range);
 	
@@ -634,10 +634,10 @@ LRESULT CALLBACK ConsWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 			CopyRichTextToClipboard(Cinfo->hwndOutput);
 			break;
 
-		//case BPQHELP:
+		/*case BPQHELP: */
 
-		//	HtmlHelp(hWnd,"BPQTerminal.chm",HH_HELP_FINDER,0);  
-		//	break;
+		/*	HtmlHelp(hWnd,"BPQTerminal.chm",HH_HELP_FINDER,0);   */
+		/*	break; */
 
 		default:
 
@@ -648,8 +648,8 @@ LRESULT CALLBACK ConsWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 	case WM_SYSCOMMAND:
 
 
-		wmId    = LOWORD(wParam); // Remember, these are...
-		wmEvent = HIWORD(wParam); // ...different for Win32!
+		wmId    = LOWORD(wParam); /* Remember, these are... */
+		wmEvent = HIWORD(wParam); /* ...different for Win32! */
 
 		switch (wmId) { 
 
@@ -698,9 +698,9 @@ LRESULT CALLBACK ConsWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
 		case WM_DESTROY:
 		
-			// Remove the subclass from the edit control. 
+			/* Remove the subclass from the edit control.  */
 
-			GetWindowRect(hWnd,	&ConsoleRect);	// For save soutine
+			GetWindowRect(hWnd,	&ConsoleRect);	/* For save soutine */
 	
             SetWindowLong(Cinfo->hwndInput, GWL_WNDPROC, 
                 (LONG) Cinfo->wpOrigInputProc); 
@@ -725,7 +725,7 @@ LRESULT CALLBACK ConsWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 				}
 			}
 
-			// Free Scrollback
+			/* Free Scrollback */
 
 			for (i = 0; i < MAXSTACK ; i++)
 			{
@@ -753,7 +753,7 @@ LRESULT CALLBACK ConsWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
 		if (wParam == (WPARAM)hBBSUSERCHAT)
 		{
-			// Set up Chat Menu
+			/* Set up Chat Menu */
 
 			CIRCUIT * conn;
 			char MenuLine[30];
@@ -804,11 +804,11 @@ LRESULT APIENTRY InputProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	if (uMsg == WM_KEYUP)
 	{
 		unsigned int i;
-//		Debugprintf("5%x", LOBYTE(HIWORD(lParam)));
+/*		Debugprintf("5%x", LOBYTE(HIWORD(lParam))); */
 
 		if (LOBYTE(HIWORD(lParam)) == 0x48 && wParam == 0x26)
 		{
-			// Scroll up
+			/* Scroll up */
 
 			if (Cinfo->KbdStack[Cinfo->StackIndex] == NULL)
 				return TRUE;
@@ -830,7 +830,7 @@ LRESULT APIENTRY InputProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		if (LOBYTE(HIWORD(lParam)) == 0x50 && wParam == 0x28)
 		{
-			// Scroll up
+			/* Scroll up */
 
 			Cinfo->StackIndex--;
 			if (Cinfo->StackIndex < 0)
@@ -867,7 +867,7 @@ LRESULT APIENTRY InputProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 			if (Cinfo->WrapInput)
 				if ((wParam == 0x20) && (TextLen > Cinfo->WrapLen))
-					wParam = 13;		// Replace space with Enter
+					wParam = 13;		/* Replace space with Enter */
 
 		}
 
@@ -878,7 +878,7 @@ LRESULT APIENTRY InputProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 			Cinfo->StackIndex = 0;
 
-			// Stack it
+			/* Stack it */
 
 			if (Cinfo->KbdStack[19])
 				free(Cinfo->KbdStack[19]);
@@ -892,7 +892,7 @@ LRESULT APIENTRY InputProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 			Cinfo->kbbuf[Cinfo->kbptr]=13;
 
-			// Echo
+			/* Echo */
 
 			if (Cinfo->BPQStream == -2)
 			{
@@ -911,7 +911,7 @@ LRESULT APIENTRY InputProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
 				POINT Point;
 				Point.x = 0;
-				Point.y = 25000;					// Should be plenty for any font
+				Point.y = 25000;					/* Should be plenty for any font */
 
 				SendMessage(Cinfo->hwndOutput, EM_SETSCROLLPOS, 0, (LPARAM) &Point);
 				Cinfo->Scrolled = FALSE;
@@ -928,7 +928,7 @@ LRESULT APIENTRY InputProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 			return 0; 
 		}
-		if (wParam == 0x1a)  // Ctrl/Z
+		if (wParam == 0x1a)  /* Ctrl/Z */
 		{
 	
 			Cinfo->kbbuf[0]=0x1a;
@@ -982,13 +982,13 @@ int WritetoConsoleWindowSupport(struct ConsoleInfo * Cinfo, char * Msg, int len)
 
 	if (Cinfo->PartLinePtr != 0)
 	{
-		Cinfo->CurrentLine--;				// Overwrite part line in buffer
+		Cinfo->CurrentLine--;				/* Overwrite part line in buffer */
 		if (Cinfo->CurrentLine < 0)
 			Cinfo->CurrentLine = MAXLINES - 1;
 
 		if (Msg[0] == 0x1b && len > 1) 
 		{
-			Msg += 2;		// Remove Colour Escape
+			Msg += 2;		/* Remove Colour Escape */
 			len -= 2;
 		}
 	}
@@ -1023,25 +1023,25 @@ lineloop:
 
 	if (len > 0)
 	{
-		//	copy text to control a line at a time	
+		/*	copy text to control a line at a time	 */
 					
 		ptr2=memchr(ptr1,13,len);
 
 		if (ptr2 == 0)
 		{
-			// no newline. Move data to start of buffer and Save pointer
+			/* no newline. Move data to start of buffer and Save pointer */
 
 			Cinfo->PartLinePtr=len;
 			memmove(Cinfo->readbuff,ptr1,len);
 			AddLinetoWindow(Cinfo, ptr1);
-//			InvalidateRect(Cinfo->hwndOutput, NULL, FALSE);
+/*			InvalidateRect(Cinfo->hwndOutput, NULL, FALSE); */
 
 			return (0);
 		}
 
 		*(ptr2++)=0;
 						
-		// If len is greater that screen with, fold
+		/* If len is greater that screen with, fold */
 
 		if ((ptr2 - ptr1) > Cinfo->maxlinelen)
 		{
@@ -1064,7 +1064,7 @@ lineloop:
 
 			if (foldlen == 0)
 			{
-				// No space before, so split at width
+				/* No space before, so split at width */
 
 				foldlen = Cinfo->maxlinelen;
 				ptr3 = ptr1 + Cinfo->maxlinelen;
@@ -1072,7 +1072,7 @@ lineloop:
 			}
 			else
 			{
-				ptr3++ ; // Omit space
+				ptr3++ ; /* Omit space */
 				linelen--;
 			}
 			save = ptr1[foldlen];
@@ -1100,7 +1100,7 @@ lineloop:
 
 		if ((len > 0) && Cinfo->StripLF)
 		{
-			if (*ptr1 == 0x0a)					// Line Feed
+			if (*ptr1 == 0x0a)					/* Line Feed */
 			{
 				ptr1++;
 				len--;
@@ -1129,7 +1129,7 @@ void CopyRichTextToClipboard(HWND hWnd)
 	HGLOBAL	hMem;
 	char * ptr;
 
-	// Copy Rich Text to Clipboard
+	/* Copy Rich Text to Clipboard */
 	
 	len = SendMessage(hWnd, WM_GETTEXTLENGTH, 0, 0);
 	
@@ -1159,9 +1159,9 @@ void CopyToClipboard(HWND hWnd)
 	int i,n, len=0;
 	HGLOBAL	hMem;
 	char * ptr;
-	//
-	//	Copy List Box to clipboard
-	//
+	/* */
+	/*	Copy List Box to clipboard */
+	/* */
 	
 	n = SendMessage(hWnd, LB_GETCOUNT, 0, 0);		
 	
@@ -1179,7 +1179,7 @@ void CopyToClipboard(HWND hWnd)
 	
 		if (OpenClipboard(MainWnd))
 		{
-			//			CopyScreentoBuffer(GlobalLock(hMem));
+			/*			CopyScreentoBuffer(GlobalLock(hMem)); */
 			
 			for (i=0; i<n; i++)
 			{
@@ -1188,7 +1188,7 @@ void CopyToClipboard(HWND hWnd)
 				*(ptr++)=10;
 			}
 
-			*(ptr)=0;					// end of data
+			*(ptr)=0;					/* end of data */
 
 			GlobalUnlock(hMem);
 			EmptyClipboard();
@@ -1207,12 +1207,12 @@ DWORD CALLBACK EditStreamCallback(struct ConsoleInfo * Cinfo, LPBYTE lpBuff, LON
 	int i;
 	int Line;
 
-//	if (cb != 4092)
-//		return 0;
+/*	if (cb != 4092) */
+/*		return 0; */
 
 	if (Cinfo->SendHeader)
 	{
-		// Return header
+		/* Return header */
 
 		memcpy(lpBuff, RTFHeader, RTFHddrLen);
 		*pcb = RTFHddrLen;
@@ -1243,7 +1243,7 @@ DWORD CALLBACK EditStreamCallback(struct ConsoleInfo * Cinfo, LPBYTE lpBuff, LON
     *pcb = BufferLen;
 */
 
-	// Return 10 line at a time
+	/* Return 10 line at a time */
 
 	for (i = 0; i < 10; i++);
 	{
@@ -1283,7 +1283,7 @@ VOID DoRefresh(struct ConsoleInfo * Cinfo)
 
 	Pos = Cinfo->Thumb + Cinfo->ClientHeight;
 
-	if ((Cinfo->Thumb + Cinfo->ClientHeight) > Cinfo->RTFHeight - 10)		// Don't bother writing to screen if scrolled back
+	if ((Cinfo->Thumb + Cinfo->ClientHeight) > Cinfo->RTFHeight - 10)		/* Don't bother writing to screen if scrolled back */
 	{
 		es.pfnCallback = (EDITSTREAMCALLBACK)EditStreamCallback;
 		es.dwCookie = (DWORD_PTR)Cinfo;
@@ -1297,22 +1297,22 @@ VOID DoRefresh(struct ConsoleInfo * Cinfo)
 
 	GetScrollInfo(hwndOutput, SB_VERT, &ScrollInfo);
 
-//	Debugprintf("Pos %d Max %d Min %d nMax %d ClientH %d", Pos, Min, Max, ScrollInfo.nMax, Cinfo->ClientHeight);
+/*	Debugprintf("Pos %d Max %d Min %d nMax %d ClientH %d", Pos, Min, Max, ScrollInfo.nMax, Cinfo->ClientHeight); */
 
 	if (Cinfo->FirstTime == FALSE)
 	{
-		// RTF Controls don't immediately scroll to end - don't know why.
+		/* RTF Controls don't immediately scroll to end - don't know why. */
 		
 		Cinfo->FirstTime = TRUE;
 		Point.x = 0;
-		Point.y = 25000;					// Should be plenty for any font
+		Point.y = 25000;					/* Should be plenty for any font */
 
 		while (LoopTrap++ < 20)
 		{
 			SendMessage(hwndOutput, EM_SETSCROLLPOS, 0, (LPARAM) &Point);
 		}
 
-		GetScrollRange(hwndOutput, SB_VERT, &Min, &Max);	// Get Actual Height
+		GetScrollRange(hwndOutput, SB_VERT, &Min, &Max);	/* Get Actual Height */
 		Cinfo->RTFHeight = Max;
 		Point.x = 0;
 		Point.y = Cinfo->RTFHeight - ScrollInfo.nPage;
@@ -1323,7 +1323,7 @@ VOID DoRefresh(struct ConsoleInfo * Cinfo)
 	Point.x = 0;
 	Point.y = Cinfo->RTFHeight - ScrollInfo.nPage;
 
-	if (Cinfo->Thumb > (Point.y - 10))		// Don't Scroll if user has scrolled back 
+	if (Cinfo->Thumb > (Point.y - 10))		/* Don't Scroll if user has scrolled back  */
 	{
 		SendMessage(hwndOutput, EM_SETSCROLLPOS, 0, (LPARAM) &Point);
 
@@ -1350,7 +1350,7 @@ VOID AddLinetoWindow(struct ConsoleInfo * Cinfo, char * Line)
 	int l, Index;
 	char LineCopy[LINELEN * 2];
 
-	if (Len > 199)			// Console can't handle long lines
+	if (Len > 199)			/* Console can't handle long lines */
 	{
 		Line[198] = 13;
 		Line[199] = 0;
@@ -1359,7 +1359,7 @@ VOID AddLinetoWindow(struct ConsoleInfo * Cinfo, char * Line)
 
 	if (Line[0] ==  0x1b && Len > 1)
 	{
-		// Save Colour Char
+		/* Save Colour Char */
 		
 		Cinfo->CurrentColour = Line[1] - 10;
 		ptr1 +=2;
@@ -1368,25 +1368,25 @@ VOID AddLinetoWindow(struct ConsoleInfo * Cinfo, char * Line)
 
 	strcpy(Cinfo->OutputScreen[Cinfo->CurrentLine], ptr1);
 
-	// Look for chars we need to escape (\  { })
+	/* Look for chars we need to escape (\  { }) */
 
 	ptr1 = Cinfo->OutputScreen[Cinfo->CurrentLine];
 	Index = 0;
-	ptr2 = strchr(ptr1, '\\');				// Look for Backslash first, as we may add some later
+	ptr2 = strchr(ptr1, '\\');				/* Look for Backslash first, as we may add some later */
 
 	if (ptr2)
 	{
 		while (ptr2)
 		{
 			l = ++ptr2 - ptr1;
-			memcpy(&LineCopy[Index], ptr1, l);	// Copy Including found char
+			memcpy(&LineCopy[Index], ptr1, l);	/* Copy Including found char */
 			Index += l;
 			LineCopy[Index++] = '\\';
 			Len++;
 			ptr1 = ptr2;
 			ptr2 = strchr(ptr1, '\\');
 		}
-		strcpy(&LineCopy[Index], ptr1);			// Copy in rest
+		strcpy(&LineCopy[Index], ptr1);			/* Copy in rest */
 		strcpy(Cinfo->OutputScreen[Cinfo->CurrentLine], LineCopy);
 	}
 
@@ -1407,20 +1407,20 @@ VOID AddLinetoWindow(struct ConsoleInfo * Cinfo, char * Line)
 			ptr1 = ++ptr2;
 			ptr2 = strchr(ptr1, '{');
 		}
-		strcpy(&LineCopy[Index], ptr1);			// Copy in rest
+		strcpy(&LineCopy[Index], ptr1);			/* Copy in rest */
 		strcpy(Cinfo->OutputScreen[Cinfo->CurrentLine], LineCopy);
 	}
 
 	ptr1 = Cinfo->OutputScreen[Cinfo->CurrentLine];
 	Index = 0;
-	ptr2 = strchr(ptr1, '}');				// Look for Backslash first, as we may add some later
+	ptr2 = strchr(ptr1, '}');				/* Look for Backslash first, as we may add some later */
 
 	if (ptr2)
 	{
 		while (ptr2)
 		{
 			l = ptr2 - ptr1;
-			memcpy(&LineCopy[Index], ptr1, l);	// Copy 
+			memcpy(&LineCopy[Index], ptr1, l);	/* Copy  */
 			Index += l;
 			LineCopy[Index++] = '\\';
 			LineCopy[Index++] = '}';
@@ -1428,7 +1428,7 @@ VOID AddLinetoWindow(struct ConsoleInfo * Cinfo, char * Line)
 			ptr1 = ++ptr2;
 			ptr2 = strchr(ptr1, '}');
 		}
-		strcpy(&LineCopy[Index], ptr1);			// Copy in rest
+		strcpy(&LineCopy[Index], ptr1);			/* Copy in rest */
 		strcpy(Cinfo->OutputScreen[Cinfo->CurrentLine], LineCopy);
 	}
 

@@ -1,7 +1,7 @@
-//{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
-// Used by BPQMail.rc
-//
+/*{{NO_DEPENDENCIES}} */
+/* Microsoft Developer Studio generated include file. */
+/* Used by BPQMail.rc */
+/* */
 #define IDC_MYICON                      2
 #define IDSENDTOMAP                     3
 #define IDSelectFiles                   3
@@ -318,8 +318,8 @@
 #define IDC_DEFAULTNOWINLINK            41001
 #define IDC_MULTIP                      41002
 
-// Next default values for new objects
-// 
+/* Next default values for new objects */
+/*  */
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        30012

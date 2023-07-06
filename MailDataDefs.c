@@ -20,17 +20,17 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 
 #include "bpqmail.h"
 
-int LastVer[4] = {0, 0, 0, 0};					// In case we need to do somthing the first time a version is run
+int LastVer[4] = {0, 0, 0, 0};					/* In case we need to do somthing the first time a version is run */
 
 HWND MainWnd;
 HWND hWndSess;
 RECT MainRect;
 HMENU hActionMenu;
 static HMENU hMenu;
-HMENU hDisMenu;									// Disconnect Menu Handle
-HMENU hFWDMenu;									// Forward Menu Handle
+HMENU hDisMenu;									/* Disconnect Menu Handle */
+HMENU hFWDMenu;									/* Forward Menu Handle */
 
-int SessX, SessY, SessWidth;					// Params for Session Window
+int SessX, SessY, SessWidth;					/* Params for Session Window */
 
 char szBuff[80];
 
@@ -47,12 +47,12 @@ struct SEM OutputSEM = {0, 0};
 struct UserInfo ** UserRecPtr=NULL;
 int NumberofUsers=0;
 
-struct UserInfo * BBSChain = NULL;					// Chain of users that are BBSes
+struct UserInfo * BBSChain = NULL;					/* Chain of users that are BBSes */
 
 struct MsgInfo ** MsgHddrPtr=NULL;
 int NumberofMessages=0;
 
-int FirstMessageIndextoForward = 0;					// Lowest Message with a forward bit set - limits search
+int FirstMessageIndextoForward = 0;					/* Lowest Message with a forward bit set - limits search */
 
 BIDRec ** BIDRecPtr=NULL;
 int NumberofBIDs=0;
@@ -68,7 +68,7 @@ int NumberofBadWords=0;
 char * BadFile = NULL;
 
 int LatestMsg = 0;
-struct SEM MsgNoSemaphore = {0, 0};					// For locking updates to LatestMsg
+struct SEM MsgNoSemaphore = {0, 0};					/* For locking updates to LatestMsg */
 int HighestBBSNumber = 0;
 
 int MaxMsgno = 60000;
@@ -105,7 +105,7 @@ ULONG ChatApplMask;
 int BBSApplNum=0;
 int ChatApplNum=0;
 
-//int	StartStream=0;
+/*int	StartStream=0; */
 int	NumberofStreams=0;
 int MaxStreams=0;
 
@@ -162,8 +162,8 @@ BOOL UsingingRegConfig = FALSE;
 BOOL MulticastRX = FALSE;
 
 char BaseDir[MAX_PATH];
-char BaseDirRaw[MAX_PATH];			// As set in registry - may contain %NAME%
-char ProperBaseDir[MAX_PATH];		// BPQ Directory/BPQMailChat
+char BaseDirRaw[MAX_PATH];			/* As set in registry - may contain %NAME% */
+char ProperBaseDir[MAX_PATH];		/* BPQ Directory/BPQMailChat */
 
 
 char MailDir[MAX_PATH];
@@ -184,7 +184,7 @@ BOOL OnlyKnown = FALSE;
 BOOL DontNeedHomeBBS = FALSE;
 BOOL DontCheckFromCall = FALSE;
 
-// Send WP Params
+/* Send WP Params */
 
 BOOL SendWP;
 BOOL FilterWPBulls;
@@ -193,7 +193,7 @@ BOOL NoWPGuesses;
 char SendWPVIA[81];
 char SendWPTO[11];
 
-char ** SendWPAddrs;					// Replaces WP To and VIA
+char ** SendWPAddrs;					/* Replaces WP To and VIA */
 
 int SendWPType;
 
@@ -201,22 +201,22 @@ int SMTPMsgs;
 
 int MailForInterval = 0;
 
-char zeros[NBMASK];						// For forward bitmask tests
+char zeros[NBMASK];						/* For forward bitmask tests */
 
-time_t MaintClock;						// Time to run housekeeping
+time_t MaintClock;						/* Time to run housekeeping */
 
-struct MsgInfo * MsgnotoMsg[100000];	// Message Number to Message Slot List.
+struct MsgInfo * MsgnotoMsg[100000];	/* Message Number to Message Slot List. */
 
-// Filter Params
+/* Filter Params */
 
-char ** RejFrom;					// Reject on FROM Call
-char ** RejTo;						// Reject on TO Call
-char ** RejAt;						// Reject on AT Call
-char ** RejBID;						// Reject on BID 
+char ** RejFrom;					/* Reject on FROM Call */
+char ** RejTo;						/* Reject on TO Call */
+char ** RejAt;						/* Reject on AT Call */
+char ** RejBID;						/* Reject on BID  */
 
-char ** HoldFrom;					// Hold on FROM Call
-char ** HoldTo;						// Hold on TO Call
-char ** HoldAt;						// Hold on AT Call
-char ** HoldBID;					// Hold on BID
+char ** HoldFrom;					/* Hold on FROM Call */
+char ** HoldTo;						/* Hold on TO Call */
+char ** HoldAt;						/* Hold on AT Call */
+char ** HoldBID;					/* Hold on BID */
 
 struct ConsoleInfo * ConsHeader[2];

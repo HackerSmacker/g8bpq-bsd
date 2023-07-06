@@ -1,7 +1,7 @@
-//{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
-// Used by BPQRemotePTT.rc
-//
+/*{{NO_DEPENDENCIES}} */
+/* Microsoft Developer Studio generated include file. */
+/* Used by BPQRemotePTT.rc */
+/* */
 #define IDC_BPQHOST                     1000
 #define IDC_COM1                        1001
 #define IDC_HAMLIBPORT1                 1002
@@ -20,8 +20,8 @@
 #define IDC_STATE4                      1015
 #define IDC_TEST4                       1016
 
-// Next default values for new objects
-// 
+/* Next default values for new objects */
+/*  */
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        102

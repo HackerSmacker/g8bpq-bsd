@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-//
-//	Interface to allow G8BPQ switch to use  HSMODEM TNC 
+/* */
+/*	Interface to allow G8BPQ switch to use  HSMODEM TNC  */
 
 
 #define _CRT_SECURE_NO_DEPRECATE
@@ -59,17 +59,17 @@ struct BroadcastMsg
 struct FileHeader
 {
 	unsigned char Type;
-	unsigned char Info;		// 0 - First, 1 - Continuation 2 Last 3  - Only
+	unsigned char Info;		/* 0 - First, 1 - Continuation 2 Last 3  - Only */
 	char filename[50];
-	unsigned short CRC;		// of filename = transfer id
-	unsigned char Size[3];	// Big endian
+	unsigned short CRC;		/* of filename = transfer id */
+	unsigned char Size[3];	/* Big endian */
 	unsigned char Data[164];
 };
 
 struct FileData
 {
 	unsigned char Type;
-	unsigned char Info;		// 0 - First, 1 - Continuation 2 Last 3  - Only
+	unsigned char Info;		/* 0 - First, 1 - Continuation 2 Last 3  - Only */
 	unsigned char Data[219];
 };
 
@@ -77,10 +77,10 @@ struct FileData
 
 struct HSFILEINFO
 {
-	struct HSFILEINFO * Next;	// May want to chain entries for partial files
+	struct HSFILEINFO * Next;	/* May want to chain entries for partial files */
 
 	char fileName[50];
-	unsigned short CRC;			// Used as a transfer ID
+	unsigned short CRC;			/* Used as a transfer ID */
 	int fileSize;
 	int Sequence;
 	int State;
@@ -102,9 +102,9 @@ struct HSMODEMINFO
 	struct HSFILEINFO * File;
 
 	int Mode;
-	char * Capture;				// Capture Device Name
-	char * Playback;			// Playback Device Name
-	int Seq;					// To make CRC more Unique
+	char * Capture;				/* Capture Device Name */
+	char * Playback;			/* Playback Device Name */
+	int Seq;					/* To make CRC more Unique */
 	int txFifo;
 	int rxFifo;
 	int Sync;
@@ -174,13 +174,13 @@ static int ProcessLine(char * buf, int Port)
 
 	if (ptr == NULL) return (TRUE);
 
-	if (*ptr =='#') return (TRUE);			// comment
+	if (*ptr =='#') return (TRUE);			/* comment */
 
-	if (*ptr ==';') return (TRUE);			// comment
+	if (*ptr ==';') return (TRUE);			/* comment */
 
 
 	if (_stricmp(buf, "ADDR"))
-		return FALSE;						// Must start with ADDR
+		return FALSE;						/* Must start with ADDR */
 
 	ptr = strtok(NULL, " \t\n\r");
 
@@ -210,7 +210,7 @@ static int ProcessLine(char * buf, int Port)
 	TNC->TCPPort = WINMORport;
 
 	TNC->destaddr.sin_family = AF_INET;
-	TNC->destaddr.sin_port = htons(WINMORport + 2);		// We only receive on Port + 2
+	TNC->destaddr.sin_port = htons(WINMORport + 2);		/* We only receive on Port + 2 */
 
 	TNC->HostName = malloc(strlen(p_ipad)+1);
 
@@ -243,7 +243,7 @@ static int ProcessLine(char * buf, int Port)
 		}
 	}
 
-	// Read Initialisation lines
+	/* Read Initialisation lines */
 
 	while(TRUE)
 	{
@@ -317,7 +317,7 @@ BOOL HSMODEMReadConfigFile(int Port, int ProcLine())
 
 	if (Config)
 	{
-		// Using config from bpq32.cfg
+		/* Using config from bpq32.cfg */
 
 		if (strlen(Config) == 0)
 		{
@@ -358,11 +358,11 @@ static VOID SendToTNC(struct TNCINFO * TNC, int Stream, UCHAR * Encoded, int Enc
 {
 	if (TNC->hDevice)
 	{
-		// HSMODEM mode. Queue to Hostmode driver
+		/* HSMODEM mode. Queue to Hostmode driver */
 		
 		PMSGWITHLEN buffptr = (PMSGWITHLEN)GetBuff();
 
-		if (buffptr == 0) return;			// No buffers, so ignore
+		if (buffptr == 0) return;			/* No buffers, so ignore */
 
 		buffptr->Len = EncLen;
 		memcpy(&buffptr->Data[0], Encoded, EncLen);
@@ -381,7 +381,7 @@ VOID HSMODEMChangeMYC(struct TNCINFO * TNC, char * Call)
 	int datalen;
 
 	if (strcmp(Call, TNC->CurrentMYC) == 0)
-		return;								// No Change
+		return;								/* No Change */
 
 	strcpy(TNC->CurrentMYC, Call);
 
@@ -393,7 +393,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 {
 	int datalen;
 	PMSGWITHLEN buffptr;
-//	char txbuff[500];
+/*	char txbuff[500]; */
 	unsigned int bytes,txlen = 0;
 	UCHAR * TXMsg;
 
@@ -405,15 +405,15 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 	struct ScanEntry * Scan;
 
 	if (TNC == NULL)
-		return 0;							// Port not defined
+		return 0;							/* Port not defined */
 
 	switch (fn)
 	{
 		case 7:			
 
-			// 100 mS Timer. May now be needed, as Poll can be called more frequently in some circumstances
+			/* 100 mS Timer. May now be needed, as Poll can be called more frequently in some circumstances */
 
-		// G7TAJ's code to record activity for stats display
+		/* G7TAJ's code to record activity for stats display */
 			
 		if ( TNC->BusyFlags && CDBusy )
 			TNC->PortRecord->PORTCONTROL.ACTIVE += 2;
@@ -443,7 +443,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 		
 			return 0;
 
-		case 1:				// poll
+		case 1:				/* poll */
 
 		HSMODEMCheckRX(TNC);
 
@@ -470,22 +470,22 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 			}
 */	
 			datalen = buffptr->LENGTH - MSGHDDRLEN;
-			Buffer = &buffptr->DEST[0];		// Raw Frame
+			Buffer = &buffptr->DEST[0];		/* Raw Frame */
 			Buffer[datalen] = 0;
 
-			// Frame has ax.25 format header. Convert to Text
+			/* Frame has ax.25 format header. Convert to Text */
 
-			CallLen = ConvFromAX25(Buffer + 7, Call);		// Origin
+			CallLen = ConvFromAX25(Buffer + 7, Call);		/* Origin */
 			memcpy(ptr, Call, CallLen);
 			ptr += CallLen;
 
 			*ptr++ = '!';
 
-			CallLen = ConvFromAX25(Buffer, Call);			// Dest
+			CallLen = ConvFromAX25(Buffer, Call);			/* Dest */
 			memcpy(ptr, Call, CallLen);
 			ptr += CallLen;
 
-			Buffer += 14;						// TO Digis
+			Buffer += 14;						/* TO Digis */
 			datalen -= 14;
 
 			while ((Buffer[-1] & 1) == 0)
@@ -494,15 +494,15 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 				CallLen = ConvFromAX25(Buffer,  Call);
 				memcpy(ptr, Call, CallLen);
 				ptr += CallLen;
-				Buffer += 7;	// End of addr
+				Buffer += 7;	/* End of addr */
 				datalen -= 7;
 			}
 
 			*ptr++ = '_';
-			*ptr++ = 'U';					// UI Frame
-			*ptr++ = 0;						// delimit calls
+			*ptr++ = 'U';					/* UI Frame */
+			*ptr++ = 0;						/* delimit calls */
 
-			if (Buffer[0] == 3)				// UI
+			if (Buffer[0] == 3)				/* UI */
 			{
 				Buffer += 2;
 				datalen -= 2;
@@ -520,7 +520,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 			if (TNC->DiscPending == 0)
 			{
-				// Too long in Disc Pending - Kill and Restart TNC
+				/* Too long in Disc Pending - Kill and Restart TNC */
 			}
 		}
 
@@ -535,7 +535,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 				if (STREAM->NeedDisc == 0)
 				{
-					// Send the DISCONNECT
+					/* Send the DISCONNECT */
 
 					HSMODEMSendCommand(TNC, "DISCONNECT\r");
 				}
@@ -543,7 +543,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 			if (TNC->PortRecord->ATTACHEDSESSIONS[Stream] && STREAM->Attached == 0)
 			{
-				// New Attach
+				/* New Attach */
 
 				int calllen;
 				char Msg[80];
@@ -558,14 +558,14 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 	
 				HSMODEMChangeMYC(TNC, TNC->Streams[0].MyCall);
 		
-				// Stop other ports in same group
+				/* Stop other ports in same group */
 
 				SuspendOtherPorts(TNC);
 	
-				//sprintf(TNC->WEB_TNCSTATE, "In Use by %s", TNC->Streams[0].MyCall);
-				//MySetWindowText(TNC->xIDC_TNCSTATE, TNC->WEB_TNCSTATE);
+				/*sprintf(TNC->WEB_TNCSTATE, "In Use by %s", TNC->Streams[0].MyCall); */
+				/*MySetWindowText(TNC->xIDC_TNCSTATE, TNC->WEB_TNCSTATE); */
 
-					// Stop Scanning
+					/* Stop Scanning */
 
 				sprintf(Msg, "%d SCANSTOP", TNC->Port);
 	
@@ -577,7 +577,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 		}
 				
-		// See if any frames for this port
+		/* See if any frames for this port */
 
 		for (Stream = 0; Stream <= 2; Stream++)
 		{
@@ -601,9 +601,9 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 				datalen = (int)buffptr->Len;
 
-				buff->PORT = Stream;						// Compatibility with Kam Driver
+				buff->PORT = Stream;						/* Compatibility with Kam Driver */
 				buff->PID = 0xf0;
-				memcpy(&buff->L2DATA, &buffptr->Data[0], datalen);		// Data goes to + 7, but we have an extra byte
+				memcpy(&buff->L2DATA, &buffptr->Data[0], datalen);		/* Data goes to + 7, but we have an extra byte */
 				datalen += sizeof(void *) + 4;
 
 				PutLengthinBuffer(buff, datalen);
@@ -613,75 +613,75 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 				return (1);
 			}
 
-			if (STREAM->ReportDISC)		// May need a delay so treat as a counter
+			if (STREAM->ReportDISC)		/* May need a delay so treat as a counter */
 			{
 				STREAM->ReportDISC--;
 				if (STREAM->ReportDISC == 0)
 				{
 					buff->PORT = Stream;
-//					STREAM->Connected = 0;
-//					STREAM->Attached = 0;
+/*					STREAM->Connected = 0; */
+/*					STREAM->Attached = 0; */
 					return -1;
 				}
 			}
 		}
 		return (0);
 
-	case 2:				// send
+	case 2:				/* send */
 
 		Stream = buff->PORT;
 
 		if (!TNC->CONNECTED)
 		{
-			// Send Error Response
+			/* Send Error Response */
 
 			PMSGWITHLEN buffptr = (PMSGWITHLEN)GetBuff();
 
-			if (buffptr == 0) return (0);			// No buffers, so ignore
+			if (buffptr == 0) return (0);			/* No buffers, so ignore */
 
 			buffptr->Len = 36;
 			memcpy(&buffptr->Data[0], "No Connection to TNC\r", 36);
 
 			C_Q_ADD(&TNC->Streams[Stream].PACTORtoBPQ_Q, buffptr);
 			
-			return 0;		// Don't try if not connected
+			return 0;		/* Don't try if not connected */
 		}
 
 		STREAM = &TNC->Streams[Stream];
 		
 		if (TNC->SwallowSignon)
 		{
-			TNC->SwallowSignon = FALSE;		// Discard *** connected
+			TNC->SwallowSignon = FALSE;		/* Discard *** connected */
 			return 0;
 		}
 
-		txlen = GetLengthfromBuffer(buff) - (MSGHDDRLEN + 1);		// 1 as no PID
+		txlen = GetLengthfromBuffer(buff) - (MSGHDDRLEN + 1);		/* 1 as no PID */
 		TXMsg = &buff->L2DATA[0];
 		TXMsg[txlen] = 0;
 
-		// for now just send, but allow sending control
-		// characters with \\ or ^ escape
+		/* for now just send, but allow sending control */
+		/* characters with \\ or ^ escape */
 
 		if (STREAM->Connected)
 		{
 			STREAM->PacketsSent++;
 
 			bytes=HSMODEMSendData(TNC, TXMsg, txlen);
-			TNC->Streams[Stream].BytesOutstanding += bytes;		// So flow control works - will be updated by BUFFER response
+			TNC->Streams[Stream].BytesOutstanding += bytes;		/* So flow control works - will be updated by BUFFER response */
 			STREAM->BytesTXed += bytes;
-//			WritetoTrace(TNC, &buff->L2DATA[0], txlen);
+/*			WritetoTrace(TNC, &buff->L2DATA[0], txlen); */
 	
 			return 1;
 		}
 
 		if (_memicmp(&buff->L2DATA[0], "D\r", 2) == 0 || _memicmp(&buff->L2DATA[0], "BYE\r", 4) == 0)
 		{
-			STREAM->ReportDISC = TRUE;		// Tell Node
+			STREAM->ReportDISC = TRUE;		/* Tell Node */
 			return 0;
 		}
 	
 
-		// See if Local command (eg RADIO)
+		/* See if Local command (eg RADIO) */
 
 		if (_memicmp(&buff->L2DATA[0], "RADIO ", 6) == 0)
 		{
@@ -694,7 +694,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 			{
 				PMSGWITHLEN buffptr = (PMSGWITHLEN)GetBuff();
 
-				if (buffptr == 0) return 1;			// No buffers, so ignore
+				if (buffptr == 0) return 1;			/* No buffers, so ignore */
 
 				buffptr->Len  = sprintf((UCHAR *)&buffptr->Data[0], "%s", &buff->L2DATA[0]);
 				C_Q_ADD(&TNC->Streams[Stream].PACTORtoBPQ_Q, buffptr);
@@ -737,9 +737,9 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 		}
 
 
-		// See if a Connect Command. If so, start codec and set Connecting
+		/* See if a Connect Command. If so, start codec and set Connecting */
 
-		if (toupper(buff->L2DATA[0]) == 'C' && buff->L2DATA[1] == ' ' && txlen > 2)	// Connect
+		if (toupper(buff->L2DATA[0]) == 'C' && buff->L2DATA[1] == ' ' && txlen > 2)	/* Connect */
 		{
 			char Connect[80];
 			char * ptr = strchr(&buff->L2DATA[2], 13);
@@ -756,21 +756,21 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 			HSMODEMChangeMYC(TNC, TNC->Streams[0].MyCall);
 
-			// See if Busy
+			/* See if Busy */
 
 			if (InterlockedCheckBusy(TNC))
 			{
-				// Channel Busy. Unless override set, wait
+				/* Channel Busy. Unless override set, wait */
 
 				if (TNC->OverrideBusy == 0)
 				{
-					// Save Command, and wait up to 10 secs
+					/* Save Command, and wait up to 10 secs */
 						
 					sprintf(TNC->WEB_TNCSTATE, "Waiting for clear channel");
 					MySetWindowText(TNC->xIDC_TNCSTATE, TNC->WEB_TNCSTATE);
 
 					TNC->ConnectCmd = _strdup(Connect);
-					TNC->BusyDelay = TNC->BusyWait * 10;		// BusyWait secs
+					TNC->BusyDelay = TNC->BusyWait * 10;		/* BusyWait secs */
 					return 0;
 				}
 			}
@@ -789,7 +789,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 		}
 
-		// Normal data. Send to TNC
+		/* Normal data. Send to TNC */
 
 
 		HSMODEMSendData(TNC, TXMsg, txlen);
@@ -798,18 +798,18 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 	case 3:	
 		
-		// CHECK IF OK TO SEND (And check TNC Status)
+		/* CHECK IF OK TO SEND (And check TNC Status) */
 
 		Stream = (int)(size_t)buff;
 
-		// I think we should check buffer space for all comms modes
+		/* I think we should check buffer space for all comms modes */
 
 		{
 			int Queued;
 			int Outstanding = TNC->Streams[Stream].BytesOutstanding;
 
 			if (Stream == 0)
-				Queued = TNC->Streams[13].FramesQueued;		// ARDOP Native Mode Send Queue
+				Queued = TNC->Streams[13].FramesQueued;		/* ARDOP Native Mode Send Queue */
 			else
 				Queued = TNC->Streams[Stream].FramesQueued;
 
@@ -822,57 +822,57 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 		if (TNC->Streams[Stream].Attached == 0)
 			return (TNC->CONNECTED != 0) << 8 | 1;
 
-		return ((TNC->CONNECTED != 0) << 8 | TNC->Streams[Stream].Disconnecting << 15);		// OK
+		return ((TNC->CONNECTED != 0) << 8 | TNC->Streams[Stream].Disconnecting << 15);		/* OK */
 		
 
-	case 4:				// reinit7
+	case 4:				/* reinit7 */
 
 		return 0;
 
-	case 5:				// Close
+	case 5:				/* Close */
 
 		return 0;
 
-	case 6:				// Scan Stop Interface
+	case 6:				/* Scan Stop Interface */
 
 		Param = (size_t)buff;
 	
-		if (Param == 2)		// Check  Permission (Shouldn't happen)
+		if (Param == 2)		/* Check  Permission (Shouldn't happen) */
 		{
 			Debugprintf("Scan Check Permission called on ARDOP");
-			return 1;		// OK to change
+			return 1;		/* OK to change */
 		}
 
-		if (Param == 1)		// Request Permission
+		if (Param == 1)		/* Request Permission */
 		{
 			if (!TNC->CONNECTED)
-				return 0;					// No connection so no interlock
+				return 0;					/* No connection so no interlock */
 			
 			if (TNC->ConnectPending == 0 && TNC->PTTState == 0)
 			{
 				HSMODEMSendCommand(TNC, "CONOK OFF");
 				TNC->GavePermission = TRUE;
-				return 0;	// OK to Change
+				return 0;	/* OK to Change */
 			}
 
 			if (TNC->ConnectPending)
-				TNC->ConnectPending--;		// Time out if set too long
+				TNC->ConnectPending--;		/* Time out if set too long */
 
 			return TRUE;
 		}
 
-		if (Param == 3)		// Release  Permission
+		if (Param == 3)		/* Release  Permission */
 		{
 			if (TNC->GavePermission)
 			{
 				TNC->GavePermission = FALSE;
-				if (TNC->ARDOPCurrentMode[0] != 'S')	// Skip
+				if (TNC->ARDOPCurrentMode[0] != 'S')	/* Skip */
 					HSMODEMSendCommand(TNC, "CONOK ON");
 			}
 			return 0;
 		}
 
-		// Param is Address of a struct ScanEntry
+		/* Param is Address of a struct ScanEntry */
 
 		Scan = (struct ScanEntry *)buff;
 		return 0;
@@ -882,13 +882,13 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 VOID HSMODEMReleaseTNC(struct TNCINFO * TNC)
 {
-	// Set mycall back to Node or Port Call, and Start Scanner
+	/* Set mycall back to Node or Port Call, and Start Scanner */
 
 	UCHAR TXMsg[1000];
 
 	HSMODEMChangeMYC(TNC, TNC->NodeCall);
 
-	//	Start Scanner
+	/*	Start Scanner */
 				
 	sprintf(TXMsg, "%d SCANSTART 15", TNC->Port);
 
@@ -931,7 +931,7 @@ static int WebProc(struct TNCINFO * TNC, char * Buff, BOOL LOCAL)
 	Len += sprintf(&Buff[Len], "<tr><td>Channel State</td><td>%s</td></tr>", TNC->WEB_CHANSTATE);
 	Len += sprintf(&Buff[Len], "<tr><td>Proto State</td><td>%s</td></tr>", TNC->WEB_PROTOSTATE);
 	Len += sprintf(&Buff[Len], "<tr><td>Traffic</td><td>%s</td></tr>", TNC->WEB_TRAFFIC);
-//	Len += sprintf(&Buff[Len], "<tr><td>TNC Restarts</td><td></td></tr>", TNC->WEB_RESTARTS);
+/*	Len += sprintf(&Buff[Len], "<tr><td>TNC Restarts</td><td></td></tr>", TNC->WEB_RESTARTS); */
 	Len += sprintf(&Buff[Len], "</table>");
 
 	Len += sprintf(&Buff[Len], "<textarea rows=10 style=\"width:500px; height:250px;\" id=textarea >%s</textarea>", TNC->WebBuffer);
@@ -1002,9 +1002,9 @@ static LRESULT CALLBACK PacWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARA
 		if (TNC->HSModemInfo->Sync)
 			TextOut(hdc, 305, 162, "Sync", 4);
 
-//		SelectObject(ps.hdc, RedBrush); 
+/*		SelectObject(ps.hdc, RedBrush);  */
 		SelectObject(ps.hdc, GreenBrush); 
-//		SelectObject(ps.hdc, GetStockObject(GRAY_BRUSH)); 
+/*		SelectObject(ps.hdc, GetStockObject(GRAY_BRUSH));  */
 
 		Rectangle(ps.hdc, 40, 165, TNC->HSModemInfo->rxFifo + 42, 175); 
 		SelectObject(ps.hdc, RedBrush); 
@@ -1030,11 +1030,11 @@ static LRESULT CALLBACK PacWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARA
 	case WM_MDIACTIVATE:
 	{
 			 
-		// Set the system info menu when getting activated
+		/* Set the system info menu when getting activated */
 			 
 		if (lParam == (LPARAM) hWnd)
 		{
-			// Activate
+			/* Activate */
 
 			RemoveMenu(hBaseMenu, 1, MF_BYPOSITION);
 
@@ -1043,16 +1043,16 @@ static LRESULT CALLBACK PacWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARA
 			
 			SendMessage(ClientWnd, WM_MDISETMENU, (WPARAM) hBaseMenu, (LPARAM) hWndMenu);
 
-//			SendMessage(ClientWnd, WM_MDISETMENU, (WPARAM) TNC->hMenu, (LPARAM) TNC->hWndMenu);
+/*			SendMessage(ClientWnd, WM_MDISETMENU, (WPARAM) TNC->hMenu, (LPARAM) TNC->hWndMenu); */
 		}
 		else
 		{
-			 // Deactivate
+			 /* Deactivate */
 	
 			SendMessage(ClientWnd, WM_MDISETMENU, (WPARAM) hMainFrameMenu, (LPARAM) NULL);
 		 }
 			 
-		// call DrawMenuBar after the menu items are set
+		/* call DrawMenuBar after the menu items are set */
 		DrawMenuBar(FrameWnd);
 
 		return DefMDIChildProc(hWnd, message, wParam, lParam);
@@ -1191,7 +1191,7 @@ VOID * HSMODEMExtInit(EXTPORTDATA * PortEntry)
 
 	if (TNC == NULL)
 	{
-		// Not defined in Config file
+		/* Not defined in Config file */
 
 		sprintf(Msg," ** Error - no info in BPQ32.cfg for this port\n");
 		WritetoConsole(Msg);
@@ -1234,8 +1234,8 @@ VOID * HSMODEMExtInit(EXTPORTDATA * PortEntry)
 
 	PortEntry->MAXHOSTMODESESSIONS = TNC->PacketChannels + 1;
 
-	PortEntry->SCANCAPABILITIES = SIMPLE;			// Scan Control - pending connect only
-	PortEntry->PERMITGATEWAY = TRUE;				// Can change ax.25 call on each stream
+	PortEntry->SCANCAPABILITIES = SIMPLE;			/* Scan Control - pending connect only */
+	PortEntry->PERMITGATEWAY = TRUE;				/* Can change ax.25 call on each stream */
 
 	PortEntry->PORTCONTROL.UICAPABLE = TRUE;
 
@@ -1250,15 +1250,15 @@ VOID * HSMODEMExtInit(EXTPORTDATA * PortEntry)
 
 
 	ptr=strchr(TNC->NodeCall, ' ');
-	if (ptr) *(ptr) = 0;					// Null Terminate
+	if (ptr) *(ptr) = 0;					/* Null Terminate */
 
-	// Set Essential Params and MYCALL
+	/* Set Essential Params and MYCALL */
 
-	// Put overridable ones on front, essential ones on end
+	/* Put overridable ones on front, essential ones on end */
 
 	TempScript = zalloc(1000);
 
-	// cant think of any yet
+	/* cant think of any yet */
 
 	if (TNC->InitScript)
 	{
@@ -1268,7 +1268,7 @@ VOID * HSMODEMExtInit(EXTPORTDATA * PortEntry)
 
 	TNC->InitScript = TempScript;
 
-	// Set MYCALL
+	/* Set MYCALL */
 
 	sprintf(Msg, "MYCALL %s\r", TNC->NodeCall);
 	strcat(TNC->InitScript, Msg);
@@ -1276,7 +1276,7 @@ VOID * HSMODEMExtInit(EXTPORTDATA * PortEntry)
 	strcpy(TNC->CurrentMYC, TNC->NodeCall);
 
 	if (TNC->WL2K == NULL)
-		if (PortEntry->PORTCONTROL.WL2KInfo.RMSCall[0])			// Alrerady decoded
+		if (PortEntry->PORTCONTROL.WL2KInfo.RMSCall[0])			/* Alrerady decoded */
 			TNC->WL2K = &PortEntry->PORTCONTROL.WL2KInfo;
 
 	PortEntry->PORTCONTROL.TNC = TNC;
@@ -1344,7 +1344,7 @@ VOID * HSMODEMExtInit(EXTPORTDATA * PortEntry)
 #endif
 
 
-	// Open and bind UDP socket
+	/* Open and bind UDP socket */
 
 	TNC->TCPSock = socket(AF_INET,SOCK_DGRAM,0);
 
@@ -1360,7 +1360,7 @@ VOID * HSMODEMExtInit(EXTPORTDATA * PortEntry)
 
 	if (ret != 0)
 	{
-		//	Bind Failed
+		/*	Bind Failed */
 
 		ret = WSAGetLastError();
 		sprintf(Msg, "Bind Failed for UDP port %d - error code = %d", TNC->TCPPort + 2, ret);
@@ -1368,9 +1368,9 @@ VOID * HSMODEMExtInit(EXTPORTDATA * PortEntry)
 	}
 
  
-//	SendInitScript(TNC);
+/*	SendInitScript(TNC); */
 
-	time(&TNC->lasttime);			// Get initial time value
+	time(&TNC->lasttime);			/* Get initial time value */
 
 	return ExtProc;
 }
@@ -1378,7 +1378,7 @@ VOID * HSMODEMExtInit(EXTPORTDATA * PortEntry)
 
 VOID TidyClose(struct TNCINFO * TNC, int Stream)
 {
-	// If all acked, send disc
+	/* If all acked, send disc */
 	
 	if (TNC->Streams[Stream].BytesOutstanding == 0)
 		HSMODEMSendCommand(TNC, "DISCONNECT\r");
@@ -1404,7 +1404,7 @@ VOID HSMODEMAbort(struct TNCINFO * TNC)
 	HSMODEMSendCommand(TNC, "ABORT\r");
 }
 
-// Host Mode Stuff (we reuse some routines in SCSPactor)
+/* Host Mode Stuff (we reuse some routines in SCSPactor) */
 
 VOID HSMODEMDoTermModeTimeout(struct TNCINFO * TNC)
 {
@@ -1412,7 +1412,7 @@ VOID HSMODEMDoTermModeTimeout(struct TNCINFO * TNC)
 
 	if (TNC->ReinitState == 0)
 	{
-		//Checking if in Terminal Mode - Try to set back to Term Mode
+		/*Checking if in Terminal Mode - Try to set back to Term Mode */
 
 		TNC->ReinitState = 1;
 		return;
@@ -1420,7 +1420,7 @@ VOID HSMODEMDoTermModeTimeout(struct TNCINFO * TNC)
 
 	if (TNC->ReinitState == 1)
 	{
-		// Forcing back to Term Mode
+		/* Forcing back to Term Mode */
 
 		TNC->ReinitState = 0;
 		return;
@@ -1444,20 +1444,20 @@ VOID HSMODEMProcessTNCMessage(struct TNCINFO * TNC, unsigned char * Msg, int Len
 	struct HSFILEINFO * Info = Modem->File;
 	int fileLen, Seq, Offset;
 
-	// Any message indicates Ok
+	/* Any message indicates Ok */
 
 	Msg[Len] = 0;
 
 	if (TNC->CONNECTED == 0)
 	{
-		// Just come up
+		/* Just come up */
 
 		sprintf(TNC->WEB_COMMSSTATE, "Connected to HSMODEM");		
 		MySetWindowText(TNC->xIDC_COMMSSTATE, TNC->WEB_COMMSSTATE);
 		SendMode(TNC);
 	}
 
-	TNC->CONNECTED = 100;					// time out after 10 secs
+	TNC->CONNECTED = 100;					/* time out after 10 secs */
 
 	/*
 	3: responses to broadcast messages (see: GUI Interface: UDP/IP/Initialization)
@@ -1506,14 +1506,14 @@ VOID HSMODEMProcessTNCMessage(struct TNCINFO * TNC, unsigned char * Msg, int Len
 		case 4:
 		case 5:
 
-			// File transfer types
+			/* File transfer types */
 
 			switch (Msg[4])
 			{
 			case 0:
 			case 3:
 
-				// File Header
+				/* File Header */
 
 				FH = (struct FileHeader *) &Msg[9];
 
@@ -1552,7 +1552,7 @@ VOID HSMODEMProcessTNCMessage(struct TNCINFO * TNC, unsigned char * Msg, int Len
 			case 1:
 			case 2:
 
-				// Data Frame
+				/* Data Frame */
 
 				if (Seq == Info->lastBlock)
 				{
@@ -1581,30 +1581,30 @@ VOID HSMODEMProcessTNCMessage(struct TNCINFO * TNC, unsigned char * Msg, int Len
 
 			}
 
-			// End of Data Frame Case
+			/* End of Data Frame Case */
 
 			if (Msg[4] == 2 || Msg[4] == 3)
 			{
-				// Last Frame - check file
+				/* Last Frame - check file */
 
 				if (Info->lostBlocks == 0)
 				{
-					// filename is encoding of calls and frame type
+					/* filename is encoding of calls and frame type */
 
 					struct _MESSAGE * buffptr;
 
-//					FILE * fp1 = fopen(Info->fileName, "wb");
-//					int WriteLen;
+/*					FILE * fp1 = fopen(Info->fileName, "wb"); */
+/*					int WriteLen; */
 
-//					if (fp1)
-//					{
-//						WriteLen = (int)fwrite(Info->Data, 1, Info->fileSize, fp1);
-//						fclose(fp1);
-//					}
+/*					if (fp1) */
+/*					{ */
+/*						WriteLen = (int)fwrite(Info->Data, 1, Info->fileSize, fp1); */
+/*						fclose(fp1); */
+/*					} */
 
 					if (strchr(Info->fileName, '!'))
 					{
-						// Callsigns encoded in filename
+						/* Callsigns encoded in filename */
 
 
 
@@ -1614,14 +1614,14 @@ VOID HSMODEMProcessTNCMessage(struct TNCINFO * TNC, unsigned char * Msg, int Len
 						unsigned char * Packet;
 
 
-						// Convert to ax.25 format
+						/* Convert to ax.25 format */
 
 						buffptr = GetBuff();
 
-						// Convert to ax.25 format
+						/* Convert to ax.25 format */
 			
 						if (buffptr == 0)
-							return;				// No buffers, so ignore
+							return;				/* No buffers, so ignore */
 
 						Type =  strlop(Origin, '_');
 				
@@ -1636,13 +1636,13 @@ VOID HSMODEMProcessTNCMessage(struct TNCINFO * TNC, unsigned char * Msg, int Len
 
 						while (strchr(Dest, ','))
 						{
-							Dest = strlop(Dest, ',');	// Next digi
+							Dest = strlop(Dest, ',');	/* Next digi */
 							Packet += 7;
 							ConvToAX25(Dest, Packet);
 							buffptr->LENGTH += 7;
 						}
 							
-						Packet[6] |= 1;				// Set end of address
+						Packet[6] |= 1;				/* Set end of address */
 						
 						Packet += 7;
 
@@ -1662,7 +1662,7 @@ VOID HSMODEMProcessTNCMessage(struct TNCINFO * TNC, unsigned char * Msg, int Len
 
 		return;
 
-	case 4:		// FFT data for a spectrum monitor
+	case 4:		/* FFT data for a spectrum monitor */
 
 		Modem->txFifo = Msg[1];
 		Modem->rxFifo = Msg[2];
@@ -1673,8 +1673,8 @@ VOID HSMODEMProcessTNCMessage(struct TNCINFO * TNC, unsigned char * Msg, int Len
 		InvalidateRect(TNC->hDlg, &Rect1, TRUE);
 #endif
 
-//		if (Info->Sync || Info->txFifo)
-//			Debugprintf("%d %d %d %d", Info->txFifo, Info->rxFifo, Info->DCD, Info->Sync);
+/*		if (Info->Sync || Info->txFifo) */
+/*			Debugprintf("%d %d %d %d", Info->txFifo, Info->rxFifo, Info->DCD, Info->Sync); */
 		/*
  Byte 0 ... 0x04
  Byte 1 ... usage of the TX fifo (used by the transmitter to sync its data 
@@ -1699,10 +1699,10 @@ VOID HSMODEMProcessTNCMessage(struct TNCINFO * TNC, unsigned char * Msg, int Len
 		return;
 
 
-	case 5:	// IQ data for a constellation display
+	case 5:	/* IQ data for a constellation display */
 		return;
 	
-	case 6: //received RTTY characters
+	case 6: /*received RTTY characters */
 		return;
 	}
 
@@ -1713,7 +1713,7 @@ VOID HSMODEMProcessTNCMessage(struct TNCINFO * TNC, unsigned char * Msg, int Len
 
 	if (buffptr == 0)
 	{
-		return;			// No buffers, so ignore
+		return;			/* No buffers, so ignore */
 	}
 	
 	buffptr->Len = sprintf((UCHAR *)&buffptr->Data[0], "%s", TNC->RXBuffer);
@@ -1732,7 +1732,7 @@ void SendMode(struct TNCINFO * TNC)
 	Msg[0] = 16;
 	Msg[1] = TNC->HSModemInfo->Mode;
 
-	TNC->destaddr.sin_port = htons(TNC->TCPPort + 1);		// Data Port
+	TNC->destaddr.sin_port = htons(TNC->TCPPort + 1);		/* Data Port */
 	TNC->destaddr.sin_addr.s_addr = inet_addr(TNC->HostName);
 
 	ret = sendto(TNC->TCPSock, (char *)&Msg, 221,  0, (struct sockaddr *)&TNC->destaddr, sizeof(struct sockaddr));
@@ -1747,13 +1747,13 @@ void SendPoll(struct TNCINFO * TNC)
 
 	strcpy(&PollMsg.captureDevice[0], TNC->HSModemInfo->Capture);
 	strcpy(&PollMsg.playbackDevice[0], TNC->HSModemInfo->Playback);
-//	strcpy(&PollMsg.playbackDevice[0], "CABLE Input (VB-Audio Virtual Cable)");
+/*	strcpy(&PollMsg.playbackDevice[0], "CABLE Input (VB-Audio Virtual Cable)"); */
 
 	strcpy(&PollMsg.Callsign[0], TNC->NodeCall);
 	strcpy(&PollMsg.Locator[0], LOC);
 	strcpy(&PollMsg.Name[0], "1234567890");
 
-	TNC->destaddr.sin_port = htons(TNC->TCPPort);		// Command Port
+	TNC->destaddr.sin_port = htons(TNC->TCPPort);		/* Command Port */
 	TNC->destaddr.sin_addr.s_addr = inet_addr(TNC->HostName);
 
 	ret = sendto(TNC->TCPSock, (char *)&PollMsg, 260,  0, (struct sockaddr *)&TNC->destaddr, sizeof(struct sockaddr));
@@ -1789,19 +1789,19 @@ int HSMODEMSendSingleData(struct TNCINFO * TNC, UCHAR * FN, UCHAR * data, int tx
 
 	memset(&Msg, 0, sizeof(struct FileHeader));
 
-	Msg.Type = 5;			// Binary Data
-	Msg.Info = 3;			// Only Fragment
+	Msg.Type = 5;			/* Binary Data */
+	Msg.Info = 3;			/* Only Fragment */
 
 	if (txlen > 163)
 	{
-		// Need to send as multiple fragments
+		/* Need to send as multiple fragments */
 
 		fragLen = 164;
 		Info->txData = malloc(txlen + 512);
 		memcpy(Info->txData, data, txlen);
 		Info->txSize = txlen;
 		Info->txLeft = txlen - 164;
-		Msg.Info = 0;			// First Fragment
+		Msg.Info = 0;			/* First Fragment */
 	}
 
 	strcpy(Msg.filename, FN);
@@ -1811,7 +1811,7 @@ int HSMODEMSendSingleData(struct TNCINFO * TNC, UCHAR * FN, UCHAR * data, int tx
 	Msg.Size[1] = txlen >> 8;;
 	Msg.Size[2] = txlen;
 
-	TNC->destaddr.sin_port = htons(TNC->TCPPort + 1);		// Data Port
+	TNC->destaddr.sin_port = htons(TNC->TCPPort + 1);		/* Data Port */
 	TNC->destaddr.sin_addr.s_addr = inet_addr(TNC->HostName);
 
 	ret = sendto(TNC->TCPSock, (char *)&Msg, 221,  0, (struct sockaddr *)&TNC->destaddr, sizeof(struct sockaddr));
@@ -1826,8 +1826,8 @@ int HSMODEMSendData(struct TNCINFO * TNC, UCHAR * data, int txlen)
 
 	memset(&Msg, 0, sizeof(struct FileHeader));
 
-	Msg.Type = 5;			// Binary Data
-	Msg.Info = 3;			// Only Fragment
+	Msg.Type = 5;			/* Binary Data */
+	Msg.Info = 3;			/* Only Fragment */
 
 
 	return 0;
@@ -1847,7 +1847,7 @@ void HSMODEMCheckRX(struct TNCINFO * TNC)
 	{
 		if (Len == -1)
 		{
-//			Debugprintf("%d", GetLastError());
+/*			Debugprintf("%d", GetLastError()); */
 			Len = 0;
 			return;
 		}

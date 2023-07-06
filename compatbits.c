@@ -139,7 +139,7 @@ pthread_t _beginthread(void(*start_address)(), unsigned stack_size, VOID * argli
 {
 	pthread_t thread;
 
-	// Need to set stack size for Mac
+	/* Need to set stack size for Mac */
 
 	int s, tnum, opt, num_threads;
 	struct thread_info *tinfo;

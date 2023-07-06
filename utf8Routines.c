@@ -17,9 +17,9 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-// Routines to convert to and from UTF8
+/* Routines to convert to and from UTF8 */
 
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
+#define WIN32_LEAN_AND_MEAN		/* Exclude rarely-used stuff from Windows headers */
 
 #define _CRT_SECURE_NO_DEPRECATE
 
@@ -256,7 +256,7 @@ BOOL initUTF8Done = TRUE;
 
 VOID initUTF8()
 {
-	// Swap bytes of UTF-8 COde on Big-endian systems
+	/* Swap bytes of UTF-8 COde on Big-endian systems */
 	
 	int n;
 	char temp[4];
@@ -320,21 +320,21 @@ int IsUTF8(unsigned char *ptr, int len)
 	int n; 
 	unsigned char * cpt = ptr;
 
-	// This has to be a bit loose, as UTF8 sequences may split over packets
+	/* This has to be a bit loose, as UTF8 sequences may split over packets */
 
-	memcpy(&ptr[len], "\x80\x80\x80", 3);		// in case trailing bytes are in next packet
+	memcpy(&ptr[len], "\x80\x80\x80", 3);		/* in case trailing bytes are in next packet */
 
-	// Don't check first 3 if could be part of sequence
+	/* Don't check first 3 if could be part of sequence */
 	
-	if ((*(cpt) & 0xC0) == 0x80)				// Valid continuation
+	if ((*(cpt) & 0xC0) == 0x80)				/* Valid continuation */
 	{
 		cpt++;
 		len--;
-		if ((*(cpt) & 0xC0) == 0x80)			// Valid continuation
+		if ((*(cpt) & 0xC0) == 0x80)			/* Valid continuation */
 		{
 			cpt++;
 			len--;
-			if ((*(cpt) & 0xC0) == 0x80)		// Valid continuation
+			if ((*(cpt) & 0xC0) == 0x80)		/* Valid continuation */
 			{
 				cpt++;
 				len--;
@@ -352,7 +352,7 @@ int IsUTF8(unsigned char *ptr, int len)
 			continue;
 
 		if ((*cpt & 0xF8) == 0xF0)
-		{ // start of 4-byte sequence
+		{ /* start of 4-byte sequence */
 			if (((*(cpt + 1) & 0xC0) == 0x80)
 		     && ((*(cpt + 2) & 0xC0) == 0x80)
 			 && ((*(cpt + 3) & 0xC0) == 0x80))
@@ -364,7 +364,7 @@ int IsUTF8(unsigned char *ptr, int len)
 			return FALSE;
 	    }
 		else if ((*cpt & 0xF0) == 0xE0)
-		{ // start of 3-byte sequence
+		{ /* start of 3-byte sequence */
 	        if (((*(cpt + 1) & 0xC0) == 0x80)
 		     && ((*(cpt + 2) & 0xC0) == 0x80))
 			{
@@ -375,7 +375,7 @@ int IsUTF8(unsigned char *ptr, int len)
 			return FALSE;
 		}
 		else if ((*cpt & 0xE0) == 0xC0)
-		{ // start of 2-byte sequence
+		{ /* start of 2-byte sequence */
 	        if ((*(cpt + 1) & 0xC0) == 0x80)
 			{
 				cpt++;
@@ -395,7 +395,7 @@ int WebIsUTF8(unsigned char *ptr, int len)
 	int n; 
 	unsigned char * cpt = ptr;
 
-	// This is simpler than the Term version, as it only handles complete lines of text, so cant get split sequences
+	/* This is simpler than the Term version, as it only handles complete lines of text, so cant get split sequences */
 
 	cpt--;
 										
@@ -407,7 +407,7 @@ int WebIsUTF8(unsigned char *ptr, int len)
 			continue;
 
 		if ((*cpt & 0xF8) == 0xF0)
-		{ // start of 4-byte sequence
+		{ /* start of 4-byte sequence */
 			if (((*(cpt + 1) & 0xC0) == 0x80)
 		     && ((*(cpt + 2) & 0xC0) == 0x80)
 			 && ((*(cpt + 3) & 0xC0) == 0x80))
@@ -419,7 +419,7 @@ int WebIsUTF8(unsigned char *ptr, int len)
 			return FALSE;
 	    }
 		else if ((*cpt & 0xF0) == 0xE0)
-		{ // start of 3-byte sequence
+		{ /* start of 3-byte sequence */
 	        if (((*(cpt + 1) & 0xC0) == 0x80)
 		     && ((*(cpt + 2) & 0xC0) == 0x80))
 			{
@@ -430,7 +430,7 @@ int WebIsUTF8(unsigned char *ptr, int len)
 			return FALSE;
 		}
 		else if ((*cpt & 0xE0) == 0xC0)
-		{ // start of 2-byte sequence
+		{ /* start of 2-byte sequence */
 	        if ((*(cpt + 1) & 0xC0) == 0x80)
 			{
 				cpt++;
@@ -545,13 +545,13 @@ int TrytoGuessCode(unsigned char * Char, int Len)
 		}
 	}
 
-	if (Above127 == 0)			// DOesn't really matter!
+	if (Above127 == 0)			/* DOesn't really matter! */
 		return 1252;
 
 	if (Above127 == LineDraw)
-		return 437;			// If only Line Draw chars, assume line draw
+		return 437;			/* If only Line Draw chars, assume line draw */
 
-	// If mainly below 128, it is probably Latin if mainly above, probably Cyrillic
+	/* If mainly below 128, it is probably Latin if mainly above, probably Cyrillic */
 
 	if ((Len - (NumericAndSpaces + Above127)) < Above127) 
 		return 1251;

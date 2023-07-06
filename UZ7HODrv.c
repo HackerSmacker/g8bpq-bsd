@@ -17,17 +17,17 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-//
-//	DLL to provide interface to allow G8BPQ switch to use UZ7HOPE as a Port Driver 
-//
-//	Uses BPQ EXTERNAL interface
-//
+/* */
+/*	DLL to provide interface to allow G8BPQ switch to use UZ7HOPE as a Port Driver  */
+/* */
+/*	Uses BPQ EXTERNAL interface */
+/* */
 
-// Interlock and scanning with UZ7HO driver.
+/* Interlock and scanning with UZ7HO driver. */
 
-// A UZ7HO port can be used in much the same way as any other HF port, so that it only allows one connect at
-// a time and takes part in Interlock and Scan Control proessing. But it can also be used as a multisession
-// driver so it does need special treatment.
+/* A UZ7HO port can be used in much the same way as any other HF port, so that it only allows one connect at */
+/* a time and takes part in Interlock and Scan Control proessing. But it can also be used as a multisession */
+/* driver so it does need special treatment. */
 
 
 #define _CRT_SECURE_NO_DEPRECATE
@@ -87,21 +87,21 @@ static char WindowTitle[] = "UZ7HO";
 static int RigControlRow = 165;
 
 
-//LOGFONT LFTTYFONT ;
+/*LOGFONT LFTTYFONT ; */
 
-//HFONT hFont ;
+/*HFONT hFont ; */
 
-static int UZ7HOChannel[MAXBPQPORTS+1];				// BPQ Port to UZ7HO Port
-static int BPQPort[MAXUZ7HOPORTS][MAXBPQPORTS+1];	// UZ7HO Port and Connection to BPQ Port
-static void * UZ7HOtoBPQ_Q[MAXBPQPORTS+1];			// Frames for BPQ, indexed by BPQ Port
-static void * BPQtoUZ7HO_Q[MAXBPQPORTS+1];			// Frames for UZ7HO. indexed by UZ7HO port. Only used it TCP session is blocked
+static int UZ7HOChannel[MAXBPQPORTS+1];				/* BPQ Port to UZ7HO Port */
+static int BPQPort[MAXUZ7HOPORTS][MAXBPQPORTS+1];	/* UZ7HO Port and Connection to BPQ Port */
+static void * UZ7HOtoBPQ_Q[MAXBPQPORTS+1];			/* Frames for BPQ, indexed by BPQ Port */
+static void * BPQtoUZ7HO_Q[MAXBPQPORTS+1];			/* Frames for UZ7HO. indexed by UZ7HO port. Only used it TCP session is blocked */
 
-static int MasterPort[MAXBPQPORTS+1];			// Pointer to first BPQ port for a specific UZ7HO host
-static struct TNCINFO * SlaveTNC[MAXBPQPORTS+1];// TNC Record Slave if present
+static int MasterPort[MAXBPQPORTS+1];			/* Pointer to first BPQ port for a specific UZ7HO host */
+static struct TNCINFO * SlaveTNC[MAXBPQPORTS+1];/* TNC Record Slave if present */
 
-//	Each port may be on a different machine. We only open one connection to each UZ7HO instance
+/*	Each port may be on a different machine. We only open one connection to each UZ7HO instance */
 
-static char * UZ7HOSignon[MAXBPQPORTS+1];			// Pointer to message for secure signin
+static char * UZ7HOSignon[MAXBPQPORTS+1];			/* Pointer to message for secure signin */
 
 static unsigned int UZ7HOInst = 0;
 static int AttachedProcesses=0;
@@ -111,7 +111,7 @@ static BOOL GotMsg;
 
 static HANDLE STDOUT=0;
 
-//SOCKET sock;
+/*SOCKET sock; */
 
 static  struct sockaddr_in  sinx; 
 static  struct sockaddr_in  rxaddr;
@@ -119,14 +119,14 @@ static  struct sockaddr_in  destaddr[MAXBPQPORTS+1];
 
 static int addrlen=sizeof(sinx);
 
-//static short UZ7HOPort=0;
+/*static short UZ7HOPort=0; */
 
 static time_t ltime,lasttime[MAXBPQPORTS+1];
 
 static BOOL CONNECTING[MAXBPQPORTS+1];
 static BOOL CONNECTED[MAXBPQPORTS+1];
 
-//HANDLE hInstance;
+/*HANDLE hInstance; */
 
 
 static fd_set readfs;
@@ -172,7 +172,7 @@ static BOOL CALLBACK EnumTNCWindowsProc(HWND hwnd, LPARAM  lParam)
 
 		if (TNC->PID == ProcessId)
 		{
-			 // Our Process
+			 /* Our Process */
 
 			hProc =  OpenProcess(PROCESS_TERMINATE | PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, ProcessId);
 
@@ -180,12 +180,12 @@ static BOOL CALLBACK EnumTNCWindowsProc(HWND hwnd, LPARAM  lParam)
 			{
 				GetModuleFileNameExPtr(hProc, NULL, FN, MAX_PATH);
 
-				// Make sure this is the right copy
+				/* Make sure this is the right copy */
 
 				CloseHandle(hProc);
 
 				if (_stricmp(FN, TNC->ProgramPath))
-					return TRUE;					//Wrong Copy
+					return TRUE;					/*Wrong Copy */
 			}
 
 			TNC->PID = ProcessId;
@@ -204,7 +204,7 @@ static BOOL CALLBACK EnumTNCWindowsProc(HWND hwnd, LPARAM  lParam)
 
 void RegisterAPPLCalls(struct TNCINFO * TNC, BOOL Unregister)
 {
-	// Register/Deregister Nodecall and all applcalls
+	/* Register/Deregister Nodecall and all applcalls */
 
 	struct AGWINFO * AGW;
 	APPLCALLS * APPL;
@@ -225,9 +225,9 @@ void RegisterAPPLCalls(struct TNCINFO * TNC, BOOL Unregister)
 	AGW->TXHeader.DataLength=0;
 
 	if (Unregister)
-		AGW->TXHeader.DataKind = 'x';		// UnRegister
+		AGW->TXHeader.DataKind = 'x';		/* UnRegister */
 	else
-		AGW->TXHeader.DataKind = 'X';		// Register
+		AGW->TXHeader.DataKind = 'X';		/* Register */
 
 	memset(AGW->TXHeader.callfrom, 0, 10);
 	strcpy(AGW->TXHeader.callfrom, TNC->NodeCall);
@@ -237,7 +237,7 @@ void RegisterAPPLCalls(struct TNCINFO * TNC, BOOL Unregister)
 	strcpy(AGW->TXHeader.callfrom, NodeCall);
 	send(TNC->TCPSock,(const char FAR *)&AGW->TXHeader,AGWHDDRLEN,0);
 
-	// Add Alias
+	/* Add Alias */
 
 	memcpy(NodeCall, MYALIASTEXT, 10);
 	strlop(NodeCall, ' ');
@@ -280,7 +280,7 @@ void RegisterAPPLCalls(struct TNCINFO * TNC, BOOL Unregister)
 
 BOOL UZ7HOStopPort(struct PORTCONTROL * PORT)
 {
-	// Disable Port - close TCP Sockets or Serial Port
+	/* Disable Port - close TCP Sockets or Serial Port */
 
 	struct TNCINFO * TNC = PORT->TNC;
 
@@ -288,7 +288,7 @@ BOOL UZ7HOStopPort(struct PORTCONTROL * PORT)
 	TNC->Alerted = FALSE;
 
 	if (TNC->PTTMode)
-		Rig_PTT(TNC, FALSE);			// Make sure PTT is down
+		Rig_PTT(TNC, FALSE);			/* Make sure PTT is down */
 
 	if (TNC->Streams[0].Attached)
 		TNC->Streams[0].ReportDISC = TRUE;
@@ -322,7 +322,7 @@ int ConnecttoUZ7HO(int port);
 
 BOOL UZ7HOStartPort(struct PORTCONTROL * PORT)
 {
-	// Restart Port - Open Sockets or Serial Port
+	/* Restart Port - Open Sockets or Serial Port */
 
 	struct TNCINFO * TNC = PORT->TNC;
 
@@ -341,7 +341,7 @@ BOOL UZ7HOStartPort(struct PORTCONTROL * PORT)
 
 VOID UZ7HOSuspendPort(struct TNCINFO * TNC, struct TNCINFO * ThisTNC)
 {
-	// We don't want to suspend port if on same TNC
+	/* We don't want to suspend port if on same TNC */
 
 	if (MasterPort[TNC->Port] == MasterPort[ThisTNC->Port])
 		return;
@@ -360,11 +360,11 @@ int UZ7HOSetFreq(int port, struct TNCINFO * TNC, struct AGWINFO * AGW, PDATAMESS
 {
 	int txlen = GetLengthfromBuffer(buff) - (MSGHDDRLEN + 1);
 
-	// May be read or set frequency
+	/* May be read or set frequency */
 
 	if (txlen == 5)
 	{
-		// Read Freq
+		/* Read Freq */
 
 		buffptr->Len = sprintf((UCHAR *)&buffptr->Data[0], "UZ7HO} Modem Freqency %d\r", AGW->CenterFreq);
 		return 1;
@@ -380,7 +380,7 @@ int UZ7HOSetFreq(int port, struct TNCINFO * TNC, struct AGWINFO * AGW, PDATAMESS
 
 	if (TNCInfo[MasterPort[port]]->AGWInfo->isQTSM == 3)
 	{
-		// QtSM so can send Set Freq Command
+		/* QtSM so can send Set Freq Command */
 
 		char Buffer[32] = "";
 		int MsgLen = 32;
@@ -402,7 +402,7 @@ int UZ7HOSetFreq(int port, struct TNCINFO * TNC, struct AGWINFO * AGW, PDATAMESS
 #ifdef WIN32
 	else if (AGW->hFreq)
 	{
-		//Using real UZ7HO on Windows
+		/*Using real UZ7HO on Windows */
 
 		char Freq[16];
 		sprintf(Freq, "%d", AGW->CenterFreq - 1);
@@ -428,7 +428,7 @@ int UZ7HOSetModem(int port, struct TNCINFO * TNC, struct AGWINFO * AGW, PDATAMES
 
 	if (txlen == 6)
 	{
-		// Read Modem
+		/* Read Modem */
 
 		if (AGW->ModemName[0])
 			buffptr->Len = sprintf((UCHAR *)&buffptr->Data[0], "UZ7HO} Modem %s\r", AGW->ModemName);
@@ -439,7 +439,7 @@ int UZ7HOSetModem(int port, struct TNCINFO * TNC, struct AGWINFO * AGW, PDATAMES
 	}
 	else if (TNCInfo[MasterPort[port]]->AGWInfo->isQTSM == 3)
 	{
-		// Can send modem name to QTSM
+		/* Can send modem name to QTSM */
 
 		char Buffer[32] = "";
 		int MsgLen = 32;
@@ -467,13 +467,13 @@ int UZ7HOSetModem(int port, struct TNCINFO * TNC, struct AGWINFO * AGW, PDATAMES
 #ifdef WIN32
 	else if (AGW->cbinfo.cbSize)
 	{
-		// Real QTSM on Windows
+		/* Real QTSM on Windows */
 
 		AGW->Modem = atoi(&buff->L2DATA[6]);
 
 		if (AGW->cbinfo.cbSize && AGW->cbinfo.hwndCombo)
 		{
-			// Set it
+			/* Set it */
 
 			LRESULT ret = SendMessage(AGW->cbinfo.hwndCombo, CB_SETCURSEL, AGW->Modem, 0);
 			int pos = 13 * AGW->Modem + 7;
@@ -509,11 +509,11 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 	int TNCOK;
 
 	if (TNC == NULL)
-		return 0;					// Port not defined
+		return 0;					/* Port not defined */
 
 	AGW = TNC->AGWInfo;
 
-	// Look for attach on any call
+	/* Look for attach on any call */
 
 	for (Stream = 0; Stream <= TNC->AGWInfo->MaxSessions; Stream++)
 	{
@@ -523,39 +523,39 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 		{
 			char Cmd[80];
 
-			// New Attach
+			/* New Attach */
 
 			int calllen;
 			STREAM->Attached = TRUE;
 
-			TNC->PortRecord->ATTACHEDSESSIONS[Stream]->L4USER[6] |= 0x60; // Ensure P or T aren't used on ax.25
+			TNC->PortRecord->ATTACHEDSESSIONS[Stream]->L4USER[6] |= 0x60; /* Ensure P or T aren't used on ax.25 */
 			calllen = ConvFromAX25(TNC->PortRecord->ATTACHEDSESSIONS[Stream]->L4USER, STREAM->MyCall);
 			STREAM->MyCall[calllen] = 0;
 			STREAM->FramesOutstanding = 0;
 
-			// Stop Scanning
+			/* Stop Scanning */
 
 			sprintf(Cmd, "%d SCANSTOP", TNC->Port);
 			Rig_Command( (TRANSPORTENTRY *) -1, Cmd);
 
-			SuspendOtherPorts(TNC);			// Prevent connects on other ports in same scan gruop
+			SuspendOtherPorts(TNC);			/* Prevent connects on other ports in same scan gruop */
 
 		}
 	}
 
 	switch (fn)
 	{
-	case 1:				// poll
+	case 1:				/* poll */
 
 		if (MasterPort[port] == port)
 		{
-			// Only on first port using a host
+			/* Only on first port using a host */
 
 			time(&ltime);
 
 			if (TNC->CONNECTED == FALSE && TNC->CONNECTING == FALSE)
 			{
-				//	See if time to reconnect
+				/*	See if time to reconnect */
 
 				if (ltime - lasttime[port] > 9)
 				{
@@ -565,7 +565,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 			}
 			else
 			{
-				// See if time to refresh registrations
+				/* See if time to refresh registrations */
 
 				if (TNC->CONNECTED)
 				{
@@ -586,9 +586,9 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 			FD_ZERO(&writefs);
 
-			if (TNC->CONNECTING) FD_SET(TNC->TCPSock, &writefs);	// Need notification of Connect
+			if (TNC->CONNECTING) FD_SET(TNC->TCPSock, &writefs);	/* Need notification of Connect */
 
-			if (TNC->BPQtoWINMOR_Q) FD_SET(TNC->TCPSock, &writefs);	// Need notification of busy clearing
+			if (TNC->BPQtoWINMOR_Q) FD_SET(TNC->TCPSock, &writefs);	/* Need notification of busy clearing */
 
 
 			FD_ZERO(&errorfs);
@@ -600,11 +600,11 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 			if (select((int)TNC->TCPSock + 1, &readfs, &writefs, &errorfs, &timeout) > 0)
 			{
-				//	See what happened
+				/*	See what happened */
 
 				if (FD_ISSET(TNC->TCPSock, &readfs))
 				{
-					// data available
+					/* data available */
 
 					ProcessReceivedData(port);
 				}
@@ -624,7 +624,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 						memcpy(NodeCall, MYNODECALL, 10);
 						strlop(NodeCall, ' ');
 
-						//	Connect success
+						/*	Connect success */
 
 						TNC->CONNECTED = TRUE;
 						TNC->CONNECTING = FALSE;
@@ -632,30 +632,30 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 						sprintf(TNC->WEB_COMMSSTATE, "Connected to TNC");
 						MySetWindowText(TNC->xIDC_COMMSSTATE, TNC->WEB_COMMSSTATE);
 
-						// If required, send signon
+						/* If required, send signon */
 
 						if (UZ7HOSignon[port])
 							send(TNC->TCPSock, UZ7HOSignon[port], 546, 0);
 
-						// Request Raw Frames
+						/* Request Raw Frames */
 
 						AGW->TXHeader.Port = 0;
-						AGW->TXHeader.DataKind = 'k';		// Raw Frames
+						AGW->TXHeader.DataKind = 'k';		/* Raw Frames */
 						AGW->TXHeader.DataLength = 0;
 						send(TNC->TCPSock, (const char FAR *)&AGW->TXHeader, AGWHDDRLEN, 0);
 
-						AGW->TXHeader.DataKind = 'm';		// Monitor Frames
+						AGW->TXHeader.DataKind = 'm';		/* Monitor Frames */
 						send(TNC->TCPSock, (const char FAR *)&AGW->TXHeader, AGWHDDRLEN, 0);
 
-						AGW->TXHeader.DataKind = 'R';		// Version
+						AGW->TXHeader.DataKind = 'R';		/* Version */
 						send(TNC->TCPSock, (const char FAR *)&AGW->TXHeader, AGWHDDRLEN, 0);
 
-						AGW->TXHeader.DataKind = 'g';		// Port Capabilities
+						AGW->TXHeader.DataKind = 'g';		/* Port Capabilities */
 						send(TNC->TCPSock, (const char FAR *)&AGW->TXHeader, AGWHDDRLEN, 0);
 
-						// Register all applcalls
+						/* Register all applcalls */
 
-						AGW->TXHeader.DataKind = 'X';		// Register
+						AGW->TXHeader.DataKind = 'X';		/* Register */
 						memset(AGW->TXHeader.callfrom, 0, 10);
 						strcpy(AGW->TXHeader.callfrom, TNC->NodeCall);
 						send(TNC->TCPSock, (const char FAR *)&AGW->TXHeader, AGWHDDRLEN, 0);
@@ -686,7 +686,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 					}
 					else
 					{
-						// Write block has cleared. Send rest of packet
+						/* Write block has cleared. Send rest of packet */
 
 						buffptr = Q_REM(&BPQtoUZ7HO_Q[port]);
 
@@ -705,14 +705,14 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 				if (FD_ISSET(TNC->TCPSock, &errorfs))
 				{
 
-					//	if connecting, then failed, if connected then has just disconnected
+					/*	if connecting, then failed, if connected then has just disconnected */
 
-//					if (CONNECTED[port])
-//					if (!CONNECTING[port])
-//					{
-//						i=sprintf(ErrMsg, "UZ7HO Connection lost for BPQ Port %d\r\n", port);
-//						WritetoConsole(ErrMsg);
-//					}
+/*					if (CONNECTED[port]) */
+/*					if (!CONNECTING[port]) */
+/*					{ */
+/*						i=sprintf(ErrMsg, "UZ7HO Connection lost for BPQ Port %d\r\n", port); */
+/*						WritetoConsole(ErrMsg); */
+/*					} */
 
 					CONNECTING[port] = FALSE;
 					CONNECTED[port] = FALSE;
@@ -723,13 +723,13 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 		}
 
-		// See if any frames for this port
+		/* See if any frames for this port */
 
 		for (Stream = 0; Stream <= TNC->AGWInfo->MaxSessions; Stream++)
 		{
 			STREAM = &TNC->Streams[Stream];
 
-			// Have to time out connects, as TNC doesn't report failure
+			/* Have to time out connects, as TNC doesn't report failure */
 
 			if (STREAM->Connecting)
 			{
@@ -737,7 +737,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 				if (STREAM->Connecting == 0)
 				{
-					// Report Connect Failed, and drop back to command mode
+					/* Report Connect Failed, and drop back to command mode */
 
 					buffptr = GetBuff();
 
@@ -747,10 +747,10 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 						C_Q_ADD(&STREAM->PACTORtoBPQ_Q, buffptr);
 					}
 
-					STREAM->Connected = FALSE;		// Back to Command Mode
+					STREAM->Connected = FALSE;		/* Back to Command Mode */
 					STREAM->DiscWhenAllSent = 10;
 
-					// Send Disc to TNC
+					/* Send Disc to TNC */
 
 					TidyClose(TNC, Stream);
 				}
@@ -767,7 +767,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 				return -1;
 			}
 
-			// if Busy, send buffer status poll
+			/* if Busy, send buffer status poll */
 
 			if (STREAM->Connected && STREAM->FramesOutstanding)
 			{
@@ -797,7 +797,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 				{
 					STREAM->DiscWhenAllSent--;
 					if (STREAM->DiscWhenAllSent == 0)
-						STREAM->ReportDISC = TRUE;				// Dont want to leave session attached. Causes too much confusion
+						STREAM->ReportDISC = TRUE;				/* Dont want to leave session attached. Causes too much confusion */
 				}
 			}
 			else
@@ -808,9 +808,9 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 				datalen = (int)buffptr->Len;
 
-				buff->PORT = Stream;						// Compatibility with Kam Driver
+				buff->PORT = Stream;						/* Compatibility with Kam Driver */
 				buff->PID = 0xf0;
-				memcpy(&buff->L2DATA, &buffptr->Data[0], datalen);		// Data goes to + 7, but we have an extra byte
+				memcpy(&buff->L2DATA, &buffptr->Data[0], datalen);		/* Data goes to + 7, but we have an extra byte */
 				datalen += sizeof(void *) + 4;
 
 				PutLengthinBuffer(buff, datalen);
@@ -832,7 +832,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 			SOCKET Sock;
 			buffptr = Q_REM(&TNC->PortRecord->UI_Q);
 
-			if (TNC->PortRecord->PORTCONTROL.PortSuspended == TRUE)		// Interlock Disabled Port
+			if (TNC->PortRecord->PORTCONTROL.PortSuspended == TRUE)		/* Interlock Disabled Port */
 			{
 				ReleaseBuffer((UINT *)buffptr);
 				return (0);
@@ -840,10 +840,10 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 			Sock = TNCInfo[MasterPort[port]]->TCPSock;
 
-			MsgLen = buffptr->LENGTH - 6;	// 7 Header, need extra Null
-			buffptr->LENGTH = 0;				// Need a NULL on front	
-			Buffer = &buffptr->DEST[0];		// Raw Frame
-			Buffer--;						// Need to send an extra byte on front
+			MsgLen = buffptr->LENGTH - 6;	/* 7 Header, need extra Null */
+			buffptr->LENGTH = 0;				/* Need a NULL on front	 */
+			Buffer = &buffptr->DEST[0];		/* Raw Frame */
+			Buffer--;						/* Need to send an extra byte on front */
 
 			AGW->TXHeader.Port = UZ7HOChannel[port];
 			AGW->TXHeader.DataKind = 'K';
@@ -865,19 +865,19 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 
 
-	case 2:				// send
+	case 2:				/* send */
 
-		if (TNC->PortRecord->PORTCONTROL.PortSuspended == TRUE)		// Interlock Disabled Port
+		if (TNC->PortRecord->PORTCONTROL.PortSuspended == TRUE)		/* Interlock Disabled Port */
 			return 0;
 
-		if (!TNCInfo[MasterPort[port]]->CONNECTED) return 0;		// Don't try if not connected to TNC
+		if (!TNCInfo[MasterPort[port]]->CONNECTED) return 0;		/* Don't try if not connected to TNC */
 
 		Stream = buff->PORT;
 
 		STREAM = &TNC->Streams[Stream];
 		AGW = TNC->AGWInfo;
 
-		txlen = GetLengthfromBuffer(buff) - (MSGHDDRLEN + 1);		// 1 as no PID
+		txlen = GetLengthfromBuffer(buff) - (MSGHDDRLEN + 1);		/* 1 as no PID */
 		if (STREAM->Connected)
 		{
 			SendData(Stream, TNC, &STREAM->AGWKey[0], &buff->L2DATA[0], txlen);
@@ -888,14 +888,14 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 			if (_memicmp(&buff->L2DATA[0], "D\r", 2) == 0)
 			{
 				TidyClose(TNC, buff->PORT);
-				STREAM->ReportDISC = TRUE;		// Tell Node
+				STREAM->ReportDISC = TRUE;		/* Tell Node */
 				return 0;
 			}
 
 			if (STREAM->Connecting)
 				return 0;
 
-			// See if Local command (eg RADIO)
+			/* See if Local command (eg RADIO) */
 
 			if (_memicmp(&buff->L2DATA[0], "RADIO ", 6) == 0)
 			{
@@ -908,7 +908,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 				{
 					PMSGWITHLEN buffptr = (PMSGWITHLEN)GetBuff();
 
-					if (buffptr == 0) return 1;			// No buffers, so ignore
+					if (buffptr == 0) return 1;			/* No buffers, so ignore */
 
 					buffptr->Len = sprintf((UCHAR *)&buffptr->Data[0], "%s", &buff->L2DATA[0]);
 					C_Q_ADD(&STREAM->PACTORtoBPQ_Q, buffptr);
@@ -918,7 +918,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 			if (_memicmp(&buff->L2DATA[0], "INUSE?", 6) == 0)
 			{
-				// Return Error if in use, OK if not
+				/* Return Error if in use, OK if not */
 
 				PMSGWITHLEN buffptr = (PMSGWITHLEN)GetBuff();
 				int s = 0;
@@ -931,7 +931,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 						{
 							buffptr->Len = sprintf((UCHAR *)&buffptr->Data[0], "UZ7HO} Error - In use\r");
 							C_Q_ADD(&STREAM->PACTORtoBPQ_Q, buffptr);
-							return 1;							// Busy
+							return 1;							/* Busy */
 						}
 					}
 					s++;
@@ -977,9 +977,9 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 				}
 				return 1;
 			}
-			// See if a Connect Command.
+			/* See if a Connect Command. */
 
-			if (toupper(buff->L2DATA[0]) == 'C' && buff->L2DATA[1] == ' ' && txlen > 2)	// Connect
+			if (toupper(buff->L2DATA[0]) == 'C' && buff->L2DATA[1] == ' ' && txlen > 2)	/* Connect */
 			{
 				struct AGWINFO * AGW = TNC->AGWInfo;
 				char ViaList[82] = "";
@@ -997,7 +997,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 				memset(STREAM->RemoteCall, 0, 10);
 
-				// See if any digis - accept V VIA or nothing, seps space or comma
+				/* See if any digis - accept V VIA or nothing, seps space or comma */
 
 				ptr = strtok_s(&buff->L2DATA[2], " ,\r", &context);
 
@@ -1027,7 +1027,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 				strcpy(&Key[11], STREAM->MyCall);
 				strcpy(&Key[1], ptr);
 
-				// Make sure we don't already have a session for this station
+				/* Make sure we don't already have a session for this station */
 
 				S = 0;
 
@@ -1037,7 +1037,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 					if (memcmp(TSTREAM->AGWKey, Key, 21) == 0)
 					{
-						// Found it;
+						/* Found it; */
 
 						PMSGWITHLEN buffptr = (PMSGWITHLEN)GetBuff();
 
@@ -1055,7 +1055,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 					S++;
 				}
 
-				// Not Found
+				/* Not Found */
 
 				memcpy(&STREAM->AGWKey[0], &Key[0], 21);
 
@@ -1069,7 +1069,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 				if (ptr)
 				{
-					// we have digis
+					/* we have digis */
 
 					viaptr = &ViaList[1];
 
@@ -1098,10 +1098,10 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 				if (Digis)
 					send(TNCInfo[MasterPort[port]]->TCPSock, ViaList, Digis * 10 + 1, 0);
 
-				STREAM->Connecting = TNC->AGWInfo->ConnTimeOut;	// It doesn't report failure
+				STREAM->Connecting = TNC->AGWInfo->ConnTimeOut;	/* It doesn't report failure */
 
-//				sprintf(Status, "%s Connecting to %s", TNC->Streams[0].MyCall, TNC->Streams[0].RemoteCall);
-//				SetDlgItemText(TNC->hDlg, IDC_TNCSTATE, Status);
+/*				sprintf(Status, "%s Connecting to %s", TNC->Streams[0].MyCall, TNC->Streams[0].RemoteCall); */
+/*				SetDlgItemText(TNC->hDlg, IDC_TNCSTATE, Status); */
 			}
 		}
 		return (0);
@@ -1117,11 +1117,11 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 		if (STREAM->FramesOutstanding > 8)	
 			return (1 | TNCOK << 8 | STREAM->Disconnecting << 15);
 
-		return TNCOK << 8 | STREAM->Disconnecting << 15;		// OK, but lock attach if disconnecting
+		return TNCOK << 8 | STREAM->Disconnecting << 15;		/* OK, but lock attach if disconnecting */
 	
 		break;
 
-	case 4:				// reinit
+	case 4:				/* reinit */
 
 		shutdown(TNC->TCPSock, SD_BOTH);
 		Sleep(100);
@@ -1141,7 +1141,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 		return (0);
 
-	case 5:				// Close
+	case 5:				/* Close */
 
 		shutdown(TNC->TCPSock, SD_BOTH);
 		Sleep(100);
@@ -1208,12 +1208,12 @@ void * UZ7HOExtInit(EXTPORTDATA * PortEntry)
 	struct TNCINFO * TNC;
 	char * ptr;
 
-	//
-	//	Will be called once for each UZ7HO port to be mapped to a BPQ Port
-	//	The UZ7HO port number is in CHANNEL - A=0, B=1 etc
-	//
-	//	The Socket to connect to is in IOBASE
-	//
+	/* */
+	/*	Will be called once for each UZ7HO port to be mapped to a BPQ Port */
+	/*	The UZ7HO port number is in CHANNEL - A=0, B=1 etc */
+	/* */
+	/*	The Socket to connect to is in IOBASE */
+	/* */
 
 	port = PortEntry->PORTCONTROL.PORTNUMBER;
 
@@ -1223,7 +1223,7 @@ void * UZ7HOExtInit(EXTPORTDATA * PortEntry)
 
 	if (TNC == NULL)
 	{
-		// Not defined in Config file
+		/* Not defined in Config file */
 
 		sprintf(Msg," ** Error - no info in BPQ32.cfg for this port\n");
 		WritetoConsole(Msg);
@@ -1252,14 +1252,14 @@ void * UZ7HOExtInit(EXTPORTDATA * PortEntry)
 	PortEntry->PORTCONTROL.PROTOCOL = 10;
 	PortEntry->PORTCONTROL.UICAPABLE = 1;
 	PortEntry->PORTCONTROL.PORTQUALITY = 0;
-	PortEntry->PERMITGATEWAY = TRUE;					// Can change ax.25 call on each stream
-	PortEntry->SCANCAPABILITIES = NONE;					// Scan Control - pending connect only
+	PortEntry->PERMITGATEWAY = TRUE;					/* Can change ax.25 call on each stream */
+	PortEntry->SCANCAPABILITIES = NONE;					/* Scan Control - pending connect only */
 
 	if (PortEntry->PORTCONTROL.PORTPACLEN == 0)
 		PortEntry->PORTCONTROL.PORTPACLEN = 64;
 
 	ptr=strchr(TNC->NodeCall, ' ');
-	if (ptr) *(ptr) = 0;					// Null Terminate
+	if (ptr) *(ptr) = 0;					/* Null Terminate */
 
 	TNC->Hardware = H_UZ7HO;
 
@@ -1271,7 +1271,7 @@ void * UZ7HOExtInit(EXTPORTDATA * PortEntry)
 		TNC->HostName, TNC->TCPPort, PortEntry->PORTCONTROL.CHANNELNUM);
 	WritetoConsole(Msg);
 
-	// See if we already have a port for this host
+	/* See if we already have a port for this host */
 
 	MasterPort[port] = port;
 
@@ -1337,7 +1337,7 @@ void * UZ7HOExtInit(EXTPORTDATA * PortEntry)
 
 	if (MasterPort[port] == port)
 	{
-		// First port for this TNC - start TNC if configured and connect
+		/* First port for this TNC - start TNC if configured and connect */
 
 #ifndef LINBPQ
 		if (EnumWindows(EnumTNCWindowsProc, (LPARAM)TNC))
@@ -1351,13 +1351,13 @@ void * UZ7HOExtInit(EXTPORTDATA * PortEntry)
 	}
 	else
 	{
-		// Slave Port
+		/* Slave Port */
 
 		sprintf(TNC->WEB_COMMSSTATE, "Slave to Port %d", MasterPort[port] );		
 		MySetWindowText(TNC->xIDC_COMMSSTATE, TNC->WEB_COMMSSTATE);
 	}
 
-	time(&lasttime[port]);			// Get initial time value
+	time(&lasttime[port]);			/* Get initial time value */
 
 	return ExtProc;
 }
@@ -1398,12 +1398,12 @@ static int ProcessLine(char * buf, int Port)
 
 	if(ptr == NULL) return (TRUE);
 
-	if(*ptr =='#') return (TRUE);			// comment
+	if(*ptr =='#') return (TRUE);			/* comment */
 
-	if(*ptr ==';') return (TRUE);			// comment
+	if(*ptr ==';') return (TRUE);			/* comment */
 
 	if (_stricmp(buf, "ADDR"))
-		return FALSE;						// Must start with ADDR
+		return FALSE;						/* Must start with ADDR */
 
 	ptr = strtok(NULL, " \t\n\r");
 
@@ -1411,7 +1411,7 @@ static int ProcessLine(char * buf, int Port)
 	p_ipad = ptr;
 
 	TNC = TNCInfo[BPQport] = zalloc(sizeof(struct TNCINFO));
-	AGW = TNC->AGWInfo = zalloc(sizeof(struct AGWINFO)); // AGW Sream Mode Specific Data
+	AGW = TNC->AGWInfo = zalloc(sizeof(struct AGWINFO)); /* AGW Sream Mode Specific Data */
 
 	AGW->MaxSessions = 10;
 	AGW->ConnTimeOut = CONTIMEOUT;
@@ -1463,7 +1463,7 @@ static int ProcessLine(char * buf, int Port)
 			}
 		}
 
-		// Read Initialisation lines
+		/* Read Initialisation lines */
 
 		while(TRUE)
 		{
@@ -1493,7 +1493,7 @@ static int ProcessLine(char * buf, int Port)
 			if (_memicmp(buf, "UPDATEMAP", 9) == 0)
 				TNC->PktUpdateMap = TRUE;
 			else
-			if (_memicmp(buf, "BEACONAFTERSESSION", 18) == 0) // Send Beacon after each session 
+			if (_memicmp(buf, "BEACONAFTERSESSION", 18) == 0) /* Send Beacon after each session  */
 				TNC->RPBEACON = TRUE;
 			else
 			if (_memicmp(buf, "WINDOW", 6) == 0)
@@ -1531,13 +1531,13 @@ BOOL CALLBACK EnumChildProc(HWND handle, LPARAM lParam)
 	char classname[100];
 	struct hINFO * hInfo = (struct hINFO *)lParam;
 
-	// We collect the handles for the two modem and freq boxs here and set into correct TNC record later
+	/* We collect the handles for the two modem and freq boxs here and set into correct TNC record later */
 
 	GetClassName(handle, classname, 99);
 
 	if (strcmp(classname, "TComboBox") == 0)
 	{
-		// Get the Combo Box Info
+		/* Get the Combo Box Info */
 		
 		if (hInfo->cinfo1.cbSize == 0)
 		{
@@ -1586,9 +1586,9 @@ BOOL CALLBACK uz_enum_windows_callback(HWND handle, LPARAM lParam)
 	{
 		if (strstr(wtext,"SoundModem "))
 		{
-			// Our Process
+			/* Our Process */
 
-			// Enumerate Child Windows
+			/* Enumerate Child Windows */
 
 			struct hINFO hInfo; 
 
@@ -1596,7 +1596,7 @@ BOOL CALLBACK uz_enum_windows_callback(HWND handle, LPARAM lParam)
 
 			EnumChildWindows(handle, EnumChildProc,  (LPARAM)&hInfo);
 
-			// Set handles
+			/* Set handles */
 
 			if (TNC->PortRecord->PORTCONTROL.CHANNELNUM == 'A')
 			{
@@ -1613,7 +1613,7 @@ BOOL CALLBACK uz_enum_windows_callback(HWND handle, LPARAM lParam)
 
 			if (AGW->CenterFreq && AGW->hFreq)
 			{
-				// Set it
+				/* Set it */
 
 				sprintf(Freq, "%d", AGW->CenterFreq - 1);
 
@@ -1622,7 +1622,7 @@ BOOL CALLBACK uz_enum_windows_callback(HWND handle, LPARAM lParam)
 				SendMessage(AGW->hSpin, WM_LBUTTONUP, 0, 1);
 			}
 
-			// Set slave port
+			/* Set slave port */
 
 			TNC = SlaveTNC[TNC->Port];
 
@@ -1645,7 +1645,7 @@ BOOL CALLBACK uz_enum_windows_callback(HWND handle, LPARAM lParam)
 
 				if (AGW->CenterFreq && AGW->hFreq)
 				{
-					// Set it
+					/* Set it */
 
 					sprintf(Freq, "%d", AGW->CenterFreq - 1);
 
@@ -1685,7 +1685,7 @@ VOID ConnecttoUZ7HOThread(void * portptr)
 	struct TNCINFO * TNC = TNCInfo[port];
 	struct AGWINFO * AGW = TNC->AGWInfo;
 	
-	Sleep(3000);		// Allow init to complete 
+	Sleep(3000);		/* Allow init to complete  */
 
 	TNC->AGWInfo->isQTSM = 0;
 
@@ -1696,16 +1696,16 @@ VOID ConnecttoUZ7HOThread(void * portptr)
 
 	if (strcmp(TNC->HostName, "127.0.0.1") == 0)
 	{
-		// can only check if running on local host
+		/* can only check if running on local host */
 		
 		TNC->PID = GetListeningPortsPID(TNC->destaddr.sin_port);
 		
 		if (TNC->PID == 0)
 			return;
 	
-//		goto TNCNotRunning;
+/*		goto TNCNotRunning; */
 
-		// Get the File Name in case we want to restart it.
+		/* Get the File Name in case we want to restart it. */
 
 		if (TNC->ProgramPath == NULL)
 		{
@@ -1726,7 +1726,7 @@ VOID ConnecttoUZ7HOThread(void * portptr)
 			}
 		}
 
-		// Get Window Handles so we can change centre freq and modem
+		/* Get Window Handles so we can change centre freq and modem */
 
 		EnumWindows(uz_enum_windows_callback, (LPARAM)TNC);
 	}
@@ -1736,11 +1736,11 @@ VOID ConnecttoUZ7HOThread(void * portptr)
 
 	if (TNC->destaddr.sin_addr.s_addr == INADDR_NONE)
 	{
-		//	Resolve name to address
+		/*	Resolve name to address */
 
 		 HostEnt = gethostbyname (TNC->HostName);
 		 
-		 if (!HostEnt) return;			// Resolve failed
+		 if (!HostEnt) return;			/* Resolve failed */
 
 		 memcpy(&TNC->destaddr.sin_addr.s_addr,HostEnt->h_addr,4);
 		 memcpy(&TNC->Datadestaddr.sin_addr.s_addr,HostEnt->h_addr,4);
@@ -1773,9 +1773,9 @@ VOID ConnecttoUZ7HOThread(void * portptr)
 
 	if (connect(TNC->TCPSock,(struct sockaddr *) &TNC->destaddr,sizeof(TNC->destaddr)) == 0)
 	{
-		//
-		//	Connect successful
-		//
+		/* */
+		/*	Connect successful */
+		/* */
 
 		TNC->CONNECTED = TRUE;
 
@@ -1806,8 +1806,8 @@ VOID ConnecttoUZ7HOThread(void * portptr)
 		return;
 	}
 
-	TNC->LastFreq = 0;					// so V4 display will be updated
-	RegisterAPPLCalls(TNC, FALSE);		// Register Calls
+	TNC->LastFreq = 0;					/* so V4 display will be updated */
+	RegisterAPPLCalls(TNC, FALSE);		/* Register Calls */
 
 	return;
 
@@ -1823,16 +1823,16 @@ static int ProcessReceivedData(int port)
 	struct AGWINFO * AGW = TNC->AGWInfo;
 	struct TNCINFO * SaveTNC;
 
-	//	Need to extract messages from byte stream
+	/*	Need to extract messages from byte stream */
 
-	//	Use MSG_PEEK to ensure whole message is available
+	/*	Use MSG_PEEK to ensure whole message is available */
 
 	bytes = recv(TNC->TCPSock, (char *) &AGW->RXHeader, AGWHDDRLEN, MSG_PEEK);
 
 	if (bytes == SOCKET_ERROR)
 	{
-//		i=sprintf(ErrMsg, "Read Failed for UZ7HO socket - error code = %d\r\n", WSAGetLastError());
-//		WritetoConsole(ErrMsg);
+/*		i=sprintf(ErrMsg, "Read Failed for UZ7HO socket - error code = %d\r\n", WSAGetLastError()); */
+/*		WritetoConsole(ErrMsg); */
 				
 		closesocket(TNC->TCPSock);
 		TNC->TCPSock = 0;
@@ -1849,7 +1849,7 @@ static int ProcessReceivedData(int port)
 
 	if (bytes == 0)
 	{
-		//	zero bytes means connection closed
+		/*	zero bytes means connection closed */
 
 		i=sprintf(ErrMsg, "UZ7HO Connection closed for BPQ Port %d\n", port);
 		WritetoConsole(ErrMsg);
@@ -1866,11 +1866,11 @@ static int ProcessReceivedData(int port)
 		return (0);
 	}
 
-	//	Have some data
+	/*	Have some data */
 	
 	if (bytes == AGWHDDRLEN)
 	{
-		//	Have a header - see if we have any associated data
+		/*	Have a header - see if we have any associated data */
 		
 		datalen = AGW->RXHeader.DataLength;
 
@@ -1879,7 +1879,7 @@ static int ProcessReceivedData(int port)
 #endif
 		if (datalen < 0 || datalen > 500)
 		{
-			// corrupt - reset connection
+			/* corrupt - reset connection */
 
 			shutdown(TNC->TCPSock, SD_BOTH);
 			Sleep(100);
@@ -1896,7 +1896,7 @@ static int ProcessReceivedData(int port)
 
 		if (datalen > 0)
 		{
-			// Need data - See if enough there
+			/* Need data - See if enough there */
 				
 			bytes = recv(TNC->TCPSock, (char *)&Message, AGWHDDRLEN + datalen, MSG_PEEK);
 		}
@@ -1910,22 +1910,22 @@ static int ProcessReceivedData(int port)
 				bytes = recv(TNC->TCPSock,(char *)&Message, datalen,0);
 			}
 
-			// Have header, and data if needed
+			/* Have header, and data if needed */
 
 			SaveTNC = TNC;
-			ProcessAGWPacket(TNC, Message);			// Data may be for another port
+			ProcessAGWPacket(TNC, Message);			/* Data may be for another port */
 			TNC = SaveTNC;
 
 			return (0);
 		}
 
-		// Have header, but not sufficient data
+		/* Have header, but not sufficient data */
 
 		return (0);
 	
 	}
 
-	// Dont have at least header bytes
+	/* Dont have at least header bytes */
 	
 	return (0);
 
@@ -2070,14 +2070,14 @@ VOID ProcessAGWPacket(struct TNCINFO * TNC, UCHAR * Message)
 
 	switch (RXHeader->DataKind)
 	{
-	case 'D':			// Appl Data
+	case 'D':			/* Appl Data */
 
 		TNC = GetSessionKey(Key, TNC);
 	
 		if (TNC == NULL)
 			return;
 
-		// Find our Session
+		/* Find our Session */
 
 		Stream = 0;
 
@@ -2087,10 +2087,10 @@ VOID ProcessAGWPacket(struct TNCINFO * TNC, UCHAR * Message)
 
 			if (memcmp(STREAM->AGWKey, Key, 21) == 0)
 			{
-				// Found it;
+				/* Found it; */
 
 				buffptr = GetBuff();
-				if (buffptr == 0) return;			// No buffers, so ignore
+				if (buffptr == 0) return;			/* No buffers, so ignore */
 
 				buffptr->Len  = RXHeader->DataLength;
 				memcpy(buffptr->Data, Message, RXHeader->DataLength);
@@ -2101,19 +2101,19 @@ VOID ProcessAGWPacket(struct TNCINFO * TNC, UCHAR * Message)
 			Stream++;
 		}		
 			
-		// Not Found
+		/* Not Found */
 
 		return;
 
 
-	case 'd':			// Disconnected
+	case 'd':			/* Disconnected */
 
 		TNC = GetSessionKey(Key, TNC);
 
 		if (TNC == NULL)
 			return;
 
-		// Find our Session
+		/* Find our Session */
 
 		Stream = 0;
 
@@ -2123,19 +2123,19 @@ VOID ProcessAGWPacket(struct TNCINFO * TNC, UCHAR * Message)
 
 			if (memcmp(STREAM->AGWKey, Key, 21) == 0)
 			{
-				// Found it;
+				/* Found it; */
 
 				if (STREAM->DiscWhenAllSent)
-					return;						// Already notified
+					return;						/* Already notified */
 
 				if (STREAM->Connecting)
 				{
-					// Report Connect Failed, and drop back to command mode
+					/* Report Connect Failed, and drop back to command mode */
 
 					STREAM->Connecting = FALSE;
 					buffptr = GetBuff();
 
-					if (buffptr == 0) return;			// No buffers, so ignore
+					if (buffptr == 0) return;			/* No buffers, so ignore */
 
 					buffptr->Len = sprintf(buffptr->Data, "UZ7HO} Failure with %s\r", STREAM->RemoteCall);
 
@@ -2148,14 +2148,14 @@ VOID ProcessAGWPacket(struct TNCINFO * TNC, UCHAR * Message)
 					return;
 				}
 
-				// Release Session
+				/* Release Session */
 
 				STREAM->Connecting = FALSE;
-				STREAM->Connected = FALSE;		// Back to Command Mode
-				STREAM->ReportDISC = TRUE;		// Tell Node
+				STREAM->Connected = FALSE;		/* Back to Command Mode */
+				STREAM->ReportDISC = TRUE;		/* Tell Node */
 
-		//		if (STREAM->Disconnecting)		// 
-		//			ReleaseTNC(TNC);
+		/*		if (STREAM->Disconnecting)		//  */
+		/*			ReleaseTNC(TNC); */
 
 				STREAM->Disconnecting = FALSE;
 				STREAM->DiscWhenAllSent = 10;
@@ -2173,12 +2173,12 @@ VOID ProcessAGWPacket(struct TNCINFO * TNC, UCHAR * Message)
 
 	case 'C':
 
-        //   Connect. Can be Incoming or Outgoing
+        /*   Connect. Can be Incoming or Outgoing */
 
-		// "*** CONNECTED To Station [CALLSIGN]" When the other station starts the connection
-		// "*** CONNECTED With [CALLSIGN]" When we started the connection
+		/* "*** CONNECTED To Station [CALLSIGN]" When the other station starts the connection */
+		/* "*** CONNECTED With [CALLSIGN]" When we started the connection */
 
-        //   Create Session Key from port and callsign pair
+        /*   Create Session Key from port and callsign pair */
 
 		TNC = GetSessionKey(Key, TNC);
 
@@ -2191,7 +2191,7 @@ VOID ProcessAGWPacket(struct TNCINFO * TNC, UCHAR * Message)
 		{
 			char noStreams[] = "No free sessions - disconnecting\r";
 
-			// Incoming. Look for a free Stream
+			/* Incoming. Look for a free Stream */
 
 			Stream = 0;
 
@@ -2203,9 +2203,9 @@ VOID ProcessAGWPacket(struct TNCINFO * TNC, UCHAR * Message)
 				Stream++;
 			}
 
-			// No free streams - send message then Disconnect
+			/* No free streams - send message then Disconnect */
 
-			// Do we need to swap From and To? - yes
+			/* Do we need to swap From and To? - yes */
 
 			memcpy(RXHeader->callfrom, &Key[11], 10);
 			memcpy(RXHeader->callto, &Key[1], 10);
@@ -2243,7 +2243,7 @@ GotStream:
 
 			ProcessIncommingConnect(TNC, RXHeader->callfrom, Stream, FALSE);
 
-			// if Port CTEXT defined, use it
+			/* if Port CTEXT defined, use it */
 
 			if (PORT->CTEXT)
 			{
@@ -2300,14 +2300,14 @@ GotStream:
 				}
 			}
 */
-			if (strcmp(RXHeader->callto, TNC->NodeCall) != 0)		// Not Connect to Node Call
+			if (strcmp(RXHeader->callto, TNC->NodeCall) != 0)		/* Not Connect to Node Call */
 			{
 				APPLCALLS * APPL;
 				char * ApplPtr = APPLS;
 				int App;
 				char Appl[10];
 				char * ptr;
-				char Buffer[80];				// Data portion of frame
+				char Buffer[80];				/* Data portion of frame */
 
 				for (App = 0; App < 32; App++)
 				{
@@ -2339,14 +2339,14 @@ GotStream:
 					memcpy(AppName, &ApplPtr[App * sizeof(CMDX)], 12);
 					AppName[12] = 0;
 
-					// Make sure app is available
+					/* Make sure app is available */
 
 					if (CheckAppl(TNC, AppName))
 					{
 						int MsgLen = sprintf(Buffer, "%s\r", AppName);
 						buffptr = GetBuff();
 
-						if (buffptr == 0) return;			// No buffers, so ignore
+						if (buffptr == 0) return;			/* No buffers, so ignore */
 
 						buffptr->Len = MsgLen;
 						memcpy(buffptr->Data, Buffer, MsgLen);
@@ -2358,25 +2358,25 @@ GotStream:
 					{
 						char Msg[] = "Application not available\r\n";
 					
-						// Send a Message, then a disconenct
+						/* Send a Message, then a disconenct */
 					
 						SendData(Stream, TNC, Key, Msg, (int)strlen(Msg));
 
-						STREAM->DiscWhenAllSent = 100;	// 10 secs
+						STREAM->DiscWhenAllSent = 100;	/* 10 secs */
 					}
 					return;
 				}
 			}
 		
-			// Not to a known appl - drop through to Node
+			/* Not to a known appl - drop through to Node */
 
 			return;
 		}
 		else
 		{
-			// Connect Complete
+			/* Connect Complete */
 
-			// Find our Session
+			/* Find our Session */
 
 			Stream = 0;
 
@@ -2386,7 +2386,7 @@ GotStream:
 
 				if (memcmp(STREAM->AGWKey, Key, 21) == 0)
 				{
-					// Found it;
+					/* Found it; */
 
 					STREAM->Connected = TRUE;
 					STREAM->Connecting = FALSE;
@@ -2394,7 +2394,7 @@ GotStream:
 					STREAM->BytesRXed = STREAM->BytesTXed = 0;
 
 					buffptr = GetBuff();
-					if (buffptr == 0) return;			// No buffers, so ignore
+					if (buffptr == 0) return;			/* No buffers, so ignore */
 
 					buffptr->Len  = sprintf(buffptr->Data, "*** Connected to %s\r", RXHeader->callfrom);
 
@@ -2406,25 +2406,25 @@ GotStream:
 				Stream++;
 			}		
 			
-			// Not Found
+			/* Not Found */
 
 			return;
 		}
 
-	case 'T':				// Trasmitted Dats
+	case 'T':				/* Trasmitted Dats */
 
 		DoMonitorHddr(TNC, RXHeader, Message);
 
 		return;
 
-	case 'S':				// Monitored Supervisory
+	case 'S':				/* Monitored Supervisory */
 
-		// Check for SABM
+		/* Check for SABM */
 
 		if (strstr(Message, "<SABM") == 0 && strstr(Message, "<UA") == 0)
 			return;
 
-		// Drop through
+		/* Drop through */
 
 	case 'U':
 
@@ -2442,24 +2442,24 @@ GotStream:
 
 		strlop(Message, '<');
 
-//		if (strchr(Message, '*'))
-//			UpdateMH(TNC, RXHeader->callfrom, '*', 0);
-//		else
-//			UpdateMH(TNC, RXHeader->callfrom, ' ', 0);
+/*		if (strchr(Message, '*')) */
+/*			UpdateMH(TNC, RXHeader->callfrom, '*', 0); */
+/*		else */
+/*			UpdateMH(TNC, RXHeader->callfrom, ' ', 0); */
 		
 		return;
 
-	case 'K':				// raw data	
+	case 'K':				/* raw data	 */
 
 		memset(&Monframe, 0, sizeof(Monframe));
 		memset(&MonDigis, 0, sizeof(MonDigis));
 
 		Monframe.PORT = BPQPort[RXHeader->Port][TNC->Port];
 
-		if (Monframe.PORT == 0)		// Unused UZ7HO port?
+		if (Monframe.PORT == 0)		/* Unused UZ7HO port? */
 			return;
 
-		//	Get real port 
+		/*	Get real port  */
 
 		TNC = TNCInfo[Monframe.PORT];
 
@@ -2470,19 +2470,19 @@ GotStream:
 
 		memcpy(&Monframe.DEST[0], &Message[1], RXHeader->DataLength);
 
-		// Check address - may have Single bit correction activated and non-x.25 filter off
+		/* Check address - may have Single bit correction activated and non-x.25 filter off */
 
 		ptr = &Monframe.ORIGIN[0];
 		n = 6;
 
 		while(n--)
 		{
-			// Try a bit harder to detect corruption
+			/* Try a bit harder to detect corruption */
 
 			c = *(ptr++);
 
 			if (c & 1)
-				return;			// bottom bit set
+				return;			/* bottom bit set */
 
 			c = c >> 1;
 
@@ -2514,19 +2514,19 @@ GotStream:
 			}
 		}
 */
-		// Pass to Monitor
+		/* Pass to Monitor */
 
 		time(&Monframe.Timestamp);
 
 		MHCall[ConvFromAX25(&Monframe.ORIGIN[0], MHCall)] = 0;
 
-		// I think we need to check if UI and if so report to nodemap
+		/* I think we need to check if UI and if so report to nodemap */
 
-		// should skip digis and report last digi but for now keep it simple
+		/* should skip digis and report last digi but for now keep it simple */
 
-		// if there are digis process them
+		/* if there are digis process them */
 
-		if (Monframe.ORIGIN[6]  & 1)		// No digis
+		if (Monframe.ORIGIN[6]  & 1)		/* No digis */
 		{
 			if (Monframe.CTL == 3)
 				UpdateMHEx(TNC, MHCall, ' ', 0, NULL, TRUE);
@@ -2546,7 +2546,7 @@ GotStream:
 			MonDigis.Timestamp = Monframe.Timestamp;
 
 
-			while ((ptr1[6] & 1) == 0)		// till end of address
+			while ((ptr1[6] & 1) == 0)		/* till end of address */
 			{
 				memcpy(ptr2, ptr1, 7);
 				ptr2 += 7;
@@ -2554,12 +2554,12 @@ GotStream:
 				Rest -= 7;
 			}
 
-			memcpy(ptr2, ptr1, 7);			// Copy Last
+			memcpy(ptr2, ptr1, 7);			/* Copy Last */
 			ptr2 += 7;
 			ptr1 += 7;
 			Rest -= 7;
 
-			// Now copy CTL PID and Data
+			/* Now copy CTL PID and Data */
 
 			if (Rest < 0 || Rest > 256)
 				return;
@@ -2571,10 +2571,10 @@ GotStream:
 			if (TNC->PortRecord->PORTCONTROL.PORTMHEARD)
 				MHPROC((struct PORTCONTROL *)TNC->PortRecord, (MESSAGE *)&MonDigis);
 
-//			if (ptr1[0] == 3)
-//				UpdateMHEx(TNC, MHCall, ' ', 0, NULL, TRUE);
-//			else
-//				UpdateMHEx(TNC, MHCall, ' ', 0, NULL, FALSE);
+/*			if (ptr1[0] == 3) */
+/*				UpdateMHEx(TNC, MHCall, ' ', 0, NULL, TRUE); */
+/*			else */
+/*				UpdateMHEx(TNC, MHCall, ' ', 0, NULL, FALSE); */
 
 
 
@@ -2587,7 +2587,7 @@ GotStream:
 
 	case 'R':
 	{
-		// Version
+		/* Version */
 
 		int v1, v2;
 
@@ -2602,19 +2602,19 @@ GotStream:
 
 	case 'g':
 
-		// Capabilities - along with Version used to indicate QtSoundModem
-		// with ability to set and read Modem type and frequency/
+		/* Capabilities - along with Version used to indicate QtSoundModem */
+		/* with ability to set and read Modem type and frequency/ */
 
 		if (Message[2] == 24 && Message[3] == 3 && Message[4] == 100)
 		{
-			// Set flag on any other ports on same TNC (all ports with this as master port)
+			/* Set flag on any other ports on same TNC (all ports with this as master port) */
 
 			int p;
 			int This = TNC->Port;
 
 			if (RXHeader->DataLength == 12)
 			{
-				// First reply - request Modem Freq and Name
+				/* First reply - request Modem Freq and Name */
 				for (p = This; p < 33; p++)
 				{
 					if (MasterPort[p] == This)
@@ -2649,9 +2649,9 @@ GotStream:
 
 			if (RXHeader->DataLength == 44)
 			{
-				// Modem Freq and Type Report from QtSM
+				/* Modem Freq and Type Report from QtSM */
 
-				int p = BPQPort[RXHeader->Port][TNC->Port];		// Get subchannel port
+				int p = BPQPort[RXHeader->Port][TNC->Port];		/* Get subchannel port */
 
 				TNC = TNCInfo[p];
 				
@@ -2674,16 +2674,16 @@ GotStream:
 	case 'x':
 		break;
 
-	case 'Y':				// Session Queue
+	case 'Y':				/* Session Queue */
 
 		AGWPort = RXHeader->Port;
 		Key[0] = AGWPort + '1'; 
         
 		memset(&Key[1], 0, 20);
-		strcpy(&Key[11], RXHeader->callfrom);		// Wrong way round for GetSessionKey
+		strcpy(&Key[11], RXHeader->callfrom);		/* Wrong way round for GetSessionKey */
 		strcpy(&Key[1], RXHeader->callto);
 
-		// Need to get BPQ Port from AGW Port
+		/* Need to get BPQ Port from AGW Port */
 
 		if (AGWPort > 8)
 			return;
@@ -2695,8 +2695,8 @@ GotStream:
 		if (TNC == NULL)
 			return;
 
-//		Debugprintf("UZ7HO Port %d %d %c %s %s %d", TNC->Port, RXHeader->Port,
-//			RXHeader->DataKind, RXHeader->callfrom, RXHeader->callto, Message[0]); 
+/*		Debugprintf("UZ7HO Port %d %d %c %s %s %d", TNC->Port, RXHeader->Port, */
+/*			RXHeader->DataKind, RXHeader->callfrom, RXHeader->callto, Message[0]);  */
 
 		Stream = 0;
 
@@ -2706,11 +2706,11 @@ GotStream:
 
 			if (memcmp(STREAM->AGWKey, Key, 21) == 0)
 			{
-				// Found it;
+				/* Found it; */
 
 				memcpy(&STREAM->FramesOutstanding, Message, 4);
 
-				if (STREAM->FramesOutstanding == 0)			// All Acked
+				if (STREAM->FramesOutstanding == 0)			/* All Acked */
 					if (STREAM->Disconnecting && STREAM->BPQtoPACTOR_Q == 0)
 						TidyClose(TNC, 0);
 
@@ -2719,7 +2719,7 @@ GotStream:
 			Stream++;
 		}		
 			
-		// Not Found
+		/* Not Found */
 
 		return;
 
@@ -2736,7 +2736,7 @@ struct TNCINFO * GetSessionKey(char * key, struct TNCINFO * TNC)
 	struct AGWHEADER * RXHeader = &AGW->RXHeader;
 	int AGWPort;
 
-//   Create Session Key from port and callsign pair
+/*   Create Session Key from port and callsign pair */
         
 	AGWPort = RXHeader->Port;
 	key[0] = AGWPort + '1'; 
@@ -2745,7 +2745,7 @@ struct TNCINFO * GetSessionKey(char * key, struct TNCINFO * TNC)
 	strcpy(&key[1], RXHeader->callfrom);
 	strcpy(&key[11], RXHeader->callto);
 
-	// Need to get BPQ Port from AGW Port
+	/* Need to get BPQ Port from AGW Port */
 
 	if (AGWPort > 8)
 		return 0;
@@ -2778,7 +2778,7 @@ VOID SendData(int Stream, struct TNCINFO * TNC, char * Key, char * Msg, int MsgL
 	memcpy(AGW->TXHeader.callfrom, &Key[11], 10);
 	memcpy(AGW->TXHeader.callto, &Key[1], 10);
 
-	// If Length is greater than Paclen we should fragment
+	/* If Length is greater than Paclen we should fragment */
 
 	if (TNC->PortRecord->ATTACHEDSESSIONS[Stream])
 		Paclen = TNC->PortRecord->ATTACHEDSESSIONS[Stream]->SESSPACLEN;
@@ -2788,14 +2788,14 @@ VOID SendData(int Stream, struct TNCINFO * TNC, char * Key, char * Msg, int MsgL
 
 	if (MsgLen > Paclen)
 	{
-		// Fragment it. 
-		// Is it best to send Paclen packets then short or equal length?
-		// I think equal length;
+		/* Fragment it.  */
+		/* Is it best to send Paclen packets then short or equal length? */
+		/* I think equal length; */
 
 		int Fragments = (MsgLen + Paclen - 1) / Paclen;
 		int Fraglen = MsgLen / Fragments;
 
-		if ((MsgLen & 1))		// Odd
+		if ((MsgLen & 1))		/* Odd */
 			Fraglen ++;
 
 		while (MsgLen > Fraglen)
@@ -2814,7 +2814,7 @@ VOID SendData(int Stream, struct TNCINFO * TNC, char * Key, char * Msg, int MsgL
 			MsgLen -= Fraglen;
 		}
 
-		// Drop through to send last bit
+		/* Drop through to send last bit */
 	}
 #ifdef __BIG_ENDIAN__
 	AGW->TXHeader.DataLength = reverse(MsgLen);
@@ -2844,7 +2844,7 @@ VOID TidyClose(struct TNCINFO * TNC, int Stream)
 
 VOID ForcedClose(struct TNCINFO * TNC, int Stream)
 {
-	TidyClose(TNC, Stream);			// I don't think Hostmode has a DD
+	TidyClose(TNC, Stream);			/* I don't think Hostmode has a DD */
 }
 
 VOID CloseComplete(struct TNCINFO * TNC, int Stream)
@@ -2852,11 +2852,11 @@ VOID CloseComplete(struct TNCINFO * TNC, int Stream)
 	char Status[80];
 	int s;
 
-	// Clear Session Key
+	/* Clear Session Key */
 	
 	memset(TNC->Streams[Stream].AGWKey, 0, 21);
 
-	// if all streams are free, start scanner
+	/* if all streams are free, start scanner */
 
 	s = 0;
 
@@ -2865,7 +2865,7 @@ VOID CloseComplete(struct TNCINFO * TNC, int Stream)
 		if (s != Stream)
 		{		
 			if (TNC->PortRecord->ATTACHEDSESSIONS[s])
-				return;										// Busy
+				return;										/* Busy */
 		}
 		s++;
 	}
@@ -2876,17 +2876,17 @@ VOID CloseComplete(struct TNCINFO * TNC, int Stream)
 	Rig_Command( (TRANSPORTENTRY *) -1, Status);
 }
 
-static MESSAGE Monframe;		// I frames come in two parts.
+static MESSAGE Monframe;		/* I frames come in two parts. */
 
 
-MESSAGE * AdjMsg;		// Adjusted fir digis
+MESSAGE * AdjMsg;		/* Adjusted fir digis */
 
 
 static VOID DoMonitorHddr(struct TNCINFO * TNC, struct AGWHEADER * RXHeader, UCHAR * Msg)
 {
-	// Convert to ax.25 form and pass to monitor
+	/* Convert to ax.25 form and pass to monitor */
 
-	// Only update MH on UI, SABM, UA
+	/* Only update MH on UI, SABM, UA */
 
 	UCHAR * ptr, * starptr, * CPPtr, * nrptr, * nsptr;
 	char * context;
@@ -2896,10 +2896,10 @@ static VOID DoMonitorHddr(struct TNCINFO * TNC, struct AGWHEADER * RXHeader, UCH
 
 	Msg[RXHeader->DataLength] = 0;
 
-	Monframe.LENGTH = MSGHDDRLEN + 16;				// Control Frame
+	Monframe.LENGTH = MSGHDDRLEN + 16;				/* Control Frame */
 	Monframe.PORT = BPQPort[RXHeader->Port][TNC->Port];
 
-	if (RXHeader->DataKind == 'T')		// Transmitted
+	if (RXHeader->DataKind == 'T')		/* Transmitted */
 		Monframe.PORT += 128;
 
 	/*
@@ -2911,7 +2911,7 @@ UZ7HO T GM8BPQ-2 APRS  1:Fm GM8BPQ-2 To APRS Via WIDE2-2 <UI F pid=F0 Len=28 >[1
 */
 
 	
-	AdjMsg = &Monframe;					// Adjusted for digis
+	AdjMsg = &Monframe;					/* Adjusted for digis */
 	ptr = strstr(Msg, "Fm ");
 
 	ConvToAX25(&ptr[3], Monframe.ORIGIN);
@@ -2927,7 +2927,7 @@ UZ7HO T GM8BPQ-2 APRS  1:Fm GM8BPQ-2 To APRS Via WIDE2-2 <UI F pid=F0 Len=28 >[1
 
 	if (ptr)
 	{
-		// We have digis
+		/* We have digis */
 
 		char Save[100];
 
@@ -2949,21 +2949,21 @@ DigiLoop:
 		ConvToAX25(ptr, AdjMsg->ORIGIN);
 
 		if (starptr)
-			AdjMsg->ORIGIN[6] |= 0x80;				// Set end of address
+			AdjMsg->ORIGIN[6] |= 0x80;				/* Set end of address */
 
 		ptr = strtok_s(NULL, ", ", &context);
 
 		if (ptr[0] != '<')
 			goto DigiLoop;
 	}
-	AdjMsg->ORIGIN[6] |= 1;				// Set end of address
+	AdjMsg->ORIGIN[6] |= 1;				/* Set end of address */
 
 	ptr = strstr(Msg, "<");
 
 	if (memcmp(&ptr[1], "SABM", 4) == 0)
 	{
 		AdjMsg->CTL = 0x2f;
-//		UpdateMH(TNC, MHCall, ' ', 0);
+/*		UpdateMH(TNC, MHCall, ' ', 0); */
 	}
 	else  
 	if (memcmp(&ptr[1], "DISC", 4) == 0)
@@ -2972,7 +2972,7 @@ DigiLoop:
 	if (memcmp(&ptr[1], "UA", 2) == 0)
 	{
 		AdjMsg->CTL = 0x63;
-//		UpdateMH(TNC, MHCall, ' ', 0);
+/*		UpdateMH(TNC, MHCall, ' ', 0); */
 	}
 	else  
 	if (memcmp(&ptr[1], "DM", 2) == 0)
@@ -2984,17 +2984,17 @@ DigiLoop:
 
 		if (RXHeader->DataKind != 'T')
 		{
-			// only report RX
+			/* only report RX */
 
 			if (strstr(Msg, "To BEACON "))
 			{
-				// Update MH with Received Beacons
+				/* Update MH with Received Beacons */
 
 				char * ptr1 = strchr(Msg, ']');
 
 				if (ptr1)
 				{
-					ptr1 += 2;						// Skip ] and cr
+					ptr1 += 2;						/* Skip ] and cr */
 					if (memcmp(ptr1, "QRA ", 4) == 0)
 					{
 						char Call[10], Loc[10] = "";
@@ -3045,17 +3045,17 @@ DigiLoop:
 	{
 		if (AdjMsg->CTL != 3)
 			AdjMsg->CTL |= 0x10;
-//		Monframe.DEST[6] |= 0x80;				// SET COMMAND
+/*		Monframe.DEST[6] |= 0x80;				// SET COMMAND */
 	}
 
 	if (strchr(&CPPtr[1], 'F'))
 	{
 		if (AdjMsg->CTL != 3)
 			AdjMsg->CTL |= 0x10;
-//		Monframe.ORIGIN[6] |= 0x80;				// SET P/F bit
+/*		Monframe.ORIGIN[6] |= 0x80;				// SET P/F bit */
 	}
 
-	if ((AdjMsg->CTL & 1) == 0 || AdjMsg->CTL == 3)	// I or UI
+	if ((AdjMsg->CTL & 1) == 0 || AdjMsg->CTL == 3)	/* I or UI */
 	{
 		ptr = strstr(ptr, "pid");	
 		sscanf(&ptr[4], "%x", (unsigned int *)&AdjMsg->PID);
@@ -3064,11 +3064,11 @@ DigiLoop:
 		ILen = atoi(&ptr[4]);
 
 		ptr = strstr(ptr, "]");
-		ptr += 2;						// Skip ] and cr
+		ptr += 2;						/* Skip ] and cr */
 		memcpy(AdjMsg->L2DATA, ptr, ILen);
 		Monframe.LENGTH += ILen;
 	}
-	else if (AdjMsg->CTL == 0x97)		// FRMR
+	else if (AdjMsg->CTL == 0x97)		/* FRMR */
 	{
 		ptr = strstr(ptr, ">");
 		sscanf(ptr+1, "%hhx %hhx %hhx", &AdjMsg->PID, &AdjMsg->L2DATA[0], &AdjMsg->L2DATA[1]);

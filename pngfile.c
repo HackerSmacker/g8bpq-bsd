@@ -1,18 +1,18 @@
-//-------------------------------------
-//  PNGFILE.C -- Image File Functions
-//-------------------------------------
+/*------------------------------------- */
+/*  PNGFILE.C -- Image File Functions */
+/*------------------------------------- */
 
-// Copyright 2000, Willem van Schaik.  For conditions of distribution and
-// use, see the copyright/license/disclaimer notice in png.h
+/* Copyright 2000, Willem van Schaik.  For conditions of distribution and */
+/* use, see the copyright/license/disclaimer notice in png.h */
 
-//#include <windows.h>
-//#include <commdlg.h>
-//#include <stdio.h>
-//#include <stdlib.h>
+/*#include <windows.h> */
+/*#include <commdlg.h> */
+/*#include <stdio.h> */
+/*#include <stdlib.h> */
 
 #include "png.h"
 #include "pngfile.h"
-//#include "cexcept.h"
+/*#include "cexcept.h" */
 
 png_const_charp msg;
 
@@ -21,7 +21,7 @@ static png_structp png_ptr = NULL;
 static png_infop info_ptr = NULL;
 
 
-// cexcept interface
+/* cexcept interface */
 
 static void
 png_cexcept_error(png_structp png_ptr, png_const_charp msg)
@@ -32,13 +32,13 @@ png_cexcept_error(png_structp png_ptr, png_const_charp msg)
    fprintf(stderr, "libpng error: %s\n", msg);
 #endif
    {
-//      Throw msg;
+/*      Throw msg; */
    }
 }
 
 
 
-// PNG image handler functions
+/* PNG image handler functions */
 
 BOOL PngLoadImage (PTSTR pstrFileName, png_byte **ppbImageData,
                    int *piWidth, int *piHeight, int *piChannels, png_color *pBkgColor)
@@ -55,7 +55,7 @@ BOOL PngLoadImage (PTSTR pstrFileName, png_byte **ppbImageData,
     static png_byte   **ppbRowPointers = NULL;
     int                 i;
 
-    // open the PNG input file
+    /* open the PNG input file */
 
     if (!pstrFileName)
     {
@@ -77,7 +77,7 @@ BOOL PngLoadImage (PTSTR pstrFileName, png_byte **ppbImageData,
         return FALSE;
     }
 
-    // first check the eight byte PNG signature
+    /* first check the eight byte PNG signature */
 
     fread(pbSig, 1, 8, pfFile);
     if (!png_check_sig(pbSig, 8))
@@ -93,7 +93,7 @@ BOOL PngLoadImage (PTSTR pstrFileName, png_byte **ppbImageData,
         return FALSE;
     }
 
-    // create the two png(-info) structures
+    /* create the two png(-info) structures */
 
     png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL,
       (png_error_ptr)png_cexcept_error, (png_error_ptr)NULL);
@@ -111,10 +111,10 @@ BOOL PngLoadImage (PTSTR pstrFileName, png_byte **ppbImageData,
         return FALSE;
     }
 
-//    Try
+/*    Try */
     {
         
-        // initialize the png structure
+        /* initialize the png structure */
         
 #if !defined(PNG_NO_STDIO)
         png_init_io(png_ptr, pfFile);
@@ -124,17 +124,17 @@ BOOL PngLoadImage (PTSTR pstrFileName, png_byte **ppbImageData,
         
         png_set_sig_bytes(png_ptr, 8);
         
-        // read all PNG info up to image data
+        /* read all PNG info up to image data */
         
         png_read_info(png_ptr, info_ptr);
         
-        // get width, height, bit-depth and color-type
+        /* get width, height, bit-depth and color-type */
         
         png_get_IHDR(png_ptr, info_ptr, piWidth, piHeight, &iBitDepth,
             &iColorType, NULL, NULL, NULL);
         
-        // expand images of all color-type and bit-depth to 3x8 bit RGB images
-        // let the library process things like alpha, transparency, background
+        /* expand images of all color-type and bit-depth to 3x8 bit RGB images */
+        /* let the library process things like alpha, transparency, background */
         
         if (iBitDepth == 16)
             png_set_strip_16(png_ptr);
@@ -148,7 +148,7 @@ BOOL PngLoadImage (PTSTR pstrFileName, png_byte **ppbImageData,
             iColorType == PNG_COLOR_TYPE_GRAY_ALPHA)
             png_set_gray_to_rgb(png_ptr);
         
-        // set the background color to draw transparent and alpha images over.
+        /* set the background color to draw transparent and alpha images over. */
         if (png_get_bKGD(png_ptr, info_ptr, &pBackground))
         {
             png_set_background(png_ptr, pBackground, PNG_BACKGROUND_GAMMA_FILE, 1, 1.0);
@@ -161,28 +161,28 @@ BOOL PngLoadImage (PTSTR pstrFileName, png_byte **ppbImageData,
             pBkgColor = NULL;
         }
         
-        // if required set gamma conversion
+        /* if required set gamma conversion */
         if (png_get_gAMA(png_ptr, info_ptr, &dGamma))
             png_set_gamma(png_ptr, (double) 2.2, dGamma);
         
-        // after the transformations have been registered update info_ptr data
+        /* after the transformations have been registered update info_ptr data */
         
         png_read_update_info(png_ptr, info_ptr);
         
-        // get again width, height and the new bit-depth and color-type
+        /* get again width, height and the new bit-depth and color-type */
         
         png_get_IHDR(png_ptr, info_ptr, piWidth, piHeight, &iBitDepth,
             &iColorType, NULL, NULL, NULL);
         
         
-        // row_bytes is the width x number of channels
+        /* row_bytes is the width x number of channels */
         
         ulRowBytes = png_get_rowbytes(png_ptr, info_ptr);
         ulChannels = png_get_channels(png_ptr, info_ptr);
         
         *piChannels = ulChannels;
         
-        // now we can allocate memory to store the image
+        /* now we can allocate memory to store the image */
         
         if (pbImageData)
         {
@@ -196,7 +196,7 @@ BOOL PngLoadImage (PTSTR pstrFileName, png_byte **ppbImageData,
         }
         *ppbImageData = pbImageData;
         
-        // and allocate memory for an array of row-pointers
+        /* and allocate memory for an array of row-pointers */
         
         if ((ppbRowPointers = (png_bytepp) malloc((*piHeight)
                             * sizeof(png_bytep))) == NULL)
@@ -204,20 +204,20 @@ BOOL PngLoadImage (PTSTR pstrFileName, png_byte **ppbImageData,
             png_error(png_ptr, "Visual PNG: out of memory");
         }
         
-        // set the individual row-pointers to point at the correct offsets
+        /* set the individual row-pointers to point at the correct offsets */
         
         for (i = 0; i < (*piHeight); i++)
             ppbRowPointers[i] = pbImageData + i * ulRowBytes;
         
-        // now we can go ahead and just read the whole image
+        /* now we can go ahead and just read the whole image */
         
         png_read_image(png_ptr, ppbRowPointers);
         
-        // read the additional chunks in the PNG file (not really needed)
+        /* read the additional chunks in the PNG file (not really needed) */
         
         png_read_end(png_ptr, NULL);
          
-        // and we're done
+        /* and we're done */
         
         free (ppbRowPointers);
         ppbRowPointers = NULL;
@@ -225,7 +225,7 @@ BOOL PngLoadImage (PTSTR pstrFileName, png_byte **ppbImageData,
 		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 
         
-        // yepp, done
+        /* yepp, done */
     }
 /*
     Catch (msg)
@@ -260,7 +260,7 @@ BOOL PngSaveImage (PTSTR pstrFileName, png_byte *pDiData,
     static png_byte   **ppbRowPointers = NULL;
     int                 i;
 
-    // open the PNG output file
+    /* open the PNG output file */
 
     if (!pstrFileName)
         return FALSE;
@@ -268,7 +268,7 @@ BOOL PngSaveImage (PTSTR pstrFileName, png_byte *pDiData,
     if (!(pfFile = fopen(pstrFileName, "wb")))
         return FALSE;
 
-    // prepare the standard PNG structures
+    /* prepare the standard PNG structures */
 
     png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL,
       (png_error_ptr)png_cexcept_error, (png_error_ptr)NULL);
@@ -285,9 +285,9 @@ BOOL PngSaveImage (PTSTR pstrFileName, png_byte *pDiData,
         return FALSE;
     }
 
-//    Try
+/*    Try */
     {
-        // initialize the png structure
+        /* initialize the png structure */
         
 #if !defined(PNG_NO_STDIO)
         png_init_io(png_ptr, pfFile);
@@ -295,52 +295,52 @@ BOOL PngSaveImage (PTSTR pstrFileName, png_byte *pDiData,
         png_set_write_fn(png_ptr, (png_voidp)pfFile, png_write_data, png_flush);
 #endif
         
-        // we're going to write a very simple 3x8 bit RGB image
+        /* we're going to write a very simple 3x8 bit RGB image */
         
         png_set_IHDR(png_ptr, info_ptr, iWidth, iHeight, ciBitDepth,
             PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE,
             PNG_FILTER_TYPE_BASE);
         
-        // write the file header information
+        /* write the file header information */
         
         png_write_info(png_ptr, info_ptr);
         
-        // swap the BGR pixels in the DiData structure to RGB
+        /* swap the BGR pixels in the DiData structure to RGB */
         
-//        png_set_bgr(png_ptr);
+/*        png_set_bgr(png_ptr); */
         
-        // row_bytes is the width x number of channels
+        /* row_bytes is the width x number of channels */
         
         ulRowBytes = iWidth * ciChannels;
         
-        // we can allocate memory for an array of row-pointers
+        /* we can allocate memory for an array of row-pointers */
         
         if ((ppbRowPointers = (png_bytepp) malloc(iHeight * sizeof(png_bytep))) == NULL)
             Debugprintf( "Visualpng: Out of memory");
         
-        // set the individual row-pointers to point at the correct offsets
+        /* set the individual row-pointers to point at the correct offsets */
         
         for (i = 0; i < iHeight; i++)
             ppbRowPointers[i] = pDiData + i * (((ulRowBytes + 3) >> 2) << 2);
         
-        // write out the entire image data in one call
+        /* write out the entire image data in one call */
         
         png_write_image (png_ptr, ppbRowPointers);
         
-        // write the additional chunks to the PNG file (not really needed)
+        /* write the additional chunks to the PNG file (not really needed) */
         
         png_write_end(png_ptr, info_ptr);
         
-        // and we're done
+        /* and we're done */
         
         free (ppbRowPointers);
         ppbRowPointers = NULL;
         
-        // clean up after the write, and free any memory allocated
+        /* clean up after the write, and free any memory allocated */
         
         png_destroy_write_struct(&png_ptr, (png_infopp) NULL);
         
-        // yepp, done
+        /* yepp, done */
     }
 /*
     Catch (msg)
@@ -404,6 +404,6 @@ png_flush(png_structp png_ptr)
 
 #endif
 
-//-----------------
-//  end of source
-//-----------------
+/*----------------- */
+/*  end of source */
+/*----------------- */

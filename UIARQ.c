@@ -17,9 +17,9 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-//
-//	Runs FLARQ-like protocol over UI Packets
-//
+/* */
+/*	Runs FLARQ-like protocol over UI Packets */
+/* */
 
 #define _CRT_SECURE_NO_DEPRECATE
 
@@ -56,7 +56,7 @@ extern int (WINAPI FAR *EnumProcessesPtr)();
 
 extern int (WINAPI FAR *GetModuleFileNameExPtr)();
 
-//int ResetExtDriver(int num);
+/*int ResetExtDriver(int num); */
 
 int SemHeldByAPI;
 
@@ -107,9 +107,9 @@ static int ExtProc(int fn, int port,unsigned char * buff)
 	struct STREAMINFO * STREAM;
 
 	if (TNC == NULL)
-		return 0;					// Port not defined
+		return 0;					/* Port not defined */
 
-	// Look for attach on any call
+	/* Look for attach on any call */
 
 	for (Stream = 0; Stream <= MAXARQ; Stream++)
 	{
@@ -117,7 +117,7 @@ static int ExtProc(int fn, int port,unsigned char * buff)
 	
 		if (TNC->PortRecord->ATTACHEDSESSIONS[Stream] && TNC->Streams[Stream].Attached == 0)
 		{
-			// New Attach
+			/* New Attach */
 
 			int calllen;
 			STREAM->Attached = TRUE;
@@ -136,7 +136,7 @@ static int ExtProc(int fn, int port,unsigned char * buff)
 	{
 	case 7:			
 
-		// 100 mS Timer. 
+		/* 100 mS Timer.  */
 
 		for (Stream = 0; Stream <= MAXARQ; Stream++)
 		{
@@ -148,7 +148,7 @@ static int ExtProc(int fn, int port,unsigned char * buff)
 
 				if (STREAM->NeedDisc == 0)
 				{
-					// Send the DISCONNECT
+					/* Send the DISCONNECT */
 
 					TidyClose(TNC, Stream);
 				}
@@ -159,9 +159,9 @@ static int ExtProc(int fn, int port,unsigned char * buff)
 	
 		return 0;
 
-	case 1:				// poll
+	case 1:				/* poll */
 
-		// See if any frames for this port
+		/* See if any frames for this port */
 
 		for (Stream = 0; Stream <= MAXARQ; Stream++)
 		{
@@ -184,7 +184,7 @@ static int ExtProc(int fn, int port,unsigned char * buff)
 				{
 					STREAM->DiscWhenAllSent--;
 					if (STREAM->DiscWhenAllSent == 0)
-						STREAM->ReportDISC = TRUE;				// Dont want to leave session attached. Causes too much confusion
+						STREAM->ReportDISC = TRUE;				/* Dont want to leave session attached. Causes too much confusion */
 				}
 			}
 			else
@@ -197,7 +197,7 @@ static int ExtProc(int fn, int port,unsigned char * buff)
 
 				buff[4] = Stream;
 				buff[7] = 0xf0;
-				memcpy(&buff[8],buffptr->Data,datalen);		// Data goes to +7, but we have an extra byte
+				memcpy(&buff[8],buffptr->Data,datalen);		/* Data goes to +7, but we have an extra byte */
 				datalen += (MSGHDDRLEN + 1);
 				
 				PutLengthinBuffer((PDATAMESSAGE)buff, datalen);
@@ -224,9 +224,9 @@ static int ExtProc(int fn, int port,unsigned char * buff)
 
 			UIMsg[UILen] = 0;
 
-			if (UILen < 129 && STREAM->Attached == FALSE)			// Be sensible!
+			if (UILen < 129 && STREAM->Attached == FALSE)			/* Be sensible! */
 			{
-				// >00uG8BPQ:72 TestA
+				/* >00uG8BPQ:72 TestA */
 				SendLen = sprintf(Reply, "u%s:72 %s", TNC->NodeCall, UIMsg);
 				SendPacket(TNC, STREAM, Reply, SendLen);
 			}
@@ -235,22 +235,22 @@ static int ExtProc(int fn, int port,unsigned char * buff)
 			
 		return (0);
 
-	case 2:				// send
+	case 2:				/* send */
 
 	
 		Stream = buff[4];
 		
 		STREAM = &TNC->Streams[Stream]; 
 
-//		txlen=(buff[6]<<8) + buff[5] - 8;	
+/*		txlen=(buff[6]<<8) + buff[5] - 8;	 */
 
-		txlen = GetLengthfromBuffer((PDATAMESSAGE)buff) - (MSGHDDRLEN + 1);		// 1 as no PID;
+		txlen = GetLengthfromBuffer((PDATAMESSAGE)buff) - (MSGHDDRLEN + 1);		/* 1 as no PID; */
 				
 		if (STREAM->Connected)
 		{
 			buffptr = GetBuff();
 
-			if (buffptr == 0) return (0);			// No buffers, so ignore
+			if (buffptr == 0) return (0);			/* No buffers, so ignore */
 		
 			buffptr->Len = txlen;
 			memcpy(buffptr->Data, &buff[8], txlen);
@@ -269,13 +269,13 @@ static int ExtProc(int fn, int port,unsigned char * buff)
 				if (STREAM->Connected)
 					TidyClose(TNC, buff[4]);
 
-				STREAM->ReportDISC = TRUE;		// Tell Node
+				STREAM->ReportDISC = TRUE;		/* Tell Node */
 				return 0;
 			}
 
-			// See if a Connect Command.
+			/* See if a Connect Command. */
 
-			if (toupper(buff[8]) == 'C' && buff[9] == ' ' && txlen > 2)	// Connect
+			if (toupper(buff[8]) == 'C' && buff[9] == ' ' && txlen > 2)	/* Connect */
 			{
 				char * ptr;
 				char * context;
@@ -286,18 +286,18 @@ static int ExtProc(int fn, int port,unsigned char * buff)
 				_strupr(&buff[8]);
 				buff[8 + txlen] = 0;
 
-				memset(ARQ, 0, sizeof(struct ARQINFO));		// Reset ARQ State
-				ARQ->TXSeq = ARQ->TXLastACK = 63;			// Last Sent
-				ARQ->RXHighest = ARQ->RXNoGaps = 63;		// Last Received
+				memset(ARQ, 0, sizeof(struct ARQINFO));		/* Reset ARQ State */
+				ARQ->TXSeq = ARQ->TXLastACK = 63;			/* Last Sent */
+				ARQ->RXHighest = ARQ->RXNoGaps = 63;		/* Last Received */
 				ARQ->OurStream = Stream + 64;
-				ARQ->FarStream = 64;						// Not yet defined
+				ARQ->FarStream = 64;						/* Not yet defined */
 
 				memset(STREAM->RemoteCall, 0, 10);
 
 				ptr = strtok_s(&buff[10], " ,\r", &context);
 				strcpy(STREAM->RemoteCall, ptr);
 
-//<SOH>00cG8BPQ:1025 G8BPQ:24 0 7 T60R5W10FA36<EOT>
+/*<SOH>00cG8BPQ:1025 G8BPQ:24 0 7 T60R5W10FA36<EOT> */
 
 				SendLen = sprintf(Reply, "c%s:42 %s:24 %c 7 T60R5W10",
 					STREAM->MyCall, STREAM->RemoteCall, ARQ->OurStream); 
@@ -325,7 +325,7 @@ static int ExtProc(int fn, int port,unsigned char * buff)
 
 		STREAM = &TNC->Streams[Stream];
 		{
-			// Busy if TX Window reached
+			/* Busy if TX Window reached */
 
 			struct ARQINFO * ARQ = STREAM->ARQInfo;
 			int Outstanding;
@@ -335,21 +335,21 @@ static int ExtProc(int fn, int port,unsigned char * buff)
 			if (Outstanding < 0)
 				Outstanding += 64;
 
-			TNC->PortRecord->FramesQueued = Outstanding + C_Q_COUNT(&STREAM->BPQtoPACTOR_Q);		// Save for Appl Level Queued Frames
+			TNC->PortRecord->FramesQueued = Outstanding + C_Q_COUNT(&STREAM->BPQtoPACTOR_Q);		/* Save for Appl Level Queued Frames */
 
 			if (Outstanding > ARQ->TXWindow)
-				return (1 | 1 << 8 | STREAM->Disconnecting << 15); // 3rd Nibble is frames unacked
+				return (1 | 1 << 8 | STREAM->Disconnecting << 15); /* 3rd Nibble is frames unacked */
 			else
 				return 1 << 8 | STREAM->Disconnecting << 15;
 
 		}
-		return 1 << 8 | STREAM->Disconnecting << 15;		// OK, but lock attach if disconnecting
+		return 1 << 8 | STREAM->Disconnecting << 15;		/* OK, but lock attach if disconnecting */
 	
-	case 4:				// reinit
+	case 4:				/* reinit */
 
 		return (0);
 
-	case 5:				// Close
+	case 5:				/* Close */
 
 		return 0;
 	}
@@ -398,7 +398,7 @@ static int WebProc(struct TNCINFO * TNC, char * Buff, BOOL LOCAL)
 	Len += sprintf(&Buff[Len], "<tr><td>Channel State</td><td>%s</td></tr>", TNC->WEB_CHANSTATE);
 	Len += sprintf(&Buff[Len], "<tr><td>Proto State</td><td>%s</td></tr>", TNC->WEB_PROTOSTATE);
 	Len += sprintf(&Buff[Len], "<tr><td>Traffic</td><td>%s</td></tr>", TNC->WEB_TRAFFIC);
-//	Len += sprintf(&Buff[Len], "<tr><td>TNC Restarts</td><td></td></tr>", TNC->WEB_RESTARTS);
+/*	Len += sprintf(&Buff[Len], "<tr><td>TNC Restarts</td><td></td></tr>", TNC->WEB_RESTARTS); */
 	Len += sprintf(&Buff[Len], "</table>");
 
 	Len += sprintf(&Buff[Len], "<textarea rows=10 style=\"width:500px; height:250px;\" id=textarea >%s</textarea>", TNC->WebBuffer);
@@ -426,7 +426,7 @@ UINT UIARQExtInit(EXTPORTDATA * PortEntry)
 
 	if (TNC == NULL)
 	{
-		// Not defined in Config file
+		/* Not defined in Config file */
 
 		sprintf(Msg," ** Error - no info in BPQ32.cfg for this port\n");
 		WritetoConsole(Msg);
@@ -453,16 +453,16 @@ UINT UIARQExtInit(EXTPORTDATA * PortEntry)
 
 
 	PortEntry->PORTCONTROL.PROTOCOL = 10;
-	PortEntry->PERMITGATEWAY = TRUE;					// Can change ax.25 call on each stream
-	PortEntry->PORTCONTROL.UICAPABLE = 1;				// Can send beacons
+	PortEntry->PERMITGATEWAY = TRUE;					/* Can change ax.25 call on each stream */
+	PortEntry->PORTCONTROL.UICAPABLE = 1;				/* Can send beacons */
 	PortEntry->PORTCONTROL.PORTQUALITY = 0;
-	PortEntry->SCANCAPABILITIES = NONE;					// Scan Control - None
+	PortEntry->SCANCAPABILITIES = NONE;					/* Scan Control - None */
 
 	if (PortEntry->PORTCONTROL.PORTPACLEN == 0 || PortEntry->PORTCONTROL.PORTPACLEN > 128)
 		PortEntry->PORTCONTROL.PORTPACLEN = 64;
 
 	ptr=strchr(TNC->NodeCall, ' ');
-	if (ptr) *(ptr) = 0;					// Null Terminate
+	if (ptr) *(ptr) = 0;					/* Null Terminate */
 
 	TNC->Hardware = H_UIARQ;
 
@@ -559,14 +559,14 @@ static int ProcessLine(char * buf, int Port)
 	BPQport = Port;
 	TNC = TNCInfo[BPQport] = zalloc(sizeof(struct TNCINFO));
 
-	TNC->Timeout = 50;		// Default retry = 5 seconds
-	TNC->Retries = 6;		// Default Retries
+	TNC->Timeout = 50;		/* Default retry = 5 seconds */
+	TNC->Retries = 6;		/* Default Retries */
 	TNC->Window = 16;
 
 	TNC->InitScript = malloc(1000);
 	TNC->InitScript[0] = 0;
 	
-	// Read Initialisation lines
+	/* Read Initialisation lines */
 
 	while(TRUE)
 	{
@@ -598,9 +598,9 @@ static int ProcessLine(char * buf, int Port)
 
 			if (ptr == NULL) return (TRUE);
 
-			if (*ptr =='#') return (TRUE);			// comment
+			if (*ptr =='#') return (TRUE);			/* comment */
 
-			if (*ptr ==';') return (TRUE);			// comment
+			if (*ptr ==';') return (TRUE);			/* comment */
 
 			if (_stricmp(ptr,"Ports") == 0)
 			{
@@ -640,14 +640,14 @@ static VOID SendPacket(struct TNCINFO * TNC, struct STREAMINFO * STREAM, UCHAR *
 	memcpy(&Block.L2DATA[1], Msg, MsgLen);
 	MsgLen += 1;
 	
-	Send_AX_Datagram(&Block, MsgLen + 2, Port);		// Inulude CTL and PID
+	Send_AX_Datagram(&Block, MsgLen + 2, Port);		/* Inulude CTL and PID */
 }
 
 VOID ProcessFLDigiData(struct TNCINFO * TNC, UCHAR * Input, int Len, int Stream);
 
 VOID ProcessARQPacket(struct PORTCONTROL * PORT, MESSAGE * Buffer)
 {
-	// ARQ Packet from KISS-Like Hardware
+	/* ARQ Packet from KISS-Like Hardware */
 
 	struct TNCINFO * TNC = TNCInfo[PORT->PORTNUMBER];
 	UCHAR * Input;
@@ -657,7 +657,7 @@ VOID ProcessARQPacket(struct PORTCONTROL * PORT, MESSAGE * Buffer)
 	if (Stream < 0 || Stream > MAXARQ)
 		return;
 
-	// First Bytes is Stream Number (as ASCII Letter)
+	/* First Bytes is Stream Number (as ASCII Letter) */
 
 	Input = &Buffer->L2DATA[1];
 	Len = Buffer->LENGTH - 24;	
@@ -745,16 +745,16 @@ static VOID ProcessFLDigiData(struct TNCINFO * TNC, UCHAR * Input, int Len, int 
 
 	Input[Len] = 0;
 
-	// Process Message
+	/* Process Message */
 
-	// This processes eitrher message from the KISS or RAW interfaces.
-	//	Headers and RAW checksum have been removed, so packet starts with Control Byte
+	/* This processes eitrher message from the KISS or RAW interfaces. */
+	/*	Headers and RAW checksum have been removed, so packet starts with Control Byte */
 
-	// Only a connect request is allowed with no session, so check first
+	/* Only a connect request is allowed with no session, so check first */
 
 	if (CTRL == 'c')
 	{
-		// Connect Request
+		/* Connect Request */
 
 		char * call1;
 		char * call2;
@@ -763,7 +763,7 @@ static VOID ProcessFLDigiData(struct TNCINFO * TNC, UCHAR * Input, int Len, int 
 		char * ptr;
 		char * context;
 		char FarStream = 0;
-		int BlockSize = 6;			// 64 default
+		int BlockSize = 6;			/* 64 default */
 		int Window = TNC->Window;		
 		APPLCALLS * APPL;
 		char * ApplPtr = APPLS;
@@ -773,7 +773,7 @@ static VOID ProcessFLDigiData(struct TNCINFO * TNC, UCHAR * Input, int Len, int 
 		TRANSPORTENTRY * SESS;
 
 		if (Stream)
-			return;					// Shouldn't have Stream on Connect Request
+			return;					/* Shouldn't have Stream on Connect Request */
 
 		call1 = strtok_s(&Input[1], " ", &context);
 		call2 = strtok_s(NULL, " ", &context);
@@ -781,7 +781,7 @@ static VOID ProcessFLDigiData(struct TNCINFO * TNC, UCHAR * Input, int Len, int 
 		port1 = strlop(call1, ':');
 		port2 = strlop(call2, ':');
 
-		// See if for us
+		/* See if for us */
 
 		for (App = 0; App < 32; App++)
 		{
@@ -807,7 +807,7 @@ static VOID ProcessFLDigiData(struct TNCINFO * TNC, UCHAR * Input, int Len, int 
 		if (App > 31)
 			if (strcmp(TNC->NodeCall, call2) !=0)
 				if (strcmp(call2, MYALIASLOPPED) !=0)
-					return;				// Not Appl or Port/Node Call
+					return;				/* Not Appl or Port/Node Call */
 
 		ptr =  strtok_s(NULL, " ", &context);
 		FarStream = *ptr;
@@ -816,12 +816,12 @@ static VOID ProcessFLDigiData(struct TNCINFO * TNC, UCHAR * Input, int Len, int 
 
 		if (ARQ->ARQState > ARQ_CONNECTING)
 		{
-			// We have already received a connect request - just ACK it
+			/* We have already received a connect request - just ACK it */
 
 			goto AckConnectRequest;
 		}
 
-		// Get a Session
+		/* Get a Session */
 
 		Stream = 1;
 
@@ -833,7 +833,7 @@ static VOID ProcessFLDigiData(struct TNCINFO * TNC, UCHAR * Input, int Len, int 
 			Stream++;
 		}
 
-		// No free streams - send Disconnect
+		/* No free streams - send Disconnect */
 
 		return;
 
@@ -854,10 +854,10 @@ static VOID ProcessFLDigiData(struct TNCINFO * TNC, UCHAR * Input, int Len, int 
 
 		ARQ = STREAM->ARQInfo;
 
-		memset(ARQ, 0, sizeof(struct ARQINFO));		// Reset ARQ State
+		memset(ARQ, 0, sizeof(struct ARQINFO));		/* Reset ARQ State */
 		ARQ->FarStream = FarStream;
-		ARQ->TXSeq = ARQ->TXLastACK = 63;			// Last Sent
-		ARQ->RXHighest = ARQ->RXNoGaps = 63;		// Last Received
+		ARQ->TXSeq = ARQ->TXLastACK = 63;			/* Last Sent */
+		ARQ->RXHighest = ARQ->RXNoGaps = 63;		/* Last Received */
 		ARQ->ARQState = ARQ_ACTIVE;
 		ARQ->OurStream = Stream + 64;
 
@@ -870,7 +870,7 @@ static VOID ProcessFLDigiData(struct TNCINFO * TNC, UCHAR * Input, int Len, int 
 			memcpy(AppName, &ApplPtr[App * sizeof(CMDX)], 12);
 			AppName[12] = 0;
 
-			// Make sure app is available
+			/* Make sure app is available */
 
 			if (CheckAppl(TNC, AppName))
 			{
@@ -881,7 +881,7 @@ static VOID ProcessFLDigiData(struct TNCINFO * TNC, UCHAR * Input, int Len, int 
 
 				if (buffptr == 0)
 				{
-					return;			// No buffers, so ignore
+					return;			/* No buffers, so ignore */
 				}
 
 				buffptr->Len = MsgLen;
@@ -891,12 +891,12 @@ static VOID ProcessFLDigiData(struct TNCINFO * TNC, UCHAR * Input, int Len, int 
 
 				TNC->SwallowSignon = TRUE;
 
-				// Save Appl Call in case needed for 
+				/* Save Appl Call in case needed for  */
 
 			}
 			else
 			{	
-				STREAM->NeedDisc = 50;	// 1 sec
+				STREAM->NeedDisc = 50;	/* 1 sec */
 			}
 		}
 	
@@ -908,11 +908,11 @@ static VOID ProcessFLDigiData(struct TNCINFO * TNC, UCHAR * Input, int Len, int 
 		ARQ->MaxBlock = Blocksizes[BlockSize];
 
 
-		ARQ->ARQTimer = 1;			// To force CTEXT to be Queued
+		ARQ->ARQTimer = 1;			/* To force CTEXT to be Queued */
 		
 		if (App == 32)
 		{
-			// Connect to Node - send CTEXT
+			/* Connect to Node - send CTEXT */
 
 			if (HFCTEXTLEN > 1)
 			{
@@ -928,7 +928,7 @@ static VOID ProcessFLDigiData(struct TNCINFO * TNC, UCHAR * Input, int Len, int 
 
 		if (STREAM->NeedDisc)
 		{
-			// Send Not Avail 
+			/* Send Not Avail  */
 
 			buffptr = GetBuff();
 			if (buffptr)
@@ -954,14 +954,14 @@ AckConnectRequest:
 		return;
 	}
 
-	// All others need a session
+	/* All others need a session */
 
-//	if (!STREAM->Connected && !STREAM->Connecting)
-//		return;
+/*	if (!STREAM->Connected && !STREAM->Connecting) */
+/*		return; */
 
 	if (CTRL == 'k')
 	{
-		// Connect ACK
+		/* Connect ACK */
 
 		char * call1;
 		char * call2;
@@ -970,7 +970,7 @@ AckConnectRequest:
 		char * ptr;
 		char * context;
 		char FarStream = 0;
-		int BlockSize = 6;			// 64 default
+		int BlockSize = 6;			/* 64 default */
 		int Window = 16;
 		
 		char Reply[80];
@@ -986,7 +986,7 @@ AckConnectRequest:
 			return;
 
 		if (Channel != ARQ->OurStream)
-			return;					// Wrong Session
+			return;					/* Wrong Session */
 
 		ptr =  strtok_s(NULL, " ", &context);
 		if (ptr)
@@ -996,7 +996,7 @@ AckConnectRequest:
 			BlockSize = atoi(ptr);
 
 		if (STREAM->Connected)
-			goto SendKReply;		// Repeated ACK
+			goto SendKReply;		/* Repeated ACK */
 
 		STREAM->ConnectTime = time(NULL); 
 		STREAM->BytesRXed = STREAM->BytesTXed = STREAM->BytesAcked = STREAM->BytesResent = 0;
@@ -1039,7 +1039,7 @@ AckConnectRequest:
 
 SendKReply:
 
-		// Reply with status
+		/* Reply with status */
 
 		SendLen = sprintf(Reply, "s%c%c%c", ARQ->TXSeq + 32, ARQ->RXNoGaps + 32, ARQ->RXHighest + 32);
 
@@ -1050,7 +1050,7 @@ SendKReply:
 
 			while (n != ARQ->RXHighest)
 			{
-				if (ARQ->RXHOLDQ[n] == 0)		// Dont have it
+				if (ARQ->RXHOLDQ[n] == 0)		/* Dont have it */
 					SendLen += sprintf(&Reply[SendLen], "%c", n + 32);
 
 				n++;
@@ -1062,20 +1062,20 @@ SendKReply:
 		return;
 	}
 
-	// All others need a session
+	/* All others need a session */
 
-	//if (!STREAM->Connected)
-	//	return;
+	/*if (!STREAM->Connected) */
+	/*	return; */
 
 
 	if (CTRL == 's')
 	{
-		// Status
+		/* Status */
 
 		if (Channel != ARQ->OurStream)
-			return;					// Wrong Session
+			return;					/* Wrong Session */
 
-		ARQ->ARQTimer = 0;			// Stop retry timer
+		ARQ->ARQTimer = 0;			/* Stop retry timer */
 		Input[Len] = 0;
 		ProcessARQStatus(TNC, Stream, ARQ, &Input[1]);
 
@@ -1084,7 +1084,7 @@ SendKReply:
 
 	if (CTRL == 'p')
 	{
-		// Poll
+		/* Poll */
 
 		char * call1;
 		char * context;
@@ -1095,7 +1095,7 @@ SendKReply:
 			return;
 
 		if (Channel != ARQ->OurStream)
-			return;					// Wrong Session
+			return;					/* Wrong Session */
 
 		Debugprintf("Sending Poll Resp TX NOGaps High %d %d %d", ARQ->TXSeq, ARQ->RXNoGaps, ARQ->RXHighest);
 
@@ -1108,7 +1108,7 @@ SendKReply:
 
 			while (n != ARQ->RXHighest)
 			{
-				if (ARQ->RXHOLDQ[n] == 0)		// Dont have it
+				if (ARQ->RXHOLDQ[n] == 0)		/* Dont have it */
 					SendLen += sprintf(&Reply[SendLen], "%c", n + 32);
 
 				n++;
@@ -1116,7 +1116,7 @@ SendKReply:
 			}
 		}
 		else
-			ARQ->TurnroundTimer = 15;			// Allow us to send it all acked
+			ARQ->TurnroundTimer = 15;			/* Allow us to send it all acked */
 
 		QueueAndSend(TNC, ARQ, TNC->TCPDataSock, Reply, SendLen);
 
@@ -1126,7 +1126,7 @@ SendKReply:
 
 	if (CTRL == 'a')
 	{
-		// Abort. Send Abort ACK - same as 
+		/* Abort. Send Abort ACK - same as  */
 
 		char * call1;
 		char * context;
@@ -1137,7 +1137,7 @@ SendKReply:
 			return;
 
 		if (Channel != ARQ->OurStream)
-			return;					// Wrong Session
+			return;					/* Wrong Session */
 
 		SendLen = sprintf(Reply, "o%c%c%c", ARQ->TXSeq + 32, ARQ->RXNoGaps + 32, ARQ->RXHighest + 32);
 
@@ -1148,7 +1148,7 @@ SendKReply:
 
 			while (n != ARQ->RXHighest)
 			{
-				if (ARQ->RXHOLDQ[n] == 0)		// Dont have it
+				if (ARQ->RXHOLDQ[n] == 0)		/* Dont have it */
 					SendLen += sprintf(&Reply[SendLen], "%c", n + 32);
 
 				n++;
@@ -1162,21 +1162,21 @@ SendKReply:
 
 	if (CTRL == 'i')
 	{
-		// Ident
+		/* Ident */
 
 		return;
 	}
 
 	if (CTRL == 't')
 	{
-		// Talk - not sure what to do with these
+		/* Talk - not sure what to do with these */
 
 		return;
 	}
 
 	if (CTRL == 'd')
 	{
-		// Disconnect Request
+		/* Disconnect Request */
 
 		char * call1;
 		char * context;
@@ -1188,10 +1188,10 @@ SendKReply:
 			return;
 
 		if (Channel != ARQ->OurStream)
-			return;					// Wrong Session
+			return;					/* Wrong Session */
 
 
-		// As the Disc ACK isn't repeated, we have to clear session now
+		/* As the Disc ACK isn't repeated, we have to clear session now */
 
 		STREAM->Connected = FALSE;
 		STREAM->Connecting = FALSE;
@@ -1216,7 +1216,7 @@ SendKReply:
 
 	if (CTRL == 'b')
 	{
-		// Disconnect ACK
+		/* Disconnect ACK */
 
 		char * call1;
 		char * context;
@@ -1228,7 +1228,7 @@ SendKReply:
 			return;
 
 		if (Channel != ARQ->OurStream)
-			return;					// Wrong Session
+			return;					/* Wrong Session */
 
 		ARQ->ARQTimer = 0;
 		ARQ->ARQTimerState = 0;
@@ -1236,7 +1236,7 @@ SendKReply:
 
 		if (STREAM->Connected)
 		{
-			// Create a traffic record
+			/* Create a traffic record */
 		
 			char logmsg[120];	
 			time_t Duration;
@@ -1255,8 +1255,8 @@ SendKReply:
 		}
 
 		STREAM->Connecting = FALSE;
-		STREAM->Connected = FALSE;		// Back to Command Mode
-		STREAM->ReportDISC = TRUE;		// Tell Node
+		STREAM->Connected = FALSE;		/* Back to Command Mode */
+		STREAM->ReportDISC = TRUE;		/* Tell Node */
 
 		STREAM->Disconnecting = FALSE;
 
@@ -1271,9 +1271,9 @@ SendKReply:
 
 	if (CTRL == 'u')
 	{
-		// Beacon
+		/* Beacon */
 
-		//>00uGM8BPQ:72 GM8BPQ TestingAD67
+		/*>00uGM8BPQ:72 GM8BPQ TestingAD67 */
 
 		char * Call = &Input[1];
 		strlop(Call, ':');
@@ -1285,27 +1285,27 @@ SendKReply:
 	if (STREAM->Connected)
 	{
 		if (Channel != ARQ->OurStream)
-			return;					// Wrong Session
+			return;					/* Wrong Session */
 
 		if (CTRL >= ' ' && CTRL < 96)
 		{
-			// ARQ Data
+			/* ARQ Data */
 
 			int Seq = CTRL - 32;
 			int Work;
 
-//			if (rand() % 5 == 2)
-//			{
-//				Debugprintf("Dropping %d", Seq);
-//				return; 
-//			}
+/*			if (rand() % 5 == 2) */
+/*			{ */
+/*				Debugprintf("Dropping %d", Seq); */
+/*				return;  */
+/*			} */
 
 			buffptr = GetBuff();
 	
 			if (buffptr == NULL)
-				return;				// Sould never run out, but cant do much else
+				return;				/* Sould never run out, but cant do much else */
 
-			// Remove any DLE transparency
+			/* Remove any DLE transparency */
 
 			Len -= 1;
 
@@ -1315,50 +1315,50 @@ SendKReply:
 
 			UpdateStatsLine(TNC, STREAM);
 
-			// Safest always to save, then see what we can process
+			/* Safest always to save, then see what we can process */
 
 			if (ARQ->RXHOLDQ[Seq])
 			{
-				// Wot! Shouldn't happen
+				/* Wot! Shouldn't happen */
 
 				ReleaseBuffer(ARQ->RXHOLDQ[Seq]);
-//				Debugprintf("ARQ Seq %d Duplicate");
+/*				Debugprintf("ARQ Seq %d Duplicate"); */
 			}
 
 			ARQ->RXHOLDQ[Seq] = buffptr;
-//			Debugprintf("ARQ saving %d", Seq);
+/*			Debugprintf("ARQ saving %d", Seq); */
 
-			// If this is higher that highest received, save. But beware of wrap'
+			/* If this is higher that highest received, save. But beware of wrap' */
 
-			// Hi = 2, Seq = 60  dont save s=h = 58
-			// Hi = 10 Seq = 12	 save s-h = 2
-			// Hi = 14 Seq = 10  dont save s-h = -4
-			// Hi = 60 Seq = 2	 save s-h = -58
+			/* Hi = 2, Seq = 60  dont save s=h = 58 */
+			/* Hi = 10 Seq = 12	 save s-h = 2 */
+			/* Hi = 14 Seq = 10  dont save s-h = -4 */
+			/* Hi = 60 Seq = 2	 save s-h = -58 */
 
 			Work = Seq - ARQ->RXHighest;
 
 			if ((Work > 0 && Work < 32) || Work < -32)
 				ARQ->RXHighest = Seq;
 
-			// We may now be able to process some
+			/* We may now be able to process some */
 
-			Work = (ARQ->RXNoGaps + 1) & 63;		// The next one we need
+			Work = (ARQ->RXNoGaps + 1) & 63;		/* The next one we need */
 
 			while (ARQ->RXHOLDQ[Work])
 			{
-				// We have it
+				/* We have it */
 
 				C_Q_ADD(&STREAM->PACTORtoBPQ_Q, ARQ->RXHOLDQ[Work]);
-//				ReleaseBuffer(ARQ->RXHOLDQ[Work]);
+/*				ReleaseBuffer(ARQ->RXHOLDQ[Work]); */
 
 				ARQ->RXHOLDQ[Work] = NULL;
-//				Debugprintf("Processing %d from Q", Work);
+/*				Debugprintf("Processing %d from Q", Work); */
 
 				ARQ->RXNoGaps = Work;
-				Work = (Work + 1) & 63;		// The next one we need
+				Work = (Work + 1) & 63;		/* The next one we need */
 			}
 
-			ARQ->TurnroundTimer = 200;		// Delay before allowing reply. Will normally be reset by the poll following data
+			ARQ->TurnroundTimer = 200;		/* Delay before allowing reply. Will normally be reset by the poll following data */
 			return;
 		}
 	}
@@ -1367,7 +1367,7 @@ SendKReply:
 
 static VOID SendARQData(struct TNCINFO * TNC, PMSGWITHLEN Buffer, int Stream)
 {
-	// Send Data, saving a copy until acked.
+	/* Send Data, saving a copy until acked. */
 
 	struct STREAMINFO * STREAM = &TNC->Streams[Stream];
 	struct ARQINFO * ARQ = STREAM->ARQInfo;
@@ -1384,7 +1384,7 @@ static VOID SendARQData(struct TNCINFO * TNC, PMSGWITHLEN Buffer, int Stream)
 	
 	SendLen = sprintf(TXBuffer, "%c", ARQ->TXSeq + 32);
 
-	ptr = Buffer->Data;			// Start of data;
+	ptr = Buffer->Data;			/* Start of data; */
 
 	ptr[Buffer->Len] = 0;
 
@@ -1393,9 +1393,9 @@ static VOID SendARQData(struct TNCINFO * TNC, PMSGWITHLEN Buffer, int Stream)
 
 	TXBuffer[SendLen] = 0;
 
-//	if (rand() % 5 == 2)
-//		Debugprintf("Dropping %d", ARQ->TXSeq);
-//	else 
+/*	if (rand() % 5 == 2) */
+/*		Debugprintf("Dropping %d", ARQ->TXSeq); */
+/*	else  */
 
 	ARQ->TXHOLDQ[ARQ->TXSeq] = Buffer;
 
@@ -1404,17 +1404,17 @@ static VOID SendARQData(struct TNCINFO * TNC, PMSGWITHLEN Buffer, int Stream)
 	UpdateStatsLine(TNC, STREAM);
 
 
-	// if waiting for ack, don't send, just queue. Will be sent when ack received
+	/* if waiting for ack, don't send, just queue. Will be sent when ack received */
 
 	if (ARQ->ARQTimer == 0 || ARQ->ARQTimerState == ARQ_WAITDATA)
 	{
 		SendPacket(TNC, STREAM, TXBuffer, SendLen);
-		ARQ->ARQTimer = 15;			// wait up to 1.5 sec for more data before polling
+		ARQ->ARQTimer = 15;			/* wait up to 1.5 sec for more data before polling */
 		ARQ->Retries = 1;
 		ARQ->ARQTimerState = ARQ_WAITDATA;
 	}
 	else
-		STREAM->BytesResent -= Origlen;	// So wont be included in resent bytes
+		STREAM->BytesResent -= Origlen;	/* So wont be included in resent bytes */
 }
 
 VOID TidyClose(struct TNCINFO * TNC, int Stream)
@@ -1433,7 +1433,7 @@ VOID TidyClose(struct TNCINFO * TNC, int Stream)
 
 VOID ForcedClose(struct TNCINFO * TNC, int Stream)
 {
-	TidyClose(TNC, Stream);			// I don't think Hostmode has a DD
+	TidyClose(TNC, Stream);			/* I don't think Hostmode has a DD */
 }
 
 VOID CloseComplete(struct TNCINFO * TNC, int Stream)
@@ -1442,17 +1442,17 @@ VOID CloseComplete(struct TNCINFO * TNC, int Stream)
 
 static VOID SaveAndSend(struct TNCINFO * TNC, struct ARQINFO * ARQ, SOCKET sock, char * Msg, int MsgLen)
 {
-	// Used for Messages that need a reply. Save, send and set timeout
+	/* Used for Messages that need a reply. Save, send and set timeout */
 
-	memcpy(ARQ->LastMsg, Msg, MsgLen + 1);	// Include Null
+	memcpy(ARQ->LastMsg, Msg, MsgLen + 1);	/* Include Null */
 	ARQ->LastLen = MsgLen;
 
-	// Delay the send for a shot while
+	/* Delay the send for a shot while */
 	
-//	SendPacket(sock, Msg, MsgLen, 0);
+/*	SendPacket(sock, Msg, MsgLen, 0); */
 
 	ARQ->ARQTimer = 1;
-	ARQ->Retries = TNC->Retries + 1;	// First timout is the real send
+	ARQ->Retries = TNC->Retries + 1;	/* First timout is the real send */
 
 	return;
 }
@@ -1469,7 +1469,7 @@ static VOID ARQTimer(struct TNCINFO * TNC)
 	char Reply[80];
 	int Stream;
 
-	//Send frames, unless held by TurnroundTimer or Window
+	/*Send frames, unless held by TurnroundTimer or Window */
 
 	int Outstanding;
 
@@ -1478,8 +1478,8 @@ static VOID ARQTimer(struct TNCINFO * TNC)
 		STREAM = &TNC->Streams[Stream];
 		ARQ = STREAM->ARQInfo;
 
-		//	TXDelay is used as a turn round delay for frames that don't have to be retried. It doesn't
-		//	need to check for busy (or anything else (I think!)
+		/*	TXDelay is used as a turn round delay for frames that don't have to be retried. It doesn't */
+		/*	need to check for busy (or anything else (I think!) */
 
 	if (ARQ->TXDelay)
 	{
@@ -1491,7 +1491,7 @@ static VOID ARQTimer(struct TNCINFO * TNC)
 		SendPacket(TNC, STREAM, ARQ->TXMsg, ARQ->TXLen);
 	}
 
-	// if We are alredy sending (State = ARQ_WAITDATA) we should allow it to send more (and the Poll at end)
+	/* if We are alredy sending (State = ARQ_WAITDATA) we should allow it to send more (and the Poll at end) */
 
 	if (ARQ->ARQTimerState == ARQ_WAITDATA)
 	{
@@ -1502,7 +1502,7 @@ static VOID ARQTimer(struct TNCINFO * TNC)
 			if (Outstanding < 0)
 				Outstanding += 64;
 
-			TNC->PortRecord->FramesQueued = Outstanding + C_Q_COUNT(STREAM->BPQtoPACTOR_Q);		// Save for Appl Level Queued Frames
+			TNC->PortRecord->FramesQueued = Outstanding + C_Q_COUNT(STREAM->BPQtoPACTOR_Q);		/* Save for Appl Level Queued Frames */
 
 			if (Outstanding >= ARQ->TXWindow)
 				break;
@@ -1514,15 +1514,15 @@ static VOID ARQTimer(struct TNCINFO * TNC)
 		ARQ->ARQTimer--;
 
 		if (ARQ->ARQTimer > 0)
-			continue;					// Timer Still Running
+			continue;					/* Timer Still Running */
 	
-		// No more data available - send poll 
+		/* No more data available - send poll  */
 
 		SendLen = sprintf(Reply, "p%s", STREAM->MyCall);
 
 		ARQ->ARQTimerState = ARQ_WAITACK;
 
-		// This is one message that should not be queued so it is sent straiget after data
+		/* This is one message that should not be queued so it is sent straiget after data */
 
 		Debugprintf("Sending Poll After Data");
 
@@ -1541,7 +1541,7 @@ static VOID ARQTimer(struct TNCINFO * TNC)
 	
 	}
 
-	// TrunroundTimer is used to allow time for far end to revert to RX
+	/* TrunroundTimer is used to allow time for far end to revert to RX */
 
 	if (ARQ->TurnroundTimer)
 		ARQ->TurnroundTimer--;
@@ -1555,7 +1555,7 @@ static VOID ARQTimer(struct TNCINFO * TNC)
 			if (Outstanding < 0)
 				Outstanding += 64;
 
-			TNC->PortRecord->FramesQueued = Outstanding + C_Q_COUNT(&STREAM->BPQtoPACTOR_Q) + 1; // Make sure busy is reported to BBS
+			TNC->PortRecord->FramesQueued = Outstanding + C_Q_COUNT(&STREAM->BPQtoPACTOR_Q) + 1; /* Make sure busy is reported to BBS */
 
 			if (Outstanding >= ARQ->TXWindow)
 				break;
@@ -1567,22 +1567,22 @@ static VOID ARQTimer(struct TNCINFO * TNC)
 
 	if (ARQ->ARQTimer)
 	{
-		// Only decrement if running send poll timer
+		/* Only decrement if running send poll timer */
 			
-//		if (ARQ->ARQTimerState != ARQ_WAITDATA)
-//			return;
+/*		if (ARQ->ARQTimerState != ARQ_WAITDATA) */
+/*			return; */
 
 		ARQ->ARQTimer--;
 		{
 			if (ARQ->ARQTimer)
-				continue;					// Timer Still Running
+				continue;					/* Timer Still Running */
 		}
 
 		ARQ->Retries--;
 
 		if (ARQ->Retries)
 		{
-			// Retry Current Message
+			/* Retry Current Message */
 
 			SendPacket(TNC, STREAM, ARQ->LastMsg, ARQ->LastLen);
 			ARQ->ARQTimer = TNC->Timeout + (rand() % 30);
@@ -1590,13 +1590,13 @@ static VOID ARQTimer(struct TNCINFO * TNC)
 			continue;
 		}
 
-		// Retried out.
+		/* Retried out. */
 
 		switch (ARQ->ARQTimerState)
 		{
 		case ARQ_WAITDATA:
 
-			// No more data available - send poll 
+			/* No more data available - send poll  */
 
 			SendLen = sprintf(Reply, "p%s", STREAM->MyCall);
 
@@ -1604,7 +1604,7 @@ static VOID ARQTimer(struct TNCINFO * TNC)
 
 			ARQ->ARQTimerState = ARQ_WAITACK;
 
-			// This is one message that should not be queued so it is sent straiget after data
+			/* This is one message that should not be queued so it is sent straiget after data */
 
 			memcpy(ARQ->LastMsg, Reply, SendLen + 1);
 			ARQ->LastLen = SendLen;
@@ -1621,7 +1621,7 @@ static VOID ARQTimer(struct TNCINFO * TNC)
 	
 		case ARQ_CONNECTING:
 
-			// Report Connect Failed, and drop back to command mode
+			/* Report Connect Failed, and drop back to command mode */
 
 			buffptr = GetBuff();
 
@@ -1631,11 +1631,11 @@ static VOID ARQTimer(struct TNCINFO * TNC)
 				C_Q_ADD(&STREAM->PACTORtoBPQ_Q, buffptr);
 			}
 	
-			// Send Disc to TNC in case it got the Connects, but we missed the ACKs
+			/* Send Disc to TNC in case it got the Connects, but we missed the ACKs */
 
 			TidyClose(TNC, Stream);
-			ARQ->Retries = 2;				// First timout is the real send, only send once
-			STREAM->Connecting = FALSE;		// Back to Command Mode
+			ARQ->Retries = 2;				/* First timout is the real send, only send once */
+			STREAM->Connecting = FALSE;		/* Back to Command Mode */
 			ARQ->ARQState = FALSE;
 
 			break;
@@ -1644,7 +1644,7 @@ static VOID ARQTimer(struct TNCINFO * TNC)
 		case ARQ_CONNECTACK:
 		case ARQ_DISC:
 		
-			STREAM->Connected = FALSE;		// Back to Command Mode
+			STREAM->Connected = FALSE;		/* Back to Command Mode */
 			STREAM->ReportDISC = TRUE;	
 			ARQ->ARQState = FALSE;
 
@@ -1672,7 +1672,7 @@ static VOID ARQTimer(struct TNCINFO * TNC)
 
 static VOID ProcessARQStatus(struct TNCINFO * TNC, int Stream, struct ARQINFO * ARQ, char * Input)
 {
-	// Release any acked frames and resend any outstanding
+	/* Release any acked frames and resend any outstanding */
 
 	struct STREAMINFO * STREAM = &TNC->Streams[Stream];
 	int LastInSeq = Input[1] - 32;
@@ -1685,7 +1685,7 @@ static VOID ProcessARQStatus(struct TNCINFO * TNC, int Stream, struct ARQINFO * 
 	PMSGWITHLEN Buffer;
 	int Acked = 0;
 
-	// First status is an ack of Connect ACK
+	/* First status is an ack of Connect ACK */
 
 	if (ARQ->ARQTimerState == ARQ_CONNECTACK)
 	{
@@ -1699,7 +1699,7 @@ static VOID ProcessARQStatus(struct TNCINFO * TNC, int Stream, struct ARQINFO * 
 
 	Debugprintf("Lsast In Seq, LastRXed %d %d", LastInSeq, LastRXed); 
 
-	//	Release all up to LastInSeq
+	/*	Release all up to LastInSeq */
 	
 	while (FirstUnAcked != LastInSeq)
 	{
@@ -1725,7 +1725,7 @@ static VOID ProcessARQStatus(struct TNCINFO * TNC, int Stream, struct ARQINFO * 
 	if (Outstanding < 0)
 		Outstanding += 64;
 
-	TNC->PortRecord->FramesQueued = Outstanding + C_Q_COUNT(&STREAM->BPQtoPACTOR_Q);		// Save for Appl Level Queued Frames
+	TNC->PortRecord->FramesQueued = Outstanding + C_Q_COUNT(&STREAM->BPQtoPACTOR_Q);		/* Save for Appl Level Queued Frames */
 
 	if (FirstUnAcked == ARQ->TXSeq)
 	{
@@ -1735,10 +1735,10 @@ static VOID ProcessARQStatus(struct TNCINFO * TNC, int Stream, struct ARQINFO * 
 		strcpy(TNC->WEB_PROTOSTATE, "Connected");
 		SetWindowText(STREAM->xIDC_STATUS, "Connected");
 
-		return;								// All Acked
+		return;								/* All Acked */
 	}
 
-	// Release any not in retry list up to LastRXed.
+	/* Release any not in retry list up to LastRXed. */
 
 	ptr = &Input[3];
 
@@ -1766,12 +1766,12 @@ static VOID ProcessARQStatus(struct TNCINFO * TNC, int Stream, struct ARQINFO * 
 			FirstUnAcked &= 63;
 		}
 
-		// We don't ACK this one. Process any more resend values, then release up to LastRXed.
+		/* We don't ACK this one. Process any more resend values, then release up to LastRXed. */
 
 		n--;
 	}
 
-	//	Release rest up to LastRXed
+	/*	Release rest up to LastRXed */
 	
 	while (FirstUnAcked != LastRXed)
 	{
@@ -1790,7 +1790,7 @@ static VOID ProcessARQStatus(struct TNCINFO * TNC, int Stream, struct ARQINFO * 
 		}
 	}
 
-	// Resend anything in TX Buffer (From LastACK to TXSeq
+	/* Resend anything in TX Buffer (From LastACK to TXSeq */
 
 	Last = ARQ->TXSeq + 1;
 	Last &= 63;
@@ -1822,19 +1822,19 @@ static VOID ProcessARQStatus(struct TNCINFO * TNC, int Stream, struct ARQINFO * 
 
 			SendPacket(TNC, STREAM, TXBuffer, SendLen);
 
-			ARQ->ARQTimer = 10;			// wait up to 1 sec for more data before polling
+			ARQ->ARQTimer = 10;			/* wait up to 1 sec for more data before polling */
 			ARQ->Retries = 1;
 			ARQ->ARQTimerState = ARQ_WAITDATA;
 
 			if (Acked == 0)
 			{
-				// Nothing acked by this statis message
+				/* Nothing acked by this statis message */
 
-				Acked = 1;					// Dont count more thna once
+				Acked = 1;					/* Dont count more thna once */
 				ARQ->NoAckRetries++;
 				if (ARQ->NoAckRetries > TNC->Retries)
 				{
-					// Too many retries - just disconnect
+					/* Too many retries - just disconnect */
 
 					TidyClose(TNC, Stream);
 					return;

@@ -1,10 +1,10 @@
 
-// Program to Convert RTS changes on Virtual COM Port to hamlib PTT commands
+/* Program to Convert RTS changes on Virtual COM Port to hamlib PTT commands */
 
 
-// Version 1. 0. 0. 1 December 2020
+/* Version 1. 0. 0. 1 December 2020 */
 
-// Version 1. 0. 2. 1 April 2018
+/* Version 1. 0. 2. 1 April 2018 */
 
 
 #define _CRT_SECURE_NO_WARNINGS
@@ -26,7 +26,7 @@
 
 #define BPQICON 400
 
-WSADATA WsaData;            // receives data from WSAStartup
+WSADATA WsaData;            /* receives data from WSAStartup */
 
 #define WSA_READ WM_USER + 1
 
@@ -34,11 +34,11 @@ HINSTANCE hInst;
 char AppName[] = "BPQRemotePTT";
 char Title[80] = "BPQRemotePTT";
 
-TCHAR szTitle[]="GPSMuxPC";						// The title bar text
-TCHAR szWindowClass[]="GPSMAINWINDOW";			// the main window class name
+TCHAR szTitle[]="GPSMuxPC";						/* The title bar text */
+TCHAR szWindowClass[]="GPSMAINWINDOW";			/* the main window class name */
 
 
-// Foward declarations of functions included in this code module:
+/* Foward declarations of functions included in this code module: */
 
 ATOM MyRegisterClass(HINSTANCE hInstance);
 BOOL InitInstance(HINSTANCE, int);
@@ -60,7 +60,7 @@ struct sockaddr rx;
 
 int addrlen = sizeof(struct sockaddr_in);
 
-int HAMLIBPORT;		// Port Number for HAMLIB (rigctld) Emulator
+int HAMLIBPORT;		/* Port Number for HAMLIB (rigctld) Emulator */
 char * HAMLIBHOST[128];
 
 BOOL MinimizetoTray=FALSE;
@@ -82,7 +82,7 @@ VOID __cdecl Debugprintf(const char * format, ...)
 
 char * strlop(char * buf, char delim)
 {
-	// Terminate buf at delim, and return rest of string
+	/* Terminate buf at delim, and return rest of string */
 
 	char * ptr = strchr(buf, delim);
 
@@ -96,7 +96,7 @@ char * strlop(char * buf, char delim)
 char * RigPort = NULL;
 char * RigSpeed = NULL;
 HANDLE RigHandle = 0;
-int RigType = 0;			// Flag for possible RTS/DTR
+int RigType = 0;			/* Flag for possible RTS/DTR */
 
 
 char BPQHostIP[128];
@@ -104,7 +104,7 @@ char BPQHostIP[128];
 char PTTCATPort[4][16];
 HANDLE PTTCATHandle[4];
 short HamLibPort[4];
-SOCKET HamLibSock[4];				// rigctld socket
+SOCKET HamLibSock[4];				/* rigctld socket */
 
 HWND comWnd[4];
 HWND portWnd[4];
@@ -113,7 +113,7 @@ int stateCtl[4];
 
 struct sockaddr_in remoteDest[4];
 
-int RealMux[4];		// BPQ Virtual or Real
+int RealMux[4];		/* BPQ Virtual or Real */
 
 int EndPTTCATThread = 0;
 	
@@ -209,7 +209,7 @@ VOID SaveConfig()
 	config_setting_t *root, *group;
 	config_t cfg;
 
-	//	Get rid of old config before saving
+	/*	Get rid of old config before saving */
 	
 	config_init(&cfg);
 
@@ -248,7 +248,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	if (lpCmdLine[0])
 	{
-		// Port Name and Speed for Remote CAT
+		/* Port Name and Speed for Remote CAT */
 
 		RigPort = _strdup(lpCmdLine);
 		RigSpeed = strlop(RigPort, ':');
@@ -261,7 +261,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	if (!InitInstance(hInstance, nCmdShow))
 		return (FALSE);
 
-	// Main message loop:
+	/* Main message loop: */
 
 	while (GetMessage(&msg, NULL, 0, 0)) 
 	{
@@ -274,19 +274,19 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	return (msg.wParam);
 }
 
-//
+/* */
 
-//
-//  FUNCTION: InitApplication(HANDLE)
-//
-//  PURPOSE: Initializes window data and registers window class 
-//
-//  COMMENTS:
-//
-//       In this function, we initialize a window class by filling out a data
-//       structure of type WNDCLASS and calling either RegisterClass or 
-//       the internal MyRegisterClass.
-//
+/* */
+/*  FUNCTION: InitApplication(HANDLE) */
+/* */
+/*  PURPOSE: Initializes window data and registers window class  */
+/* */
+/*  COMMENTS: */
+/* */
+/*       In this function, we initialize a window class by filling out a data */
+/*       structure of type WNDCLASS and calling either RegisterClass or  */
+/*       the internal MyRegisterClass. */
+/* */
 
 #define BGCOLOUR RGB(236,233,216)
 HBRUSH bgBrush;
@@ -300,16 +300,16 @@ BOOL InitApplication(HINSTANCE hInstance)
 	return TRUE;
 }
 
-//
-//   FUNCTION: InitInstance(HANDLE, int)
-//
-//   PURPOSE: Saves instance handle and creates main window 
-//
-//   COMMENTS:
-//
-//        In this function, we save the instance handle in a global variable and
-//        create and display the main program window.
-//
+/* */
+/*   FUNCTION: InitInstance(HANDLE, int) */
+/* */
+/*   PURPOSE: Saves instance handle and creates main window  */
+/* */
+/*   COMMENTS: */
+/* */
+/*        In this function, we save the instance handle in a global variable and */
+/*        create and display the main program window. */
+/* */
 
 HFONT FAR PASCAL MyCreateFont( void ) 
 { 
@@ -317,7 +317,7 @@ HFONT FAR PASCAL MyCreateFont( void )
     LOGFONT lf; 
     HFONT hfont; 
  
-    // Initialize members of the CHOOSEFONT structure.  
+    /* Initialize members of the CHOOSEFONT structure.   */
  
     cf.lStructSize = sizeof(CHOOSEFONT); 
     cf.hwndOwner = (HWND)NULL; 
@@ -335,13 +335,13 @@ HFONT FAR PASCAL MyCreateFont( void )
     cf.nSizeMin = 0; 
     cf.nSizeMax = 0; 
  
-    // Display the CHOOSEFONT common-dialog box.  
+    /* Display the CHOOSEFONT common-dialog box.   */
  
     ChooseFont(&cf); 
  
-    // Create a logical font based on the user's  
-    // selection and return a handle identifying  
-    // that font.  
+    /* Create a logical font based on the user's   */
+    /* selection and return a handle identifying   */
+    /* that font.   */
  
     hfont = CreateFontIndirect(cf.lpLogFont); 
     return (hfont); 
@@ -399,9 +399,9 @@ VOID PTTCATThread()
 		if (PTTCATHandle[HIndex] == INVALID_HANDLE_VALUE)
 		{
 			int Err = GetLastError();
-//			Consoleprintf("PTTMUX port BPQCOM%s Open failed code %d", RIG->PTTCATPort[PIndex], Err);
+/*			Consoleprintf("PTTMUX port BPQCOM%s Open failed code %d", RIG->PTTCATPort[PIndex], Err); */
 
-			// See if real com port
+			/* See if real com port */
 
 			sprintf(Port, "\\\\.\\\\%s", PTTCATPort[PIndex]);
 
@@ -418,7 +418,7 @@ VOID PTTCATThread()
 			}
 			else
 			{
-				rc = SetCommMask(PTTCATHandle[HIndex], EV_CTS | EV_DSR);		// Request notifications
+				rc = SetCommMask(PTTCATHandle[HIndex], EV_CTS | EV_DSR);		/* Request notifications */
 				HIndex++;
 			}
 		}
@@ -430,7 +430,7 @@ VOID PTTCATThread()
 	}
 
 	if (PIndex == 0)
-		return;				// No ports
+		return;				/* No ports */
 
 	Event = CreateEvent(NULL, TRUE, FALSE, NULL);
 
@@ -441,7 +441,7 @@ VOID PTTCATThread()
 
 		if (RealMux[i])
 		{
-			// Request Interface change notifications
+			/* Request Interface change notifications */
 
 			rc = WaitCommEvent(PTTCATHandle[i], &EvtMask[i], &Overlapped[i]);
 			rc = GetLastError();
@@ -449,7 +449,7 @@ VOID PTTCATThread()
 		}
 		else
 		{
-			// Prime a read on each PTTCATHandle
+			/* Prime a read on each PTTCATHandle */
 
 			ReadFile(PTTCATHandle[i], Block[i], 80, &Length, &Overlapped[i]);
 		}
@@ -480,7 +480,7 @@ WaitAgain:
 
 		ResetEvent(Event);
 
-		// See which request(s) have completed
+		/* See which request(s) have completed */
 
 		for (i = 0; i < HIndex; i ++)
 		{
@@ -490,7 +490,7 @@ WaitAgain:
 			{
 				if (RealMux[i])
 				{
-					// Request Interface change notifications
+					/* Request Interface change notifications */
 
 					DWORD Mask;
 
@@ -523,14 +523,14 @@ WaitAgain:
 							c = *(ptr1++);
 							Length--;
 
-							if (c == 0xff)			// ff ff means ff
+							if (c == 0xff)			/* ff ff means ff */
 							{
 								Length--;
 							}
 							else
 							{
-								// This is connection / RTS/DTR statua from other end
-								// Convert to CAT Command
+								/* This is connection / RTS/DTR statua from other end */
+								/* Convert to CAT Command */
 
 								if (c == CurrentState[i])
 									continue;
@@ -566,7 +566,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 	bgBrush = CreateSolidBrush(BGCOLOUR);
 	RedBrush = CreateSolidBrush(RGB(255,0,0));
 	GreenBrush = CreateSolidBrush(RGB(0,255,0));
-//	BlueBrush = CreateSolidBrush(RGB(0,0,255));
+/*	BlueBrush = CreateSolidBrush(RGB(0,0,255)); */
 
     wc.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS; 
     wc.lpfnWndProc = WndProc;       
@@ -574,22 +574,22 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wc.cbClsExtra = 0;                
     wc.cbWndExtra = DLGWINDOWEXTRA;
 	wc.hInstance = hInstance;
-    wc.hIcon = NULL; //LoadIcon( hInstance, MAKEINTRESOURCE(IDI_GPSMUXPC));
+    wc.hIcon = NULL; /*LoadIcon( hInstance, MAKEINTRESOURCE(IDI_GPSMUXPC)); */
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = bgBrush; 
 
-	wc.lpszMenuName = NULL;//"MENU_1";	
+	wc.lpszMenuName = NULL;/*"MENU_1";	 */
 	wc.lpszClassName = szWindowClass; 
 
-//	RegisterClass(&wc);
+/*	RegisterClass(&wc); */
 
- //   wc.lpfnWndProc = TraceWndProc;       
- // 	wc.lpszClassName = TraceClassName;
+ /*   wc.lpfnWndProc = TraceWndProc;        */
+ /* 	wc.lpszClassName = TraceClassName; */
 
-//	RegisterClass(&wc);
+/*	RegisterClass(&wc); */
 
-//    wc.lpfnWndProc = ConfigWndProc;       
-//  	wc.lpszClassName = ConfigClassName;
+/*    wc.lpfnWndProc = ConfigWndProc;        */
+/*  	wc.lpszClassName = ConfigClassName; */
 
 	return (RegisterClass(&wc));
 
@@ -605,7 +605,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	int n = 0;
 
 
-	hInst = hInstance; // Store instance handle in our global variable
+	hInst = hInstance; /* Store instance handle in our global variable */
 
 	WSAStartup(MAKEWORD(2, 0), &WsaData);
 
@@ -618,7 +618,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	  return FALSE;
    }
 		
-	// setup default font information
+	/* setup default font information */
 
    LFTTYFONT.lfHeight =			12;
    LFTTYFONT.lfWidth =          8 ;
@@ -636,7 +636,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    lstrcpy( LFTTYFONT.lfFaceName, "Fixedsys" ) ;
 
 	hFont = CreateFontIndirect(&LFTTYFONT) ;
-//	hFont = MyCreateFont();
+/*	hFont = MyCreateFont(); */
 
 	SetWindowText(hWnd,Title);
 
@@ -675,7 +675,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	SetDlgItemInt(hWnd, IDC_HAMLIBPORT3, HamLibPort[2], 0);
 	SetDlgItemInt(hWnd, IDC_HAMLIBPORT4, HamLibPort[3], 0);
 
-//	ioctlsocket (sock, FIONBIO, &param);
+/*	ioctlsocket (sock, FIONBIO, &param); */
  
 	if (RigPort)
 	{
@@ -687,7 +687,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	TimerHandle = SetTimer(hWnd, 1, 10000, NULL);
 
-	runTimer();					// Open Hamlib connections
+	runTimer();					/* Open Hamlib connections */
 
 	_beginthread(PTTCATThread, 0);
 
@@ -704,7 +704,7 @@ VOID runTimer()
 	{
 		if (HamLibPort[n] && HamLibSock[n] == 0)
 		{
-			// try to connect
+			/* try to connect */
 
 			ConnecttoHAMLIB(n);
 
@@ -724,8 +724,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_CTLCOLOREDIT:
 	{
-		HDC hdc = (HDC) wParam;   // handle to display context 
-		HWND hwnd = (HWND) lParam; // handle to control window
+		HDC hdc = (HDC) wParam;   /* handle to display context  */
+		HWND hwnd = (HWND) lParam; /* handle to control window */
 		int n;
 
 		for (n = 0; n < 4; n++)
@@ -743,15 +743,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					return (INT_PTR)RedBrush;
 		}
 
-		//return (INT_PTR)RedBrush;
+		/*return (INT_PTR)RedBrush; */
 
 		return (DefWindowProc(hWnd, message, wParam, lParam));
 	}
 
 	case WM_SYSCOMMAND:
 
-		wmId    = LOWORD(wParam); // Remember, these are...
-		wmEvent = HIWORD(wParam); // ...different for Win32!
+		wmId    = LOWORD(wParam); /* Remember, these are... */
+		wmEvent = HIWORD(wParam); /* ...different for Win32! */
 
 		switch (wmId)
 		{ 
@@ -830,11 +830,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			SaveConfig();
 
-	//		EndPTTCATThread = 1;
+	/*		EndPTTCATThread = 1; */
 
-	//		Sleep(1100);
+	/*		Sleep(1100); */
 
-	//		_beginthread(PTTCATThread, 0);
+	/*		_beginthread(PTTCATThread, 0); */
 
 			break;
 
@@ -876,7 +876,7 @@ VOID ConnecttoHAMLIB(int n)
 
 VOID HAMLIBThread(int n)
 {
-	// Opens sockets and looks for data
+	/* Opens sockets and looks for data */
 	
 	char Msg[255];
 	int err, i, ret;
@@ -889,7 +889,7 @@ VOID HAMLIBThread(int n)
 	if (HamLibSock[n])
 		closesocket(HamLibSock[n]);
 
-		// Param is IPADDR:PORT. Only Allow numeric addresses 
+		/* Param is IPADDR:PORT. Only Allow numeric addresses  */
 	
 	if (HamLibPort[n] == 0)
 		return;
@@ -914,9 +914,9 @@ VOID HAMLIBThread(int n)
 
 	if (connect(HamLibSock[n],(LPSOCKADDR)&remoteDest[n],sizeof(remoteDest[n])) == 0)
 	{
-		//
-		//	Connected successful
-		//
+		/* */
+		/*	Connected successful */
+		/* */
 	}
 	else
 	{
@@ -958,7 +958,7 @@ VOID HAMLIBThread(int n)
 
 		if (ret > 0)
 		{
-			//	See what happened
+			/*	See what happened */
 
 			if (FD_ISSET(HamLibSock[n], &readfs))
 			{

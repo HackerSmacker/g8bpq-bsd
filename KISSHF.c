@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-//
-//	Interface to allow G8BPQ switch to use a KISS over TCP TNC for HF style use (ATTACH and single channel operation)
+/* */
+/*	Interface to allow G8BPQ switch to use a KISS over TCP TNC for HF style use (ATTACH and single channel operation) */
 
 
 
@@ -76,7 +76,7 @@ static int ProcessLine(char * buf, int Port);
 
 VOID WritetoTrace(struct TNCINFO * TNC, char * Msg, int Len);
 
-#define	FEND	0xC0	// KISS CONTROL CODES 
+#define	FEND	0xC0	/* KISS CONTROL CODES  */
 #define	FESC	0xDB
 #define	TFEND	0xDC
 #define	TFESC	0xDD
@@ -98,12 +98,12 @@ static int ProcessLine(char * buf, int Port)
 
 	if(ptr == NULL) return (TRUE);
 
-	if(*ptr =='#') return (TRUE);			// comment
+	if(*ptr =='#') return (TRUE);			/* comment */
 
-	if(*ptr ==';') return (TRUE);			// comment
+	if(*ptr ==';') return (TRUE);			/* comment */
 
 	if (_stricmp(buf, "ADDR"))
-		return FALSE;						// Must start with ADDR
+		return FALSE;						/* Must start with ADDR */
 
 	ptr = strtok(NULL, " \t\n\r");
 
@@ -113,7 +113,7 @@ static int ProcessLine(char * buf, int Port)
 	TNC = TNCInfo[BPQport] = malloc(sizeof(struct TNCINFO));
 	memset(TNC, 0, sizeof(struct TNCINFO));
 
-	TNC->DefaultMode = TNC->WL2KMode = 0;	// Packet 1200
+	TNC->DefaultMode = TNC->WL2KMode = 0;	/* Packet 1200 */
 
 	TNC->InitScript = malloc(1000);
 	TNC->InitScript[0] = 0;
@@ -165,7 +165,7 @@ static int ProcessLine(char * buf, int Port)
 		}
 	}
 
-	// Read Initialisation lines
+	/* Read Initialisation lines */
 
 	while (TRUE)
 	{
@@ -228,11 +228,11 @@ static VOID SendToTNC(struct TNCINFO * TNC, int Stream, UCHAR * Encoded, int Enc
 {
 	if (TNC->hDevice)
 	{
-		// Serial mode. Queue to Hostmode driver
+		/* Serial mode. Queue to Hostmode driver */
 		
 		PMSGWITHLEN buffptr = (PMSGWITHLEN)GetBuff();
 
-		if (buffptr == 0) return;			// No buffers, so ignore
+		if (buffptr == 0) return;			/* No buffers, so ignore */
 
 		buffptr->Len = EncLen;
 		memcpy(&buffptr->Data[0], Encoded, EncLen);
@@ -267,11 +267,11 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 	struct ScanEntry * Scan;
 
 	if (TNC == NULL)
-		return 0;							// Port not defined
+		return 0;							/* Port not defined */
 
 	if (TNC->CONNECTED == 0 && TNC->CONNECTING == 0)
 	{
-		// Try to reopen every 30 secs
+		/* Try to reopen every 30 secs */
 
 		if (fn > 3  && fn < 7)
 			goto ok;
@@ -296,12 +296,12 @@ ok:
 	{
 		case 7:			
 
-		// 100 mS Timer. May now be needed, as Poll can be called more frequently in some circumstances
+		/* 100 mS Timer. May now be needed, as Poll can be called more frequently in some circumstances */
 
 		SerialCheckRX(TNC);
 		return 0;
 
-		case 1:				// poll
+		case 1:				/* poll */
 
 			STREAM = &TNC->Streams[0];
 
@@ -311,7 +311,7 @@ ok:
 
 				if (STREAM->NeedDisc == 0)
 				{
-					// Send the DISCONNECT
+					/* Send the DISCONNECT */
 
 					SerialSendCommand(TNC, "DISCONNECT\r");
 				}
@@ -319,7 +319,7 @@ ok:
 
 			if (TNC->PortRecord->ATTACHEDSESSIONS[Stream] && STREAM->Attached == 0)
 			{
-				// New Attach
+				/* New Attach */
 
 				int calllen;
 				char Msg[80];
@@ -330,14 +330,14 @@ ok:
 				TNC->Streams[Stream].MyCall[calllen] = 0;
 
 
-				// Stop other ports in same group
+				/* Stop other ports in same group */
 
 				SuspendOtherPorts(TNC);
 
 				sprintf(TNC->WEB_TNCSTATE, "In Use by %s", TNC->Streams[0].MyCall);
 				MySetWindowText(TNC->xIDC_TNCSTATE, TNC->WEB_TNCSTATE);
 
-				// Stop Scanning
+				/* Stop Scanning */
 
 				sprintf(Msg, "%d SCANSTOP", TNC->Port);
 
@@ -347,7 +347,7 @@ ok:
 			if (STREAM->Attached)
 				CheckForDetach(TNC, Stream, STREAM, TidyClose, ForcedClose, CloseComplete);
 
-			// See if any frames for this port
+			/* See if any frames for this port */
 
 			STREAM = &TNC->Streams[0];
 
@@ -369,9 +369,9 @@ ok:
 
 				datalen = (int)buffptr->Len;
 
-				buff->PORT = Stream;						// Compatibility with Kam Driver
+				buff->PORT = Stream;						/* Compatibility with Kam Driver */
 				buff->PID = 0xf0;
-				memcpy(&buff->L2DATA, &buffptr->Data[0], datalen);		// Data goes to + 7, but we have an extra byte
+				memcpy(&buff->L2DATA, &buffptr->Data[0], datalen);		/* Data goes to + 7, but we have an extra byte */
 				datalen += sizeof(void *) + 4;
 
 				PutLengthinBuffer(buff, datalen);
@@ -381,7 +381,7 @@ ok:
 				return (1);
 			}
 
-			if (STREAM->ReportDISC)		// May need a delay so treat as a counter
+			if (STREAM->ReportDISC)		/* May need a delay so treat as a counter */
 			{
 				STREAM->ReportDISC--;
 
@@ -394,28 +394,28 @@ ok:
 
 			return (0);
 
-	case 2:				// send
+	case 2:				/* send */
 
 		Stream = 0;
 
 		if (!TNC->CONNECTED)
-			return 0;		// Don't try if not connected
+			return 0;		/* Don't try if not connected */
 
 		STREAM = &TNC->Streams[0];
 		
 		if (TNC->SwallowSignon)
 		{
-			TNC->SwallowSignon = FALSE;		// Discard *** connected
+			TNC->SwallowSignon = FALSE;		/* Discard *** connected */
 			return 0;
 		}
 
-		// We may get KISS packets (UI or session related) or text commands such as RADIO, CONNECT
+		/* We may get KISS packets (UI or session related) or text commands such as RADIO, CONNECT */
 
 		txlen = GetLengthfromBuffer(buff) - (MSGHDDRLEN);
 
 		TXMsg = &buff->L2DATA[0];
 
-		if (buff->PID != 240)			// ax.25 address
+		if (buff->PID != 240)			/* ax.25 address */
 		{
 			txlen = KissEncode(&buff->PID, txbuff, txlen);
 			txlen = send(TNC->TCPSock, txbuff, txlen, 0);
@@ -432,22 +432,22 @@ ok:
 		{
 			PMSGWITHLEN buffptr = (PMSGWITHLEN)GetBuff();
 
-			if (buffptr == 0) return 1;			// No buffers, so ignore
+			if (buffptr == 0) return 1;			/* No buffers, so ignore */
 
 			buffptr->Len  = txlen;
 			memcpy((UCHAR *)&buffptr->Data[0], &buff->L2DATA[0], txlen);
 			C_Q_ADD(&TNC->Streams[Stream].PACTORtoBPQ_Q, buffptr);
 
-			// connected data
+			/* connected data */
 
 			return 1;
 		}
 
-		// Process as Text Command
+		/* Process as Text Command */
 
 		if (_memicmp(txbuff, "D\r", 2) == 0 || _memicmp(txbuff, "BYE\r", 4) == 0)
 		{
-			STREAM->ReportDISC = TRUE;		// Tell Node
+			STREAM->ReportDISC = TRUE;		/* Tell Node */
 			return 0;
 		}
 	
@@ -462,7 +462,7 @@ ok:
 			{
 				PMSGWITHLEN buffptr = (PMSGWITHLEN)GetBuff();
 
-				if (buffptr == 0) return 1;			// No buffers, so ignore
+				if (buffptr == 0) return 1;			/* No buffers, so ignore */
 
 				buffptr->Len  = sprintf((UCHAR *)&buffptr->Data[0], "%s", &buff->L2DATA[0]);
 				C_Q_ADD(&TNC->Streams[Stream].PACTORtoBPQ_Q, buffptr);
@@ -504,9 +504,9 @@ ok:
 			}
 		}
 
-		if (toupper(buff->L2DATA[0]) == 'C' && buff->L2DATA[1] == ' ' && txlen > 2)	// Connect
+		if (toupper(buff->L2DATA[0]) == 'C' && buff->L2DATA[1] == ' ' && txlen > 2)	/* Connect */
 		{
-			// Connect Command. Pass to L2 code to start session
+			/* Connect Command. Pass to L2 code to start session */
 
 			char * ptr = strchr(&buff->L2DATA[2], 13);
 			TRANSPORTENTRY * NewSess = L4TABLE;
@@ -515,7 +515,7 @@ ok:
 			struct PORTCONTROL * PORT = &TNC->PortRecord->PORTCONTROL;
 
 			UCHAR axcalls[64];
-			UCHAR ourcall[7];					// Call we are using (may have SSID bits inverted
+			UCHAR ourcall[7];					/* Call we are using (may have SSID bits inverted */
 			int Stay = 0, Spy = 0, CQFLAG = 0, n;
 
 			if (ptr)
@@ -534,9 +534,9 @@ ok:
 				return 0;
 			}
 
-			// Code copied from cmdc00
+			/* Code copied from cmdc00 */
 
-			// Get Session Entry for Downlink
+			/* Get Session Entry for Downlink */
 
 			NewSess = SetupNewSession(Session, NULL);
 	
@@ -545,37 +545,37 @@ ok:
 
 			NewSess->L4CIRCUITTYPE = L2LINK + DOWNLINK;
 
-			//	FORMAT LINK TABLE ENTRY FOR THIS CONNECTION
+			/*	FORMAT LINK TABLE ENTRY FOR THIS CONNECTION */
 
 			memcpy(Session->L4USER, NewSess->L4USER, 7);
 			memcpy(ourcall, NewSess->L4USER, 7);
 
-			// SSID SWAP TEST - LEAVE ALONE FOR HOST or Pactor like (unless UZ7HO)
+			/* SSID SWAP TEST - LEAVE ALONE FOR HOST or Pactor like (unless UZ7HO) */
 
-			if ((Session->L4CIRCUITTYPE & BPQHOST))// host
+			if ((Session->L4CIRCUITTYPE & BPQHOST))/* host */
 				goto noFlip3;
 
 			if ((Session->L4CIRCUITTYPE & PACTOR))
 			{
-				// incoming is Pactorlike - see if UZ7HO
+				/* incoming is Pactorlike - see if UZ7HO */
 
 				if (memcmp(Session->L4TARGET.EXTPORT->PORT_DLL_NAME, "UZ7HO", 5) != 0)
 					goto noFlip3;
 
-				if (Session->L4TARGET.EXTPORT->MAXHOSTMODESESSIONS < 2)	// Not multisession	
+				if (Session->L4TARGET.EXTPORT->MAXHOSTMODESESSIONS < 2)	/* Not multisession	 */
 					goto noFlip3;
 
-				ourcall[6] ^= 0x1e;		// UZ7HO Uplink - flip
+				ourcall[6] ^= 0x1e;		/* UZ7HO Uplink - flip */
 			}
 			else
 
-				// Must be L2 uplink - flip
+				/* Must be L2 uplink - flip */
 
-				ourcall[6] ^= 0x1e;									// Flip SSID
+				ourcall[6] ^= 0x1e;									/* Flip SSID */
 
 noFlip3:
 
-			//	SET UP NEW SESSION (OR RESET EXISTING ONE)
+			/*	SET UP NEW SESSION (OR RESET EXISTING ONE) */
 
 			FindLink(axcalls, ourcall, TNC->Port, &LINK);
 
@@ -597,7 +597,7 @@ noFlip3:
 
 			LINK->L2TIME = PORT->PORTT1;
 
-			// Copy Digis
+			/* Copy Digis */
 
 			n = 7;
 			ptr = &LINK->DIGIS[0];
@@ -608,18 +608,18 @@ noFlip3:
 				n += 7;
 				ptr += 7;
 
-				LINK->L2TIME += 2 * PORT->PORTT1;	// ADJUST TIMER VALUE FOR 1 DIGI
+				LINK->L2TIME += 2 * PORT->PORTT1;	/* ADJUST TIMER VALUE FOR 1 DIGI */
 			}
 
-			LINK->LINKTYPE = 2;						// DOWNLINK
+			LINK->LINKTYPE = 2;						/* DOWNLINK */
 			LINK->LINKWINDOW = PORT->PORTWINDOW;
 
-			RESET2(LINK);						// RESET ALL FLAGS
+			RESET2(LINK);						/* RESET ALL FLAGS */
 
-//			if (CMD->String[0] == 'N' && SUPPORT2point2)
-//				LINK->L2STATE = 1;					// New (2.2) send XID
-//			else
-				LINK->L2STATE = 2;					// Send SABM
+/*			if (CMD->String[0] == 'N' && SUPPORT2point2) */
+/*				LINK->L2STATE = 1;					// New (2.2) send XID */
+/*			else */
+				LINK->L2STATE = 2;					/* Send SABM */
 
 			LINK->CIRCUITPOINTER = NewSess;
 
@@ -630,7 +630,7 @@ noFlip3:
 
 			STREAM->Connecting = TRUE;
 
-			if (CQFLAG == 0)			// if a CQ CALL  DONT SEND SABM
+			if (CQFLAG == 0)			/* if a CQ CALL  DONT SEND SABM */
 			{
 				if (LINK->L2STATE == 1)
 					L2SENDXID(LINK);
@@ -644,58 +644,58 @@ noFlip3:
 
 	case 3:	
 		
-		// CHECK IF OK TO SEND (And check TNC Status)
+		/* CHECK IF OK TO SEND (And check TNC Status) */
 
-		return ((TNC->CONNECTED) << 8 | TNC->Streams[0].Disconnecting << 15);		// OK
+		return ((TNC->CONNECTED) << 8 | TNC->Streams[0].Disconnecting << 15);		/* OK */
 		
-	case 4:				// reinit7
+	case 4:				/* reinit7 */
 
 		return 0;
 
-	case 5:				// Close
+	case 5:				/* Close */
 
 		return 0;
 
-	case 6:				// Scan Stop Interface
+	case 6:				/* Scan Stop Interface */
 
 		Param = (size_t)buff;
 	
-		if (Param == 2)		// Check  Permission (Shouldn't happen)
+		if (Param == 2)		/* Check  Permission (Shouldn't happen) */
 		{
 			Debugprintf("Scan Check Permission called on KISSHF");
-			return 1;		// OK to change
+			return 1;		/* OK to change */
 		}
 
-		if (Param == 1)		// Request Permission
+		if (Param == 1)		/* Request Permission */
 		{
 			if (!TNC->CONNECTED)
-				return 0;					// No connection so no interlock
+				return 0;					/* No connection so no interlock */
 
 			if (TNC->ConnectPending == 0 && TNC->PTTState == 0)
 			{
 				SerialSendCommand(TNC, "CONOK OFF");
 				TNC->GavePermission = TRUE;
-				return 0;	// OK to Change
+				return 0;	/* OK to Change */
 			}
 
 			if (TNC->ConnectPending)
-				TNC->ConnectPending--;		// Time out if set too long
+				TNC->ConnectPending--;		/* Time out if set too long */
 
 			return TRUE;
 		}
 
-		if (Param == 3)		// Release  Permission
+		if (Param == 3)		/* Release  Permission */
 		{
 			if (TNC->GavePermission)
 			{
 				TNC->GavePermission = FALSE;
-				if (TNC->ARDOPCurrentMode[0] != 'S')	// Skip
+				if (TNC->ARDOPCurrentMode[0] != 'S')	/* Skip */
 					SerialSendCommand(TNC, "CONOK ON");
 			}
 			return 0;
 		}
 
-		// Param is Address of a struct ScanEntry
+		/* Param is Address of a struct ScanEntry */
 
 		Scan = (struct ScanEntry *)buff;
 		return 0;
@@ -705,11 +705,11 @@ noFlip3:
 
 VOID KISSHFReleaseTNC(struct TNCINFO * TNC)
 {
-	// Set mycall back to Node or Port Call, and Start Scanner
+	/* Set mycall back to Node or Port Call, and Start Scanner */
 
 	UCHAR TXMsg[64];
 
-	//	Start Scanner
+	/*	Start Scanner */
 				
 	sprintf(TXMsg, "%d SCANSTART 15", TNC->Port);
 	Rig_Command( (TRANSPORTENTRY *) -1, TXMsg);
@@ -750,7 +750,7 @@ static int WebProc(struct TNCINFO * TNC, char * Buff, BOOL LOCAL)
 	Len += sprintf(&Buff[Len], "<tr><td>Channel State</td><td>%s</td></tr>", TNC->WEB_CHANSTATE);
 	Len += sprintf(&Buff[Len], "<tr><td>Proto State</td><td>%s</td></tr>", TNC->WEB_PROTOSTATE);
 	Len += sprintf(&Buff[Len], "<tr><td>Traffic</td><td>%s</td></tr>", TNC->WEB_TRAFFIC);
-//	Len += sprintf(&Buff[Len], "<tr><td>TNC Restarts</td><td></td></tr>", TNC->WEB_RESTARTS);
+/*	Len += sprintf(&Buff[Len], "<tr><td>TNC Restarts</td><td></td></tr>", TNC->WEB_RESTARTS); */
 	Len += sprintf(&Buff[Len], "</table>");
 
 	Len += sprintf(&Buff[Len], "<textarea rows=10 style=\"width:500px; height:250px;\" id=textarea >%s</textarea>", TNC->WebBuffer);
@@ -772,7 +772,7 @@ VOID * KISSHFExtInit(EXTPORTDATA * PortEntry)
 	
 	port = PORT->PORTNUMBER;
 
-	if (TNCInfo[port])					// If restarting, free old config
+	if (TNCInfo[port])					/* If restarting, free old config */
 		free(TNCInfo[port]);
 
 	TNC = TNCInfo[port] = malloc(sizeof(struct TNCINFO));
@@ -781,14 +781,14 @@ VOID * KISSHFExtInit(EXTPORTDATA * PortEntry)
 	TNC->InitScript = malloc(1000);
 	TNC->InitScript[0] = 0;
 
-	if (PortConfig[port])			// May not have config
+	if (PortConfig[port])			/* May not have config */
 		ReadConfigFile(port, ProcessLine);
 
 	TNC = TNCInfo[port];
 
 	if (TNC == NULL)
 	{
-		// Not defined in Config file
+		/* Not defined in Config file */
 
 		sprintf(Msg," ** Error - no info in BPQ32.cfg for this port\n");
 		WritetoConsole(Msg);
@@ -812,14 +812,14 @@ VOID * KISSHFExtInit(EXTPORTDATA * PortEntry)
 
 	PortEntry->PORTCONTROL.PROTOCOL = 10;
 	PortEntry->PORTCONTROL.PORTQUALITY = 0;
-	PortEntry->PORTCONTROL.USERS = 1;			// Max 1 Session
+	PortEntry->PORTCONTROL.USERS = 1;			/* Max 1 Session */
 
 	TNC->PacketChannels = 0;
 
 	PortEntry->MAXHOSTMODESESSIONS = 1;
 
-	PortEntry->SCANCAPABILITIES = SIMPLE;			// Scan Control - pending connect only
-	PortEntry->PERMITGATEWAY = TRUE;				// Can change ax.25 call on each stream
+	PortEntry->SCANCAPABILITIES = SIMPLE;			/* Scan Control - pending connect only */
+	PortEntry->PERMITGATEWAY = TRUE;				/* Can change ax.25 call on each stream */
 
 	PortEntry->PORTCONTROL.UICAPABLE = TRUE;
 
@@ -829,19 +829,19 @@ VOID * KISSHFExtInit(EXTPORTDATA * PortEntry)
 	TNC->SuspendPortProc = KISSHFSuspendPort;
 	TNC->ReleasePortProc = KISSHFReleasePort;
 
-//	PortEntry->PORTCONTROL.PORTSTARTCODE = KISSStartPort;
-//	PortEntry->PORTCONTROL.PORTSTOPCODE = KISSStopPort;
+/*	PortEntry->PORTCONTROL.PORTSTARTCODE = KISSStartPort; */
+/*	PortEntry->PORTCONTROL.PORTSTOPCODE = KISSStopPort; */
 
 	ptr=strchr(TNC->NodeCall, ' ');
-	if (ptr) *(ptr) = 0;					// Null Terminate
+	if (ptr) *(ptr) = 0;					/* Null Terminate */
 
-	// Set Essential Params and MYCALL
+	/* Set Essential Params and MYCALL */
 
-	// Put overridable ones on front, essential ones on end
+	/* Put overridable ones on front, essential ones on end */
 
 	TempScript = zalloc(1000);
 
-	// cant think of any yet
+	/* cant think of any yet */
 
 	if (TNC->InitScript)
 	{
@@ -852,7 +852,7 @@ VOID * KISSHFExtInit(EXTPORTDATA * PortEntry)
 	TNC->InitScript = TempScript;
 
 	if (TNC->WL2K == NULL)
-		if (PortEntry->PORTCONTROL.WL2KInfo.RMSCall[0])			// Alrerady decoded
+		if (PortEntry->PORTCONTROL.WL2KInfo.RMSCall[0])			/* Alrerady decoded */
 			TNC->WL2K = &PortEntry->PORTCONTROL.WL2KInfo;
 
 	PortEntry->PORTCONTROL.TNC = TNC;
@@ -922,7 +922,7 @@ VOID * KISSHFExtInit(EXTPORTDATA * PortEntry)
 
 	ConnecttoKISS(port);
 
-	time(&TNC->lasttime);			// Get initial time value
+	time(&TNC->lasttime);			/* Get initial time value */
 
 	return ExtProc;
 }
@@ -930,7 +930,7 @@ VOID * KISSHFExtInit(EXTPORTDATA * PortEntry)
 
 VOID TidyClose(struct TNCINFO * TNC, int Stream)
 {
-	// If all acked, send disc
+	/* If all acked, send disc */
 	
 	if (TNC->Streams[Stream].BytesOutstanding == 0)
 		SerialSendCommand(TNC, "DISCONNECT\r");
@@ -961,7 +961,7 @@ int ConnecttoKISS(int port)
 
 VOID KISSThread(void * portptr)
 {
-	// Opens socket and looks for data on control and data sockets.
+	/* Opens socket and looks for data on control and data sockets. */
 	
 	int port = (int)(size_t)portptr;
 	char Msg[255];
@@ -984,21 +984,21 @@ VOID KISSThread(void * portptr)
 
 	TNC->CONNECTING = TRUE;
 
-	Sleep(3000);		// Allow init to complete 
+	Sleep(3000);		/* Allow init to complete  */
 
 #ifdef WIN32
 	if (strcmp(TNC->HostName, "127.0.0.1") == 0)
 	{
-		// can only check if running on local host
+		/* can only check if running on local host */
 		
 		TNC->PID = GetListeningPortsPID(TNC->destaddr.sin_port);
 		if (TNC->PID == 0)
 		{
 			TNC->CONNECTING = FALSE;
-			return;						// Not listening so no point trying to connect
+			return;						/* Not listening so no point trying to connect */
 		}
 
-		// Get the File Name in case we want to restart it.
+		/* Get the File Name in case we want to restart it. */
 
 		if (TNC->ProgramPath == NULL)
 		{
@@ -1021,13 +1021,13 @@ VOID KISSThread(void * portptr)
 	}
 #endif
 
-//	// If we started the TNC make sure it is still running.
+/*	// If we started the TNC make sure it is still running. */
 
-//	if (!IsProcess(TNC->PID))
-//	{
-//		RestartTNC(TNC);
-//		Sleep(3000);
-//	}
+/*	if (!IsProcess(TNC->PID)) */
+/*	{ */
+/*		RestartTNC(TNC); */
+/*		Sleep(3000); */
+/*	} */
 
 
 	TNC->destaddr.sin_addr.s_addr = inet_addr(TNC->HostName);
@@ -1035,21 +1035,21 @@ VOID KISSThread(void * portptr)
 
 	if (TNC->destaddr.sin_addr.s_addr == INADDR_NONE)
 	{
-		//	Resolve name to address
+		/*	Resolve name to address */
 
 		HostEnt = gethostbyname (TNC->HostName);
 		 
 		 if (!HostEnt)
 		 {
 		 	TNC->CONNECTING = FALSE;
-			return;			// Resolve failed
+			return;			/* Resolve failed */
 		 }
 		 memcpy(&TNC->destaddr.sin_addr.s_addr,HostEnt->h_addr,4);
 		 memcpy(&TNC->Datadestaddr.sin_addr.s_addr,HostEnt->h_addr,4);
 	}
 
-//	closesocket(TNC->TCPSock);
-//	closesocket(TNC->TCPDataSock);
+/*	closesocket(TNC->TCPSock); */
+/*	closesocket(TNC->TCPDataSock); */
 
 	TNC->TCPSock=socket(AF_INET,SOCK_STREAM,0);
 
@@ -1070,9 +1070,9 @@ VOID KISSThread(void * portptr)
 
 	if (connect(TNC->TCPSock,(LPSOCKADDR) &TNC->destaddr,sizeof(TNC->destaddr)) == 0)
 	{
-		//
-		//	Connected successful
-		//
+		/* */
+		/*	Connected successful */
+		/* */
 	}
 	else
 	{
@@ -1095,20 +1095,20 @@ VOID KISSThread(void * portptr)
 
 	Sleep(1000);
 
-	TNC->LastFreq = 0;			//	so V4 display will be updated
+	TNC->LastFreq = 0;			/*	so V4 display will be updated */
 
  	TNC->CONNECTING = FALSE;
 	TNC->CONNECTED = TRUE;
 	TNC->BusyFlags = 0;
 	TNC->InputLen = 0;
 
-	// Send INIT script
+	/* Send INIT script */
 
-	// VARA needs each command in a separate send
+	/* VARA needs each command in a separate send */
 
 	ptr1 = &TNC->InitScript[0];
 
-	// We should wait for first RDY. Cheat by queueing a null command
+	/* We should wait for first RDY. Cheat by queueing a null command */
 
 	GetSemaphore(&Semaphore, 52);
 
@@ -1129,13 +1129,13 @@ VOID KISSThread(void * portptr)
 		
 		if (ptr2)
 		{
-			c = *(ptr2 + 1);		// Save next char
-			*(ptr2 + 1) = 0;		// Terminate string
+			c = *(ptr2 + 1);		/* Save next char */
+			*(ptr2 + 1) = 0;		/* Terminate string */
 		}
-//		VARASendCommand(TNC, ptr1, TRUE);
+/*		VARASendCommand(TNC, ptr1, TRUE); */
 
 		if (ptr2)
-			*(1 + ptr2++) = c;		// Put char back 
+			*(1 + ptr2++) = c;		/* Put char back  */
 
 		ptr1 = ptr2;
 	}
@@ -1152,10 +1152,10 @@ VOID KISSThread(void * portptr)
 
 
 	#ifndef LINBPQ
-//	FreeSemaphore(&Semaphore);
-	Sleep(1000);		// Give VARA time to update Window title
-//	EnumWindows(EnumVARAWindowsProc, (LPARAM)TNC);
-//	GetSemaphore(&Semaphore, 52);
+/*	FreeSemaphore(&Semaphore); */
+	Sleep(1000);		/* Give VARA time to update Window title */
+/*	EnumWindows(EnumVARAWindowsProc, (LPARAM)TNC); */
+/*	GetSemaphore(&Semaphore, 52); */
 #endif
 
 
@@ -1168,7 +1168,7 @@ VOID KISSThread(void * portptr)
 		FD_SET(TNC->TCPSock,&errorfs);
 
 		timeout.tv_sec = 600;
-		timeout.tv_usec = 0;				// We should get messages more frequently that this
+		timeout.tv_usec = 0;				/* We should get messages more frequently that this */
 
 		ret = select((int)TNC->TCPSock + 1, &readfs, NULL, &errorfs, &timeout);
 		
@@ -1179,7 +1179,7 @@ VOID KISSThread(void * portptr)
 		}
 		if (ret > 0)
 		{
-			//	See what happened
+			/*	See what happened */
 
 			if (FD_ISSET(TNC->TCPSock, &readfs))
 			{
@@ -1201,7 +1201,7 @@ Lost:
 				TNC->Alerted = FALSE;
 
 				if (TNC->PTTMode)
-					Rig_PTT(TNC, FALSE);			// Make sure PTT is down
+					Rig_PTT(TNC, FALSE);			/* Make sure PTT is down */
 
 				if (TNC->Streams[0].Attached)
 					TNC->Streams[0].ReportDISC = TRUE;
@@ -1289,14 +1289,14 @@ VOID KISSHFProcessReceivedPacket(struct TNCINFO * TNC)
 	unsigned char * ptr;
 	char Buffer[4096];
 
-	if (TNC->InputLen > 8000)	// Shouldnt have packets longer than this
+	if (TNC->InputLen > 8000)	/* Shouldnt have packets longer than this */
 		TNC->InputLen=0;
 
 	InputLen = recv(TNC->TCPSock, &TNC->ARDOPBuffer[TNC->InputLen], 8192 - TNC->InputLen, 0);
 
 	if (InputLen == 0 || InputLen == SOCKET_ERROR)
 	{
-		// Does this mean closed?
+		/* Does this mean closed? */
 
 		int err = GetLastError();
 
@@ -1315,11 +1315,11 @@ VOID KISSHFProcessReceivedPacket(struct TNCINFO * TNC)
 
 	TNC->InputLen += InputLen;
 
-	// Extract and decode KISS frames
+	/* Extract and decode KISS frames */
 
-	ptr = memchr(TNC->ARDOPBuffer + 1, FEND, TNC->InputLen - 1);		// Ignore leading FEND
+	ptr = memchr(TNC->ARDOPBuffer + 1, FEND, TNC->InputLen - 1);		/* Ignore leading FEND */
 
-	while (ptr)	//  FEND in buffer
+	while (ptr)	/*  FEND in buffer */
 	{
 		ptr++;
 
@@ -1339,7 +1339,7 @@ VOID KISSHFProcessReceivedPacket(struct TNCINFO * TNC)
 
 			MsgLen = KissDecode(TNC->ARDOPBuffer, Buffer, MsgLen);
 
-			// we dont need the FENDS or control byte
+			/* we dont need the FENDS or control byte */
 
 			MsgLen -= 3;
 				
@@ -1348,7 +1348,7 @@ VOID KISSHFProcessReceivedPacket(struct TNCINFO * TNC)
 				memcpy(&Buff->DEST, &Buffer[2], MsgLen);
 				MsgLen += (3 + sizeof(void *));
 
-				PutLengthinBuffer((PDATAMESSAGE)Buff, MsgLen);		// Needed for arm5 portability
+				PutLengthinBuffer((PDATAMESSAGE)Buff, MsgLen);		/* Needed for arm5 portability */
 
 				C_Q_ADD(&TNC->PortRecord->PORTCONTROL.PORTRX_Q, (UINT *)Buff);
 			}
@@ -1358,7 +1358,7 @@ VOID KISSHFProcessReceivedPacket(struct TNCINFO * TNC)
 			return;
 
 		memmove(TNC->ARDOPBuffer, ptr, TNC->InputLen);
-		ptr = memchr(TNC->ARDOPBuffer + 1, FEND, TNC->InputLen - 1);		// Ignore leading FEND
+		ptr = memchr(TNC->ARDOPBuffer + 1, FEND, TNC->InputLen - 1);		/* Ignore leading FEND */
 	}
 		
 }
@@ -1383,16 +1383,16 @@ C_Q_ADD(TNC->PortRecord->PORTCONTROL.PORTRX_Q, (UINT *)Buffer);
 
 */
 
-//	TNC->InputLen -= MsgLen;
-//	goto loop;
+/*	TNC->InputLen -= MsgLen; */
+/*	goto loop; */
 
 
 
 
 void AttachKISSHF(struct PORTCONTROL * PORT, MESSAGE * Buffer)
 {
-	// SABM on HFKISS port. L2 code will accepr call and connect to appl if necessary, but
-	// need to attach the port
+	/* SABM on HFKISS port. L2 code will accepr call and connect to appl if necessary, but */
+	/* need to attach the port */
 
 	char Call[16] = "";
 	char OrigCall[16] = "";
@@ -1404,16 +1404,16 @@ void AttachKISSHF(struct PORTCONTROL * PORT, MESSAGE * Buffer)
 		TRANSPORTENTRY * SESS;
 		struct TNCINFO * TNC = PORT->TNC;
 
-		// Incoming Connect
+		/* Incoming Connect */
 
 		Call[ConvFromAX25(Buffer->DEST, Call)] = 0;
 		OrigCall[ConvFromAX25(Buffer->ORIGIN, OrigCall)] = 0;
 
-		// Stop other ports in same group
+		/* Stop other ports in same group */
 
 		SuspendOtherPorts(TNC);
 
-		TNC->SessionTimeLimit = TNC->DefaultSessionTimeLimit;		// Reset Limit
+		TNC->SessionTimeLimit = TNC->DefaultSessionTimeLimit;		/* Reset Limit */
 
 		ProcessIncommingConnectEx(TNC, Call, 0, FALSE, FALSE);
 
@@ -1426,10 +1426,10 @@ void AttachKISSHF(struct PORTCONTROL * PORT, MESSAGE * Buffer)
 		if (TNC->RIG && TNC->RIG != &TNC->DummyRig && strcmp(TNC->RIG->RigName, "PTT"))
 		{
 			sprintf(TNC->WEB_TNCSTATE, "%s Connected to %s Inbound Freq %s", OrigCall, Call, TNC->RIG->Valchar);
-			SESS->Frequency = (int)(atof(TNC->RIG->Valchar) * 1000000.0) + 1500;		// Convert to Centre Freq
+			SESS->Frequency = (int)(atof(TNC->RIG->Valchar) * 1000000.0) + 1500;		/* Convert to Centre Freq */
 			if (SESS->Frequency == 1500)
 			{
-				// try to get from WL2K record
+				/* try to get from WL2K record */
 
 				if (WL2K)
 				{
@@ -1457,13 +1457,13 @@ void AttachKISSHF(struct PORTCONTROL * PORT, MESSAGE * Buffer)
 
 void DetachKISSHF(struct PORTCONTROL * PORT)
 {
-	// L2 Link Closed. Detach.
+	/* L2 Link Closed. Detach. */
 
 	struct TNCINFO * TNC = PORT->TNC;
 	struct STREAMINFO * STREAM = &TNC->Streams[0];
 
 	if (STREAM->Attached)
-		STREAM->ReportDISC = TRUE;		// Tell Node
+		STREAM->ReportDISC = TRUE;		/* Tell Node */
 
 	STREAM->Connecting = FALSE;
 	STREAM->Connected = FALSE;
@@ -1472,7 +1472,7 @@ void DetachKISSHF(struct PORTCONTROL * PORT)
 
 void KISSHFConnected(struct PORTCONTROL * PORT, struct _LINKTABLE * LINK)
 {
-	// UA received when connecting
+	/* UA received when connecting */
 
 	struct TNCINFO * TNC = PORT->TNC;
 	struct STREAMINFO * STREAM = &TNC->Streams[0];
@@ -1491,7 +1491,7 @@ void KISSHFConnected(struct PORTCONTROL * PORT, struct _LINKTABLE * LINK)
 		Call[ConvFromAX25(LINK->LINKCALL, Call)] = 0;
 		OrigCall[ConvFromAX25(LINK->OURCALL, OrigCall)] = 0;
 
-		TNC->SessionTimeLimit = TNC->DefaultSessionTimeLimit;		// Reset Limit
+		TNC->SessionTimeLimit = TNC->DefaultSessionTimeLimit;		/* Reset Limit */
 
 		SESS = TNC->PortRecord->ATTACHEDSESSIONS[0];
 		SESS->Mode = TNC->WL2KMode;
@@ -1499,11 +1499,11 @@ void KISSHFConnected(struct PORTCONTROL * PORT, struct _LINKTABLE * LINK)
 		if (TNC->RIG && TNC->RIG != &TNC->DummyRig && strcmp(TNC->RIG->RigName, "PTT"))
 		{
 			sprintf(TNC->WEB_TNCSTATE, "%s Connected to %s Outbound Freq %s", OrigCall, Call, TNC->RIG->Valchar);
-			SESS->Frequency = (int)(atof(TNC->RIG->Valchar) * 1000000.0) + 1500;		// Convert to Centre Freq
+			SESS->Frequency = (int)(atof(TNC->RIG->Valchar) * 1000000.0) + 1500;		/* Convert to Centre Freq */
 			
 			if (SESS->Frequency == 1500)
 			{
-				// try to get from WL2K record
+				/* try to get from WL2K record */
 
 				if (WL2K)
 				{

@@ -30,7 +30,7 @@
 #include <wchar.h>
 
 #ifdef _WIN32
-//      #define HID_API_EXPORT __declspec(dllexport)		// BPQ
+/*      #define HID_API_EXPORT __declspec(dllexport)		// BPQ */
       #define HID_API_EXPORT
 	  #define HID_API_CALL
 #else

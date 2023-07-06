@@ -17,9 +17,9 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-// Mail and Chat Server for BPQ32 Packet Switch
-//
-//	TCP access module - POP and SMTP
+/* Mail and Chat Server for BPQ32 Packet Switch */
+/* */
+/*	TCP access module - POP and SMTP */
 
 #include "bpqmail.h"
 
@@ -49,11 +49,11 @@ char szBuff[80];
 int SMTPInPort;
 int POP3InPort;
 
-BOOL RemoteEmail;			// Set to listen on INADDR_ANY rather than LOCALHOST
+BOOL RemoteEmail;			/* Set to listen on INADDR_ANY rather than LOCALHOST */
 
 BOOL ISP_Gateway_Enabled;
 
-char MyDomain[50];			// Mail domain for BBS<>Internet Mapping
+char MyDomain[50];			/* Mail domain for BBS<>Internet Mapping */
 
 char ISPSMTPName[50];
 char ISPEHLOName[50] = "";
@@ -73,11 +73,11 @@ BOOL SMTPAuthNeeded;
 BOOL GMailMode = FALSE;
 char GMailName[50];
 
-int POP3Timer=9999;							// Run on startup
+int POP3Timer=9999;							/* Run on startup */
 int ISPPOP3Interval;
 
-BOOL SMTPMsgCreated=FALSE;					// Set to cause SMTP client to send messages to ISP
-BOOL SMTPActive=FALSE;						// SO we don't try every 10 secs!
+BOOL SMTPMsgCreated=FALSE;					/* Set to cause SMTP client to send messages to ISP */
+BOOL SMTPActive=FALSE;						/* SO we don't try every 10 secs! */
 
 char mycd64[256];
 static const char cb64[]="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -104,7 +104,7 @@ int SendSock(SocketConn * sockptr, char * msg)
 
 	if (sockptr->SendBuffer)
 	{
-		// Already queued, so add to end
+		/* Already queued, so add to end */
 
 		if ((sockptr->SendSize + len) > sockptr->SendBufferSize)
 		{
@@ -124,7 +124,7 @@ int SendSock(SocketConn * sockptr, char * msg)
 	{
 		int error, remains;
 
-		// Not all could be sent - queue rest
+		/* Not all could be sent - queue rest */
 
 		if (sent == SOCKET_ERROR)
 		{
@@ -132,7 +132,7 @@ int SendSock(SocketConn * sockptr, char * msg)
 			if (error == WSAEWOULDBLOCK)
 				sent=0;
 
-			//	What else??
+			/*	What else?? */
 		}
 
 		remains = len - sent;
@@ -154,7 +154,7 @@ int SendSock(SocketConn * sockptr, char * msg)
 
 VOID __cdecl sockprintf(SocketConn * sockptr, const char * format, ...)
 {
-	// printf to a socket
+	/* printf to a socket */
 
 	char buff[1000];
 	va_list(arglist);
@@ -176,7 +176,7 @@ int NNTP_Read(SocketConn * sockptr, SOCKET sock);
 
 VOID SetupListenSet()
 {
-	// Set up master set of fd's for checking for incoming calls
+	/* Set up master set of fd's for checking for incoming calls */
 
 	fd_set * readfd = &ListenSet;
 	SOCKET sock;
@@ -242,7 +242,7 @@ VOID Socket_Connected(SocketConn * sockptr, int error)
 
 VOID TCPFastTimer()
 {
-	//	we now poll for incoming connections and data
+	/*	we now poll for incoming connections and data */
 
 	fd_set readfd, writefd, exceptfd;
 	struct timeval timeout;
@@ -253,7 +253,7 @@ VOID TCPFastTimer()
 	SOCKET maxsock;
 
 	timeout.tv_sec = 0;
-	timeout.tv_usec = 0;				// poll
+	timeout.tv_usec = 0;				/* poll */
 
 	if (ListenMax)
 	{	
@@ -286,7 +286,7 @@ VOID TCPFastTimer()
 		}
 	}
 
-	// look for data on any active sockets
+	/* look for data on any active sockets */
 
 	maxsock = 0;
 
@@ -299,19 +299,19 @@ VOID TCPFastTimer()
 	{		
 		sockptr->Timeout++;
 
-		if (sockptr->Timeout > 1200)		// 2 mins
+		if (sockptr->Timeout > 1200)		/* 2 mins */
 		{
 			Logprintf(LOG_TCP, NULL, '|', "Timeout on Socket = %d", sockptr->socket);
 			shutdown(sockptr->socket, 0);
 			closesocket(sockptr->socket);
 			ReleaseSock(sockptr->socket);
 
-			return;					// We've messed with chain
+			return;					/* We've messed with chain */
 		}
 		
 		if (sockptr->State & Connecting)
 		{
-			// look for complete or failed
+			/* look for complete or failed */
 
 			FD_SET(sockptr->socket, &writefd);
 			FD_SET(sockptr->socket, &exceptfd);
@@ -336,9 +336,9 @@ VOID TCPFastTimer()
 	{
 		perror("select");
 	
-		// we need to do something or the error will recur. 
-		// As there are unlikely to be a lot of open tcp connections perhaps
-		// simplest is to close all
+		/* we need to do something or the error will recur.  */
+		/* As there are unlikely to be a lot of open tcp connections perhaps */
+		/* simplest is to close all */
 
 		sockptr = Sockets;
 		
@@ -349,7 +349,7 @@ VOID TCPFastTimer()
 			closesocket(sockptr->socket);
 			ReleaseSock(sockptr->socket);
 
-			sockptr = Sockets;		// We've messed with chain
+			sockptr = Sockets;		/* We've messed with chain */
 		}
 	}
 	else
@@ -358,7 +358,7 @@ VOID TCPFastTimer()
 		{
 			sockptr = Sockets;
 
-			// see who has data
+			/* see who has data */
 
 			while (sockptr)
 			{		
@@ -371,12 +371,12 @@ VOID TCPFastTimer()
 					if (sockptr->Type == NNTPServer)
 					{
 						if (NNTP_Read(sockptr, sock) == 0)
-							break;						// We've messed with the chain
+							break;						/* We've messed with the chain */
 					}
 					else
 					{
 						if (DataSocket_Read(sockptr, sock) == 0)
-							break;						// We've messed with the chain
+							break;						/* We've messed with the chain */
 					}
 				}
 				if (FD_ISSET(sockptr->socket, &writefd))
@@ -397,10 +397,10 @@ VOID TCPTimer()
 {
 	POP3Timer+=10;
 
-//	Debugprintf("POP3 Debug Timer = %d Interval = %d Port %d Enabled %d",
-//		POP3Timer, ISPPOP3Interval, ISPPOP3Port, ISP_Gateway_Enabled);
+/*	Debugprintf("POP3 Debug Timer = %d Interval = %d Port %d Enabled %d", */
+/*		POP3Timer, ISPPOP3Interval, ISPPOP3Port, ISP_Gateway_Enabled); */
 
-	if (POP3Timer > ISPPOP3Interval)			// 5 mins
+	if (POP3Timer > ISPPOP3Interval)			/* 5 mins */
 	{
 		POP3Timer=0;
 
@@ -409,7 +409,7 @@ VOID TCPTimer()
 		
 		if (ISPPOP3Port  && ISP_Gateway_Enabled)
 		{
-//			Debugprintf("Calling POP3 Connect");
+/*			Debugprintf("Calling POP3 Connect"); */
 			POP3Connect(ISPPOP3Name, ISPPOP3Port);
 		}
 
@@ -424,10 +424,10 @@ VOID TCPTimer()
 }
 BOOL InitialiseTCP()
 {
-	int			  Error;              // catches return value of WSAStartup
+	int			  Error;              /* catches return value of WSAStartup */
 #ifdef	WIN32
-	WORD          VersionRequested;   // passed to WSAStartup
-    WSADATA       WsaData;            // receives data from WSAStartup
+	WORD          VersionRequested;   /* passed to WSAStartup */
+    WSADATA       WsaData;            /* receives data from WSAStartup */
 #endif
 	int i,j;
 
@@ -458,7 +458,7 @@ BOOL InitialiseTCP()
 
 #endif
 
-//	Create listening sockets
+/*	Create listening sockets */
 
 
 	if (SMTPInPort)
@@ -469,7 +469,7 @@ BOOL InitialiseTCP()
 
 	if (ISP_Gateway_Enabled)
 	{
-		// See if using GMail
+		/* See if using GMail */
 
 		char * ptr = strchr(ISPAccountName, '@');
 
@@ -513,7 +513,7 @@ SOCKET CreateListeningSocket(int Port)
 	psin=&local_sin;
 
 	psin->sin_family = AF_INET;
-	psin->sin_addr.s_addr = htonl(RemoteEmail ? INADDR_ANY  : INADDR_LOOPBACK);	// Local Host Olny
+	psin->sin_addr.s_addr = htonl(RemoteEmail ? INADDR_ANY  : INADDR_LOOPBACK);	/* Local Host Olny */
 	
 	psin->sin_port = htons(Port);        /* Convert to network ordering */
 
@@ -554,7 +554,7 @@ static int Socket_Accept(SOCKET SocketId)
 
 	addrlen=sizeof(struct sockaddr);
 
-	//   Allocate a Socket entry
+	/*   Allocate a Socket entry */
 
 	sockptr = malloc(sizeof(SocketConn));
 	memset(sockptr, 0, sizeof (SocketConn));
@@ -568,7 +568,7 @@ static int Socket_Accept(SOCKET SocketId)
 	{
 		Logprintf(LOG_TCP, NULL, '|', " accept() failed Error %d", WSAGetLastError());
 
-		// get rid of socket record
+		/* get rid of socket record */
 
 		Sockets = sockptr->Next;
 		free(sockptr);
@@ -601,7 +601,7 @@ static int Socket_Accept(SOCKET SocketId)
 
 VOID ReleaseSock(SOCKET sock)
 {
-	// remove and free the socket record
+	/* remove and free the socket record */
 
 	SocketConn * sockptr, * lastptr;
 
@@ -716,9 +716,9 @@ int DataSocket_Read(SocketConn * sockptr, SOCKET sock)
 	char * ptr, * ptr2;
 	char Buffer[2000];
 
-	// May have several messages per packet, or message split over packets
+	/* May have several messages per packet, or message split over packets */
 
-	if (sockptr->InputLen > 1000)	// Shouldnt have lines longer  than this in text mode
+	if (sockptr->InputLen > 1000)	/* Shouldnt have lines longer  than this in text mode */
 	{
 		sockptr->InputLen=0;
 	}
@@ -732,7 +732,7 @@ int DataSocket_Read(SocketConn * sockptr, SOCKET sock)
 		closesocket(sock);
 		ReleaseSock(sock);
 
-		return 0;					// Does this mean closed?
+		return 0;					/* Does this mean closed? */
 	}
 
 	sockptr->InputLen += InputLen;
@@ -741,14 +741,14 @@ loop:
 	
 	ptr = memchr(sockptr->TCPBuffer, '\n', sockptr->InputLen);
 
-	if (ptr)	//  CR in buffer
+	if (ptr)	/*  CR in buffer */
 	{
 		ptr2 = &sockptr->TCPBuffer[sockptr->InputLen];
-		ptr++;				// Assume LF Follows CR
+		ptr++;				/* Assume LF Follows CR */
 
 		if (ptr == ptr2)
 		{
-			// Usual Case - single meg in buffer
+			/* Usual Case - single meg in buffer */
 	
 			if (sockptr->Type == SMTPServer)
 				ProcessSMTPServerMessage(sockptr, sockptr->TCPBuffer, sockptr->InputLen);
@@ -767,7 +767,7 @@ loop:
 		}
 		else
 		{
-			// buffer contains more that 1 message
+			/* buffer contains more that 1 message */
 
 			MsgLen = sockptr->InputLen - (int)(ptr2-ptr);
 
@@ -805,9 +805,9 @@ char * FindPart(char ** Msg, char * Boundary, int * PartLen)
 	int BLen = (int)strlen(Boundary);
 	char * Part;
 
-	while(*ptr)				// Just in case we run off end
+	while(*ptr)				/* Just in case we run off end */
 	{
-		ptr2 = strchr(ptr, 10);	// Find LF
+		ptr2 = strchr(ptr, 10);	/* Find LF */
 
 		if (ptr2 == NULL) return NULL;
 
@@ -815,7 +815,7 @@ char * FindPart(char ** Msg, char * Boundary, int * PartLen)
 		{
 			if (memcmp(&ptr[2], Boundary, BLen) == 0)
 			{
-				// Found Boundary
+				/* Found Boundary */
 
 				int Partlen = (int)(ptr - Msgptr);
 				Part = malloc(Partlen + 1);
@@ -839,7 +839,7 @@ char * FindPart(char ** Msg, char * Boundary, int * PartLen)
 
 
 
-BOOL CheckforMIME(SocketConn * sockptr, char * Msg, char ** Body, int * MsgLen)	// Will reformat message if necessary. 
+BOOL CheckforMIME(SocketConn * sockptr, char * Msg, char ** Body, int * MsgLen)	/* Will reformat message if necessary.  */
 {
 	int i;
 	char * ptr, * ptr2, * ptr3, * ptr4;
@@ -863,17 +863,17 @@ BOOL CheckforMIME(SocketConn * sockptr, char * Msg, char ** Body, int * MsgLen)	
 
 	while(*ptr != 13)
 	{
-		ptr2 = strchr(ptr, 10);	// Find CR
+		ptr2 = strchr(ptr, 10);	/* Find CR */
 
-		while(ptr2[1] == ' ' || ptr2[1] == 9)		// Whitespace - continuation line
+		while(ptr2[1] == ' ' || ptr2[1] == 9)		/* Whitespace - continuation line */
 		{
-			ptr2 = strchr(&ptr2[1], 10);	// Find CR
+			ptr2 = strchr(&ptr2[1], 10);	/* Find CR */
 		}
 
-//		Content-Type: multipart/mixed;
-//	boundary="----=_NextPart_000_025B_01CAA004.84449180"
-//		7.2.2 The Multipart/mixed (primary) subtype
-//		7.2.3 The Multipart/alternative subtype
+/*		Content-Type: multipart/mixed; */
+/*	boundary="----=_NextPart_000_025B_01CAA004.84449180" */
+/*		7.2.2 The Multipart/mixed (primary) subtype */
+/*		7.2.3 The Multipart/alternative subtype */
 
 
 		if (_memicmp(ptr, "Content-Type: ", 14) == 0)
@@ -908,12 +908,12 @@ BOOL CheckforMIME(SocketConn * sockptr, char * Msg, char ** Body, int * MsgLen)	
 					strcpy(Boundary, ptr3);
 					ptr3 = strchr(Boundary, '"');
 					if (ptr3) *ptr3 = 0;
-					ptr3 = strchr(Boundary, 13);			// CR
+					ptr3 = strchr(Boundary, 13);			/* CR */
 					if (ptr3) *ptr3 = 0;
 
 				}
 				else
-					return FALSE;						// Can't do anything without a boundary ??
+					return FALSE;						/* Can't do anything without a boundary ?? */
 			}
 
 		}
@@ -935,7 +935,7 @@ BOOL CheckforMIME(SocketConn * sockptr, char * Msg, char ** Body, int * MsgLen)	
 
 	if (Multipart == FALSE)
 	{
-		// We only have one part, but it could have an odd encoding
+		/* We only have one part, but it could have an odd encoding */
 
 		if (Base64)
 		{
@@ -999,7 +999,7 @@ BOOL CheckforMIME(SocketConn * sockptr, char * Msg, char ** Body, int * MsgLen)	
 					c = c - 48;
 					if (c < 0)
 					{
-						// = CRLF as a soft break
+						/* = CRLF as a soft break */
 
 						ptr += 2;
 						continue;
@@ -1029,27 +1029,27 @@ BOOL CheckforMIME(SocketConn * sockptr, char * Msg, char ** Body, int * MsgLen)	
 
 		return FALSE;
 	}
-	// FindPart Returns Next Part of Message, Updates Input Pointer
-	// Skip to first Boundary (over the non MIME Alt Part)
+	/* FindPart Returns Next Part of Message, Updates Input Pointer */
+	/* Skip to first Boundary (over the non MIME Alt Part) */
 
 	ptr = FindPart(Body, Boundary, &Partlen);
 
 	if (ptr == NULL)
-		return FALSE;			// Couldn't find separator
+		return FALSE;			/* Couldn't find separator */
 
 	free(ptr);
 	
 	if (ALT)
 	{
-		// Assume HTML and Plain Text Versions of the same single body.
+		/* Assume HTML and Plain Text Versions of the same single body. */
 
 		ptr = FindPart(Body, Boundary, &Partlen);	
 
-		Save = ptr;		// For free();
+		Save = ptr;		/* For free(); */
 
-		// Should be the First (Least desireable part, but the bit we want, as we are only interested in plain text)
+		/* Should be the First (Least desireable part, but the bit we want, as we are only interested in plain text) */
 
-		// Skip any headers
+		/* Skip any headers */
 	
 		while(*ptr != 13)
 		{
@@ -1062,21 +1062,21 @@ BOOL CheckforMIME(SocketConn * sockptr, char * Msg, char ** Body, int * MsgLen)	
 					QuotedP = TRUE;
 			}
 
-			ptr2 = strchr(ptr, 10);	// Find CR
+			ptr2 = strchr(ptr, 10);	/* Find CR */
 					
-			while(ptr2[1] == ' ' || ptr2[1] == 9)		// Whitespace - continuation line
+			while(ptr2[1] == ' ' || ptr2[1] == 9)		/* Whitespace - continuation line */
 			{
-				ptr2 = strchr(&ptr2[1], 10);	// Find CR
+				ptr2 = strchr(&ptr2[1], 10);	/* Find CR */
 			}
 
 			ptr = ++ptr2;
 		}
 
-		ptr += 2;		// Skip rerminating line
+		ptr += 2;		/* Skip rerminating line */
 
-		// Should now have a plain text body to return;
+		/* Should now have a plain text body to return; */
 
-		// But could be an odd encoding
+		/* But could be an odd encoding */
 
 		if (Base64)
 		{
@@ -1142,7 +1142,7 @@ BOOL CheckforMIME(SocketConn * sockptr, char * Msg, char ** Body, int * MsgLen)	
 					c = c - 48;
 					if (c < 0)
 					{
-						// = CRLF as a soft break
+						/* = CRLF as a soft break */
 
 						ptr += 2;
 						continue;
@@ -1178,38 +1178,38 @@ BOOL CheckforMIME(SocketConn * sockptr, char * Msg, char ** Body, int * MsgLen)	
 		return FALSE;
 	}
 
-	// Assume Multipart/Mixed - Message with attachments
+	/* Assume Multipart/Mixed - Message with attachments */
 
 	ptr = FindPart(Body, Boundary, &Partlen);
 
 	if (ptr == NULL)
-		return FALSE;			// Couldn't find separator
+		return FALSE;			/* Couldn't find separator */
 
 	while (ptr)
 	{
 		BOOL Base64 = FALSE;
 		BOOL QuotedP = FALSE;
 
-		MallocSave[Files] = ptr;		// For free();
+		MallocSave[Files] = ptr;		/* For free(); */
 
-		// Should be the First (Least desireable part, but the bit we want, as we are only interested in plain text)
+		/* Should be the First (Least desireable part, but the bit we want, as we are only interested in plain text) */
 
-		// Process headers - looking for Content-Disposition: attachment;
+		/* Process headers - looking for Content-Disposition: attachment; */
 
-		// The first could also be a Content-Type: multipart/alternative; - if so, feed back to mime handler
+		/* The first could also be a Content-Type: multipart/alternative; - if so, feed back to mime handler */
 	
 		while(*ptr != 13)
 		{
 			char lcLine[1000] = "";
 
-			ptr2 = strchr(ptr, 10);	// Find CR
+			ptr2 = strchr(ptr, 10);	/* Find CR */
 
 			if (ptr2 == 0)
 				return FALSE;
 					
-			while(ptr2[1] == ' ' || ptr2[1] == 9)		// Whitespace - continuation line
+			while(ptr2[1] == ' ' || ptr2[1] == 9)		/* Whitespace - continuation line */
 			{
-				ptr2 = strchr(&ptr2[1], 10);	// Find CR
+				ptr2 = strchr(&ptr2[1], 10);	/* Find CR */
 			}
 
 			memcpy(lcLine, ptr, ptr2-ptr-1);
@@ -1219,7 +1219,7 @@ BOOL CheckforMIME(SocketConn * sockptr, char * Msg, char ** Body, int * MsgLen)	
 
 			if (_memicmp(ptr, "Content-Type: Multipart/alternative", 30) == 0)
 			{
-				// Feed Back
+				/* Feed Back */
 				int MsgLen;
 				char * Text = malloc(Partlen+1);
 
@@ -1269,7 +1269,7 @@ BOOL CheckforMIME(SocketConn * sockptr, char * Msg, char ** Body, int * MsgLen)	
 
 		ptr += 2;
 
-		// Should now have file or plain text. If file is Base64 encoded, decode it.
+		/* Should now have file or plain text. If file is Base64 encoded, decode it. */
 
 		FileBody[Files] = ptr;
 		FileLen[Files] = (int)(Partlen - 2 - (ptr - MallocSave[Files]));
@@ -1332,7 +1332,7 @@ BOOL CheckforMIME(SocketConn * sockptr, char * Msg, char ** Body, int * MsgLen)	
 					c = c - 48;
 					if (c < 0)
 					{
-						// = CRLF as a soft break
+						/* = CRLF as a soft break */
 
 						ptr += 2;
 						continue;
@@ -1367,11 +1367,11 @@ BOOL CheckforMIME(SocketConn * sockptr, char * Msg, char ** Body, int * MsgLen)	
 		ptr = FindPart(Body, Boundary, &Partlen);
 	}
 
-	// Now have all the parts - build a B2 Message. Leave the first part of header for later,
-	// as we may have multiple recipients. Start with the Body: Line.
+	/* Now have all the parts - build a B2 Message. Leave the first part of header for later, */
+	/* as we may have multiple recipients. Start with the Body: Line. */
 
-	// We need to add the first part of header later, so start message part way down buffer.
-	// Make sure buffer is big enough.
+	/* We need to add the first part of header later, so start message part way down buffer. */
+	/* Make sure buffer is big enough. */
 
 	if ((sockptr->MailSize + 2000) > sockptr->MailBufferSize)
 	{
@@ -1409,7 +1409,7 @@ BOOL CheckforMIME(SocketConn * sockptr, char * Msg, char ** Body, int * MsgLen)	
 	*MsgLen = (int)(NewMsg - (sockptr->MailBuffer + 1000));
 	*Body = sockptr->MailBuffer + 1000;
 
-	return TRUE;		// B2 Message
+	return TRUE;		/* B2 Message */
 }
 
 
@@ -1435,7 +1435,7 @@ VOID ProcessSMTPServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 			char * ToString;
 			char * Via;
 			
-			// Scan headers for a Subject: or Date: Line (Headers end at blank line)
+			/* Scan headers for a Subject: or Date: Line (Headers end at blank line) */
 
 			ptr1 = sockptr->MailBuffer;
 		Loop:
@@ -1465,7 +1465,7 @@ VOID ProcessSMTPServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 				int i, HH, MM;
 				char Copy[500]="";
 
-				// Copy message, so original isn't messed up by strtok
+				/* Copy message, so original isn't messed up by strtok */
 				
 				memcpy(Copy, ptr1, linelen);
 
@@ -1473,14 +1473,14 @@ VOID ProcessSMTPServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 
 				memset(&rtime, 0, sizeof(struct tm));
 
-				// Date: Tue, 9 Jun 2009 20:54:55 +0100
+				/* Date: Tue, 9 Jun 2009 20:54:55 +0100 */
 
-				ptr1 = strtok_s(&ptr1[5], seps, &Context);	// Skip Day
-				ptr1 = strtok_s(NULL, seps, &Context);		// Day
+				ptr1 = strtok_s(&ptr1[5], seps, &Context);	/* Skip Day */
+				ptr1 = strtok_s(NULL, seps, &Context);		/* Day */
 
 				rtime.tm_mday = atoi(ptr1);
 
-				ptr1 = strtok_s(NULL, seps, &Context);		// Month
+				ptr1 = strtok_s(NULL, seps, &Context);		/* Month */
 
 				for (i=0; i < 12; i++)
 				{
@@ -1518,9 +1518,9 @@ VOID ProcessSMTPServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 				}
 			}
 
-			ptr1 = ptr2 + 2;		// Skip crlf
+			ptr1 = ptr2 + 2;		/* Skip crlf */
 			
-			if (linelen)			// Not Null line
+			if (linelen)			/* Not Null line */
 			{
 				goto Loop;
 			}
@@ -1530,21 +1530,21 @@ VOID ProcessSMTPServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 
 			MsgLen = (int)(sockptr->MailSize - (ptr2 - ptr1));
 
-			// We Just want the from call, not the full address.
+			/* We Just want the from call, not the full address. */
 			
 			TidyString(sockptr->MailFrom);
 			
-			// Examine Message to look for html formatting and attachments.
+			/* Examine Message to look for html formatting and attachments. */
 
-			B2Flag = CheckforMIME(sockptr, sockptr->MailBuffer, &ptr2, &MsgLen);	// Will reformat message if necessary. 
+			B2Flag = CheckforMIME(sockptr, sockptr->MailBuffer, &ptr2, &MsgLen);	/* Will reformat message if necessary.  */
 
-			// If any recipients are via RMS, create one message for them, and separate messages for all others
+			/* If any recipients are via RMS, create one message for them, and separate messages for all others */
 
 			ToString = zalloc(sockptr->Recipients * 100);
 	
 			for (i=0; i < sockptr->Recipients; i++)
 			{
-				char Addr[256];					// Need copy, as we may change it then decide it isn't for RMS
+				char Addr[256];					/* Need copy, as we may change it then decide it isn't for RMS */
 
 				strcpy(Addr, sockptr->RecpTo[i]);
 				Debugprintf("To Addr %s", Addr);
@@ -1554,7 +1554,7 @@ VOID ProcessSMTPServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 
 				if ((_memicmp (Addr, "RMS:", 4) == 0) |(_memicmp (Addr, "RMS/", 4) == 0))
 				{
-					// Add to B2 Message for RMS
+					/* Add to B2 Message for RMS */
 										
 					_strlwr(Addr);
 					
@@ -1562,16 +1562,16 @@ VOID ProcessSMTPServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 				
 					if (Via && _stricmp(Via, "winlink.org") == 0)
 					{
-						if (CheckifLocalRMSUser(Addr)) // if local RMS - Leave Here
+						if (CheckifLocalRMSUser(Addr)) /* if local RMS - Leave Here */
 							continue;
 						
 						ToLen = sprintf(ToString, "%sTo: %s\r\n", ToString, &Addr[4]);
-						*sockptr->RecpTo[i] = 0;		// So we dont create individual one later
+						*sockptr->RecpTo[i] = 0;		/* So we dont create individual one later */
 						continue;
 					}
 
 					ToLen = sprintf(ToString, "%sTo: %s@%s\r\n", ToString, &Addr[4], Via);
-					*sockptr->RecpTo[i] = 0;			// So we dont create individual one later
+					*sockptr->RecpTo[i] = 0;			/* So we dont create individual one later */
 					continue;
 				}
 
@@ -1583,17 +1583,17 @@ VOID ProcessSMTPServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 
 				if (Via && _stricmp(Via, "winlink.org") == 0)
 				{
-					if (CheckifLocalRMSUser(Addr)) // if local RMS - Leave Here
+					if (CheckifLocalRMSUser(Addr)) /* if local RMS - Leave Here */
 						continue;
 					
 					ToLen = sprintf(ToString, "%sTo: %s\r\n", ToString, Addr);
-					*sockptr->RecpTo[i] = 0;		// So we dont create individual one later
+					*sockptr->RecpTo[i] = 0;		/* So we dont create individual one later */
 
 					continue;
 				}
 			}
 
-			if (ToLen)						// Have some RMS Addresses
+			if (ToLen)						/* Have some RMS Addresses */
 			{
 				char B2Hddr[1000];
 				int B2HddrLen;
@@ -1605,7 +1605,7 @@ VOID ProcessSMTPServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 
 				Msg = AllocateMsgRecord();
 		
-				// Set number here so they remain in sequence
+				/* Set number here so they remain in sequence */
 		
 				Msg->number = ++LatestMsg;
 				MsgnotoMsg[Msg->number] = Msg;
@@ -1638,7 +1638,7 @@ VOID ProcessSMTPServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 				sprintf(DateString, "%04d/%02d/%02d %02d:%02d",
 					tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday, tm->tm_hour, tm->tm_min);
 
-				if (B2Flag)				// Message has attachments, so Body: line is present
+				if (B2Flag)				/* Message has attachments, so Body: line is present */
 				{
 					Msg->B2Flags = B2Msg | Attachments;
 		
@@ -1663,7 +1663,7 @@ VOID ProcessSMTPServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 
 				free(ToString);
 	
-				// Set up forwarding bitmap
+				/* Set up forwarding bitmap */
 
 				MatchMessagetoBBSList(Msg, 0);
 
@@ -1672,7 +1672,7 @@ VOID ProcessSMTPServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 			
 			for (i=0; i < sockptr->Recipients; i++)
 			{
-				if (*sockptr->RecpTo[i])			// not already sent to RMS?
+				if (*sockptr->RecpTo[i])			/* not already sent to RMS? */
 					CreateSMTPMessage(sockptr, i, Msgtitle, Date, ptr2, MsgLen, B2Flag);
 				else
 					free(sockptr->RecpTo[i]);
@@ -1754,7 +1754,7 @@ VOID ProcessSMTPServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 			if (strcmp(user->pass, Out) == 0)
 			{
 				sockptr->State = Authenticated;
-				SendSock(sockptr, "235 2.0.0 OK Authenticated"); //535 authorization failed
+				SendSock(sockptr, "235 2.0.0 OK Authenticated"); /*535 authorization failed */
 				return;
 			}
 		}
@@ -1788,7 +1788,7 @@ ZvVx9G1hcg==
 		SendSock(sockptr, "250-BPQ Mail Server");
 		SendSock(sockptr, "250 AUTH LOGIN");
 
-		//250-8BITMIME
+		/*250-8BITMIME */
 
 		return;
 	}
@@ -1811,7 +1811,7 @@ ZvVx9G1hcg==
 	{
 		if (sockptr->State != Authenticated)
 		{
-			// Accept if from 44/8 and ends in ampr.org
+			/* Accept if from 44/8 and ends in ampr.org */
 
 			if (_memicmp(&Buffer[Len - 11], "ampr.org", 8) == 0 &&
 				(sockptr->sin.sin_addr.s_addr & 0xff) == 44)	
@@ -1836,7 +1836,7 @@ ZvVx9G1hcg==
 	{
 		if (sockptr->State != Authenticated)
 		{
-			// Accept if from 44/8 and ends in ampr.org
+			/* Accept if from 44/8 and ends in ampr.org */
 
 
 
@@ -1892,8 +1892,8 @@ ZvVx9G1hcg==
 	{
 		SendSock(sockptr, "250 Ok");
 
-		// This cancelled AUTH which I think is wrong
-		//sockptr->State = 0;
+		/* This cancelled AUTH which I think is wrong */
+		/*sockptr->State = 0; */
 
 		if (sockptr->State != Authenticated)
 			sockptr->State = 0;	
@@ -1914,11 +1914,11 @@ int CreateSMTPMessage(SocketConn * sockptr, int i, char * MsgTitle, time_t Date,
 	char * To;
 	char * via;
 
-	// Allocate a message Record slot
+	/* Allocate a message Record slot */
 
 	Msg = AllocateMsgRecord();
 		
-	// Set number here so they remain in sequence
+	/* Set number here so they remain in sequence */
 		
 	Msg->number = ++LatestMsg;
 	MsgnotoMsg[Msg->number] = Msg;
@@ -1997,26 +1997,26 @@ int CreateSMTPMessage(SocketConn * sockptr, int i, char * MsgTitle, time_t Date,
 		
 		if (strlen(via) > 40) via[40] = 0;
 
-		strcpy(Msg->via, via);		// Save before messing with it
+		strcpy(Msg->via, via);		/* Save before messing with it */
 
-		// if ending in AMPR.ORG send via ISP if we have enabled forwarding AMPR
+		/* if ending in AMPR.ORG send via ISP if we have enabled forwarding AMPR */
 
 		toLen = (int)strlen(via);
 
 		if (_memicmp(&via[toLen - 8], "ampr.org", 8) == 0)
 		{
-			// if our domain keep here.
+			/* if our domain keep here. */
 				
-			// if not, and SendAMPRDirect set, set as ISP,
-			// else set as RMS			
+			/* if not, and SendAMPRDirect set, set as ISP, */
+			/* else set as RMS			 */
 				
 			if (_stricmp(via, AMPRDomain) == 0)
 			{
-				// Our Message- dont forward
+				/* Our Message- dont forward */
 			}
 			else
 			{
-				// AMPR but not us
+				/* AMPR but not us */
 
 				if (SendAMPRDirect)
 				{
@@ -2032,11 +2032,11 @@ int CreateSMTPMessage(SocketConn * sockptr, int i, char * MsgTitle, time_t Date,
 		}
 		else
 		{	
-			strlop(via, '.');			// Get first part of address
+			strlop(via, '.');			/* Get first part of address */
 
 			if (_stricmp(via, BBSName) == 0)
 			{
-				// sent via us - clear the name
+				/* sent via us - clear the name */
 
 				Msg->via[0] = 0;
 			}
@@ -2063,7 +2063,7 @@ int CreateSMTPMessage(SocketConn * sockptr, int i, char * MsgTitle, time_t Date,
 	if(Msg->to[0] == 0)
 		SMTPMsgCreated=TRUE;
 
-	// If NTS message (TO is numeric and AT is NTSxx or NTSxx.NTS - Outlook won't accept x@y)
+	/* If NTS message (TO is numeric and AT is NTSxx or NTSxx.NTS - Outlook won't accept x@y) */
 
 	if (isdigits(Msg->to) && memcmp(Msg->via, "NTS", 3) == 0)
 	{
@@ -2092,7 +2092,7 @@ int CreateSMTPMessage(SocketConn * sockptr, int i, char * MsgTitle, time_t Date,
 			tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday, tm->tm_hour, tm->tm_min);
 
 
-		if (strcmp(Msg->to, "RMS") == 0)		// Address is in via
+		if (strcmp(Msg->to, "RMS") == 0)		/* Address is in via */
 		strcpy(B2To, Msg->via);
 	else
 		if (Msg->via[0])
@@ -2123,12 +2123,12 @@ int CreateSMTPMessage(SocketConn * sockptr, int i, char * MsgTitle, time_t Date,
 
 		free(To);
 	
-		// Set up forwarding bitmap
+		/* Set up forwarding bitmap */
 
 		MatchMessagetoBBSList(Msg, 0);
 
 		if (Msg->type == 'B' && memcmp(Msg->fbbs, zeros, NBMASK) != 0)
-			Msg->status = '$';				// Has forwarding
+			Msg->status = '$';				/* Has forwarding */
 
 		return CreateSMTPMessageFile(NewBody, Msg);
 
@@ -2136,12 +2136,12 @@ int CreateSMTPMessage(SocketConn * sockptr, int i, char * MsgTitle, time_t Date,
 
 	free(To);
 
-	// Set up forwarding bitmap
+	/* Set up forwarding bitmap */
 
 	MatchMessagetoBBSList(Msg, 0);
 
 	if (Msg->type == 'B' && memcmp( Msg->fbbs, zeros, NBMASK) != 0)
-		Msg->status = '$';				// Has forwarding
+		Msg->status = '$';				/* Has forwarding */
 
 	return CreateSMTPMessageFile(MsgBody, Msg);
 		
@@ -2197,11 +2197,11 @@ BOOL CreateSMTPMessageFile(char * Message, struct MsgInfo * Msg)
 
 int TidyString(char * Address)
 {
-	// Cleans up a From: or To: Address
+	/* Cleans up a From: or To: Address */
 
-	// May have leading or trailing spaces, or be enclosed by <>,  or have a " " part
+	/* May have leading or trailing spaces, or be enclosed by <>,  or have a " " part */
 
-	// From: "John Wiseman" <john.wiseman@ntlworld.com>
+	/* From: "John Wiseman" <john.wiseman@ntlworld.com> */
 
 	char * ptr1, * ptr2;
 	size_t len;
@@ -2218,7 +2218,7 @@ int TidyString(char * Address)
 		memmove(Address, ptr1, len);
 		Address[len] = 0;
 
-		// Could have surrounding "" ""
+		/* Could have surrounding "" "" */
 	
 		if (Address[0] == '"')
 		{
@@ -2231,7 +2231,7 @@ int TidyString(char * Address)
 				return 0;
 			}
 			
-			// Thunderbird can put "" round part of address "rms:john.wiseman"@cantab.net
+			/* Thunderbird can put "" round part of address "rms:john.wiseman"@cantab.net */
 			
 			ptr2 = strchr(&Address[1], '"');
 
@@ -2363,7 +2363,7 @@ VOID ProcessPOP3ServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 				sockptr->POP3User = user;
 				user->POP3Locked = TRUE;
 
-				// Get Message List
+				/* Get Message List */
 
 				for (i=0; i<=NumberofMessages; i++)
 				{
@@ -2405,11 +2405,11 @@ VOID ProcessPOP3ServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 		return;
 	}
 
-//	if (memcmp(Buffer, "LAST",4) == 0)
-//	{
-//		SendSock(sockptr, "+OK 0");
-//		return;
-//	}
+/*	if (memcmp(Buffer, "LAST",4) == 0) */
+/*	{ */
+/*		SendSock(sockptr, "+OK 0"); */
+/*		return; */
+/*	} */
 
 	if (sockptr->State != Authenticated)
 	{
@@ -2458,7 +2458,7 @@ VOID ProcessPOP3ServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 		int i, count=0, size=0;
 		int MsgNo = atoi(&Buffer[4]);
 
-		if (Buffer[4] == 13)	// CR
+		if (Buffer[4] == 13)	/* CR */
 			MsgNo = 0;
 
 		Debugprintf("%s %d", Buffer, MsgNo);
@@ -2503,7 +2503,7 @@ VOID ProcessPOP3ServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 		if (memcmp(Buffer, "TOP", 3) == 0)
 			TOP = TRUE;
 
-		ptr=strlop(Buffer, ' ');			// Get Number
+		ptr=strlop(Buffer, ' ');			/* Get Number */
 
 		i=atoi(ptr);
 
@@ -2525,10 +2525,10 @@ VOID ProcessPOP3ServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 
 		SendSock(sockptr, "+OK ");
 
-		// Build an RFC822 ish header
+		/* Build an RFC822 ish header */
 
-//Received: from [69.147.65.148] by n15.bullet.sp1.yahoo.com with NNFMP; 16 May 2009 02:30:47 -0000
-//Received: from [69.147.108.192] by t11.bullet.mail.sp1.yahoo.com with NNFMP; 16 May 2009 02:30:47 -0000
+/*Received: from [69.147.65.148] by n15.bullet.sp1.yahoo.com with NNFMP; 16 May 2009 02:30:47 -0000 */
+/*Received: from [69.147.108.192] by t11.bullet.mail.sp1.yahoo.com with NNFMP; 16 May 2009 02:30:47 -0000 */
 
 		FormatTime(TimeString, (time_t)Msg->datecreated);
 
@@ -2557,7 +2557,7 @@ VOID ProcessPOP3ServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 			}
 			else
 			{
-				// If there is an adddress in Msg->emailfrom use it
+				/* If there is an adddress in Msg->emailfrom use it */
 
 				if (Msg->emailfrom[0])
 				{
@@ -2566,11 +2566,11 @@ VOID ProcessPOP3ServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 				}
 				else
 				{
-					// Packet Address. Mail client will need more than just a call to respond to
+					/* Packet Address. Mail client will need more than just a call to respond to */
 	
 					strcpy(B2From, Msg->from);
 
-					if (strcmp(Msg->from, "SMTP:") == 0)		// Address is in via
+					if (strcmp(Msg->from, "SMTP:") == 0)		/* Address is in via */
 						strcpy(B2From, Msg->emailfrom);
 					else
 					{
@@ -2602,7 +2602,7 @@ VOID ProcessPOP3ServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 
 		if ((Msg->B2Flags & Attachments) && TOP == FALSE)
 		{
-			// B2 Message with Attachments. Create a Mime-Encoded Multipart message
+			/* B2 Message with Attachments. Create a Mime-Encoded Multipart message */
 
 			SendMultiPartMessage(sockptr, Msg, msgbytes);
 			return;
@@ -2610,21 +2610,21 @@ VOID ProcessPOP3ServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 
 		if (TOP)
 		{
-			// Get first i lines of message
+			/* Get first i lines of message */
 
 			char * ptr1, * ptr2;
 
-			ptr = strlop(ptr, ' ');			// Get Number of lines
+			ptr = strlop(ptr, ' ');			/* Get Number of lines */
 			i = atoi(ptr);
 
 			ptr1 = msgbytes;
-			ptr2 = --ptr1;					// Point both to char before message
+			ptr2 = --ptr1;					/* Point both to char before message */
 			
 			while(i--)
 			{
 				ptr2 = strchr(++ptr1, 10);
 
-				if (ptr2 == 0)				// No more lines
+				if (ptr2 == 0)				/* No more lines */
 					i = 0;
 
 				ptr1 = ptr2;
@@ -2633,17 +2633,17 @@ VOID ProcessPOP3ServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 				*(ptr2 + 1) = 0;
 		}
 
-		// If message has characters above 7F convert to UFT8 if necessary and send as Base64
+		/* If message has characters above 7F convert to UFT8 if necessary and send as Base64 */
 
 		Len = (int)strlen(msgbytes);
 
 		if (Is8Bit(msgbytes, Len))
 		{
-			// 8 Bit. Will send as UFT8
+			/* 8 Bit. Will send as UFT8 */
 
 			if (WebIsUTF8(msgbytes, Len) == FALSE)
 			{
-				// Must be some other coding
+				/* Must be some other coding */
 
 				int code = TrytoGuessCode(msgbytes, Len);
 				UCHAR * UTF = malloc(Len * 3);
@@ -2663,16 +2663,16 @@ VOID ProcessPOP3ServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 			SendSock(sockptr, "Content-Transfer-Encoding: base64");
 			SendSock(sockptr, "Content-Disposition: inline");
 
-			SendSock(sockptr, "");							// Blank line before body
+			SendSock(sockptr, "");							/* Blank line before body */
 
 			Base64EncodeAndSend(sockptr, msgbytes, Len);
 
 		}
 		else
 		{
-			// send as USASCII
+			/* send as USASCII */
 
-			SendSock(sockptr, "");							// Blank line before body
+			SendSock(sockptr, "");							/* Blank line before body */
 			SendSock(sockptr, msgbytes);
 		}
 
@@ -2690,7 +2690,7 @@ VOID ProcessPOP3ServerMessage(SocketConn * sockptr, char * Buffer, int Len)
 		int i;
 		struct MsgInfo * Msg;
 
-		ptr=strlop(Buffer, ' ');			// Get Number
+		ptr=strlop(Buffer, ' ');			/* Get Number */
 
 		i=atoi(ptr);
 
@@ -2830,7 +2830,7 @@ SocketConn * SMTPConnect(char * Host, int Port, BOOL AMPR, struct MsgInfo * Msg,
 	int addrlen=sizeof(sinx);
 	struct hostent * HostEnt;
 
-	// Resolve Name if needed
+	/* Resolve Name if needed */
 
 	destaddr.sin_family = AF_INET; 
 	destaddr.sin_port = htons(Port);
@@ -2839,7 +2839,7 @@ SocketConn * SMTPConnect(char * Host, int Port, BOOL AMPR, struct MsgInfo * Msg,
 
 	if (destaddr.sin_addr.s_addr == INADDR_NONE)
 	{
-		//	Resolve name to address
+		/*	Resolve name to address */
 
 		 HostEnt = gethostbyname (Host);
 		 
@@ -2847,12 +2847,12 @@ SocketConn * SMTPConnect(char * Host, int Port, BOOL AMPR, struct MsgInfo * Msg,
 		 {
  			Logprintf(LOG_TCP, NULL, '|', "Resolve Failed for SMTP Server %s", Host);
 			SMTPActive = FALSE;
-			return FALSE;			// Resolve failed
+			return FALSE;			/* Resolve failed */
 		 }
 		 memcpy(&destaddr.sin_addr.s_addr,HostEnt->h_addr,4);
 	}
 
-//   Allocate a Socket entry
+/*   Allocate a Socket entry */
 
 	sockptr=malloc(sizeof(SocketConn));
 	memset(sockptr, 0, sizeof (SocketConn));
@@ -2888,18 +2888,18 @@ SocketConn * SMTPConnect(char * Host, int Port, BOOL AMPR, struct MsgInfo * Msg,
 
 	if (bind(sockptr->socket, (LPSOCKADDR) &sinx, addrlen) != 0 )
 	{
-		//
-		//	Bind Failed
-		//
+		/* */
+		/*	Bind Failed */
+		/* */
 	
   	 	return FALSE; 
 	}
 
 	if (connect(sockptr->socket,(LPSOCKADDR) &destaddr, sizeof(destaddr)) == 0)
 	{
-		//
-		//	Connected successful
-		//
+		/* */
+		/*	Connected successful */
+		/* */
 
 		sockptr->State = WaitingForGreeting;
 
@@ -2911,18 +2911,18 @@ SocketConn * SMTPConnect(char * Host, int Port, BOOL AMPR, struct MsgInfo * Msg,
 
 		if (err == WSAEWOULDBLOCK || err == 115 || err == 36)
 		{
-			//
-			//	Connect in Progress
-			//
+			/* */
+			/*	Connect in Progress */
+			/* */
 
 			sockptr->State = Connecting;
 			return sockptr;
 		}
 		else
 		{
-			//
-			//	Connect failed
-			//
+			/* */
+			/*	Connect failed */
+			/* */
 
 			printf("SMTP Connect failed immediately\n");
 			closesocket(sockptr->socket);
@@ -2935,7 +2935,7 @@ SocketConn * SMTPConnect(char * Host, int Port, BOOL AMPR, struct MsgInfo * Msg,
 	return FALSE;
 }
 
-int TryHELO = 0;			// Not thread safe but taking the chance..
+int TryHELO = 0;			/* Not thread safe but taking the chance.. */
 
 VOID ProcessSMTPClientMessage(SocketConn * sockptr, char * Buffer, int Len)
 {
@@ -3034,7 +3034,7 @@ VOID ProcessSMTPClientMessage(SocketConn * sockptr, char * Buffer, int Len)
 		else if (memcmp(Buffer, "235 ", 4) == 0)
 		{
 			sockprintf(sockptr, "MAIL FROM: <%s@%s>", sockptr->SMTPMsg->from, sockptr->FromDomain);
-//			sockprintf(sockptr, "MAIL FROM: <%s@%s.%s>", sockptr->SMTPMsg->from, BBSName, HRoute);
+/*			sockprintf(sockptr, "MAIL FROM: <%s@%s.%s>", sockptr->SMTPMsg->from, BBSName, HRoute); */
 			sockptr->State = WaitingForFROMResponse;
 		}
 
@@ -3059,7 +3059,7 @@ VOID ProcessSMTPClientMessage(SocketConn * sockptr, char * Buffer, int Len)
 		}
 		else
 		{
-			sockptr->SMTPMsg->status = 'H';			// Hold for review
+			sockptr->SMTPMsg->status = 'H';			/* Hold for review */
 			SendSock(sockptr, "QUIT");
 			sockptr->State = 0;
 			SMTPActive = FALSE;
@@ -3077,7 +3077,7 @@ VOID ProcessSMTPClientMessage(SocketConn * sockptr, char * Buffer, int Len)
 		}
 		else
 		{
-			sockptr->SMTPMsg->status = 'H';			// Hold for review
+			sockptr->SMTPMsg->status = 'H';			/* Hold for review */
 			SendSock(sockptr, "QUIT");
 			sockptr->State = 0;
 			SMTPActive = FALSE;
@@ -3107,30 +3107,30 @@ VOID ProcessSMTPClientMessage(SocketConn * sockptr, char * Buffer, int Len)
 
 			if (sockptr->SMTPMsg->B2Flags & Attachments)
 			{
-				// B2 Message with Attachments. Create a Mime-Encoded Multipart message
+				/* B2 Message with Attachments. Create a Mime-Encoded Multipart message */
 
 				SendMultiPartMessage(sockptr, sockptr->SMTPMsg, sockptr->MailBuffer);
 				return;
 			}
 
-			// If message has characters above 7F convert to UFT8 if necessary and send as Base64
+			/* If message has characters above 7F convert to UFT8 if necessary and send as Base64 */
 
 
 			Len = (int)strlen(sockptr->MailBuffer);
 
 			if (Is8Bit(sockptr->MailBuffer, Len))
 			{
-				// 8 Bit. Will send as UFT8
+				/* 8 Bit. Will send as UFT8 */
 
 				SendSock(sockptr, "Content-Type: text/plain; charset=\"utf-8\"");
 				SendSock(sockptr, "Content-Transfer-Encoding: base64");
 				SendSock(sockptr, "Content-Disposition: inline");
 
-				SendSock(sockptr, "");							// Blank line before body
+				SendSock(sockptr, "");							/* Blank line before body */
 
 				if (WebIsUTF8(sockptr->MailBuffer, Len) == FALSE)
 				{
-					// Must be some other coding
+					/* Must be some other coding */
 
 					int code = TrytoGuessCode(sockptr->MailBuffer, Len);
 					UTF = malloc(Len * 3);
@@ -3140,7 +3140,7 @@ VOID ProcessSMTPClientMessage(SocketConn * sockptr, char * Buffer, int Len)
 					else if (code == 1251)
 						Len = Convert1251toUTF8(sockptr->MailBuffer, Len, UTF);
 					else
-						Len = Convert1252toUTF8(sockptr->MailBuffer, Len, UTF);	// Default
+						Len = Convert1252toUTF8(sockptr->MailBuffer, Len, UTF);	/* Default */
 			
 					Base64EncodeAndSend(sockptr, UTF, Len);
 					free(UTF);
@@ -3151,9 +3151,9 @@ VOID ProcessSMTPClientMessage(SocketConn * sockptr, char * Buffer, int Len)
 			}
 			else
 			{
-				// send as USASCII
+				/* send as USASCII */
 
-				SendSock(sockptr, "");							// Blank line before body
+				SendSock(sockptr, "");							/* Blank line before body */
 				SendSock(sockptr, sockptr->MailBuffer);
 			}
 
@@ -3176,39 +3176,39 @@ VOID ProcessSMTPClientMessage(SocketConn * sockptr, char * Buffer, int Len)
 
 		if (memcmp(Buffer, "250 ",  4) == 0)
 		{
-			// if AMPR, clear forwarding bitmap
+			/* if AMPR, clear forwarding bitmap */
 
 			if (sockptr->AMPR)
 			{
-				// Mark mail as sent, and look for more
+				/* Mark mail as sent, and look for more */
 
 				struct UserInfo * bbs = sockptr->bbs;
 	
 				clear_fwd_bit(Msg->fbbs, bbs->BBSNumber);
 				set_fwd_bit(Msg->forw, bbs->BBSNumber);
 
-				//  Only mark as forwarded if sent to all BBSs that should have it
+				/*  Only mark as forwarded if sent to all BBSs that should have it */
 			
 				if (memcmp(Msg->fbbs, zeros, NBMASK) == 0)
 				{
-					Msg->status = 'F';			// Mark as forwarded
+					Msg->status = 'F';			/* Mark as forwarded */
 					Msg->datechanged=time(NULL);
 				}
 				
 				bbs->ForwardingInfo->MsgCount--;
 				bbs->ForwardingInfo->Forwarding = 0;
 
-				// See if any more
+				/* See if any more */
 
 				if (bbs->ForwardingInfo->MsgCount)
-					bbs->ForwardingInfo->FwdTimer = bbs->ForwardingInfo->FwdInterval; // Reschdul send
+					bbs->ForwardingInfo->FwdTimer = bbs->ForwardingInfo->FwdInterval; /* Reschdul send */
 			
 			}
 			else
 			{
 				Msg->status = 'F';
 				SMTPActive = FALSE;
-				SMTPMsgCreated=TRUE;					// See if any more
+				SMTPMsgCreated=TRUE;					/* See if any more */
 			}
 		}
 
@@ -3217,7 +3217,7 @@ VOID ProcessSMTPClientMessage(SocketConn * sockptr, char * Buffer, int Len)
 
 		SMTPActive = FALSE;
 
-		SMTPMsgCreated=TRUE;					// See if any more
+		SMTPMsgCreated=TRUE;					/* See if any more */
 
 		return;
 	}
@@ -3233,7 +3233,7 @@ BOOL SendtoAMPR(CIRCUIT * conn)
 	char * tocopy;
 	char * Host;
 	
-	// Make sure message exists
+	/* Make sure message exists */
 
 	Body = ReadMessageFile(Msg->number);
 
@@ -3274,7 +3274,7 @@ BOOL SendtoAMPR(CIRCUIT * conn)
 
 BOOL SendtoISP()
 {
-	// Find a message intended for the Internet and send it
+	/* Find a message intended for the Internet and send it */
 
 	int m = NumberofMessages;
 	char * Body;
@@ -3290,7 +3290,7 @@ BOOL SendtoISP()
 
 		if ((Msg->status == 'N') && (Msg->to[0] == 0) && (Msg->from[0] != 0))
 		{
-			// Make sure message exists
+			/* Make sure message exists */
 
 			Body = ReadMessageFile(Msg->number);
 
@@ -3302,7 +3302,7 @@ BOOL SendtoISP()
 
 			Logprintf(LOG_TCP, NULL, '|', "Connecting to Server %s to send Msg %d", ISPSMTPName, Msg->number);
 
-			SMTPMsgCreated=FALSE;		// Stop any more attempts
+			SMTPMsgCreated=FALSE;		/* Stop any more attempts */
 			SMTPConnect(ISPSMTPName, ISPSMTPPort, FALSE, Msg, Body);
 
 			SMTPActive = TRUE;
@@ -3334,7 +3334,7 @@ BOOL POP3Connect(char * Host, int Port)
 
 	Logprintf(LOG_TCP, NULL, '|', "Connecting to POP3 Server %s", Host);
 
-	// Resolve Name if needed
+	/* Resolve Name if needed */
 
 	destaddr.sin_family = AF_INET; 
 	destaddr.sin_port = htons(Port);
@@ -3343,19 +3343,19 @@ BOOL POP3Connect(char * Host, int Port)
 
 	if (destaddr.sin_addr.s_addr == INADDR_NONE)
 	{
-		//	Resolve name to address
+		/*	Resolve name to address */
 
 		 HostEnt = gethostbyname (Host);
 		 
 		 if (!HostEnt)
 		 {
 			Logprintf(LOG_TCP, NULL, '|', "Resolve Failed for POP3 Server %s", Host);
-			return FALSE;			// Resolve failed
+			return FALSE;			/* Resolve failed */
 		 }
 		 memcpy(&destaddr.sin_addr.s_addr,HostEnt->h_addr,4);
 	}
 
-//   Allocate a Socket entry
+/*   Allocate a Socket entry */
 
 	sockptr = malloc(sizeof(SocketConn));
 	memset(sockptr, 0, sizeof (SocketConn));
@@ -3382,18 +3382,18 @@ BOOL POP3Connect(char * Host, int Port)
 
 	if (bind(sockptr->socket, (LPSOCKADDR) &sinx, addrlen) != 0 )
 	{
-		//
-		//	Bind Failed
-		//
+		/* */
+		/*	Bind Failed */
+		/* */
 	
   	 	return FALSE; 
 	}
 
 	if (connect(sockptr->socket,(LPSOCKADDR) &destaddr, sizeof(destaddr)) == 0)
 	{
-		//
-		//	Connected successful
-		//
+		/* */
+		/*	Connected successful */
+		/* */
 
 		sockptr->State = WaitingForGreeting;
 
@@ -3405,18 +3405,18 @@ BOOL POP3Connect(char * Host, int Port)
 
 		if (err == WSAEWOULDBLOCK || err == 115 || err == 36)
 		{
-			//
-			//	Connect in Progressing
-			//
+			/* */
+			/*	Connect in Progressing */
+			/* */
 
 			sockptr->State = Connecting;
 			return TRUE;
 		}
 		else
 		{
-			//
-			//	Connect failed
-			//
+			/* */
+			/*	Connect failed */
+			/* */
 
 			printf("Connect failed immediately %d\n", err);
 			perror("POP Connect");
@@ -3442,13 +3442,13 @@ VOID ProcessPOP3ClientMessage(SocketConn * sockptr, char * Buffer, int Len)
 	{
 		if(memcmp(Buffer, ".\r\n", 3) == 0)
 		{
-			// File Message
+			/* File Message */
 
 			char * ptr1, * ptr2;
 			int linelen, MsgLen;
 			char MsgFrom[62], MsgTo[100], Msgtitle[62];
 
-			// Scan headers for From: To: and Subject: Line (Headers end at blank line)
+			/* Scan headers for From: To: and Subject: Line (Headers end at blank line) */
 
 			ptr1 = sockptr->MailBuffer;
 		Loop:
@@ -3462,9 +3462,9 @@ VOID ProcessPOP3ClientMessage(SocketConn * sockptr, char * Buffer, int Len)
 
 			linelen = (int)(ptr2 - ptr1);
 
-			// From: "John Wiseman" <john.wiseman@ntlworld.com>
-			// To: <G8BPQ@g8bpq.org.uk>
-			//<To: <gm8bpq+g8bpq@googlemail.com>
+			/* From: "John Wiseman" <john.wiseman@ntlworld.com> */
+			/* To: <G8BPQ@g8bpq.org.uk> */
+			/*<To: <gm8bpq+g8bpq@googlemail.com> */
 
 
 			if (_memicmp(ptr1, "From:", 5) == 0)
@@ -3497,7 +3497,7 @@ VOID ProcessPOP3ClientMessage(SocketConn * sockptr, char * Buffer, int Len)
 				int i, HH, MM;
 				char Copy[500]="";
 
-				// Copy message, so original isn't messed up by strtok
+				/* Copy message, so original isn't messed up by strtok */
 				
 				memcpy(Copy, ptr1, linelen);
 
@@ -3505,14 +3505,14 @@ VOID ProcessPOP3ClientMessage(SocketConn * sockptr, char * Buffer, int Len)
 
 				memset(&rtime, 0, sizeof(struct tm));
 
-				// Date: Tue, 9 Jun 2009 20:54:55 +0100
+				/* Date: Tue, 9 Jun 2009 20:54:55 +0100 */
 
-				ptr1 = strtok_s(&ptr1[5], seps, &Context);	// Skip Day
-				ptr1 = strtok_s(NULL, seps, &Context);		// Day
+				ptr1 = strtok_s(&ptr1[5], seps, &Context);	/* Skip Day */
+				ptr1 = strtok_s(NULL, seps, &Context);		/* Day */
 
 				rtime.tm_mday = atoi(ptr1);
 
-				ptr1 = strtok_s(NULL, seps, &Context);		// Month
+				ptr1 = strtok_s(NULL, seps, &Context);		/* Month */
 
 				for (i=0; i < 12; i++)
 				{
@@ -3552,9 +3552,9 @@ VOID ProcessPOP3ClientMessage(SocketConn * sockptr, char * Buffer, int Len)
 			}
 
 			
-			if (linelen)			// Not Null line
+			if (linelen)			/* Not Null line */
 			{
-				ptr1 = ptr2 + 2;		// Skip crlf
+				ptr1 = ptr2 + 2;		/* Skip crlf */
 				goto Loop;
 			}
 
@@ -3565,7 +3565,7 @@ VOID ProcessPOP3ClientMessage(SocketConn * sockptr, char * Buffer, int Len)
 
 			MsgLen = (int)(sockptr->MailSize - (ptr2 - ptr1));
 
-			B2Flag = CheckforMIME(sockptr, sockptr->MailBuffer, &ptr2, &MsgLen);	// Will reformat message if necessary. 
+			B2Flag = CheckforMIME(sockptr, sockptr->MailBuffer, &ptr2, &MsgLen);	/* Will reformat message if necessary.  */
 
 			CreatePOP3Message(MsgFrom, MsgTo, Msgtitle, Date, ptr2, MsgLen, B2Flag);
 
@@ -3759,11 +3759,11 @@ int CreatePOP3Message(char * From, char * To, char * MsgTitle, time_t Date, char
 	struct MsgInfo * Msg;
 	BIDRec * BIDRec;
 
-	// Allocate a message Record slot
+	/* Allocate a message Record slot */
 
 	Msg = AllocateMsgRecord();
 		
-	// Set number here so they remain in sequence
+	/* Set number here so they remain in sequence */
 		
 	Msg->number = ++LatestMsg;
 	MsgnotoMsg[Msg->number] = Msg;
@@ -3790,7 +3790,7 @@ int CreatePOP3Message(char * From, char * To, char * MsgTitle, time_t Date, char
 	TidyString(To);
 	strlop(To, '@');
 
-	// Could have surrounding "" ""
+	/* Could have surrounding "" "" */
 
 	if (To[0] == '"')
 	{
@@ -3805,7 +3805,7 @@ int CreatePOP3Message(char * From, char * To, char * MsgTitle, time_t Date, char
 
 	if (GMailMode)
 	{
-		// + separates our address and the target user
+		/* + separates our address and the target user */
 
 		char * GMailto;
 
@@ -3823,8 +3823,8 @@ int CreatePOP3Message(char * From, char * To, char * MsgTitle, time_t Date, char
 		}
 		else
 		{
-			// Someone has sent to the GMAIL account without a +. 
-			// This should go to the BBS Call
+			/* Someone has sent to the GMAIL account without a +.  */
+			/* This should go to the BBS Call */
 
 			strcpy(To, BBSName);
 		}
@@ -3846,17 +3846,17 @@ int CreatePOP3Message(char * From, char * To, char * MsgTitle, time_t Date, char
 
 	if (Msg->type == 'P' && Msg->via[0] == 0)
 	{
-		// No via - add one from HomeBBS or WP
+		/* No via - add one from HomeBBS or WP */
 
 		struct UserInfo * ToUser = LookupCall(To);
 
 		if (ToUser)
 		{
-			// Local User. If Home BBS is specified, use it
+			/* Local User. If Home BBS is specified, use it */
 
 			if (ToUser->flags & F_RMSREDIRECT)
 			{
-				// sent to Winlink
+				/* sent to Winlink */
 				
 				strcpy(Msg->via, Winlink);
 			}
@@ -3907,7 +3907,7 @@ int CreatePOP3Message(char * From, char * To, char * MsgTitle, time_t Date, char
 		struct tm * tm;
 		char Type[16] = "Private";
 					
-		// Get Type
+		/* Get Type */
 	
 		if (Msg->type == 'B')
 			strcpy(Type, "Bulletin");
@@ -3921,7 +3921,7 @@ int CreatePOP3Message(char * From, char * To, char * MsgTitle, time_t Date, char
 			tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday, tm->tm_hour, tm->tm_min);
 
 
-		if (strcmp(Msg->to, "RMS") == 0)		// Address is in via
+		if (strcmp(Msg->to, "RMS") == 0)		/* Address is in via */
 		strcpy(B2To, Msg->via);
 	else
 		if (Msg->via[0])
@@ -3943,14 +3943,14 @@ int CreatePOP3Message(char * From, char * To, char * MsgTitle, time_t Date, char
 
 		Msg->length += B2HddrLen;
 
-		// Set up forwarding bitmap
+		/* Set up forwarding bitmap */
 
 		MatchMessagetoBBSList(Msg, 0);
 
 		return CreateSMTPMessageFile(NewBody, Msg);
 	}
 
-	// Set up forwarding bitmap
+	/* Set up forwarding bitmap */
 
 	MatchMessagetoBBSList(Msg, 0);
 
@@ -3989,7 +3989,7 @@ void Base64EncodeAndSend(SocketConn * sockptr, UCHAR * Msg, int Len)
 	Base64Line[77] = 10;
 	Base64Line[78] = 0;
 
-	// Need to encode in 57 byte chunks to give 76 char lines.
+	/* Need to encode in 57 byte chunks to give 76 char lines. */
 
 	while(i > 57)
 	{
@@ -4026,15 +4026,15 @@ VOID SendMultiPartMessage(SocketConn * sockptr, struct MsgInfo * Msg, UCHAR * ms
 	sprintf_s(Header, sizeof(Header), "Content-Type: multipart/mixed; boundary=\"%s\"", Separator);
 	SendSock(sockptr, Header);
 
-	SendSock(sockptr, "");							// Blank line before body
+	SendSock(sockptr, "");							/* Blank line before body */
 
-// Get Part Sizes and Filenames
+/* Get Part Sizes and Filenames */
 
 	ptr = msgbytes;
 
 	while(*ptr != 13)
 	{
-		char * ptr2 = strchr(ptr, 10);	// Find CR
+		char * ptr2 = strchr(ptr, 10);	/* Find CR */
 
 		if (memcmp(ptr, "Body: ", 6) == 0)
 		{
@@ -4043,7 +4043,7 @@ VOID SendMultiPartMessage(SocketConn * sockptr, struct MsgInfo * Msg, UCHAR * ms
 
 		if (memcmp(ptr, "File: ", 6) == 0)
 		{
-			char * ptr1 = strchr(&ptr[6], ' ');	// Find Space
+			char * ptr1 = strchr(&ptr[6], ' ');	/* Find Space */
 
 			FileLen[Files] = atoi(&ptr[6]);
 
@@ -4054,14 +4054,14 @@ VOID SendMultiPartMessage(SocketConn * sockptr, struct MsgInfo * Msg, UCHAR * ms
 		ptr++;
 	}
 
-	ptr += 2;			// Over Blank Line 
+	ptr += 2;			/* Over Blank Line  */
 
-	// Write the none-Mime Part
+	/* Write the none-Mime Part */
 
 	SendSock(sockptr, "This is a multi-part message in MIME format.");
 	SendSock(sockptr, "");
 
-	// Write the Body as the first part.
+	/* Write the Body as the first part. */
 
 	sprintf_s(Header, sizeof(Header), "--%s", Separator);
 	SendSock(sockptr, Header);
@@ -4072,16 +4072,16 @@ VOID SendMultiPartMessage(SocketConn * sockptr, struct MsgInfo * Msg, UCHAR * ms
 
 	SendSock(sockptr, ptr);
 
-	ptr += BodyLen;		// to first file
-	ptr += 2;			// Over Blank Line
+	ptr += BodyLen;		/* to first file */
+	ptr += 2;			/* Over Blank Line */
 
-	// Write Each Attachment
+	/* Write Each Attachment */
 
 	for (i = 0; i < Files; i++)
 	{
 		sprintf_s(Header, sizeof(Header), "--%s", Separator);
 		SendSock(sockptr, Header);
-//		Content-Type: image/png; name="UserParams.png"
+/*		Content-Type: image/png; name="UserParams.png" */
 		SendSock(sockptr, "Content-Transfer-Encoding: base64");
 
 		sprintf_s(Header, sizeof(Header), "Content-Disposition: attachment; filename=\"%s\"", FileName[i]);
@@ -4089,12 +4089,12 @@ VOID SendMultiPartMessage(SocketConn * sockptr, struct MsgInfo * Msg, UCHAR * ms
 
 		SendSock(sockptr, "");
 
-		// base64 encode and send file	
+		/* base64 encode and send file	 */
 
 		Base64EncodeAndSend(sockptr, ptr, FileLen[i]);
 
 		ptr += FileLen[i];
-		ptr +=2;				// Over separator
+		ptr +=2;				/* Over separator */
 	}
 	
 	sprintf_s(Header, sizeof(Header), "--%s--", Separator);

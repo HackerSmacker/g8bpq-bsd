@@ -1,6 +1,6 @@
 
-//
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
+/* */
+#define WIN32_LEAN_AND_MEAN		/* Exclude rarely-used stuff from Windows headers */
 #define _CRT_SECURE_NO_DEPRECATE
 
 
@@ -24,11 +24,11 @@ char * PlaybackDevices = NULL;
 int CaptureCount = 0;
 int PlaybackCount = 0;
 
-int IndexA = -1;		// Card number
-int IndexB = -1;		// Card number
-int IndexC = -1;		// Card number
-int IndexD = -1;		// Card number
-int SPEAKERS = -1;		// Card number
+int IndexA = -1;		/* Card number */
+int IndexB = -1;		/* Card number */
+int IndexC = -1;		/* Card number */
+int IndexD = -1;		/* Card number */
+int SPEAKERS = -1;		/* Card number */
 
 int Device = 0;
 
@@ -40,11 +40,11 @@ char PlaybackNames[16][MAXPNAMELEN + 2] = { "" };
 
 char * strlop(char * buf, char delim)
 {
-	// Terminate buf at delim, and return rest of string
+	/* Terminate buf at delim, and return rest of string */
 
 	char * ptr;
 
-	if (buf == NULL) return NULL;		// Protect
+	if (buf == NULL) return NULL;		/* Protect */
 
 	ptr = strchr(buf, delim);
 
@@ -76,7 +76,7 @@ void main(int argc, char * argv[])
 
 	for (i = 0; i < PlaybackCount; i++)
 	{
-		waveOutOpen(&hWaveOut, i, &wfx, 0, 0, CALLBACK_NULL); //WAVE_MAPPER
+		waveOutOpen(&hWaveOut, i, &wfx, 0, 0, CALLBACK_NULL); /*WAVE_MAPPER */
 		waveOutGetDevCaps((UINT_PTR)hWaveOut, &pwoc, sizeof(WAVEOUTCAPS));
 
 		if (PlaybackDevices[0])

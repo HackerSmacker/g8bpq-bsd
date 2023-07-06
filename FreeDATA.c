@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-//
-//	Interface to allow G8BPQ switch to use  FreeData TNC 
+/* */
+/*	Interface to allow G8BPQ switch to use  FreeData TNC  */
 
 
 #define _CRT_SECURE_NO_DEPRECATE
@@ -38,7 +38,7 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 
 #define SD_BOTH         0x02
 
-#define FREEDATABUFLEN 16384				// TCP buffer size
+#define FREEDATABUFLEN 16384				/* TCP buffer size */
 
 int KillTNC(struct TNCINFO * TNC);
 static int RestartTNC(struct TNCINFO * TNC);
@@ -97,12 +97,12 @@ static int ProcessLine(char * buf, int Port);
 
 VOID WritetoTrace(struct TNCINFO * TNC, char * Msg, int Len);
 
-#define MAXRXSIZE 512000		// Sets max size for file transfer (less base64 overhead
+#define MAXRXSIZE 512000		/* Sets max size for file transfer (less base64 overhead */
 
 int CaptureCount = 0;
 int PlaybackCount = 0;
 
-int CaptureIndex = -1;		// Card number
+int CaptureIndex = -1;		/* Card number */
 int PlayBackIndex = -1;
 
 
@@ -137,24 +137,24 @@ char * gen_uuid()
     char v[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 	int i;
 
-    //3fb17ebc-bc38-4939-bc8b-74f2443281d4
-    //8 dash 4 dash 4 dash 4 dash 12
+    /*3fb17ebc-bc38-4939-bc8b-74f2443281d4 */
+    /*8 dash 4 dash 4 dash 4 dash 12 */
 
     static char buf[37] = {0};
 
-    //gen random for all spaces because lazy
+    /*gen random for all spaces because lazy */
     for (i = 0; i < 36; ++i)
 	{
         buf[i] = v[rand()%16];
     }
 
-    //put dashes in place
+    /*put dashes in place */
     buf[8] = '-';
     buf[13] = '-';
     buf[18] = '-';
     buf[23] = '-';
 
-    //needs end byte
+    /*needs end byte */
     buf[36] = '\0';
 
     return buf;
@@ -177,13 +177,13 @@ static int ProcessLine(char * buf, int Port)
 
 	if (ptr == NULL) return (TRUE);
 
-	if (*ptr =='#') return (TRUE);			// comment
+	if (*ptr =='#') return (TRUE);			/* comment */
 
-	if (*ptr ==';') return (TRUE);			// comment
+	if (*ptr ==';') return (TRUE);			/* comment */
 
 
 	if (_stricmp(buf, "ADDR"))
-		return FALSE;						// Must start with ADDR
+		return FALSE;						/* Must start with ADDR */
 
 	ptr = strtok(NULL, " \t\n\r");
 
@@ -195,12 +195,12 @@ static int ProcessLine(char * buf, int Port)
 
 	TNC->FreeDataInfo = zalloc(sizeof(struct FreeDataINFO));
 
-//	TNC->FreeDataInfo->useBaseCall = 1;		// Default
+/*	TNC->FreeDataInfo->useBaseCall = 1;		// Default */
 
 	TNC->InitScript = malloc(1000);
 	TNC->InitScript[0] = 0;
 
-	TNC->MaxConReq = 10;		// Default
+	TNC->MaxConReq = 10;		/* Default */
 	
 	if (p_ipad == NULL)
 		p_ipad = strtok(NULL, " \t\n\r");
@@ -249,7 +249,7 @@ static int ProcessLine(char * buf, int Port)
 		}
 	}
 
-	// Read Initialisation lines
+	/* Read Initialisation lines */
 
 	while(TRUE)
 	{
@@ -355,7 +355,7 @@ BOOL FreeDataReadConfigFile(int Port, int ProcLine())
 
 	if (Config)
 	{
-		// Using config from bpq32.cfg
+		/* Using config from bpq32.cfg */
 
 		if (strlen(Config) == 0)
 		{
@@ -397,11 +397,11 @@ static VOID SendToTNC(struct TNCINFO * TNC, int Stream, UCHAR * Encoded, int Enc
 {
 	if (TNC->hDevice)
 	{
-		// FreeData mode. Queue to Hostmode driver
+		/* FreeData mode. Queue to Hostmode driver */
 		
 		PMSGWITHLEN buffptr = (PMSGWITHLEN)GetBuff();
 
-		if (buffptr == 0) return;			// No buffers, so ignore
+		if (buffptr == 0) return;			/* No buffers, so ignore */
 
 		buffptr->Len = EncLen;
 		memcpy(&buffptr->Data[0], Encoded, EncLen);
@@ -420,19 +420,19 @@ VOID FreeDataChangeMYC(struct TNCINFO * TNC, char * Call)
 	int datalen;
 
 	if (strcmp(Call, TNC->CurrentMYC) == 0)
-		return;								// No Change
+		return;								/* No Change */
 
 	strcpy(TNC->CurrentMYC, Call);
 
 	datalen = sprintf(TXMsg, "MYCALL %s\r", Call);
-//	FreeDataSendCommand(TNC, TXMsg);
+/*	FreeDataSendCommand(TNC, TXMsg); */
 }
 
 static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 {
 	int datalen;
 	PMSGWITHLEN buffptr;
-//	char txbuff[500];
+/*	char txbuff[500]; */
 	unsigned int txlen = 0;
 	UCHAR * TXMsg;
 
@@ -444,15 +444,15 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 	struct ScanEntry * Scan;
 
 	if (TNC == NULL)
-		return 0;							// Port not defined
+		return 0;							/* Port not defined */
 
 	switch (fn)
 	{
 		case 7:			
 
-		// 100 mS Timer. May now be needed, as Poll can be called more frequently in some circumstances
+		/* 100 mS Timer. May now be needed, as Poll can be called more frequently in some circumstances */
 
-		// G7TAJ's code to record activity for stats display
+		/* G7TAJ's code to record activity for stats display */
 			
 		if ( TNC->BusyFlags && CDBusy )
 			TNC->PortRecord->PORTCONTROL.ACTIVE += 2;
@@ -462,7 +462,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 		
 		SendPoll(TNC);
 
-			// Check for buffered data to send
+			/* Check for buffered data to send */
 
 			if (TNC->FreeDataInfo->toSendTimeout)
 			{
@@ -473,13 +473,13 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 			return 0;
 
-		case 1:				// poll
+		case 1:				/* poll */
 
-//		FreeDataCheckRX(TNC);
+/*		FreeDataCheckRX(TNC); */
 
 		if (TNC->TNCCONNECTED == FALSE && TNC->TNCCONNECTING == FALSE)
 		{
-			//	See if time to reconnect
+			/*	See if time to reconnect */
 		
 			time(&ltime);
 			if (ltime - TNC->lasttime > 19 )
@@ -513,22 +513,22 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 			}
 */	
 			datalen = buffptr->LENGTH - MSGHDDRLEN;
-			Buffer = &buffptr->DEST[0];		// Raw Frame
+			Buffer = &buffptr->DEST[0];		/* Raw Frame */
 			Buffer[datalen] = 0;
 
-			// Frame has ax.25 format header. Convert to Text
+			/* Frame has ax.25 format header. Convert to Text */
 
-			CallLen = ConvFromAX25(Buffer + 7, Call);		// Origin
+			CallLen = ConvFromAX25(Buffer + 7, Call);		/* Origin */
 			memcpy(ptr, Call, CallLen);
 			ptr += CallLen;
 
 			*ptr++ = '!';
 
-			CallLen = ConvFromAX25(Buffer, Call);			// Dest
+			CallLen = ConvFromAX25(Buffer, Call);			/* Dest */
 			memcpy(ptr, Call, CallLen);
 			ptr += CallLen;
 
-			Buffer += 14;						// TO Digis
+			Buffer += 14;						/* TO Digis */
 			datalen -= 14;
 
 			while ((Buffer[-1] & 1) == 0)
@@ -537,21 +537,21 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 				CallLen = ConvFromAX25(Buffer,  Call);
 				memcpy(ptr, Call, CallLen);
 				ptr += CallLen;
-				Buffer += 7;	// End of addr
+				Buffer += 7;	/* End of addr */
 				datalen -= 7;
 			}
 
 			*ptr++ = '_';
-			*ptr++ = 'U';					// UI Frame
-			*ptr++ = 0;						// delimit calls
+			*ptr++ = 'U';					/* UI Frame */
+			*ptr++ = 0;						/* delimit calls */
 
-			if (Buffer[0] == 3)				// UI
+			if (Buffer[0] == 3)				/* UI */
 			{
 				Buffer += 2;
 				datalen -= 2;
 			}
 
-//			FreeDataSendSingleData(TNC, FECMsg, Buffer, datalen);
+/*			FreeDataSendSingleData(TNC, FECMsg, Buffer, datalen); */
 
 			ReleaseBuffer(buffptr);
 		}
@@ -563,7 +563,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 			if (TNC->DiscPending == 0)
 			{
-				// Too long in Disc Pending - Kill and Restart TNC
+				/* Too long in Disc Pending - Kill and Restart TNC */
 			}
 		}
 
@@ -578,7 +578,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 				if (STREAM->NeedDisc == 0)
 				{
-					// Send the DISCONNECT
+					/* Send the DISCONNECT */
 
 					FreeDataDisconnect(TNC);
 					strcpy(TNC->WEB_TNCSTATE, "Disconnecting");
@@ -589,7 +589,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 			if (TNC->PortRecord->ATTACHEDSESSIONS[Stream] && STREAM->Attached == 0)
 			{
-				// New Attach
+				/* New Attach */
 
 				int calllen;
 				char Msg[80];
@@ -601,20 +601,20 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 				calllen = ConvFromAX25(TNC->PortRecord->ATTACHEDSESSIONS[Stream]->L4USER, STREAM->MyCall);
 				TNC->Streams[Stream].MyCall[calllen] = 0;
 					
-				// Stop other ports in same group
+				/* Stop other ports in same group */
 
 				SuspendOtherPorts(TNC);
 
-				// Stop Listening, and set MYCALL to user's call
+				/* Stop Listening, and set MYCALL to user's call */
 
 				FreeDataSuspendPort(TNC, TNC);	
 				FreeDataChangeMYC(TNC, TNC->Streams[0].MyCall);
-				TNC->SessionTimeLimit = TNC->DefaultSessionTimeLimit;		// Reset Limit
+				TNC->SessionTimeLimit = TNC->DefaultSessionTimeLimit;		/* Reset Limit */
 
 				sprintf(TNC->WEB_TNCSTATE, "In Use by %s", STREAM->MyCall);
 				MySetWindowText(TNC->xIDC_TNCSTATE, TNC->WEB_TNCSTATE);
 
-					// Stop Scanning
+					/* Stop Scanning */
 
 				sprintf(Msg, "%d SCANSTOP", TNC->Port);
 	
@@ -626,7 +626,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 		}
 				
-		// See if any frames for this port
+		/* See if any frames for this port */
 
 		for (Stream = 0; Stream <= 2; Stream++)
 		{
@@ -648,9 +648,9 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 				datalen = (int)buffptr->Len;
 
-				buff->PORT = Stream;						// Compatibility with Kam Driver
+				buff->PORT = Stream;						/* Compatibility with Kam Driver */
 				buff->PID = 0xf0;
-				memcpy(&buff->L2DATA, &buffptr->Data[0], datalen);		// Data goes to + 7, but we have an extra byte
+				memcpy(&buff->L2DATA, &buffptr->Data[0], datalen);		/* Data goes to + 7, but we have an extra byte */
 				datalen += sizeof(void *) + 4;
 
 				PutLengthinBuffer(buff, datalen);
@@ -660,49 +660,49 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 				return (1);
 			}
 
-			if (STREAM->ReportDISC)		// May need a delay so treat as a counter
+			if (STREAM->ReportDISC)		/* May need a delay so treat as a counter */
 			{
 				STREAM->ReportDISC--;
 				if (STREAM->ReportDISC == 0)
 				{
 					buff->PORT = Stream;
-//					STREAM->Connected = 0;
-//					STREAM->Attached = 0;
+/*					STREAM->Connected = 0; */
+/*					STREAM->Attached = 0; */
 					return -1;
 				}
 			}
 		}
 		return (0);
 
-	case 2:				// send
+	case 2:				/* send */
 
 		Stream = buff->PORT;
 
 		if (!TNC->TNCCONNECTED)
 		{
-			// Send Error Response
+			/* Send Error Response */
 
 			PMSGWITHLEN buffptr = (PMSGWITHLEN)GetBuff();
 
-			if (buffptr == 0) return (0);			// No buffers, so ignore
+			if (buffptr == 0) return (0);			/* No buffers, so ignore */
 
 			buffptr->Len = 36;
 			memcpy(&buffptr->Data[0], "No Connection to TNC\r", 36);
 
 			C_Q_ADD(&TNC->Streams[Stream].PACTORtoBPQ_Q, buffptr);
 			
-			return 0;		// Don't try if not connected
+			return 0;		/* Don't try if not connected */
 		}
 
 		STREAM = &TNC->Streams[Stream];
 		
 		if (TNC->SwallowSignon)
 		{
-			TNC->SwallowSignon = FALSE;		// Discard *** connected
+			TNC->SwallowSignon = FALSE;		/* Discard *** connected */
 			return 0;
 		}
 
-		txlen = GetLengthfromBuffer(buff) - (MSGHDDRLEN + 1);		// 1 as no PID
+		txlen = GetLengthfromBuffer(buff) - (MSGHDDRLEN + 1);		/* 1 as no PID */
 		TXMsg = &buff->L2DATA[0];
 		TXMsg[txlen] = 0;
 
@@ -716,7 +716,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 		if (TNC->FreeDataInfo->Chat)
 		{
-			// Chat Mode - Send to other end
+			/* Chat Mode - Send to other end */
 
 			char reply[512] = "m";
 			char * p;
@@ -736,10 +736,10 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 				return 0;
 			}
 
-			// Send as chat message
+			/* Send as chat message */
 
-			//m�;send_message�;123�;64730c5c-d32c-47b4-9b11-c958fd07a185�;hhhhhhhhhhhhhhhhhh
-			//�;�;plain/text�;
+			/*m�;send_message�;123�;64730c5c-d32c-47b4-9b11-c958fd07a185�;hhhhhhhhhhhhhhhhhh */
+			/*�;�;plain/text�; */
 
 			strlop(TXMsg, 13);
 
@@ -766,13 +766,13 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 		if (_memicmp(&buff->L2DATA[0], "D\r", 2) == 0 || _memicmp(&buff->L2DATA[0], "BYE\r", 4) == 0)
 		{
-			STREAM->ReportDISC = TRUE;		// Tell Node
+			STREAM->ReportDISC = TRUE;		/* Tell Node */
 			TNC->FreeDataInfo->Chat = 0;
 			return 0;
 		}
 
 
-		// See if Local command (eg RADIO)
+		/* See if Local command (eg RADIO) */
 
 		if (_memicmp(&buff->L2DATA[0], "RADIO ", 6) == 0)
 		{
@@ -785,7 +785,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 			{
 				PMSGWITHLEN buffptr = (PMSGWITHLEN)GetBuff();
 
-				if (buffptr == 0) return 1;			// No buffers, so ignore
+				if (buffptr == 0) return 1;			/* No buffers, so ignore */
 
 				buffptr->Len  = sprintf((UCHAR *)&buffptr->Data[0], "%s", &buff->L2DATA[0]);
 				C_Q_ADD(&TNC->Streams[Stream].PACTORtoBPQ_Q, buffptr);
@@ -918,9 +918,9 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 		}
 
 
-		// See if a Connect Command.
+		/* See if a Connect Command. */
 
-		if (toupper(buff->L2DATA[0]) == 'C' && buff->L2DATA[1] == ' ' && txlen > 2)	// Connect
+		if (toupper(buff->L2DATA[0]) == 'C' && buff->L2DATA[1] == ' ' && txlen > 2)	/* Connect */
 		{
 			char Connect[80];
 			char loppedCall[10];
@@ -930,7 +930,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 			if (ptr)
 				*ptr = 0;
 
-			// FreeDATA doesn't have the concept of a connection, so need to simulate it between the nodes
+			/* FreeDATA doesn't have the concept of a connection, so need to simulate it between the nodes */
 			_strupr(&buff->L2DATA[2]);
 
 			if (strlen(&buff->L2DATA[2]) > 9)
@@ -942,13 +942,13 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 				strlop(loppedCall, '-');
 			strcpy(TNC->FreeDataInfo->farCall, loppedCall); 
 
-			// MYCALL and Target call are end to end concepts - the TNC cam can only use one call, set at TNC start. and no SSID's
-			// Messages are sent at TNC level to the tnc call, so we send our tnc call to the other end
+			/* MYCALL and Target call are end to end concepts - the TNC cam can only use one call, set at TNC start. and no SSID's */
+			/* Messages are sent at TNC level to the tnc call, so we send our tnc call to the other end */
 	
 
 			txlen = sprintf(Connect, "C %s %s %s ", &buff->L2DATA[2], STREAM->MyCall, TNC->FreeDataInfo->ourCall);
 
-			// See if Busy
+			/* See if Busy */
 /*
 			if (InterlockedCheckBusy(TNC))
 			{
@@ -977,16 +977,16 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 			sprintf(TNC->WEB_TNCSTATE, "%s Connecting to %s", STREAM->MyCall, STREAM->RemoteCall);
 			MySetWindowText(TNC->xIDC_TNCSTATE, TNC->WEB_TNCSTATE);
 				
-//			FreeDataSendCommand(TNC, Connect);
+/*			FreeDataSendCommand(TNC, Connect); */
 			FreeDataConnect(TNC, STREAM->RemoteCall);
 			STREAM->Connecting = TRUE;
 			return 0;
 
 		}
 
-		// Normal data. Send to TNC
+		/* Normal data. Send to TNC */
 
-		// The TNC doesn't have any commands, so send error message
+		/* The TNC doesn't have any commands, so send error message */
 
 		buffptr = (PMSGWITHLEN)GetBuff();
 
@@ -996,32 +996,32 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 			C_Q_ADD(&TNC->Streams[Stream].PACTORtoBPQ_Q, buffptr);
 		}
 
-	//	strlop(buff->L2DATA, 13);
-	//	txlen = SendDataMsg(TNC, TNC->, buff->L2DATA);
-	//	FreeDataSendData(TNC, TXMsg, txlen);
+	/*	strlop(buff->L2DATA, 13); */
+	/*	txlen = SendDataMsg(TNC, TNC->, buff->L2DATA); */
+	/*	FreeDataSendData(TNC, TXMsg, txlen); */
 	
 		return 0;
 
 	case 3:	
 		
-		// CHECK IF OK TO SEND (And check TNC Status)
+		/* CHECK IF OK TO SEND (And check TNC Status) */
 
 		Stream = (int)(size_t)buff;
 
-		// FreeData TNC can buffer unlimited data 
+		/* FreeData TNC can buffer unlimited data  */
 	
 		if (TNC->Streams[Stream].Attached == 0)
 			return (TNC->TNCCONNECTED != 0) << 8 | 1;
 
-		return ((TNC->TNCCONNECTED != 0) << 8 | TNC->Streams[Stream].Disconnecting << 15);		// OK
+		return ((TNC->TNCCONNECTED != 0) << 8 | TNC->Streams[Stream].Disconnecting << 15);		/* OK */
 		
-	case 5:				// Close
+	case 5:				/* Close */
 
 		StopTNC(TNC);
 
-		// Drop through
+		/* Drop through */
 
-	case 4:				// reinit7
+	case 4:				/* reinit7 */
 
 		if (TNC->TCPDataSock)
 		{
@@ -1040,46 +1040,46 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 		return 0;
 
-	case 6:				// Scan Stop Interface
+	case 6:				/* Scan Stop Interface */
 
 		Param = (size_t)buff;
 	
-		if (Param == 2)		// Check  Permission (Shouldn't happen)
+		if (Param == 2)		/* Check  Permission (Shouldn't happen) */
 		{
 			Debugprintf("Scan Check Permission called on FreeDATA");
-			return 1;		// OK to change
+			return 1;		/* OK to change */
 		}
 
-		if (Param == 1)		// Request Permission
+		if (Param == 1)		/* Request Permission */
 		{
 			if (!TNC->CONNECTED)
-				return 0;					// No connection so no interlock
+				return 0;					/* No connection so no interlock */
 			
 			if (TNC->ConnectPending == 0 && TNC->PTTState == 0)
 			{
 				FreeDataSuspendPort(TNC, TNC);
 				TNC->GavePermission = TRUE;
-				return 0;	// OK to Change
+				return 0;	/* OK to Change */
 			}
 
 			if (TNC->ConnectPending)
-				TNC->ConnectPending--;		// Time out if set too long
+				TNC->ConnectPending--;		/* Time out if set too long */
 
 			return TRUE;
 		}
 
-		if (Param == 3)		// Release  Permission
+		if (Param == 3)		/* Release  Permission */
 		{
 			if (TNC->GavePermission)
 			{
 				TNC->GavePermission = FALSE;
-				if (TNC->ARDOPCurrentMode[0] != 'S')	// Skip
+				if (TNC->ARDOPCurrentMode[0] != 'S')	/* Skip */
 					FreeDataReleasePort(TNC);
 			}
 			return 0;
 		}
 
-		// Param is Address of a struct ScanEntry
+		/* Param is Address of a struct ScanEntry */
 
 		Scan = (struct ScanEntry *)buff;
 		return 0;
@@ -1089,13 +1089,13 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 
 VOID FreeDataReleaseTNC(struct TNCINFO * TNC)
 {
-	// Set mycall back to Node or Port Call, and Start Scanner
+	/* Set mycall back to Node or Port Call, and Start Scanner */
 
 	UCHAR TXMsg[1000];
 
 	FreeDataChangeMYC(TNC, TNC->NodeCall);
 
-	//	Start Scanner
+	/*	Start Scanner */
 				
 	sprintf(TXMsg, "%d SCANSTART 15", TNC->Port);
 
@@ -1108,8 +1108,8 @@ VOID FreeDataReleaseTNC(struct TNCINFO * TNC)
 
 VOID FreeDataSuspendPort(struct TNCINFO * TNC, struct TNCINFO * ThisTNC)
 {
-//	char CMD[] = "{\"type\" : \"set\", \"command\" : \"listen\", \"state\": \"False\"}\n";
-//	send(TNC->TCPDataSock, CMD, strlen(CMD), 0);
+/*	char CMD[] = "{\"type\" : \"set\", \"command\" : \"listen\", \"state\": \"False\"}\n"; */
+/*	send(TNC->TCPDataSock, CMD, strlen(CMD), 0); */
 }
 
 VOID FreeDataReleasePort(struct TNCINFO * TNC)
@@ -1141,7 +1141,7 @@ static int WebProc(struct TNCINFO * TNC, char * Buff, BOOL LOCAL)
 	Len += sprintf(&Buff[Len], "<tr><td>Channel State</td><td>%s</td></tr>", TNC->WEB_CHANSTATE);
 	Len += sprintf(&Buff[Len], "<tr><td>Proto State</td><td>%s</td></tr>", TNC->WEB_PROTOSTATE);
 	Len += sprintf(&Buff[Len], "<tr><td>Traffic</td><td>%s</td></tr>", TNC->WEB_TRAFFIC);
-//	Len += sprintf(&Buff[Len], "<tr><td>TNC Restarts</td><td></td></tr>", TNC->WEB_RESTARTS);
+/*	Len += sprintf(&Buff[Len], "<tr><td>TNC Restarts</td><td></td></tr>", TNC->WEB_RESTARTS); */
 	Len += sprintf(&Buff[Len], "</table>");
 
 	Len += sprintf(&Buff[Len], "<textarea rows=10 style=\"width:500px; height:250px;\" id=textarea >%s</textarea>", TNC->WebBuffer);
@@ -1397,7 +1397,7 @@ VOID * FreeDataExtInit(EXTPORTDATA * PortEntry)
 
 	if (TNC == NULL)
 	{
-		// Not defined in Config file
+		/* Not defined in Config file */
 
 		sprintf(Msg," ** Error - no info in BPQ32.cfg for this port\n");
 		WritetoConsole(Msg);
@@ -1459,8 +1459,8 @@ VOID * FreeDataExtInit(EXTPORTDATA * PortEntry)
 
 	PortEntry->MAXHOSTMODESESSIONS = TNC->PacketChannels + 1;
 
-	PortEntry->SCANCAPABILITIES = SIMPLE;			// Scan Control - pending connect only
-	PortEntry->PERMITGATEWAY = TRUE;				// Can change ax.25 call on each stream
+	PortEntry->SCANCAPABILITIES = SIMPLE;			/* Scan Control - pending connect only */
+	PortEntry->PERMITGATEWAY = TRUE;				/* Can change ax.25 call on each stream */
 
 	PortEntry->PORTCONTROL.UICAPABLE = TRUE;
 
@@ -1470,20 +1470,20 @@ VOID * FreeDataExtInit(EXTPORTDATA * PortEntry)
 	TNC->SuspendPortProc = FreeDataSuspendPort;
 	TNC->ReleasePortProc = FreeDataReleasePort;
 
-//	PortEntry->PORTCONTROL.PORTSTARTCODE = KAMStartPort;
-//	PortEntry->PORTCONTROL.PORTSTOPCODE = KAMStopPort;
+/*	PortEntry->PORTCONTROL.PORTSTARTCODE = KAMStartPort; */
+/*	PortEntry->PORTCONTROL.PORTSTOPCODE = KAMStopPort; */
 
 
 	ptr=strchr(TNC->NodeCall, ' ');
-	if (ptr) *(ptr) = 0;					// Null Terminate
+	if (ptr) *(ptr) = 0;					/* Null Terminate */
 
-	// Set Essential Params and MYCALL
+	/* Set Essential Params and MYCALL */
 
-	// Put overridable ones on front, essential ones on end
+	/* Put overridable ones on front, essential ones on end */
 
 	TempScript = zalloc(1000);
 
-	// cant think of any yet
+	/* cant think of any yet */
 
 	if (TNC->InitScript)
 	{
@@ -1493,7 +1493,7 @@ VOID * FreeDataExtInit(EXTPORTDATA * PortEntry)
 
 	TNC->InitScript = TempScript;
 
-	// Set MYCALL
+	/* Set MYCALL */
 
 	sprintf(Msg, "MYCALL %s\r", TNC->NodeCall);
 	strcat(TNC->InitScript, Msg);
@@ -1501,12 +1501,12 @@ VOID * FreeDataExtInit(EXTPORTDATA * PortEntry)
 	strcpy(TNC->CurrentMYC, TNC->NodeCall);
 
 	if (TNC->WL2K == NULL)
-		if (PortEntry->PORTCONTROL.WL2KInfo.RMSCall[0])			// Already decoded
+		if (PortEntry->PORTCONTROL.WL2KInfo.RMSCall[0])			/* Already decoded */
 			TNC->WL2K = &PortEntry->PORTCONTROL.WL2KInfo;
 
 	PortEntry->PORTCONTROL.TNC = TNC;
 
-	// Build SSID List
+	/* Build SSID List */
 
 	if (TNC->LISTENCALLS)
 	{		
@@ -1521,7 +1521,7 @@ VOID * FreeDataExtInit(EXTPORTDATA * PortEntry)
 		int SSID;
 		int Listptr;
 
-		// list is a set of numbers separated by spaces eg 0 2 10 
+		/* list is a set of numbers separated by spaces eg 0 2 10  */
 
 		SSIDptr = strchr(TNC->NodeCall, '-');
 		if (SSIDptr)
@@ -1551,7 +1551,7 @@ VOID * FreeDataExtInit(EXTPORTDATA * PortEntry)
 		List[Listptr] = 0;
 	}
 	
-	// Build SSID List for Linux
+	/* Build SSID List for Linux */
 
 	TNC->FreeDataInfo->SSIDS[n] = _strdup(TNC->FreeDataInfo->SSIDList);
 
@@ -1585,13 +1585,13 @@ VOID * FreeDataExtInit(EXTPORTDATA * PortEntry)
 	{
 		CreatePactorWindow(TNC, ClassName, WindowTitle, RigControlRow + 22, PacWndProc, 500, 450, ForcedClose);
 
-		InitCommonControls(); // loads common control's DLL 
+		InitCommonControls(); /* loads common control's DLL  */
 
 		CreateWindowEx(0, "STATIC", "TX Tune", WS_CHILD | WS_VISIBLE, 10,line,120,20, TNC->hDlg, NULL, hInstance, NULL);
 		TNC->xIDC_TXTUNE = CreateWindowEx(0, TRACKBAR_CLASS, "", WS_CHILD | WS_VISIBLE, 116,line,200,20, TNC->hDlg, NULL, hInstance, NULL);
 		TNC->xIDC_TXTUNEVAL = CreateWindowEx(0, "STATIC", "0", WS_CHILD | WS_VISIBLE, 320,line,30,20, TNC->hDlg, NULL, hInstance, NULL);
 
-		SendMessage(TNC->xIDC_TXTUNE, TBM_SETRANGE, (WPARAM) TRUE, (LPARAM) MAKELONG(-200, 200));  // min. & max. positions
+		SendMessage(TNC->xIDC_TXTUNE, TBM_SETRANGE, (WPARAM) TRUE, (LPARAM) MAKELONG(-200, 200));  /* min. & max. positions */
 
 		line += 22;
 	}
@@ -1648,11 +1648,11 @@ VOID * FreeDataExtInit(EXTPORTDATA * PortEntry)
 	strcpy(TNC->WEB_CHANSTATE, "Idle");
 	SetWindowText(TNC->xIDC_CHANSTATE, TNC->WEB_CHANSTATE);
 
-	// Convert sound card name to index
+	/* Convert sound card name to index */
 
 #ifdef WIN32
 
-	if (CaptureDevices == NULL)				// DOn't do it again if more that one port
+	if (CaptureDevices == NULL)				/* DOn't do it again if more that one port */
 	{
 		CaptureCount = waveInGetNumDevs();
 
@@ -1663,7 +1663,7 @@ VOID * FreeDataExtInit(EXTPORTDATA * PortEntry)
 
 		for (i = 0; i < CaptureCount; i++)
 		{
-			waveInOpen(&hWaveIn, i, &wfx, 0, 0, CALLBACK_NULL); //WAVE_MAPPER
+			waveInOpen(&hWaveIn, i, &wfx, 0, 0, CALLBACK_NULL); /*WAVE_MAPPER */
 			waveInGetDevCaps((UINT_PTR)hWaveIn, &pwic, sizeof(WAVEINCAPS));
 
 			if (CaptureDevices)
@@ -1683,7 +1683,7 @@ VOID * FreeDataExtInit(EXTPORTDATA * PortEntry)
 
 		for (i = 0; i < PlaybackCount; i++)
 		{
-			waveOutOpen(&hWaveOut, i, &wfx, 0, 0, CALLBACK_NULL); //WAVE_MAPPER
+			waveOutOpen(&hWaveOut, i, &wfx, 0, 0, CALLBACK_NULL); /*WAVE_MAPPER */
 			waveOutGetDevCaps((UINT_PTR)hWaveOut, &pwoc, sizeof(WAVEOUTCAPS));
 
 			if (PlaybackDevices[0])
@@ -1698,7 +1698,7 @@ VOID * FreeDataExtInit(EXTPORTDATA * PortEntry)
 
 #endif
 
-	time(&TNC->lasttime);			// Get initial time value
+	time(&TNC->lasttime);			/* Get initial time value */
 
 	ConnecttoFreeData(port);
 	return ExtProc;
@@ -1707,7 +1707,7 @@ VOID * FreeDataExtInit(EXTPORTDATA * PortEntry)
 
 VOID TidyClose(struct TNCINFO * TNC, int Stream)
 {
-	// We don't get data acks, so can't check for bytes outstanding
+	/* We don't get data acks, so can't check for bytes outstanding */
 	
 	FreeDataDisconnect(TNC);
 }
@@ -1732,7 +1732,7 @@ VOID FreeDataAbort(struct TNCINFO * TNC)
 	FreeDataSendCommand(TNC, "ABORT\r");
 }
 
-// Host Mode Stuff (we reuse some routines in SCSPactor)
+/* Host Mode Stuff (we reuse some routines in SCSPactor) */
 
 VOID FreeDataDoTermModeTimeout(struct TNCINFO * TNC)
 {
@@ -1740,7 +1740,7 @@ VOID FreeDataDoTermModeTimeout(struct TNCINFO * TNC)
 
 	if (TNC->ReinitState == 0)
 	{
-		//Checking if in Terminal Mode - Try to set back to Term Mode
+		/*Checking if in Terminal Mode - Try to set back to Term Mode */
 
 		TNC->ReinitState = 1;
 		return;
@@ -1748,7 +1748,7 @@ VOID FreeDataDoTermModeTimeout(struct TNCINFO * TNC)
 
 	if (TNC->ReinitState == 1)
 	{
-		// Forcing back to Term Mode
+		/* Forcing back to Term Mode */
 
 		TNC->ReinitState = 0;
 		return;
@@ -1764,7 +1764,7 @@ static RECT Rect1 = {30, 160, 400, 195};
 
 int zEncode(unsigned char * in, unsigned char * out, int len, unsigned char * Banned)
 {
-	// Replace forbidden chars with =xx
+	/* Replace forbidden chars with =xx */
 
 	unsigned char * ptr = out;
 	unsigned char c;
@@ -1805,8 +1805,8 @@ VOID FreeDataProcessTNCMessage(struct TNCINFO * TNC, char * Call, unsigned char 
 	struct WL2KInfo * WL2K = TNC->WL2K;
 	TRANSPORTENTRY * SESS;
 
-	// First Byte of Message is Type. Messages can be commands or short (<120) data packets
-	// Data is encoded with =xx replacing restricted chars
+	/* First Byte of Message is Type. Messages can be commands or short (<120) data packets */
+	/* Data is encoded with =xx replacing restricted chars */
 
 	Msg[Len] = 0;
 
@@ -1814,7 +1814,7 @@ VOID FreeDataProcessTNCMessage(struct TNCINFO * TNC, char * Call, unsigned char 
 	{
 	case 'C':
 
-		// Connect Request. C G8BPQ-10 GM8BPQ-2 (Target, Origin) 
+		/* Connect Request. C G8BPQ-10 GM8BPQ-2 (Target, Origin)  */
 
 		toCall = strtok_s(&Msg[2], " ", &Context);
 		fromCall = strtok_s(NULL, " ", &Context);
@@ -1822,9 +1822,9 @@ VOID FreeDataProcessTNCMessage(struct TNCINFO * TNC, char * Call, unsigned char 
 
 		strcpy(TNC->FreeDataInfo->farCall, tncCall);
 
-		ConvToAX25Ex(fromCall, axcall);		// Allow -T and -R SSID's for MPS
+		ConvToAX25Ex(fromCall, axcall);		/* Allow -T and -R SSID's for MPS */
 
-		// Check for ExcludeList
+		/* Check for ExcludeList */
 
 		if (ExcludeList[0])
 		{
@@ -1832,7 +1832,7 @@ VOID FreeDataProcessTNCMessage(struct TNCINFO * TNC, char * Call, unsigned char 
 			{
 				Debugprintf("FreeData Call from %s rejected", fromCall);
 
-				// Send 'd'
+				/* Send 'd' */
 
 				Sleep(1000);
 				FreeDataDisconnect(TNC);
@@ -1840,7 +1840,7 @@ VOID FreeDataProcessTNCMessage(struct TNCINFO * TNC, char * Call, unsigned char 
 			}
 		}
 
-		//	IF WE HAVE A PERMITTED CALLS LIST, SEE IF HE IS IN IT
+		/*	IF WE HAVE A PERMITTED CALLS LIST, SEE IF HE IS IN IT */
 
 		if (TNC->PortRecord->PORTCONTROL.PERMITTEDCALLS)
 		{
@@ -1848,12 +1848,12 @@ VOID FreeDataProcessTNCMessage(struct TNCINFO * TNC, char * Call, unsigned char 
 
 			while (TRUE)
 			{
-				if (memcmp(axcall, ptr, 6) == 0)	// Ignore SSID
+				if (memcmp(axcall, ptr, 6) == 0)	/* Ignore SSID */
 					break;
 
 				ptr += 7;
 
-				if ((*ptr) == 0)							// Not in list
+				if ((*ptr) == 0)							/* Not in list */
 				{
 					Sleep(1000);
 					FreeDataSendCommand(TNC, "d");
@@ -1864,7 +1864,7 @@ VOID FreeDataProcessTNCMessage(struct TNCINFO * TNC, char * Call, unsigned char 
 			}
 		}
 
-		// See which application the connect is for
+		/* See which application the connect is for */
 
 		for (App = 0; App < 32; App++)
 		{
@@ -1885,13 +1885,13 @@ VOID FreeDataProcessTNCMessage(struct TNCINFO * TNC, char * Call, unsigned char 
 			memcpy(AppName, &ApplPtr[App * sizeof(CMDX)], 12);
 			AppName[12] = 0;
 
-			// if SendTandRtoRelay set and Appl is RMS change to RELAY
+			/* if SendTandRtoRelay set and Appl is RMS change to RELAY */
 
 			if (TNC->SendTandRtoRelay && memcmp(AppName, "RMS ", 4) == 0
 				&& (strstr(Call, "-T" ) || strstr(Call, "-R")))
 				strcpy(AppName, "RELAY       ");
 
-			// Make sure app is available
+			/* Make sure app is available */
 
 			if (!CheckAppl(TNC, AppName))
 			{
@@ -1904,7 +1904,7 @@ VOID FreeDataProcessTNCMessage(struct TNCINFO * TNC, char * Call, unsigned char 
 		ProcessIncommingConnectEx(TNC, fromCall, 0, TRUE, TRUE);
 		SESS = TNC->PortRecord->ATTACHEDSESSIONS[0];
 
-		// if connect to an application, send command
+		/* if connect to an application, send command */
 
 		if (AppName[0])
 		{
@@ -1923,10 +1923,10 @@ VOID FreeDataProcessTNCMessage(struct TNCINFO * TNC, char * Call, unsigned char 
 		if (TNC->RIG && TNC->RIG != &TNC->DummyRig && strcmp(TNC->RIG->RigName, "PTT"))
 		{
 			sprintf(TNC->WEB_TNCSTATE, "%s Connected to %s Inbound Freq %s", TNC->Streams[0].RemoteCall, toCall, TNC->RIG->Valchar);
-			SESS->Frequency = (int)(atof(TNC->RIG->Valchar) * 1000000.0) + 1500;		// Convert to Centre Freq
+			SESS->Frequency = (int)(atof(TNC->RIG->Valchar) * 1000000.0) + 1500;		/* Convert to Centre Freq */
 			if (SESS->Frequency == 1500)
 			{
-				// try to get from WL2K record
+				/* try to get from WL2K record */
 
 				if (WL2K)
 				{
@@ -1954,14 +1954,14 @@ VOID FreeDataProcessTNCMessage(struct TNCINFO * TNC, char * Call, unsigned char 
 		STREAM->BytesRXed = STREAM->BytesTXed = STREAM->PacketsSent = 0;
 		STREAM->Connected = TRUE;
 
-		// Send Connect ACK
+		/* Send Connect ACK */
 		Sleep(1000);
 		FreeDataSendCommand(TNC, "c");
 		return;
 
 	case 'c':
 
-		// Connect ACK
+		/* Connect ACK */
 
 		sprintf(TNC->WEB_TNCSTATE, "%s Connected to %s", STREAM->MyCall, STREAM->RemoteCall);
 		MySetWindowText(TNC->xIDC_TNCSTATE, TNC->WEB_TNCSTATE);
@@ -1970,7 +1970,7 @@ VOID FreeDataProcessTNCMessage(struct TNCINFO * TNC, char * Call, unsigned char 
 
 		buffptr = (PMSGWITHLEN)GetBuff();
 
-		if (buffptr == 0) return;			// No buffers, so ignore
+		if (buffptr == 0) return;			/* No buffers, so ignore */
 
 		buffptr->Len = sprintf(buffptr->Data, "*** Connected to %s\r", TNC->FreeDataInfo->toCall);
 		
@@ -1981,20 +1981,20 @@ VOID FreeDataProcessTNCMessage(struct TNCINFO * TNC, char * Call, unsigned char 
 
 	case 'D':
 
-		// Disconnect Command
+		/* Disconnect Command */
 
 		FreeDataSendCommand(TNC, "d");
 	
-		// Drop through to disconnect this end
+		/* Drop through to disconnect this end */
 
 	case 'd':
 
-		// Disconnect complete (response to sending "D")
-		// Or connect refused in response to "C"
+		/* Disconnect complete (response to sending "D") */
+		/* Or connect refused in response to "C" */
 
 		if (STREAM->Connecting)
 		{
-			// Connection Refused - If there is a message, pass to appl
+			/* Connection Refused - If there is a message, pass to appl */
 
 			sprintf(TNC->WEB_TNCSTATE, "In Use by %s", STREAM->MyCall);
 			MySetWindowText(TNC->xIDC_TNCSTATE, TNC->WEB_TNCSTATE);
@@ -2002,7 +2002,7 @@ VOID FreeDataProcessTNCMessage(struct TNCINFO * TNC, char * Call, unsigned char 
 			STREAM->Connecting = FALSE;
 			buffptr = (PMSGWITHLEN)GetBuff();
 
-			if (buffptr == 0) return;			// No buffers, so ignore
+			if (buffptr == 0) return;			/* No buffers, so ignore */
 
 			if (Msg[1])
 				buffptr->Len = sprintf(buffptr->Data, "Connect Rejected - %s\r", &Msg[1]);
@@ -2014,11 +2014,11 @@ VOID FreeDataProcessTNCMessage(struct TNCINFO * TNC, char * Call, unsigned char 
 			return;
 		}
 
-		// Release Session
+		/* Release Session */
 
 		if (STREAM->Connected)
 		{
-			// Create a traffic record
+			/* Create a traffic record */
 		
 			char logmsg[120];	
 			time_t Duration;
@@ -2036,8 +2036,8 @@ VOID FreeDataProcessTNCMessage(struct TNCINFO * TNC, char * Call, unsigned char 
 			Debugprintf(logmsg);
 		}
 
-		STREAM->Connected = FALSE;		// Back to Command Mode
-		STREAM->ReportDISC = TRUE;		// Tell Node
+		STREAM->Connected = FALSE;		/* Back to Command Mode */
+		STREAM->ReportDISC = TRUE;		/* Tell Node */
 		STREAM->Disconnecting = FALSE;
 
 		strcpy(TNC->WEB_TNCSTATE, "Free");
@@ -2047,12 +2047,12 @@ VOID FreeDataProcessTNCMessage(struct TNCINFO * TNC, char * Call, unsigned char 
 
 	case 'B':
 
-		// Was Base64, but has been expanded - just send to User
+		/* Was Base64, but has been expanded - just send to User */
 
-		// If len > blocksize, fragment
+		/* If len > blocksize, fragment */
 
 		Len--;
-		Msg++;			// Remove Type
+		Msg++;			/* Remove Type */
 
 		while (Len > 256)
 		{
@@ -2081,15 +2081,15 @@ VOID FreeDataProcessTNCMessage(struct TNCINFO * TNC, char * Call, unsigned char 
 
 	case 'I':
 
-		// Encoded Response
+		/* Encoded Response */
 
-		// Undo = transparency
+		/* Undo = transparency */
 
 		ptr = Msg + 1;
 
 		while (ptr = strchr(ptr, '='))
 		{
-			// Next two chars are a hex value
+			/* Next two chars are a hex value */
 
 			a = ptr[1] - 'A';
 			b = ptr[2] - 'A';
@@ -2105,10 +2105,10 @@ VOID FreeDataProcessTNCMessage(struct TNCINFO * TNC, char * Call, unsigned char 
 
 	case 'f':
 
-		// FreeDATA File Transfer
+		/* FreeDATA File Transfer */
 
-		// Seems to be f null fn null data
-		//f.;Makefile.;.;123123123.;
+		/* Seems to be f null fn null data */
+		/*f.;Makefile.;.;123123123.; */
 	{
 		char * FN;
 		time_t CRC;
@@ -2166,7 +2166,7 @@ VOID FreeDataProcessTNCMessage(struct TNCINFO * TNC, char * Call, unsigned char 
 
 	if (buffptr == 0)
 	{
-		return;			// No buffers, so ignore
+		return;			/* No buffers, so ignore */
 	}
 	
 	buffptr->Len = sprintf((UCHAR *)&buffptr->Data[0], "%s", Msg);
@@ -2193,9 +2193,9 @@ VOID FreeDataProcessNewConnect(struct TNCINFO * TNC, char * fromCall, char * toC
 
 	strcpy(TNC->FreeDataInfo->farCall, fromCall);
 
-	ConvToAX25Ex(fromCall, axcall);		// Allow -T and -R SSID's for MPS
+	ConvToAX25Ex(fromCall, axcall);		/* Allow -T and -R SSID's for MPS */
 
-	// Check for ExcludeList
+	/* Check for ExcludeList */
 
 	if (ExcludeList[0])
 	{
@@ -2203,7 +2203,7 @@ VOID FreeDataProcessNewConnect(struct TNCINFO * TNC, char * fromCall, char * toC
 		{
 			Debugprintf("FreeData Call from %s rejected", fromCall);
 
-			// Send 'd'
+			/* Send 'd' */
 
 			Sleep(1000);
 			FreeDataDisconnect(TNC);
@@ -2211,7 +2211,7 @@ VOID FreeDataProcessNewConnect(struct TNCINFO * TNC, char * fromCall, char * toC
 		}
 	}
 
-	//	IF WE HAVE A PERMITTED CALLS LIST, SEE IF HE IS IN IT
+	/*	IF WE HAVE A PERMITTED CALLS LIST, SEE IF HE IS IN IT */
 
 	if (TNC->PortRecord->PORTCONTROL.PERMITTEDCALLS)
 	{
@@ -2219,12 +2219,12 @@ VOID FreeDataProcessNewConnect(struct TNCINFO * TNC, char * fromCall, char * toC
 
 		while (TRUE)
 		{
-			if (memcmp(axcall, ptr, 6) == 0)	// Ignore SSID
+			if (memcmp(axcall, ptr, 6) == 0)	/* Ignore SSID */
 				break;
 
 			ptr += 7;
 
-			if ((*ptr) == 0)							// Not in list
+			if ((*ptr) == 0)							/* Not in list */
 			{
 				Sleep(1000);
 				FreeDataDisconnect(TNC);
@@ -2235,10 +2235,10 @@ VOID FreeDataProcessNewConnect(struct TNCINFO * TNC, char * fromCall, char * toC
 		}
 	}
 
-	// The TNC responds to any SSID so we can use incomming call as Appl Call
-	// No we can't - it responds but reports the configured call not the called call
+	/* The TNC responds to any SSID so we can use incomming call as Appl Call */
+	/* No we can't - it responds but reports the configured call not the called call */
 
-	// See which application the connect is for
+	/* See which application the connect is for */
 
 	for (App = 0; App < 32; App++)
 	{
@@ -2259,13 +2259,13 @@ VOID FreeDataProcessNewConnect(struct TNCINFO * TNC, char * fromCall, char * toC
 		memcpy(AppName, &ApplPtr[App * sizeof(CMDX)], 12);
 		AppName[12] = 0;
 
-		// if SendTandRtoRelay set and Appl is RMS change to RELAY
+		/* if SendTandRtoRelay set and Appl is RMS change to RELAY */
 
 		if (TNC->SendTandRtoRelay && memcmp(AppName, "RMS ", 4) == 0
 			&& (strstr(fromCall, "-T" ) || strstr(fromCall, "-R")))
 			strcpy(AppName, "RELAY       ");
 
-		// Make sure app is available
+		/* Make sure app is available */
 
 		if (!CheckAppl(TNC, AppName))
 		{
@@ -2280,7 +2280,7 @@ VOID FreeDataProcessNewConnect(struct TNCINFO * TNC, char * fromCall, char * toC
 	ProcessIncommingConnectEx(TNC, fromCall, 0, TRUE, TRUE);
 	SESS = TNC->PortRecord->ATTACHEDSESSIONS[0];
 
-	// if connect to an application, send command
+	/* if connect to an application, send command */
 
 	if (AppName[0])
 	{
@@ -2299,10 +2299,10 @@ VOID FreeDataProcessNewConnect(struct TNCINFO * TNC, char * fromCall, char * toC
 	if (TNC->RIG && TNC->RIG != &TNC->DummyRig && strcmp(TNC->RIG->RigName, "PTT"))
 	{
 		sprintf(TNC->WEB_TNCSTATE, "%s Connected to %s Inbound Freq %s", TNC->Streams[0].RemoteCall, toCall, TNC->RIG->Valchar);
-		SESS->Frequency = (int)(atof(TNC->RIG->Valchar) * 1000000.0) + 1500;		// Convert to Centre Freq
+		SESS->Frequency = (int)(atof(TNC->RIG->Valchar) * 1000000.0) + 1500;		/* Convert to Centre Freq */
 		if (SESS->Frequency == 1500)
 		{
-			// try to get from WL2K record
+			/* try to get from WL2K record */
 
 			if (WL2K)
 			{
@@ -2347,7 +2347,7 @@ VOID FreeDataProcessConnectAck(struct TNCINFO * TNC, char * Call, unsigned char 
 
 	buffptr = (PMSGWITHLEN)GetBuff();
 
-	if (buffptr == 0) return;			// No buffers, so ignore
+	if (buffptr == 0) return;			/* No buffers, so ignore */
 
 	buffptr->Len = sprintf(buffptr->Data, "*** Connected to %s\r", TNC->FreeDataInfo->toCall);
 
@@ -2371,16 +2371,16 @@ Line 272:                 if received_json["type"] == 'SET' and received_json["c
 Line 275:                 if received_json["type"] == 'SET' and received_json["command"] == 'DEL_RX_MSG_BUFFER':
 */
 
-//{\"type\" : \"ARQ\", \"command\" : \"sendMessage\",  \"dxcallsign\" : \"G8BPQ\", \"mode\" : \"10\", \"n_frames\" : \"1\", \"data\" :  \"Hello Hello\" , \"checksum\" : \"123\", \"timestamp\" : 1642580748576}
+/*{\"type\" : \"ARQ\", \"command\" : \"sendMessage\",  \"dxcallsign\" : \"G8BPQ\", \"mode\" : \"10\", \"n_frames\" : \"1\", \"data\" :  \"Hello Hello\" , \"checksum\" : \"123\", \"timestamp\" : 1642580748576} */
 
 
 
-static unsigned char BANNED[] = {'"', '=', ':', '{', '}', '[', ']', '/', 13, 0};	// I think only need to escape = ":  CR Null
+static unsigned char BANNED[] = {'"', '=', ':', '{', '}', '[', ']', '/', 13, 0};	/* I think only need to escape = ":  CR Null */
 
 
 static void SendDataMsg(struct TNCINFO * TNC, char * Call, char * Msg, int Len)
 {
-	// We can't base64 encode chunks. so buffer as original data and encode on send
+	/* We can't base64 encode chunks. so buffer as original data and encode on send */
 
 	SendAsFile(TNC, TNC->FreeDataInfo->farCall, Msg, Len);
 	WritetoTrace(TNC, Msg, Len);
@@ -2395,7 +2395,7 @@ static int SendAsRaw(struct TNCINFO * TNC, char * Call, char * myCall, char * Ms
 	char Message[16284];
 	char * Base64;
 
-	// TNC now only supports send_raw, with base64 encoded data
+	/* TNC now only supports send_raw, with base64 encoded data */
 
 	char Template[] = "{\"type\" : \"arq\", \"command\" : \"send_raw\", \"uuid\" : \"%s\",\"parameter\":"
 		"[{\"dxcallsign\" : \"%s\", \"mode\": \"255\", \"n_frames\" : \"1\", \"data\" : \"%s\"}]}\n";
@@ -2415,7 +2415,7 @@ void FlushData(struct TNCINFO * TNC)
 	struct FreeDataINFO * Info = TNC->FreeDataInfo;
 	int Len = Info->toSendCount;
 
-	// We need to flag as data (B) then base64 encode it
+	/* We need to flag as data (B) then base64 encode it */
 
 	memmove(&Info->toSendData[1], Info->toSendData, Len);
 	Info->toSendData[0] = 'B';
@@ -2437,18 +2437,18 @@ static int SendAsFile(struct TNCINFO * TNC, char * Call, char * Msg, int Len)
 	struct STREAMINFO * STREAM = &TNC->Streams[0]; 
 	struct FreeDataINFO * Info = TNC->FreeDataInfo;
 
-	// Add to buffer
+	/* Add to buffer */
 
-	if ((Info->toSendCount + Len) > 8192)			// Reasonable Limit
+	if ((Info->toSendCount + Len) > 8192)			/* Reasonable Limit */
 	{
-		// Send the buffered bit
+		/* Send the buffered bit */
 
 		 FlushData(TNC);
 	}
 
 	memcpy(&Info->toSendData[Info->toSendCount], Msg, Len);
 	Info->toSendCount += Len;
-	Info->toSendTimeout = 10;		// About a second
+	Info->toSendTimeout = 10;		/* About a second */
 
 	STREAM->BytesTXed += Len;
 
@@ -2524,11 +2524,11 @@ int FreeDataWriteCommBlock(struct TNCINFO * TNC)
 
 char * getObjectFromArray(char * Msg)
 {
-	// This gets the next object from an array ({} = object, [] = array
-	// We look for the end of the object same number of { and }, teminate after } and return pointer to next object
-	// So we have terminated Msg, and returned next object in array
+	/* This gets the next object from an array ({} = object, [] = array */
+	/* We look for the end of the object same number of { and }, teminate after } and return pointer to next object */
+	/* So we have terminated Msg, and returned next object in array */
 
-	// Only call if Msg is the next object in array
+	/* Only call if Msg is the next object in array */
 
 
 	char * ptr = Msg;
@@ -2581,7 +2581,7 @@ void ProcessFileObject(struct TNCINFO * TNC, char * This)
 	Type += 7;
 	This = strlop(Type, '"');
 
-	// Decode Base64
+	/* Decode Base64 */
 
 	Len = strlen(Type);
 
@@ -2609,7 +2609,7 @@ void ProcessFileObject(struct TNCINFO * TNC, char * This)
 
 	Type --;
 
-	Type[0] = 'B';	; // Base64 Info
+	Type[0] = 'B';	; /* Base64 Info */
 
 	FreeDataProcessTNCMessage(TNC, Call, Type, NewLen + 1);
 
@@ -2618,7 +2618,7 @@ void ProcessFileObject(struct TNCINFO * TNC, char * This)
 
 void ProcessMessageObject(struct TNCINFO * TNC, char * This)
 {
-	// This gets Message from a RX_MSG_BUFFER array element.
+	/* This gets Message from a RX_MSG_BUFFER array element. */
 
 	char * Call;
 	char * LOC;
@@ -2651,9 +2651,9 @@ void ProcessMessageObject(struct TNCINFO * TNC, char * This)
 	Msg += 8;
 	This = strlop(Msg, '"');
 
-	// Decode Base64
+	/* Decode Base64 */
 
-	// FreeData replaces / with \/ so need to undo
+	/* FreeData replaces / with \/ so need to undo */
 
 	ptr2 = strstr(Msg, "\\/");
 
@@ -2685,20 +2685,20 @@ void ProcessMessageObject(struct TNCINFO * TNC, char * This)
 
 	Msg[Len] = 0;
 
-//m�;send_message�;123�;64730c5c-d32c-47b4-9b11-c958fd07a185�;hhhhhhhhhhhhhhhhhh
-//�;�;plain/text�;
+/*m�;send_message�;123�;64730c5c-d32c-47b4-9b11-c958fd07a185�;hhhhhhhhhhhhhhhhhh */
+/*�;�;plain/text�; */
 
-//m;send_message;123;64730c5c-d32c-47b4-9b11-c958fd07a185;hhhhhhhhhhhhhhhhhh
-//;;plain/text;
+/*m;send_message;123;64730c5c-d32c-47b4-9b11-c958fd07a185;hhhhhhhhhhhhhhhhhh */
+/*;;plain/text; */
 	
-	// Message elements seem to be delimited by null ;
-	// Guessing labels
+	/* Message elements seem to be delimited by null ; */
+	/* Guessing labels */
 
 	ID = Msg;
 
 	if (ID[0] == 'B')
 	{
-		// BPQ Message
+		/* BPQ Message */
 
 		struct STREAMINFO * STREAM = &TNC->Streams[0];
 		PMSGWITHLEN buffptr;
@@ -2745,7 +2745,7 @@ void ProcessMessageObject(struct TNCINFO * TNC, char * This)
 
 	if (ID[0] == 'm')
 	{
-		// ?? Chat ?? comes from a send raw ??
+		/* ?? Chat ?? comes from a send raw ?? */
 
 		struct STREAMINFO * STREAM = &TNC->Streams[0];
 		PMSGWITHLEN buffptr;
@@ -2780,20 +2780,20 @@ void ProcessMessageObject(struct TNCINFO * TNC, char * This)
 		Msg += n;
 		Len -= n;
 
-		// if Atached, send to user
+		/* if Atached, send to user */
 
 		if (STREAM->Attached)
 		{
 			if (STREAM->Connected == 0 && STREAM->Connecting == 0)
 			{
-				// Just attached - send as Chat Message
+				/* Just attached - send as Chat Message */
 
 				char Line[560];
 				char * rest;
 
-				// Send line by line
+				/* Send line by line */
 
-				rest = strlop(TEXT, 10);		// FreeData chat uses LF
+				rest = strlop(TEXT, 10);		/* FreeData chat uses LF */
 
 				while (TEXT && TEXT[0])
 				{
@@ -2823,7 +2823,7 @@ void ProcessMessageObject(struct TNCINFO * TNC, char * This)
 					STREAM->BytesRXed += Len;
 
 					TEXT = rest;
-					rest = strlop(TEXT, 10);		// FreeData chat ues LF
+					rest = strlop(TEXT, 10);		/* FreeData chat ues LF */
 				}
 				
 				sprintf(TNC->WEB_TRAFFIC, "Sent %d RXed %d Queued %d",
@@ -2833,9 +2833,9 @@ void ProcessMessageObject(struct TNCINFO * TNC, char * This)
 		}
 		else
 		{
-			// Send Not Available Message
-//m�;send_message�;123�;64730c5c-d32c-47b4-9b11-c958fd07a185�;hhhhhhhhhhhhhhhhhh
-//�;�;plain/text�;
+			/* Send Not Available Message */
+/*m�;send_message�;123�;64730c5c-d32c-47b4-9b11-c958fd07a185�;hhhhhhhhhhhhhhhhhh */
+/*�;�;plain/text�; */
 
 			char reply[512] = "m";
 			char * p;
@@ -2864,7 +2864,7 @@ void ProcessMessageObject(struct TNCINFO * TNC, char * This)
 	}
 	else if (ID[0] == 'f')
 	{
-		// File Tranfer
+		/* File Tranfer */
 
 		char Filename[256];
 		FILE * fp1;
@@ -2882,12 +2882,12 @@ void ProcessMessageObject(struct TNCINFO * TNC, char * This)
 		Msg += n;
 		Len -= n;
 
-		SEQ = Msg;						// ?? Maybe = 123123123
+		SEQ = Msg;						/* ?? Maybe = 123123123 */
 		n = strlen(SEQ) + 2;
 		Msg += n;
 		Len -= n;
 
-		TEXT = Msg;						// The file
+		TEXT = Msg;						/* The file */
 		fileLen = Len;
 
 		if (TNC->FreeDataInfo->RXDir == NULL)
@@ -2926,7 +2926,7 @@ void ProcessMessageObject(struct TNCINFO * TNC, char * This)
 
 	
 
-//	FreeDataProcessTNCMessage(TNC, Call, Msg, strlen(Msg));
+/*	FreeDataProcessTNCMessage(TNC, Call, Msg, strlen(Msg)); */
 }
 
 void processJSONINFO(struct TNCINFO * TNC, char * Info, char * Call, double snr)
@@ -2934,7 +2934,7 @@ void processJSONINFO(struct TNCINFO * TNC, char * Info, char * Call, double snr)
 	char * LOC = "";
 	char * ptr, * Context;
 
-	// Info is an array. Normally only one element, but should check
+	/* Info is an array. Normally only one element, but should check */
 
 	ptr = strtok_s(&Info[1], ",]", &Context);
 
@@ -2948,14 +2948,14 @@ void processJSONINFO(struct TNCINFO * TNC, char * Info, char * Call, double snr)
 			Len = sprintf(CQ, "Beacon received from %s SNR %3.1f\r", Call, snr);	
 			WritetoTrace(TNC, CQ, Len);
 		
-			// Add to MH
+			/* Add to MH */
 
 			if (Call)
 				UpdateMH(TNC, Call, '!', 'I');
 		}
 		if (strstr(ptr, "PING;RECEIVING"))
 		{
-			// Add to MH
+			/* Add to MH */
 
 			if (Call)
 				UpdateMH(TNC, Call, '!', 'I');
@@ -2968,7 +2968,7 @@ void processJSONINFO(struct TNCINFO * TNC, char * Info, char * Call, double snr)
 			Len = sprintf(CQ, "CQ received from %s SNR %3.1f\r", Call, snr);	
 			WritetoTrace(TNC, CQ, Len);
 
-			// Add to MH
+			/* Add to MH */
 
 			UpdateMH(TNC, Call, '!', 'I');
 		}
@@ -2980,13 +2980,13 @@ void processJSONINFO(struct TNCINFO * TNC, char * Info, char * Call, double snr)
 			Len = sprintf(Msg, "Ping Response from %s SNR %3.1f\r", Call, snr);
 			FreeDataProcessTNCMessage(TNC, Call, Msg, Len);
 
-			// Add to MH
+			/* Add to MH */
 
 			UpdateMH(TNC, Call, '!', 'I');
 		}
 		else if (strstr(ptr, "TRANSMITTING;FAILED"))
 		{
-			// Failed to send a message - if it was a connect request tell appl
+			/* Failed to send a message - if it was a connect request tell appl */
 
 			struct STREAMINFO * STREAM = &TNC->Streams[0];
 			PMSGWITHLEN buffptr;
@@ -2999,7 +2999,7 @@ void processJSONINFO(struct TNCINFO * TNC, char * Info, char * Call, double snr)
 				STREAM->Connecting = FALSE;
 				buffptr = (PMSGWITHLEN)GetBuff();
 
-				if (buffptr == 0) return;			// No buffers, so ignore
+				if (buffptr == 0) return;			/* No buffers, so ignore */
 
 				buffptr->Len = sprintf(buffptr->Data, "*** Connect Failed\r");
 
@@ -3022,7 +3022,7 @@ char * getJSONValue(char * Msg, char * Key)
 	int vallen, keylen = strlen(Key);
 	char c;
 
-	// We Null Terminate the value, so we must look for keys in reverse order
+	/* We Null Terminate the value, so we must look for keys in reverse order */
 
 	ptr = strstr(Msg, Key);
 
@@ -3032,7 +3032,7 @@ char * getJSONValue(char * Msg, char * Key)
 
 		if (*(ptr) == '[')
 		{
-			// Array
+			/* Array */
 
 			int Open = 0;
 			int Close = 0;
@@ -3057,7 +3057,7 @@ char * getJSONValue(char * Msg, char * Key)
 		}
 		else if (*(ptr) == '\"')
 		{
-			// String
+			/* String */
 
 			ptr2 = ptr;
 			ptr = strchr(ptr + 1, '\"');
@@ -3092,7 +3092,7 @@ void ProcessTNCJSON(struct TNCINFO * TNC, char * Msg, int Len)
 	{
 		if (strstr(Msg, "True"))
 		{
-//			TNC->Busy = TNC->BusyHold * 10;				// BusyHold  delay
+/*			TNC->Busy = TNC->BusyHold * 10;				// BusyHold  delay */
 
 			if (TNC->PTTMode)
 				Rig_PTT(TNC, TRUE);
@@ -3113,8 +3113,8 @@ void ProcessTNCJSON(struct TNCINFO * TNC, char * Msg, int Len)
 
 	if (memcmp(Msg, "{\"freedata\"", 10) == 0)
 	{
-		// {"freedata":"tnc-message","arq":"session","status":"connected","mycallsign":"G8BPQ-10","dxcallsign":"G8BPQ-0"}
-		// {"freedata":"tnc-message","arq":"session","status":"connected","heartbeat":"transmitting","mycallsign":"G8BPQ-10","dxcallsign":"G8BPQ-0"}
+		/* {"freedata":"tnc-message","arq":"session","status":"connected","mycallsign":"G8BPQ-10","dxcallsign":"G8BPQ-0"} */
+		/* {"freedata":"tnc-message","arq":"session","status":"connected","heartbeat":"transmitting","mycallsign":"G8BPQ-10","dxcallsign":"G8BPQ-0"} */
 
 		char myCall[12] = "";
 		char farCall[12] = "";
@@ -3155,11 +3155,11 @@ void ProcessTNCJSON(struct TNCINFO * TNC, char * Msg, int Len)
 						Debugprintf("%d arq_session_state %s", TNC->Port, "disconnected");
 					}
 
-					// if connected this is a new disconnect
+					/* if connected this is a new disconnect */
 
 					if (STREAM->Connected)
 					{
-						// Create a traffic record
+						/* Create a traffic record */
 
 						char logmsg[120];	
 						time_t Duration;
@@ -3176,8 +3176,8 @@ void ProcessTNCJSON(struct TNCINFO * TNC, char * Msg, int Len)
 
 						Debugprintf(logmsg);
 
-						STREAM->Connected = FALSE;		// Back to Command Mode
-						STREAM->ReportDISC = TRUE;		// Tell Node
+						STREAM->Connected = FALSE;		/* Back to Command Mode */
+						STREAM->ReportDISC = TRUE;		/* Tell Node */
 						STREAM->Disconnecting = FALSE;
 
 						strcpy(TNC->WEB_TNCSTATE, "Free");
@@ -3194,7 +3194,7 @@ void ProcessTNCJSON(struct TNCINFO * TNC, char * Msg, int Len)
 				}
 				else if (memcmp(ptr, "connected", 9) == 0)
 				{
-					// if connection is idle this is an incoming connect
+					/* if connection is idle this is an incoming connect */
 
 					if (TNC->FreeDataInfo->arqstate != 3)
 					{
@@ -3207,7 +3207,7 @@ void ProcessTNCJSON(struct TNCINFO * TNC, char * Msg, int Len)
 						FreeDataProcessNewConnect(TNC, farCall, myCall);
 					}
 
-					// if connecting it is a connect ack
+					/* if connecting it is a connect ack */
 
 					else if (STREAM->Connecting)
 					{
@@ -3241,7 +3241,7 @@ void ProcessTNCJSON(struct TNCINFO * TNC, char * Msg, int Len)
 						STREAM->Connecting = FALSE;
 						buffptr = (PMSGWITHLEN)GetBuff();
 
-						if (buffptr == 0) return;			// No buffers, so ignore
+						if (buffptr == 0) return;			/* No buffers, so ignore */
 
 						buffptr->Len = sprintf(buffptr->Data, "*** Connect Failed\r");
 
@@ -3329,7 +3329,7 @@ void ProcessTNCJSON(struct TNCINFO * TNC, char * Msg, int Len)
 			}
 		}
 
-		// Look for changes in arq_session_state
+		/* Look for changes in arq_session_state */
 
 		ptr = strstr(Msg, "\"arq_session_state\"");
 
@@ -3346,11 +3346,11 @@ void ProcessTNCJSON(struct TNCINFO * TNC, char * Msg, int Len)
 					Debugprintf("%d arq_session_state %s", TNC->Port, "disconnected");
 				}
 
-				// if connected this is a new disconnect
+				/* if connected this is a new disconnect */
 
 				if (STREAM->Connected)
 				{
-					// Create a traffic record
+					/* Create a traffic record */
 
 					char logmsg[120];	
 					time_t Duration;
@@ -3367,8 +3367,8 @@ void ProcessTNCJSON(struct TNCINFO * TNC, char * Msg, int Len)
 
 					Debugprintf(logmsg);
 
-					STREAM->Connected = FALSE;		// Back to Command Mode
-					STREAM->ReportDISC = TRUE;		// Tell Node
+					STREAM->Connected = FALSE;		/* Back to Command Mode */
+					STREAM->ReportDISC = TRUE;		/* Tell Node */
 					STREAM->Disconnecting = FALSE;
 
 					strcpy(TNC->WEB_TNCSTATE, "Free");
@@ -3385,7 +3385,7 @@ void ProcessTNCJSON(struct TNCINFO * TNC, char * Msg, int Len)
 			}
 			else if (memcmp(ptr, "connected", 9) == 0)
 			{
-				// if connection is idle this is an incoming connect
+				/* if connection is idle this is an incoming connect */
 
 				if (TNC->FreeDataInfo->arqstate != 3)
 				{
@@ -3398,7 +3398,7 @@ void ProcessTNCJSON(struct TNCINFO * TNC, char * Msg, int Len)
 					FreeDataProcessNewConnect(TNC, farCall, myCall);
 				}
 
-				// if connecting it is a connect ack
+				/* if connecting it is a connect ack */
 
 				else if (STREAM->Connecting)
 				{
@@ -3432,7 +3432,7 @@ void ProcessTNCJSON(struct TNCINFO * TNC, char * Msg, int Len)
 					STREAM->Connecting = FALSE;
 					buffptr = (PMSGWITHLEN)GetBuff();
 
-					if (buffptr == 0) return;			// No buffers, so ignore
+					if (buffptr == 0) return;			/* No buffers, so ignore */
 
 					buffptr->Len = sprintf(buffptr->Data, "*** Connect Failed\r");
 
@@ -3498,7 +3498,7 @@ void ProcessTNCJSON(struct TNCINFO * TNC, char * Msg, int Len)
 				Len = sprintf(CQ, "Beacon received from %s SNR %3.1f", dxcall, snr);	
 				WritetoTrace(TNC, CQ, Len);
 
-				// Add to MH
+				/* Add to MH */
 
 				if (dxcall)
 					UpdateMH(TNC, dxcall, '!', 'I');
@@ -3514,7 +3514,7 @@ void ProcessTNCJSON(struct TNCINFO * TNC, char * Msg, int Len)
 				Len = sprintf(CQ, "CQ received from %s", dxcall);	
 				WritetoTrace(TNC, CQ, Len);
 
-				// Add to MH
+				/* Add to MH */
 
 				if (dxcall)
 					UpdateMH(TNC, dxcall, '!', 'I');
@@ -3530,7 +3530,7 @@ void ProcessTNCJSON(struct TNCINFO * TNC, char * Msg, int Len)
 				Len = sprintf(CQ, "PING received from %s SNR %3.1f", dxcall, snr);	
 				WritetoTrace(TNC, CQ, Len);
 
-				// Add to MH
+				/* Add to MH */
 
 				if (dxcall)
 					UpdateMH(TNC, dxcall, '!', 'I');
@@ -3567,7 +3567,7 @@ void ProcessTNCJSON(struct TNCINFO * TNC, char * Msg, int Len)
 	{
 		char * Next, * This;
 
-		// Delete from TNC
+		/* Delete from TNC */
 			
 		SendTNCCommand(TNC, "set", "del_rx_buffer");		Msg += 22;
 
@@ -3576,7 +3576,7 @@ void ProcessTNCJSON(struct TNCINFO * TNC, char * Msg, int Len)
 
 		This = ptr;
 
-		if (This[1] == '{')		// Array of objects
+		if (This[1] == '{')		/* Array of objects */
 		{
 			This++;
 			do
@@ -3594,7 +3594,7 @@ void ProcessTNCJSON(struct TNCINFO * TNC, char * Msg, int Len)
 	Debugprintf("%d %s", TNC->Port, Msg);
 
 
-//	{"COMMAND":"RX_BUFFER","DATA-ARRAY":[],"EOF":"EOF"}
+/*	{"COMMAND":"RX_BUFFER","DATA-ARRAY":[],"EOF":"EOF"} */
 /* {"COMMAND":"RX_BUFFER","DATA-ARRAY":[{"DXCALLSIGN":"GM8BPQ","DXGRID":"","TIMESTAMP":1642579504,
 "RXDATA":[{"dt":"f","fn":"main.js","ft":"text\/javascript"
 ,"d":"data:text\/javascript;base64,Y29uc3Qge.....9KTsK","crc":"123123123"}]}],"EOF":"EOF"}
@@ -3618,9 +3618,9 @@ void ProcessTNCJSON(struct TNCINFO * TNC, char * Msg, int Len)
 		ptr = getJSONValue(Msg, "\"data\"");
 		Type = ++ptr;
 
-		// Decode Base64
+		/* Decode Base64 */
 
-		// FreeData replaces / with \/ so need to undo
+		/* FreeData replaces / with \/ so need to undo */
 
 		ptr2 = strstr(Type, "\\/");
 
@@ -3632,7 +3632,7 @@ void ProcessTNCJSON(struct TNCINFO * TNC, char * Msg, int Len)
 
 		Len = strlen(Type) - 1;
 
-		//	Debugprintf("RX %d %s %d", TNC->Port, FN, Len);
+		/*	Debugprintf("RX %d %s %d", TNC->Port, FN, Len); */
 
 		ptr = ptr2 = Type;
 
@@ -3685,7 +3685,7 @@ void ProcessTNCJSON(struct TNCINFO * TNC, char * Msg, int Len)
 
 		This = ptr;
 
-		if (This[1] == '{')		// Array of objects
+		if (This[1] == '{')		/* Array of objects */
 		{
 			This++;
 			do {
@@ -3694,7 +3694,7 @@ void ProcessTNCJSON(struct TNCINFO * TNC, char * Msg, int Len)
 				This = Next;
 			} while (Next && Next[0] == '{');
 		
-			// Delete from TNC
+			/* Delete from TNC */
 			
 			SendTNCCommand(TNC, "SET", "DEL_RX_MSG_BUFFER");
 		}
@@ -3721,7 +3721,7 @@ int FreeDataDisconnect(struct TNCINFO * TNC)
 	char Msg[128];
 	int Len;
 
-//	return FreeDataSendCommand(TNC, "D");
+/*	return FreeDataSendCommand(TNC, "D"); */
 
 	Len = sprintf(Msg, Disconnect);
 
@@ -3742,11 +3742,11 @@ int FreeGetData(struct TNCINFO * TNC)
 
 int FreeDataSendCommand(struct TNCINFO * TNC, char * Msg)
 {
-	// Commands are simulated as Messages to the remote BPQ. The TNC itself does not handle any commands
+	/* Commands are simulated as Messages to the remote BPQ. The TNC itself does not handle any commands */
 
-	// First Byte of MSG is a Type - Command or Data. MSG has a limited character set Use =xx for Now.
+	/* First Byte of MSG is a Type - Command or Data. MSG has a limited character set Use =xx for Now. */
 
-	// Current Types - C = Connect, D = Disconnect, I = info
+	/* Current Types - C = Connect, D = Disconnect, I = info */
 
 	SendAsRaw(TNC, TNC->FreeDataInfo->farCall, TNC->FreeDataInfo->ourCall, Msg, strlen(Msg));
 	return 0;
@@ -3758,12 +3758,12 @@ void FreeDataProcessTNCMsg(struct TNCINFO * TNC)
 	char * ptr, * endptr;
 	int maxlen;
 
-	// May get message split over packets or multiple messages per packet
+	/* May get message split over packets or multiple messages per packet */
 
-	// A complete file transfer arrives as one message, so can bw very long
+	/* A complete file transfer arrives as one message, so can bw very long */
 
 
-	if (TNC->DataInputLen > MAXRXSIZE)	// Shouldnt have packets longer than this
+	if (TNC->DataInputLen > MAXRXSIZE)	/* Shouldnt have packets longer than this */
 		TNC->DataInputLen=0;
 
 	maxlen = MAXRXSIZE - TNC->DataInputLen;
@@ -3783,8 +3783,8 @@ void FreeDataProcessTNCMsg(struct TNCINFO * TNC)
 
 		TNC->TNCCONNECTED = FALSE;
 
-		STREAM->Connected = FALSE;		// Back to Command Mode
-		STREAM->ReportDISC = TRUE;		// Tell Node
+		STREAM->Connected = FALSE;		/* Back to Command Mode */
+		STREAM->ReportDISC = TRUE;		/* Tell Node */
 		STREAM->Disconnecting = FALSE;
 
 		strcpy(TNC->WEB_TNCSTATE, "Free");
@@ -3798,14 +3798,14 @@ void FreeDataProcessTNCMsg(struct TNCINFO * TNC)
 
 	TNC->DataInputLen += DataInputLen;
 
-	TNC->ARDOPDataBuffer[TNC->DataInputLen] = 0;	// So we can use string functions
+	TNC->ARDOPDataBuffer[TNC->DataInputLen] = 0;	/* So we can use string functions */
 
-	// Message should be json. We know the format, so don't need a general parser, but need to know if complete.
-	// I think counting { and } and stopping if equal should work;
+	/* Message should be json. We know the format, so don't need a general parser, but need to know if complete. */
+	/* I think counting { and } and stopping if equal should work; */
 
-//	Debugprintf(TNC->ARDOPDataBuffer);
+/*	Debugprintf(TNC->ARDOPDataBuffer); */
 
-	//I think now messages end with LF
+	/*I think now messages end with LF */
 
 loop:
 
@@ -3828,7 +3828,7 @@ loop:
 	
 	ProcessTNCJSON(TNC, ptr, MsgLen);
 
-	// MsgLen doesnt include lf
+	/* MsgLen doesnt include lf */
 
 	MsgLen++;
 
@@ -3838,7 +3838,7 @@ loop:
 		return;
 	}
 
-	// More in buffer
+	/* More in buffer */
 
 	ptr += MsgLen;
 	TNC->DataInputLen -= MsgLen;
@@ -3847,7 +3847,7 @@ loop:
 
 	goto loop;
 	
-	// Message Incomplete - wait for rest;
+	/* Message Incomplete - wait for rest; */
 }
 
 
@@ -3867,9 +3867,9 @@ static SOCKADDR_IN rxaddr;
 
 VOID FreeDataThread(void * portptr)
 {
-	// Messages are JSON encapulated
-	// Now We run tnc directly so don't open daemon socket
-	// Looks for data on socket(s)
+	/* Messages are JSON encapulated */
+	/* Now We run tnc directly so don't open daemon socket */
+	/* Looks for data on socket(s) */
 	
 	int port = (int)(size_t)portptr;
 	char Msg[255];
@@ -3892,24 +3892,24 @@ VOID FreeDataThread(void * portptr)
 
 	TNC->TNCCONNECTING = TRUE;
 
-	Sleep(3000);		// Allow init to complete 
+	Sleep(3000);		/* Allow init to complete  */
 
-//	printf("Starting FreeDATA Thread\n");
+/*	printf("Starting FreeDATA Thread\n"); */
 
-// if on Windows and Localhost see if TNC is running
+/* if on Windows and Localhost see if TNC is running */
 
 #ifdef WIN32
 
 	if (strcmp(TNC->HostName, "127.0.0.1") == 0)
 	{
-		// can only check if running on local host
+		/* can only check if running on local host */
 		
 		TNC->PID = GetListeningPortsPID(TNC->Datadestaddr.sin_port);
 		
 		if (TNC->PID == 0)
 			goto TNCNotRunning;
 
-		// Get the File Name in case we want to restart it.
+		/* Get the File Name in case we want to restart it. */
 
 		if (TNC->ProgramPath == NULL)
 		{
@@ -3936,7 +3936,7 @@ VOID FreeDataThread(void * portptr)
 
 TNCNotRunning:
 
-	// Not running or can't check, restart if we have a path 
+	/* Not running or can't check, restart if we have a path  */
 
 	if (TNC->ProgramPath)
 	{
@@ -3965,7 +3965,7 @@ TNCRunning:
 
 	if (TNC->Datadestaddr.sin_addr.s_addr == INADDR_NONE)
 	{
-		//	Resolve name to address
+		/*	Resolve name to address */
 
 		HostEnt = gethostbyname (TNC->HostName);
 		 
@@ -3974,7 +3974,7 @@ TNCRunning:
 		 	TNC->TNCCONNECTING = FALSE;
 			sprintf(Msg, "Resolve Failed for FreeData Host - error code = %d\r\n", WSAGetLastError());
 			WritetoConsole(Msg);
-			return;			// Resolve failed
+			return;			/* Resolve failed */
 		 }
 		 memcpy(&TNC->Datadestaddr.sin_addr.s_addr,HostEnt->h_addr,4);
 	}
@@ -3994,13 +3994,13 @@ TNCRunning:
 	sinx.sin_addr.s_addr = INADDR_ANY;
 	sinx.sin_port = 0;
 
-	// Connect TNC Port
+	/* Connect TNC Port */
 
 	if (connect(TNC->TCPDataSock,(LPSOCKADDR) &TNC->Datadestaddr,sizeof(TNC->Datadestaddr)) == 0)
 	{
-		//
-		//	Connected successful
-		//
+		/* */
+		/*	Connected successful */
+		/* */
 	}
 	else
 	{
@@ -4060,7 +4060,7 @@ TNCRunning:
 			goto Lost;
 		}
 
-		// If nothing doing send get rx_buffer as link validation poll
+		/* If nothing doing send get rx_buffer as link validation poll */
 
 		if (ret == 0)
 		{
@@ -4074,7 +4074,7 @@ TNCRunning:
 		}
 		else
 		{
-			//	See what happened
+			/*	See what happened */
 
 			if (FD_ISSET(TNC->TCPDataSock, &readfs))
 			{
@@ -4096,7 +4096,7 @@ Lost:
 				TNC->Alerted = FALSE;
 
 				if (TNC->PTTMode)
-					Rig_PTT(TNC, FALSE);			// Make sure PTT is down
+					Rig_PTT(TNC, FALSE);			/* Make sure PTT is down */
 
 				if (TNC->Streams[0].Attached)
 					TNC->Streams[0].ReportDISC = TRUE;
@@ -4119,7 +4119,7 @@ closeThread:
 	}
 
 	sprintf(Msg, "FreeData Thread Terminated Port %d\r\n", TNC->Port);
-	TNC->lasttime = time(NULL);				// Prevent immediate restart
+	TNC->lasttime = time(NULL);				/* Prevent immediate restart */
 
 	WritetoConsole(Msg);
 }
@@ -4148,7 +4148,7 @@ void ConnectTNCPort(struct TNCINFO * TNC)
 
 	if (connect(TNC->TCPDataSock,(LPSOCKADDR) &TNC->Datadestaddr,sizeof(TNC->Datadestaddr)) == 0)
 	{
-		//	Connected successful
+		/*	Connected successful */
 
 		sprintf(TNC->WEB_COMMSSTATE, "Connected to FreeData TNC");		
 		MySetWindowText(TNC->xIDC_COMMSSTATE, TNC->WEB_COMMSSTATE);
@@ -4181,13 +4181,13 @@ void ConnectTNCPort(struct TNCINFO * TNC)
 
 void buildParamString(struct TNCINFO * TNC, char * line)
 {
-	//  choices=[, "direct", "rigctl", "rigctld"],
+	/*  choices=[, "direct", "rigctl", "rigctld"], */
 
 	struct FreeDataINFO * FDI = TNC->FreeDataInfo;
 	int capindex = -1, playindex = -1;
 	int i;
 
-	// Python adds sound mapper on front and counts Playback after Capture
+	/* Python adds sound mapper on front and counts Playback after Capture */
 
 	for (i = 0; i < CaptureCount; i++)
 	{
@@ -4224,15 +4224,15 @@ void buildParamString(struct TNCINFO * TNC, char * line)
 		strcat(line, " --explorer");
 
 
-	// Add these to the end if needed 
-	//				--scatter
-	//				--fft
-	//				--fsk
-	//				--qrv (respond to cq)
+	/* Add these to the end if needed  */
+	/*				--scatter */
+	/*				--fft */
+	/*				--fsk */
+	/*				--qrv (respond to cq) */
 
 }
 
-// We need a local restart tnc as we need to add params and start a python progrm on Linux
+/* We need a local restart tnc as we need to add params and start a python progrm on Linux */
 
 BOOL KillOldTNC(char * Path);
 
@@ -4245,7 +4245,7 @@ static BOOL RestartTNC(struct TNCINFO * TNC)
 	{
 		int n;
 		
-		// Try to start TNC on a remote host
+		/* Try to start TNC on a remote host */
 
 		SOCKET sock = socket(AF_INET,SOCK_DGRAM,0);
 		struct sockaddr_in destaddr;
@@ -4261,12 +4261,12 @@ static BOOL RestartTNC(struct TNCINFO * TNC)
 
 		if (destaddr.sin_addr.s_addr == INADDR_NONE)
 		{
-			//	Resolve name to address
+			/*	Resolve name to address */
 
 			struct hostent * HostEnt = gethostbyname (TNC->HostName);
 		 
 			if (!HostEnt)
-				return 0;			// Resolve failed
+				return 0;			/* Resolve failed */
 
 			memcpy(&destaddr.sin_addr.s_addr,HostEnt->h_addr,4);
 		}
@@ -4278,12 +4278,12 @@ static BOOL RestartTNC(struct TNCINFO * TNC)
 		Sleep(100);
 		closesocket(sock);
 
-		return 1;				// Cant tell if it worked, but assume ok
+		return 1;				/* Cant tell if it worked, but assume ok */
 	}
 
-	// Not Remote
+	/* Not Remote */
 
-	// Add  parameters to command string
+	/* Add  parameters to command string */
 
 #ifndef WIN32
 	{
@@ -4301,7 +4301,7 @@ static BOOL RestartTNC(struct TNCINFO * TNC)
 
 		struct FreeDataINFO * FDI = TNC->FreeDataInfo;
 
-		signal(SIGCHLD, SIG_IGN); // Silently (and portably) reap children. 
+		signal(SIGCHLD, SIG_IGN); /* Silently (and portably) reap children.  */
 
 		arg_list[n++] = "python3";
 		arg_list[n++] = TNC->ProgramPath;
@@ -4354,7 +4354,7 @@ static BOOL RestartTNC(struct TNCINFO * TNC)
 
 		n = 0;
 
-		//	Fork and Exec TNC
+		/*	Fork and Exec TNC */
 
 		printf("Trying to start %s\n", TNC->ProgramPath);
 
@@ -4375,7 +4375,7 @@ static BOOL RestartTNC(struct TNCINFO * TNC)
 			/* The execvp  function returns only if an error occurs.  */ 
 
 			printf ("Failed to start TNC\n"); 
-			exit(0);			// Kill the new process
+			exit(0);			/* Kill the new process */
 		}
 		
 		TNC->PID = child_pid;
@@ -4388,8 +4388,8 @@ static BOOL RestartTNC(struct TNCINFO * TNC)
 	{
 		int n = 0;
 
-		STARTUPINFO  SInfo;			// pointer to STARTUPINFO 
-		PROCESS_INFORMATION PInfo; 	// pointer to PROCESS_INFORMATION 
+		STARTUPINFO  SInfo;			/* pointer to STARTUPINFO  */
+		PROCESS_INFORMATION PInfo; 	/* pointer to PROCESS_INFORMATION  */
 		char workingDirectory[256];
 		char commandLine[512];
 		char Params[512];

@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 */	
 
-//
-//	DLL to provide BPQEther support for G8BPQ switch in a Linux environment,
+/* */
+/*	DLL to provide BPQEther support for G8BPQ switch in a Linux environment, */
 
-// Normally uses a Raw socket, but that can't send to other apps on same machine.
-// so can use a TAP device instead (or maybe as well??)
+/* Normally uses a Raw socket, but that can't send to other apps on same machine. */
+/* so can use a TAP device instead (or maybe as well??) */

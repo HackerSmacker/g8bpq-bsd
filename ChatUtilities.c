@@ -1,6 +1,6 @@
-// Mail and Chat Server for BPQ32 Packet Switch
-//
-//	Utility Routines
+/* Mail and Chat Server for BPQ32 Packet Switch */
+/* */
+/*	Utility Routines */
 
 
 
@@ -20,10 +20,10 @@ VOID __cdecl Debugprintf(const char * format, ...)
 	va_start(arglist, format);
 	Len = vsprintf_s(Mess, sizeof(Mess), format, arglist);
 	ChatWriteLogLine(NULL, '!',Mess, Len, LOG_DEBUGx);
-//	#ifdef _DEBUG 
+/*	#ifdef _DEBUG  */
 	strcat(Mess, "\r\n");
 	OutputDebugString(Mess);
-//	#endif
+/*	#endif */
 	return;
 }
 
@@ -41,14 +41,14 @@ VOID __cdecl Logprintf(int LogMode, ChatCIRCUIT * conn, int InOut, const char * 
 
 void GetSemaphore(struct SEM * Semaphore, int ID)
 {
-	//
-	//	Wait for it to be free
-	//
+	/* */
+	/*	Wait for it to be free */
+	/* */
 	
 	if (Semaphore->Flag != 0)
 	{
 		Semaphore->Clashes++;
-//		Debugprintf("MailChat Semaphore Clash");
+/*		Debugprintf("MailChat Semaphore Clash"); */
 	}
 loop1:
 
@@ -57,18 +57,18 @@ loop1:
 		Sleep(10);
 	}
 
-	//
-	//	try to get semaphore
-	//
+	/* */
+	/*	try to get semaphore */
+	/* */
 
 	_asm{
 
 	mov	eax,1
 	mov ebx, Semaphore
-	xchg [ebx],eax		// this instruction is locked
+	xchg [ebx],eax		/* this instruction is locked */
 	
 	cmp	eax,0
-	jne loop1			// someone else got it - try again
+	jne loop1			/* someone else got it - try again */
 ;
 ;	ok, we've got the semaphore
 ;

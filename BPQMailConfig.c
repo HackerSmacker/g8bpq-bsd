@@ -1,14 +1,14 @@
 		
-// Mail and Chat Server for BPQ32 Packet Switch
-//
-//	Configuration Module
+/* Mail and Chat Server for BPQ32 Packet Switch */
+/* */
+/*	Configuration Module */
 
 #include "bpqmail.h"
 
 
 #define C_PAGES 7
 
-int CurrentPage=0;				// Page currently on show in tabbed Dialog
+int CurrentPage=0;				/* Page currently on show in tabbed Dialog */
 
 #define BBSPARAMS 0
 #define ISPPARAMS 1
@@ -20,17 +20,17 @@ int CurrentPage=0;				// Page currently on show in tabbed Dialog
 
 typedef struct tag_dlghdr {
 
-HWND hwndTab; // tab control
-HWND hwndDisplay; // current child dialog box
-RECT rcDisplay; // display rectangle for the tab control
+HWND hwndTab; /* tab control */
+HWND hwndDisplay; /* current child dialog box */
+RECT rcDisplay; /* display rectangle for the tab control */
 
 
 DLGTEMPLATE *apRes[C_PAGES];
 
 } DLGHDR;
 
-HWND hwndDlg;		// Config Dialog
-HWND hwndDisplay;   // Current child dialog box
+HWND hwndDlg;		/* Config Dialog */
+HWND hwndDisplay;   /* Current child dialog box */
 
 HWND hCheck[33];
 HWND hNullCheck[33];
@@ -41,26 +41,26 @@ HWND hUIBox[33];
 HFONT hFont;
 LOGFONT LFTTYFONT ;
 
-char CurrentConfigCall[20];		// Current user or bbs
-int CurrentConfigIndex;			// Index of current user record
-int CurrentMsgIndex;			// Index of current Msg record
-struct UserInfo * CurrentBBS;	// User Record of selected BBS iin Forwarding Config;
+char CurrentConfigCall[20];		/* Current user or bbs */
+int CurrentConfigIndex;			/* Index of current user record */
+int CurrentMsgIndex;			/* Index of current Msg record */
+struct UserInfo * CurrentBBS;	/* User Record of selected BBS iin Forwarding Config; */
 
-struct UserInfo * MsgBBSList[NBBBS+2] = {0}; // Sorted BBS List
+struct UserInfo * MsgBBSList[NBBBS+2] = {0}; /* Sorted BBS List */
 
-char InfoBoxText[100];			// Text to display in Config Info Popup
+char InfoBoxText[100];			/* Text to display in Config Info Popup */
 
 char Filter_FROM[20];
 char Filter_TO[20];
-char Filter_VIA[60];				// Filters for Edit Message Dialog
-char Filter_BID[16];				// Filters for Edit Message Dialog
+char Filter_VIA[60];				/* Filters for Edit Message Dialog */
+char Filter_BID[16];				/* Filters for Edit Message Dialog */
 
 extern char LTFROMString[2048];
 extern char LTTOString[2048];
 extern char LTATString[2048];
 VOID * GetOverrideFromString(char * input);
 
-extern time_t MaintClock;			// Time to run housekeeping
+extern time_t MaintClock;			/* Time to run housekeeping */
 
 DLGTEMPLATE * WINAPI DoLockDlgRes(LPCSTR lpszResName);
 VOID WINAPI OnSelChanged(HWND hwndDlg);
@@ -78,7 +78,7 @@ INT_PTR CALLBACK EditMsgTextDialogProc(HWND hDlg, UINT message, WPARAM wParam, L
 VOID SaveMAINTConfigFromDialog();
 VOID TidyWelcomeMsg(char ** pPrompt);
 
-// POP3 Password is encrypted by xor'ing it with an MD5 hash of the hostname and pop3 server name
+/* POP3 Password is encrypted by xor'ing it with an MD5 hash of the hostname and pop3 server name */
 
 
 double GetDlgItemFloat(HWND hDlg, int DlgItem, BOOL *lpTranslated, BOOL bSigned)
@@ -125,10 +125,10 @@ INT_PTR CALLBACK ConfigWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 	{
 	case WM_INITDIALOG:
 
-		ShowScrollBar(hDlg, SB_BOTH, FALSE);		// Hide them till needed
+		ShowScrollBar(hDlg, SB_BOTH, FALSE);		/* Hide them till needed */
 		OnTabbedDialogInit(hDlg);
 
-		// initialise scroll bars
+		/* initialise scroll bars */
 
 		xmargin = 6;
 		ymargin = 2 + GetSystemMetrics(SM_CYCAPTION);
@@ -141,7 +141,7 @@ INT_PTR CALLBACK ConfigWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 		w = LOWORD(lParam);
 		h = HIWORD(lParam);
 
-		// If window is smaller than client area enable scroll bars
+		/* If window is smaller than client area enable scroll bars */
 
 		ret = GetWindowRect(hwndDisplay, &Rect);
 		ww = Rect.right - Rect.left;
@@ -149,7 +149,7 @@ INT_PTR CALLBACK ConfigWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 
 		if (ww <= w && (wh + ymargin) <= h)
 		{
-			ShowScrollBar(hDlg, SB_BOTH, FALSE);	// Hide them till needed
+			ShowScrollBar(hDlg, SB_BOTH, FALSE);	/* Hide them till needed */
 			MoveWindow(hwndDisplay, xmargin, ymargin, ww, wh, TRUE);
 			hpos = vpos = 0;
 			return TRUE;
@@ -209,7 +209,7 @@ INT_PTR CALLBACK ConfigWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 			hpos = HIWORD(wParam);
 
 UpdateHPos:
-			// Need to update Scroll Bar
+			/* Need to update Scroll Bar */
 
 			Sinfo.cbSize = sizeof(SCROLLINFO);
 			Sinfo.fMask = SIF_ALL;
@@ -219,7 +219,7 @@ UpdateHPos:
 			Sinfo.nPos = hpos;
 			SetScrollInfo(hDlg, SB_HORZ, &Sinfo, TRUE);
 
-			// Move Client Window
+			/* Move Client Window */
 
 			MoveWindow(hwndDisplay, xmargin - hpos , ymargin - vpos , ww, wh, TRUE);
 			return TRUE;
@@ -262,7 +262,7 @@ UpdateHPos:
 			vpos = HIWORD(wParam);
 
 UpdateVPos:
-			// Need to update Scroll Bar
+			/* Need to update Scroll Bar */
 
 			Sinfo.cbSize = sizeof(SCROLLINFO);
 			Sinfo.fMask = SIF_ALL;
@@ -272,7 +272,7 @@ UpdateVPos:
 			Sinfo.nPos = vpos;
 			SetScrollInfo(hDlg, SB_VERT, &Sinfo, TRUE);
 
-			// Move Client Window
+			/* Move Client Window */
 
 			MoveWindow(hwndDisplay, xmargin - hpos , ymargin - vpos , ww, wh, TRUE);
 			return TRUE;
@@ -289,7 +289,7 @@ UpdateVPos:
 
 			OnSelChanged(hDlg);
 
-			// Check if scroll now needed
+			/* Check if scroll now needed */
 
 			ret = GetWindowRect(hwndDisplay, &Rect);
 			ww = Rect.right - Rect.left;
@@ -297,14 +297,14 @@ UpdateVPos:
 
 			if (ww <= w && (wh + 27) <= h)
 			{
-				ShowScrollBar(hDlg, SB_BOTH, FALSE);	// Hide them till needed
+				ShowScrollBar(hDlg, SB_BOTH, FALSE);	/* Hide them till needed */
 				return TRUE;
 			}
 
 			ShowScrollBar(hDlg, SB_BOTH, TRUE);	
 
 			return TRUE;
-			// More cases on WM_NOTIFY switch.
+			/* More cases on WM_NOTIFY switch. */
 		case NM_CHAR:
 			return TRUE;
 		}
@@ -388,7 +388,7 @@ INT_PTR CALLBACK InfoDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 
 INT_PTR CALLBACK ChildDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-//	This processes messages from controls on the tab subpages
+/*	This processes messages from controls on the tab subpages */
 	int Command;
 
 	switch (message)
@@ -400,7 +400,7 @@ INT_PTR CALLBACK ChildDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 		case TCN_SELCHANGE:
 			 OnSelChanged(hDlg);
 				 return TRUE;
-         // More cases on WM_NOTIFY switch.
+         /* More cases on WM_NOTIFY switch. */
 		case NM_CHAR:
 			return TRUE;
         }
@@ -489,9 +489,9 @@ INT_PTR CALLBACK ChildDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 }
 
 
-//The following function processes the WM_INITDIALOG message for the main dialog box. The function allocates the DLGHDR structure, loads the dialog template resources for the child dialog boxes, and creates the tab control.
+/*The following function processes the WM_INITDIALOG message for the main dialog box. The function allocates the DLGHDR structure, loads the dialog template resources for the child dialog boxes, and creates the tab control. */
 
-//The size of each child dialog box is specified by the DLGTEMPLATE structure. The function examines the size of each dialog box and uses the macro for the TCM_ADJUSTRECT message to calculate an appropriate size for the tab control. Then it sizes the dialog box and positions the two buttons accordingly. This example sends TCM_ADJUSTRECT by using the TabCtrl_AdjustRect macro.
+/*The size of each child dialog box is specified by the DLGTEMPLATE structure. The function examines the size of each dialog box and uses the macro for the TCM_ADJUSTRECT message to calculate an appropriate size for the tab control. Then it sizes the dialog box and positions the two buttons accordingly. This example sends TCM_ADJUSTRECT by using the TabCtrl_AdjustRect macro. */
 
 VOID WINAPI OnTabbedDialogInit(HWND hDlg)
 {
@@ -506,13 +506,13 @@ VOID WINAPI OnTabbedDialogInit(HWND hDlg)
 	int i, pos;
 	INITCOMMONCONTROLSEX init;
 
-	hwndDlg = hDlg;			// Save Window Handle
+	hwndDlg = hDlg;			/* Save Window Handle */
 
-	// Save a pointer to the DLGHDR structure.
+	/* Save a pointer to the DLGHDR structure. */
 
 	SetWindowLong(hwndDlg, GWL_USERDATA, (LONG) pHdr);
 
-	// Create the tab control.
+	/* Create the tab control. */
 
 
 	init.dwICC=ICC_STANDARD_CLASSES;
@@ -524,11 +524,11 @@ VOID WINAPI OnTabbedDialogInit(HWND hDlg)
 
 	if (pHdr->hwndTab == NULL) {
 
-	// handle error
+	/* handle error */
 
 	}
 
-	// Add a tab for each of the child dialog boxes.
+	/* Add a tab for each of the child dialog boxes. */
 
 	tie.mask = TCIF_TEXT | TCIF_IMAGE;
 
@@ -555,7 +555,7 @@ VOID WINAPI OnTabbedDialogInit(HWND hDlg)
 	tie.pszText = "WP Update";
 	TabCtrl_InsertItem(pHdr->hwndTab, 6, &tie);
 
-	// Lock the resources for the three child dialog boxes.
+	/* Lock the resources for the three child dialog boxes. */
 
 	pHdr->apRes[0] = DoLockDlgRes("BBS_CONFIG");
 	pHdr->apRes[1] = DoLockDlgRes("ISP_CONFIG");
@@ -565,7 +565,7 @@ VOID WINAPI OnTabbedDialogInit(HWND hDlg)
 	pHdr->apRes[5] = DoLockDlgRes("FILTERS");
 	pHdr->apRes[6] = DoLockDlgRes("WPUPDATE");
 
-	// Determine the bounding rectangle for all child dialog boxes.
+	/* Determine the bounding rectangle for all child dialog boxes. */
 
 	SetRectEmpty(&rcTab);
 
@@ -581,52 +581,52 @@ VOID WINAPI OnTabbedDialogInit(HWND hDlg)
 
 	MapDialogRect(hwndDlg, &rcTab);
 
-//	rcTab.right = rcTab.right * LOWORD(dwDlgBase) / 4;
+/*	rcTab.right = rcTab.right * LOWORD(dwDlgBase) / 4; */
 
-//	rcTab.bottom = rcTab.bottom * HIWORD(dwDlgBase) / 8;
+/*	rcTab.bottom = rcTab.bottom * HIWORD(dwDlgBase) / 8; */
 
-	// Calculate how large to make the tab control, so
+	/* Calculate how large to make the tab control, so */
 
-	// the display area can accomodate all the child dialog boxes.
+	/* the display area can accomodate all the child dialog boxes. */
 
 	TabCtrl_AdjustRect(pHdr->hwndTab, TRUE, &rcTab);
 
 	OffsetRect(&rcTab, cxMargin - rcTab.left, cyMargin - rcTab.top);
 
-	// Calculate the display rectangle.
+	/* Calculate the display rectangle. */
 
 	CopyRect(&pHdr->rcDisplay, &rcTab);
 
 	TabCtrl_AdjustRect(pHdr->hwndTab, FALSE, &pHdr->rcDisplay);
 
-	// Set the size and position of the tab control, buttons,
+	/* Set the size and position of the tab control, buttons, */
 
-	// and dialog box.
+	/* and dialog box. */
 
 	SetWindowPos(pHdr->hwndTab, NULL, rcTab.left, rcTab.top, rcTab.right - rcTab.left, rcTab.bottom - rcTab.top, SWP_NOZORDER);
 
-	// Move the Buttons to bottom of page
+	/* Move the Buttons to bottom of page */
 
 	pos=rcTab.left+cxMargin;
 
 	
-	// Size the dialog box.
+	/* Size the dialog box. */
 
 	SetWindowPos(hwndDlg, NULL, 0, 0, rcTab.right + cyMargin + 2 * GetSystemMetrics(SM_CXDLGFRAME),
 		rcTab.bottom  + 2 * cyMargin + 2 * GetSystemMetrics(SM_CYDLGFRAME) + GetSystemMetrics(SM_CYCAPTION),
 		SWP_NOMOVE | SWP_NOZORDER);
 
-	// Simulate selection of the first item.
+	/* Simulate selection of the first item. */
 
 	OnSelChanged(hwndDlg);
 
 }
 
-// DoLockDlgRes - loads and locks a dialog template resource.
+/* DoLockDlgRes - loads and locks a dialog template resource. */
 
-// Returns a pointer to the locked resource.
+/* Returns a pointer to the locked resource. */
 
-// lpszResName - name of the resource
+/* lpszResName - name of the resource */
 
 DLGTEMPLATE * WINAPI DoLockDlgRes(LPCSTR lpszResName)
 {
@@ -636,11 +636,11 @@ DLGTEMPLATE * WINAPI DoLockDlgRes(LPCSTR lpszResName)
 	return (DLGTEMPLATE *) LockResource(hglb);
 }
 
-//The following function processes the TCN_SELCHANGE notification message for the main dialog box. The function destroys the dialog box for the outgoing page, if any. Then it uses the CreateDialogIndirect function to create a modeless dialog box for the incoming page.
+/*The following function processes the TCN_SELCHANGE notification message for the main dialog box. The function destroys the dialog box for the outgoing page, if any. Then it uses the CreateDialogIndirect function to create a modeless dialog box for the incoming page. */
 
-// OnSelChanged - processes the TCN_SELCHANGE notification.
+/* OnSelChanged - processes the TCN_SELCHANGE notification. */
 
-// hwndDlg - handle of the parent dialog box
+/* hwndDlg - handle of the parent dialog box */
 
 VOID WINAPI OnSelChanged(HWND hwndDlg)
 {
@@ -654,19 +654,19 @@ VOID WINAPI OnSelChanged(HWND hwndDlg)
 
 	CurrentPage = TabCtrl_GetCurSel(pHdr->hwndTab);
 
-	// Destroy the current child dialog box, if any.
+	/* Destroy the current child dialog box, if any. */
 
 	if (pHdr->hwndDisplay != NULL)
 
 		DestroyWindow(pHdr->hwndDisplay);
 
-	// Create the new child dialog box.
+	/* Create the new child dialog box. */
 
 	pHdr->hwndDisplay = CreateDialogIndirect(hInst, pHdr->apRes[CurrentPage], hwndDlg, ChildDialogProc);
 
-	hwndDisplay = pHdr->hwndDisplay;		// Save
+	hwndDisplay = pHdr->hwndDisplay;		/* Save */
 
-	// Fill in the controls
+	/* Fill in the controls */
 
 	switch (CurrentPage)
 	{
@@ -679,7 +679,7 @@ VOID WINAPI OnSelChanged(HWND hwndDlg)
 		CheckDlgButton(pHdr->hwndDisplay, IDC_DONTHOLDNEW, DontHoldNewUsers);
 		CheckDlgButton(pHdr->hwndDisplay, IDC_FORWARDTOBBS, ForwardToMe);
 		CheckDlgButton(pHdr->hwndDisplay, IDC_NONAME, AllowAnon);
-		CheckDlgButton(pHdr->hwndDisplay, IDC_USERRKILLT, !UserCantKillT);		// Note negative logic
+		CheckDlgButton(pHdr->hwndDisplay, IDC_USERRKILLT, !UserCantKillT);		/* Note negative logic */
 		CheckDlgButton(pHdr->hwndDisplay, IDC_NOHOMEBBS, DontNeedHomeBBS);
 		CheckDlgButton(pHdr->hwndDisplay, IDC_DONTCHECKFROM, DontCheckFromCall);
 		CheckDlgButton(pHdr->hwndDisplay, IDC_DEFAULTNOWINLINK, DefaultNoWINLINK);
@@ -959,7 +959,7 @@ VOID WINAPI OnSelChanged(HWND hwndDlg)
 		SendDlgItemMessage(hwndDisplay, IDC_WPTYPE, CB_SETCURSEL, SendWPType, 0);
 
 		CheckDlgButton(hwndDisplay, IDC_SENDWP, SendWP);
-//		CheckDlgButton(hwndDisplay, IDC_SENDWP, NoWPGuesses);
+/*		CheckDlgButton(hwndDisplay, IDC_SENDWP, NoWPGuesses); */
 		CheckDlgButton(hwndDisplay, IDC_FILTERWPB, FilterWPBulls);
 
 		break;
@@ -968,11 +968,11 @@ VOID WINAPI OnSelChanged(HWND hwndDlg)
 	ShowWindow(pHdr->hwndDisplay, SW_SHOWNORMAL);
 }
 
-//The following function processes the WM_INITDIALOG message for each of the child dialog boxes. You cannot specify the position of a dialog box created using the CreateDialogIndirect function. This function uses the SetWindowPos function to position the child dialog within the tab control's display area.
+/*The following function processes the WM_INITDIALOG message for each of the child dialog boxes. You cannot specify the position of a dialog box created using the CreateDialogIndirect function. This function uses the SetWindowPos function to position the child dialog within the tab control's display area. */
 
-// OnChildDialogInit - Positions the child dialog box to fall
+/* OnChildDialogInit - Positions the child dialog box to fall */
 
-// within the display area of the tab control.
+/* within the display area of the tab control. */
 
 VOID WINAPI OnChildDialogInit(HWND hwndDlg)
 {
@@ -1106,7 +1106,7 @@ void SetForwardingPage(HWND hDlg, struct UserInfo * user)
 
 int Do_BBS_Sel_Changed(HWND hDlg)
 {
-	// Update BBS display with newly selected BBS
+	/* Update BBS display with newly selected BBS */
 
 	struct UserInfo * user;
 
@@ -1119,7 +1119,7 @@ int Do_BBS_Sel_Changed(HWND hDlg)
 		if (strcmp(user->Call, CurrentConfigCall) == 0)
 		{
 			CurrentBBS = user;
-			SetForwardingPage(hDlg, user);			// moved to separate routine as also called from copy config
+			SetForwardingPage(hDlg, user);			/* moved to separate routine as also called from copy config */
 		}
 	}
 	return 0;
@@ -1130,7 +1130,7 @@ int Sel;
 int Do_User_Sel_Changed(HWND hDlg)
 {
 
-	// Update BBS display with newly selected BBS
+	/* Update BBS display with newly selected BBS */
 
 	struct UserInfo * user;
 
@@ -1161,12 +1161,12 @@ int Do_User_Sel_Changed(HWND hDlg)
 			int MsgsRejectedOut;
 			int BytesForwardedIn;
 			int BytesForwardedOut;
-//			char MsgsIn[80];
-//			char MsgsOut[80];
-//			char BytesIn[80];
-//			char BytesOut[80];
-//			char RejIn[80];
-//			char RejOut[80];
+/*			char MsgsIn[80]; */
+/*			char MsgsOut[80]; */
+/*			char BytesIn[80]; */
+/*			char BytesOut[80]; */
+/*			char RejIn[80]; */
+/*			char RejOut[80]; */
 
 			i = 0;
 
@@ -1203,7 +1203,7 @@ int Do_User_Sel_Changed(HWND hDlg)
 			CheckDlgButton(hDlg, IDC_EXCLUDED, (user->flags & F_Excluded));
 			CheckDlgButton(hDlg, IDC_EMAIL, (user->flags & F_EMAIL));
 			CheckDlgButton(hDlg, IDC_HOLDMAIL, (user->flags & F_HOLDMAIL));
-			CheckDlgButton(hDlg, ALLOW_BULLS, (user->flags & F_NOBULLS) == 0);	// Node inverted flag
+			CheckDlgButton(hDlg, ALLOW_BULLS, (user->flags & F_NOBULLS) == 0);	/* Node inverted flag */
 			CheckDlgButton(hDlg, IDC_NTSMPS, (user->flags & F_NTSMPS));
 			CheckDlgButton(hDlg, IDC_APRSMFOR, (user->flags & F_APRSMFOR));
 			CheckDlgButton(hDlg, IDC_POLLRMS, (user->flags & F_POLLRMS));
@@ -1260,7 +1260,7 @@ int Do_User_Sel_Changed(HWND hDlg)
 						SSID[0] = 0;
 
 					SendDlgItemMessage(hDlg, RMS_SSID1 + i++, WM_SETTEXT, 0, (LPARAM)SSID);
-//					SendDlgItemMessage(hDlg, RMS_SSID1 + i++, CB_SETCURSEL, s, 0);
+/*					SendDlgItemMessage(hDlg, RMS_SSID1 + i++, CB_SETCURSEL, s, 0); */
 					if (i == 3)
 						break;
 				}
@@ -1284,7 +1284,7 @@ int Do_User_Sel_Changed(HWND hDlg)
 		}
 	}
 
-	// Typing in new user
+	/* Typing in new user */
 
 	CurrentConfigIndex = -1;
 
@@ -1364,7 +1364,7 @@ VOID Do_Delete_User(HWND hDlg)
 
 	for (n = CurrentConfigIndex; n < NumberofUsers; n++)
 	{
-		UserRecPtr[n] = UserRecPtr[n+1];		// move down all following entries
+		UserRecPtr[n] = UserRecPtr[n+1];		/* move down all following entries */
 	}
 	
 	NumberofUsers--;
@@ -1379,12 +1379,12 @@ VOID Do_Delete_User(HWND hDlg)
 	sprintf(InfoBoxText, "User %s deleted", user->Call);
 	DialogBox(hInst, MAKEINTRESOURCE(IDD_USERADDED_BOX), hWnd, InfoDialogProc);
 
-	if (user->flags & F_BBS)	// was a BBS?
+	if (user->flags & F_BBS)	/* was a BBS? */
 		DeleteBBS(user);
 	
 	free(user);
 
-	// Position to same place in list
+	/* Position to same place in list */
 
 	SendDlgItemMessage(hDlg, IDC_USER, CB_SETCURSEL, Sel, 0);
 	Do_User_Sel_Changed(hDlg);
@@ -1426,21 +1426,21 @@ VOID Do_Save_User(HWND hDlg, BOOL ShowBox)
 
 	if (IsDlgButtonChecked(hDlg, IDC_BBSFLAG))
 	{
-		// If BBS Flag has changed, must set up or delete forwarding info
+		/* If BBS Flag has changed, must set up or delete forwarding info */
 
 		if ((user->flags & F_BBS) == 0)
 		{
-			// New BBS
+			/* New BBS */
 
 			if(SetupNewBBS(user))
 			{
 				user->flags |= F_BBS;
-				user->flags &= ~F_Temp_B2_BBS;			// Clear RMS Express User
+				user->flags &= ~F_Temp_B2_BBS;			/* Clear RMS Express User */
 				CheckDlgButton(hDlg, RMS_EXPRESS_USER, (user->flags & F_Temp_B2_BBS));
 			}
 			else
 			{
-				// Failed - too many bbs's defined
+				/* Failed - too many bbs's defined */
 
 				sprintf(InfoBoxText, "Cannot set user to be a BBS - you already have 80 BBS's defined");
 				DialogBox(hInst, MAKEINTRESOURCE(IDD_USERADDED_BOX), hWnd, InfoDialogProc);
@@ -1453,7 +1453,7 @@ VOID Do_Save_User(HWND hDlg, BOOL ShowBox)
 	{
 		if (user->flags & F_BBS)
 		{
-			//was a BBS
+			/*was a BBS */
 
 			user->flags &= ~F_BBS;
 			DeleteBBS(user);
@@ -1479,7 +1479,7 @@ VOID Do_Save_User(HWND hDlg, BOOL ShowBox)
 		user->flags |= F_HOLDMAIL; else user->flags &= ~F_HOLDMAIL;
 
 	if (IsDlgButtonChecked(hDlg, ALLOW_BULLS) == 0)
-		user->flags |= F_NOBULLS; else user->flags &= ~F_NOBULLS;		// Note flag inverted
+		user->flags |= F_NOBULLS; else user->flags &= ~F_NOBULLS;		/* Note flag inverted */
 
 	if (IsDlgButtonChecked(hDlg, IDC_APRSMFOR))
 		user->flags |= F_APRSMFOR; else user->flags &= ~F_APRSMFOR;
@@ -1502,8 +1502,8 @@ VOID Do_Save_User(HWND hDlg, BOOL ShowBox)
 	if (IsDlgButtonChecked(hDlg, NO_WINLINKdotORG))
 		user->flags |= F_NOWINLINK; else user->flags &= ~F_NOWINLINK;
 
-//	if (user->flags & F_BBS)
-//		user->flags &= ~F_Temp_B2_BBS;		// Can't be both
+/*	if (user->flags & F_BBS) */
+/*		user->flags &= ~F_Temp_B2_BBS;		// Can't be both */
 
 
 	user->RMSSSIDBits = 0;
@@ -1555,7 +1555,7 @@ int compare(const void *arg1, const void *arg2);
 
 int Do_Msg_Sel_Changed(HWND hDlg)
 {
-	// Update Msg display with newly selected Msg
+	/* Update Msg display with newly selected Msg */
 
 	struct MsgInfo * Msg;
 	char MsgnoText[10];
@@ -1610,7 +1610,7 @@ int Do_Msg_Sel_Changed(HWND hDlg)
 			case '$': Sel = MSGSTATUS_$; break;
 			}
 
-			// Get a sorted list of BBS records
+			/* Get a sorted list of BBS records */
 
 			for (n = 1; n <= NumberofUsers; n++)
 			{
@@ -1684,7 +1684,7 @@ VOID Do_Save_Msg(HWND hDlg)
 	GetDlgItemText(hDlg, IDC_MSGTYPE, status, 2);
 	Msg->type = status[0];
 
-	// Check each BBS to for Farwardind State
+	/* Check each BBS to for Farwardind State */
 
 	for (i = 0; i < NBBBS; i++)
 	{
@@ -1696,8 +1696,8 @@ VOID Do_Save_Msg(HWND hDlg)
 		{
 			BBSNumber = user->BBSNumber;	
 
-//			if (BBSNumber == 31)
-//				n = n;
+/*			if (BBSNumber == 31) */
+/*				n = n; */
 
 			toforward = check_fwd_bit(Msg->fbbs, BBSNumber);
 			forwarded = check_fwd_bit(Msg->forw, BBSNumber);
@@ -1706,7 +1706,7 @@ VOID Do_Save_Msg(HWND hDlg)
 			{
 				if ((!toforward) && (!forwarded))
 				{
-					// No Change
+					/* No Change */
 					continue;
 				}
 				else
@@ -1722,7 +1722,7 @@ VOID Do_Save_Msg(HWND hDlg)
 			{
 				if (toforward)
 				{
-					// No Change
+					/* No Change */
 					continue;
 				}
 				else
@@ -1738,7 +1738,7 @@ VOID Do_Save_Msg(HWND hDlg)
 			{
 				if (forwarded)
 				{
-					// No Change
+					/* No Change */
 					continue;
 				}
 				else
@@ -1756,11 +1756,11 @@ VOID Do_Save_Msg(HWND hDlg)
 	
 	if (Msg->status != status[0])
 	{
-		// Need to take action if killing message
+		/* Need to take action if killing message */
 
 		Msg->status = status[0];
 		if (status[0] == 'K')
-			FlagAsKilled(Msg, FALSE);					// Clear forwarding bits
+			FlagAsKilled(Msg, FALSE);					/* Clear forwarding bits */
 	}
 
 	sprintf(InfoBoxText, "Message Updated");
@@ -1770,7 +1770,7 @@ VOID Do_Save_Msg(HWND hDlg)
 
 	SaveMessageDatabase();		
 
-	Do_Msg_Sel_Changed(hDlg);				// Refresh
+	Do_Msg_Sel_Changed(hDlg);				/* Refresh */
 }
 
 VOID SaveBBSConfig()
@@ -1794,7 +1794,7 @@ VOID SaveBBSConfig()
 	DontNeedHomeBBS = IsDlgButtonChecked(hwndDisplay, IDC_NOHOMEBBS);
 	DontCheckFromCall = IsDlgButtonChecked(hwndDisplay, IDC_DONTCHECKFROM);
 	AllowAnon = IsDlgButtonChecked(hwndDisplay, IDC_NONAME);
-	UserCantKillT = !IsDlgButtonChecked(hwndDisplay, IDC_USERRKILLT);	// Reverse logic
+	UserCantKillT = !IsDlgButtonChecked(hwndDisplay, IDC_USERRKILLT);	/* Reverse logic */
 	DefaultNoWINLINK = IsDlgButtonChecked(hwndDisplay, IDC_DEFAULTNOWINLINK);
 
 	BBSApplNum = GetDlgItemInt(hwndDisplay, IDC_BBSAppl, &OK1, FALSE);
@@ -1869,7 +1869,7 @@ VOID SaveFWDConfig(HWND hDlg)
 	SendPtoMultiple = IsDlgButtonChecked(hDlg, IDC_MULTIP);
 
 	
-	// Reinitialise Aliases
+	/* Reinitialise Aliases */
 
 	n = 0;
 
@@ -1945,7 +1945,7 @@ VOID CopyFwdConfig(HWND hDlg)
 		return;
 	}
 
-	// Get call to copy from 
+	/* Get call to copy from  */
 
 	GetDlgItemText(hDlg, COPYFROMCALL, FromBBS, 10);
 
@@ -1958,12 +1958,12 @@ VOID CopyFwdConfig(HWND hDlg)
 		return;
 	}
 
-	// Set current info from OldBBS
+	/* Set current info from OldBBS */
 
-	SetForwardingPage(hDlg, OldBBS);			// moved to separate routine as also called from copy config
+	SetForwardingPage(hDlg, OldBBS);			/* moved to separate routine as also called from copy config */
 
-//	sprintf(InfoBoxText, "Forwarding information saved");
-//	DialogBox(hInst, MAKEINTRESOURCE(IDD_USERADDED_BOX), hWnd, InfoDialogProc);
+/*	sprintf(InfoBoxText, "Forwarding information saved"); */
+/*	DialogBox(hInst, MAKEINTRESOURCE(IDD_USERADDED_BOX), hWnd, InfoDialogProc); */
 
 }
 
@@ -2006,7 +2006,7 @@ VOID SaveMAINTConfigFromDialog()
 	GetDlgItemText(hwndDisplay, IDM_LTAT, LTATString, 2048);
 	LTAT = GetOverrideFromString(LTATString);
  
-	// Calulate time to run Housekeeping
+	/* Calulate time to run Housekeeping */
 	{
 		struct tm *tm;
 		time_t now;
@@ -2066,7 +2066,7 @@ VOID SaveWelcomeMsgs()
 	TidyWelcomeMsg(&NewWelcomeMsg);
 	TidyWelcomeMsg(&ExpertWelcomeMsg);
 
-		// redisplay, in case tidy has changed them
+		/* redisplay, in case tidy has changed them */
 
 	SetDlgItemText(hwndDisplay, IDM_USERMSG, WelcomeMsg);
 	SetDlgItemText(hwndDisplay, IDM_NEWUSERMSG, NewWelcomeMsg);
@@ -2103,7 +2103,7 @@ VOID SavePrompts()
 	
 	TidyPrompts();
 
-	// redisplay, in case tidy has changed them
+	/* redisplay, in case tidy has changed them */
 
 	SetDlgItemText(hwndDisplay, IDM_USERMSG, Prompt);
 	SetDlgItemText(hwndDisplay, IDM_NEWUSERMSG, NewPrompt);
@@ -2170,9 +2170,9 @@ VOID * GetMultiLineDialogParam(HWND hDialog, int DLGItem)
 
 	int Len = GetDlgItemText(hDialog, DLGItem, Text, 10000);
 
-	// replace crlf with '|'
+	/* replace crlf with '|' */
 
-	if (Text[strlen(Text)-1] != '\n')			// no terminating crlf?
+	if (Text[strlen(Text)-1] != '\n')			/* no terminating crlf? */
 		strcat(Text, "\r\n");
 
 	ptr1 = Text;
@@ -2182,7 +2182,7 @@ VOID * GetMultiLineDialogParam(HWND hDialog, int DLGItem)
 	{
 		if (*ptr1 == '\r')
 		{
-			while (*(ptr1+2) == '\r')			// Blank line
+			while (*(ptr1+2) == '\r')			/* Blank line */
 				ptr1+=2;
 
 			*++ptr1 = '|';
@@ -2192,7 +2192,7 @@ VOID * GetMultiLineDialogParam(HWND hDialog, int DLGItem)
 
 	*ptr2++ = 0;
 
-	Value = zalloc(4);				// always NULL entry on end even if no values
+	Value = zalloc(4);				/* always NULL entry on end even if no values */
 	Value[0] = NULL;
 
 	ptr = Val;
@@ -2204,7 +2204,7 @@ VOID * GetMultiLineDialogParam(HWND hDialog, int DLGItem)
 		if (ptr1)
 			*(ptr1++) = 0;
 
-		if (ptr[0] == 0)		// Just had a | (empty string)
+		if (ptr[0] == 0)		/* Just had a | (empty string) */
 			break;
 
 		Value = realloc(Value, (Count+2) * sizeof(void *));
@@ -2224,7 +2224,7 @@ BOOL GetConfigFromRegistry()
 	char Size[80];
 	char * ptr;
 
-	// Get Config From Registry
+	/* Get Config From Registry */
 
 	sprintf(BaseDirRaw, "%s/BPQMailChat", GetBPQDirectory());
 
@@ -2305,7 +2305,7 @@ BOOL GetConfigFromRegistry()
 		Vallen=100;
 		retCode += RegQueryValueEx(hKey, "BBSName",0 , &Type, (UCHAR *)&BBSName, &Vallen);
 
-		sprintf(SignoffMsg, "73 de %s\r", BBSName);	// Default
+		sprintf(SignoffMsg, "73 de %s\r", BBSName);	/* Default */
 
 		Vallen=100;
 		retCode += RegQueryValueEx(hKey, "MailForText",0 , &Type, (UCHAR *)&MailForText, &Vallen);
@@ -2328,7 +2328,7 @@ BOOL GetConfigFromRegistry()
 			*ptr = 0;
 
 		ExpandEnvironmentStrings(BaseDirRaw, BaseDir, MAX_PATH);
-		// Get length of Chatnodes String
+		/* Get length of Chatnodes String */
 				
 		Vallen=4;
 		retCode += RegQueryValueEx(hKey,"SMTPPort",0,			
@@ -2415,7 +2415,7 @@ BOOL GetConfigFromRegistry()
 
 		sscanf(Size,"%d,%d,%d,%d",&MainRect.left,&MainRect.right,&MainRect.top,&MainRect.bottom);
 
-		// Get Welcome Messages
+		/* Get Welcome Messages */
 
 		Vallen=0;
 		
@@ -2455,7 +2455,7 @@ BOOL GetConfigFromRegistry()
 		Vallen = 99;
 		RegQueryValueEx(hKey,"SignoffMsg",0, (ULONG *)&Type, &SignoffMsg[0], (ULONG *)&Vallen);
 
-		// Get Prompts
+		/* Get Prompts */
 
 		Vallen=0;
 		
@@ -2534,7 +2534,7 @@ BOOL GetConfigFromRegistry()
 		HoldTo = RegGetMultiStringValue(hKey,  "HoldTo");
 		HoldAt = RegGetMultiStringValue(hKey,  "HoldAt");
 
-		// Send WP Params
+		/* Send WP Params */
 
 		Vallen=4;
 		RegQueryValueEx(hKey, "SendWP", 0, &Type, (UCHAR *)&SendWP, &Vallen);
@@ -2599,7 +2599,7 @@ BOOL GetConfigFromRegistry()
 				RegQueryValueEx(hKey,"Enabled",0,			
 					(ULONG *)&Type,(UCHAR *)&UIEnabled[i],(ULONG *)&Vallen);
 
-				UIMF[i] = UIEnabled[i];		// Defaults
+				UIMF[i] = UIEnabled[i];		/* Defaults */
 				UIHDDR[i] = UIEnabled[i];
 
 				Vallen=4;
@@ -2625,7 +2625,7 @@ BOOL GetConfigFromRegistry()
 						(ULONG *)&Type, UIDigi[i], (ULONG *)&Vallen);
 				}
 
-			//	retCode = RegSetValueEx(hKey, "Digis",0, REG_SZ,(BYTE *)UIDigi[i], strlen(UIDigi[i]));
+			/*	retCode = RegSetValueEx(hKey, "Digis",0, REG_SZ,(BYTE *)UIDigi[i], strlen(UIDigi[i])); */
 
 				RegCloseKey(hKey);
 			}
@@ -2711,13 +2711,13 @@ BOOL GetConfigFromRegistry()
 			RegQueryValueEx(hKey,"NTSF",0,			
 			(ULONG *)&Type,(UCHAR *)&NTSF,(ULONG *)&Vallen);
 
-//			Vallen=4;
-//			retCode += RegQueryValueEx(hKey, "AP", 0,			
-//				(ULONG *)&Type,(UCHAR *)&AP,(ULONG *)&Vallen);
+/*			Vallen=4; */
+/*			retCode += RegQueryValueEx(hKey, "AP", 0,			 */
+/*				(ULONG *)&Type,(UCHAR *)&AP,(ULONG *)&Vallen); */
 				
-//			Vallen=4;
-//			retCode += RegQueryValueEx(hKey, "AB", 0,			
-//				(ULONG *)&Type,(UCHAR *)&AB,(ULONG *)&Vallen);
+/*			Vallen=4; */
+/*			retCode += RegQueryValueEx(hKey, "AB", 0,			 */
+/*				(ULONG *)&Type,(UCHAR *)&AB,(ULONG *)&Vallen); */
 
 			Vallen=4;
 			RegQueryValueEx(hKey, "DeletetoRecycleBin", 0,			
@@ -2795,7 +2795,7 @@ INT_PTR CALLBACK UserEditDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPAR
 
 		case IDC_USER:
 
-			// User Selection Changed
+			/* User Selection Changed */
 
 			Do_User_Sel_Changed(hDlg);
 
@@ -2888,7 +2888,7 @@ INT_PTR CALLBACK MsgEditDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 
 		case 0:
 
-			// Msg Selection Changed
+			/* Msg Selection Changed */
 
 			Do_Msg_Sel_Changed(hDlg);
 
@@ -2961,7 +2961,7 @@ INT_PTR CALLBACK MsgEditDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			Ofn.nMaxFileTitle = 0; 
 			Ofn.lpstrInitialDir = (LPSTR)NULL; 
 			Ofn.Flags = OFN_SHOWHELP | OFN_OVERWRITEPROMPT; 
-			Ofn.lpstrTitle = NULL;//; 
+			Ofn.lpstrTitle = NULL;/*;  */
 
 			if (GetSaveFileName(&Ofn))
 			{
@@ -2974,7 +2974,7 @@ INT_PTR CALLBACK MsgEditDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 					return TRUE;
 				}
 
-//				SetFilePointer(Handle, 0, 0, FILE_END);
+/*				SetFilePointer(Handle, 0, 0, FILE_END); */
 
 				for (i = 0; i < Count; i++)
 				{
@@ -3052,7 +3052,7 @@ INT_PTR CALLBACK MsgEditDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 
 			if (Msg->B2Flags & B2Msg)
 			{
-			// Remove B2 Headers (up to the File: Line)
+			/* Remove B2 Headers (up to the File: Line) */
 			
 				char * bptr;
 				bptr = strstr(ptr, "Body:");
@@ -3078,7 +3078,7 @@ INT_PTR CALLBACK MsgEditDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			Ofn.nMaxFileTitle = 0; 
 			Ofn.lpstrInitialDir = (LPSTR)NULL; 
 			Ofn.Flags = OFN_SHOWHELP | OFN_OVERWRITEPROMPT; 
-			Ofn.lpstrTitle = NULL;//; 
+			Ofn.lpstrTitle = NULL;/*;  */
 
 			if (GetSaveFileName(&Ofn))
 			{
@@ -3255,7 +3255,7 @@ INT_PTR CALLBACK FwdEditDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 		ww = 0;
 		wh = 0;
 
-		ShowScrollBar(hDlg, SB_BOTH, FALSE);		// Hide them till needed
+		ShowScrollBar(hDlg, SB_BOTH, FALSE);		/* Hide them till needed */
 
 		xmargin = 6;
 		ymargin = 2 + GetSystemMetrics(SM_CYCAPTION);
@@ -3272,12 +3272,12 @@ INT_PTR CALLBACK FwdEditDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 		w = LOWORD(lParam);
 		h = HIWORD(lParam);
 
-		// If window is smaller than client area enable scroll bars
+		/* If window is smaller than client area enable scroll bars */
 
 		if (w >= ww && (h + ymargin) >= wh)
 		{
-			ShowScrollBar(hDlg, SB_BOTH, FALSE);	// Hide them till needed
-//			MoveWindow(hwndDisplay, xmargin, ymargin, ww, wh, TRUE);
+			ShowScrollBar(hDlg, SB_BOTH, FALSE);	/* Hide them till needed */
+/*			MoveWindow(hwndDisplay, xmargin, ymargin, ww, wh, TRUE); */
 			ScrollWindow(hDlg, scrolledx, scrolledy, 0, 0);
 			scrolledx = scrolledy = 0;
 			return TRUE;
@@ -3334,7 +3334,7 @@ INT_PTR CALLBACK FwdEditDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 			hpos = hpos -= deltax;
 
 UpdateHPos:
-			// Need to update Scroll Bar
+			/* Need to update Scroll Bar */
 
 			Sinfo.cbSize = sizeof(SCROLLINFO);
 			Sinfo.fMask = SIF_ALL;
@@ -3344,7 +3344,7 @@ UpdateHPos:
 			Sinfo.nPos = hpos;
 			SetScrollInfo(hDlg, SB_HORZ, &Sinfo, TRUE);
 
-			// Move Client Window
+			/* Move Client Window */
 
 			return TRUE;
 		}
@@ -3382,7 +3382,7 @@ UpdateHPos:
 			vpos = vpos -= deltay;
 
 UpdateVPos:
-			// Need to update Scroll Bar
+			/* Need to update Scroll Bar */
 
 			Sinfo.cbSize = sizeof(SCROLLINFO);
 			Sinfo.fMask = SIF_ALL;
@@ -3426,7 +3426,7 @@ UpdateVPos:
 
 		case IDC_BBS:
 
-			// BBS Selection Changed
+			/* BBS Selection Changed */
 
 			Do_BBS_Sel_Changed(hDlg);
 
@@ -3465,14 +3465,14 @@ int CreateDialogLine(HWND hWnd, int i, int row)
 	char PortNo[60];
 	char PortDesc[31];
 
-	// Only allow UI on ax.25 ports
+	/* Only allow UI on ax.25 ports */
 
 	struct _EXTPORTDATA * PORTVEC;
 
 	PORTVEC = (struct _EXTPORTDATA * )GetPortTableEntryFromSlot(i);
 
-	if (PORTVEC->PORTCONTROL.PORTTYPE == 16)		// EXTERNAL
-		if (PORTVEC->PORTCONTROL.PROTOCOL == 10)	// Pactor/WINMOR
+	if (PORTVEC->PORTCONTROL.PORTTYPE == 16)		/* EXTERNAL */
+		if (PORTVEC->PORTCONTROL.PROTOCOL == 10)	/* Pactor/WINMOR */
 			if (PORTVEC->PORTCONTROL.UICAPABLE == 0)
 				return FALSE;
 
@@ -3637,7 +3637,7 @@ INT_PTR CALLBACK EditMsgTextDialogProc(HWND hDlg, UINT message, WPARAM wParam, L
 
 		MsgBytes = ReadMessageFile(Msg->number);
 
-		// See if Multipart
+		/* See if Multipart */
 
 		if (Msg->B2Flags & Attachments)
 			EnableWindow(GetDlgItem(hDlg, IDC_SAVEATTACHMENTS), TRUE);
@@ -3696,7 +3696,7 @@ INT_PTR CALLBACK EditMsgTextDialogProc(HWND hDlg, UINT message, WPARAM wParam, L
 
 			while(*ptr != 13)
 			{
-				char * ptr2 = strchr(ptr, 10);	// Find CR
+				char * ptr2 = strchr(ptr, 10);	/* Find CR */
 
 				if (memcmp(ptr, "Body: ", 6) == 0)
 				{
@@ -3705,7 +3705,7 @@ INT_PTR CALLBACK EditMsgTextDialogProc(HWND hDlg, UINT message, WPARAM wParam, L
 
 				if (memcmp(ptr, "File: ", 6) == 0)
 				{
-					char * ptr1 = strchr(&ptr[6], ' ');	// Find Space
+					char * ptr1 = strchr(&ptr[6], ' ');	/* Find Space */
 
 					FileLen[Files] = atoi(&ptr[6]);
 
@@ -3716,8 +3716,8 @@ INT_PTR CALLBACK EditMsgTextDialogProc(HWND hDlg, UINT message, WPARAM wParam, L
 				ptr++;
 			}
 
-			ptr += 4;			// Over Blank Line and Separator
-			ptr += BodyLen;		// to first file
+			ptr += 4;			/* Over Blank Line and Separator */
+			ptr += BodyLen;		/* to first file */
 
 			for (i = 0; i < Files; i++)
 			{
@@ -3734,7 +3734,7 @@ INT_PTR CALLBACK EditMsgTextDialogProc(HWND hDlg, UINT message, WPARAM wParam, L
 				Ofn.nMaxFileTitle = 0; 
 				Ofn.lpstrInitialDir = (LPSTR)NULL; 
 				Ofn.Flags = OFN_SHOWHELP | OFN_OVERWRITEPROMPT; 
-				Ofn.lpstrTitle = NULL;//; 
+				Ofn.lpstrTitle = NULL;/*;  */
 
 				if (GetSaveFileName(&Ofn))
 				{
@@ -3750,7 +3750,7 @@ INT_PTR CALLBACK EditMsgTextDialogProc(HWND hDlg, UINT message, WPARAM wParam, L
 				}
 
 				ptr += FileLen[i];
-				ptr +=2;				// Over separator - I don't think there should be one
+				ptr +=2;				/* Over separator - I don't think there should be one */
 			}
 		}
 				
