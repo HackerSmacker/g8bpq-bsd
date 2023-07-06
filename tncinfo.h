@@ -2,7 +2,8 @@
 /* Common definitons for Pactor-like Modules */
 
 #include "kernelresource.h"
-
+#include "compatbits.h"
+#include "asmstrucs.h"
 #include "rigcontrol.h"
 
 #define MAXBLOCK 4096
@@ -347,7 +348,7 @@ typedef struct FLINFO
 	BOOL Busy;
 	BOOL CONOK;						/* Allow incoming connects */
 	BOOL KISSMODE;					/* Using KISS instead of socket interface */
-	BOOL RAW;						/* Raw (ARQ Socket or KISS RAW, depening on above) */
+	BOOL RAWMODE;						/* Raw (ARQ Socket or KISS RAW, depening on above) */
 	int CenterFreq;
 	char CurrentMode[20];			/* Mode to return to after session */
 	int	Responding;					/* If FLDigi is responding to conmands */

@@ -289,10 +289,10 @@ VOID L2Routine(struct PORTCONTROL * PORT, PMESSAGE Buffer)
 	/* Reached End of digis, and all actioned, so can process it */
 
 	Work = (uintptr_t)&Buffer->ORIGIN[6];
-	ptr -= 	Work;							/* ptr is now length of digis */
+	ptr -= 	(unsigned int)Work;							/* ptr is now length of digis */
 
 	Work = (uintptr_t)Buffer;
-	ptr += Work;
+	ptr += (unsigned int)Work;
 
 	ADJBUFFER = (MESSAGE * )ptr;			/* ADJBUFFER points to CTL, etc. allowing for digis */
 

@@ -1206,7 +1206,7 @@ struct WL2KInfo * DecodeWL2KReportLine(char *  buf)
 	p_cmd = strtok_s(NULL, " ,\t\n\r", &Context);
 	if (p_cmd == NULL) goto BadLine;
 
-	WL2KReport->Freq = strtoll(p_cmd, NULL, 10);
+	WL2KReport->Freq = strtol(p_cmd, NULL, 10);
 
 	if (WL2KReport->Freq == 0)	/* Invalid */
 		goto BadLine;					
@@ -1907,7 +1907,7 @@ int standardParams(struct TNCINFO * TNC, char * buf)
 	else if (_memicmp(buf, "RXRadio", 7) == 0)		/* Rig Control RADIO for RXFRETRIES */
 		TNC->RXRadio = atoi(&buf[8]);
 	else if (_memicmp(buf, "TXFreq", 6) == 0)		/* For PTT Sets Freq mode */
-		TNC->TXFreq = strtoll(&buf[7], NULL, 10);
+		TNC->TXFreq = strtol(&buf[7], NULL, 10);
 	else if (_memicmp(buf, "DefaultTXFreq", 13) == 0)	/* Set at end of session */
 		TNC->DefaultTXFreq = atof(&buf[14]);
 	else if (_memicmp(buf, "DefaultRXFreq", 13) == 0)	/* Set at end of session */

@@ -31,6 +31,8 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 #include "CHeaders.h"
 #include "tncinfo.h"
 
+#define uintptr_t unsigned int *
+
 VOID L2Routine(struct PORTCONTROL * PORT, PMESSAGE Buffer);
 VOID ProcessIframe(struct _LINKTABLE * LINK, PDATAMESSAGE Buffer);
 VOID FindLostBuffers();
@@ -40,7 +42,7 @@ int upnpInit();
 void AISTimer();
 void ADSBTimer();
 VOID SendSmartID(struct PORTCONTROL * PORT);
-static int  KissEncode(UCHAR * inbuff, UCHAR * outbuff, int len);
+int KissEncode(UCHAR* inbuff, UCHAR* outbuff, int len);
 
 #include "configstructs.h"
 
@@ -608,7 +610,7 @@ BOOL Start()
 	struct DEST_LIST * DEST;
 	CMDX * CMD;
 	int PortSlot = 1;
-	uintptr_t int3;
+	unsigned int int3;
 
 	unsigned char * ptr2 = 0, * ptr3, * ptr4;
 	USHORT * CWPTR;
@@ -1100,7 +1102,7 @@ BOOL Start()
 
 			/*	Round to word boundary (for ARM5 etc) */
 
-			int3 = (uintptr_t)ptr3;
+			int3 = (unsigned int)ptr3;
 			int3 += 7;
 			int3 &= 0xfffffffffffffff8;
 			ptr3 = (UCHAR *)int3;
@@ -1135,7 +1137,7 @@ BOOL Start()
 
 			/*	Round to word boundsaty (for ARM5 etc) */
 
-			int3 = (uintptr_t)ptr3;
+			int3 = (unsigned int)ptr3;
 			int3 += 7;
 			int3 &= 0xfffffffffffffff8;
 			ptr3 = (UCHAR *)int3;
@@ -1156,7 +1158,7 @@ BOOL Start()
 	
 			/*	Round to word boundsaty (for ARM5 etc) */
 
-			int3 = (uintptr_t)ptr3;
+			int3 = (unsigned int)ptr3;
 			int3 += 7;
 			int3 &= 0xfffffffffffffff8;
 			ptr3 = (UCHAR *)int3;
@@ -1351,7 +1353,7 @@ BOOL Start()
 
 	IDHDDR.LENGTH = (int)(ptr3 - (unsigned char *)&IDHDDR);
 
-	int3 = (uintptr_t)NEXTFREEDATA;
+	int3 = (unsigned int)NEXTFREEDATA;
 	int3 += 7;
 	int3 &= 0xfffffffffffffff8;
 	NEXTFREEDATA = (UCHAR *)int3;

@@ -4212,7 +4212,7 @@ int DataSocket_ReadRelay(struct TNCINFO * TNC, struct ConnectionInfo * sockptr, 
 }
 #define ZEXPORT WINAPI
 
-#include "zlib.h"
+#include <zlib.h>
 
 int DataSocket_ReadSync(struct TNCINFO * TNC, struct ConnectionInfo * sockptr, SOCKET sock, int Stream)
 {

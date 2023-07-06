@@ -23,6 +23,11 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 
 #pragma data_seg("_BPQDATA")
 
+#ifdef __osf__
+typedef unsigned long socklen_t;
+#endif 
+/* Hack for OSF/1 UNIX header issue ^^ */
+
 #define _CRT_SECURE_NO_DEPRECATE 
 
 #include <stdio.h>
@@ -40,6 +45,8 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/un.h>
+#include <sys/socket.h>
+#include <netdb.h>
 
 int sfd;
 struct sockaddr_un my_addr, peer_addr;

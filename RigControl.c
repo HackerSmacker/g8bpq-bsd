@@ -3097,7 +3097,7 @@ int GetPermissionToChange(struct RIGPORTINFO * PORT, struct RIGINFO *RIG)
 		/* TNC has been asked for permission, and we are waiting respoonse */
 		/* Only SCS pactor returns WaitingForPrmission, so check shouldn't be called on others */
 		
-		RIG->OKtoChange = (int)(intptr_t)RIG->PortRecord[0]->PORT_EXT_ADDR(6, RIG->PortRecord[0]->PORTCONTROL.PORTNUMBER, 2);	/* Get Ok Flag */
+		RIG->OKtoChange = (int)RIG->PortRecord[0]->PORT_EXT_ADDR(6, RIG->PortRecord[0]->PORTCONTROL.PORTNUMBER, 2);
 	
 		if (RIG->OKtoChange == 1)
 		{
@@ -3139,7 +3139,7 @@ int GetPermissionToChange(struct RIGPORTINFO * PORT, struct RIGINFO *RIG)
 		/* not waiting for permission, so must be first call of a cycle */
 
 		if (RIG->PortRecord[0] && RIG->PortRecord[0]->PORT_EXT_ADDR)
-			RIG->WaitingForPermission = (int)(intptr_t)RIG->PortRecord[0]->PORT_EXT_ADDR(6, RIG->PortRecord[0]->PORTCONTROL.PORTNUMBER, 1);	/* Request Perrmission */
+			RIG->WaitingForPermission = (int)RIG->PortRecord[0]->PORT_EXT_ADDR(6, RIG->PortRecord[0]->PORTCONTROL.PORTNUMBER, 1);
 				
 		/* If it returns zero there is no need to wait. */
 		/* Normally SCS Returns True for first call, but returns 0 if Link not running */
@@ -4490,7 +4490,7 @@ ok:
 
 			RIG->RIGOK = TRUE;
 
-			Freq = strtoll(&Msg[2], NULL, 10) + RIG->rxOffset;
+			Freq = strtol(&Msg[2], NULL, 10) + RIG->rxOffset;
 
 			RIG->RigFreq = Freq / 1000000.0;
 
@@ -4604,7 +4604,7 @@ Loop:
 		long long Freq;
 		long long MHz, Hz;
 
-		Freq = strtoll(&Msg[2], NULL, 10) + RIG->rxOffset;
+		Freq = strtol(&Msg[2], NULL, 10) + RIG->rxOffset;
 
 		RIG->RigFreq = Freq / 1000000.0;
 
@@ -5981,17 +5981,17 @@ CheckOtherParams:
 
 		else if (memcmp(ptr, "TXOFFSET", 8) == 0)
 		{
-			RIG->txOffset =  strtoll(&ptr[9], NULL, 10);
+			RIG->txOffset =  strtol(&ptr[9], NULL, 10);
 		}
 
 		else if (memcmp(ptr, "RXOFFSET", 8) == 0)
 		{
-			RIG->rxOffset =  strtoll(&ptr[9], NULL, 10);
+			RIG->rxOffset =  strtol(&ptr[9], NULL, 10);
 		}
 
 		else if (memcmp(ptr, "PTTOFFSET", 9) == 0)
 		{
-			RIG->pttOffset =  strtoll(&ptr[10], NULL, 10);
+			RIG->pttOffset =  strtol(&ptr[10], NULL, 10);
 		}
 
 		else if (memcmp(ptr, "RXERROR", 7) == 0)

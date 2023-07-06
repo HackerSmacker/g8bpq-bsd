@@ -196,11 +196,6 @@ loop1:
 
 	/*	try to get semaphore */
 
-	if (__sync_lock_test_and_set(&Semaphore->Flag, 1) != 0)
-
-		/* Failed to get it */
-		goto loop1;		/* try again; */
-
 	/*Ok. got it */
 
 	Semaphore->Gets++;

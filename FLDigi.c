@@ -186,7 +186,7 @@ static size_t ExtProc(int fn, int port, PDATAMESSAGE buff)
 			int calllen;
 			STREAM->Attached = TRUE;
 
-			TNC->FLInfo->RAW = FALSE;
+			TNC->FLInfo->RAWMODE = FALSE;
 
 			calllen = ConvFromAX25(TNC->PortRecord->ATTACHEDSESSIONS[Stream]->L4USER, STREAM->MyCall);
 			STREAM->MyCall[calllen] = 0;
@@ -659,10 +659,10 @@ pollloop:
 
 				buff->L2DATA[txlen - 1] = 0;		/* Remove CR */
 	
-				if (strstr(&buff->L2DATA[0], "RAW"))
-					TNC->FLInfo->RAW = TRUE;
+				if (strstr(&buff->L2DATA[0], "RAWMODE"))
+					TNC->FLInfo->RAWMODE = TRUE;
 				else if (strstr(&buff->L2DATA[0], "KISS"))
-					TNC->FLInfo->RAW = FALSE;
+					TNC->FLInfo->RAWMODE = FALSE;
 				else
 				{
 					buffptr->Len = sprintf(&buffptr->Data[0], "FLDigi} Error - Invalid Mode\r");
@@ -671,7 +671,7 @@ pollloop:
 				}
 
 				buffptr->Len = sprintf(&buffptr->Data[0], "FLDigi} Ok - Mode is %s\r",
-					(TNC->FLInfo->RAW)?"RAW":"KISS");
+					(TNC->FLInfo->RAWMODE)?"RAWMODE":"KISS");
 
 				C_Q_ADD(&STREAM->PACTORtoBPQ_Q, buffptr);
 			
@@ -1649,9 +1649,9 @@ VOID SendPacket(struct TNCINFO * TNC, UCHAR * Msg, int MsgLen)
 		char outbuff[1000];
 		int newlen;
 
-		if (TNC->FLInfo->RAW)
+		if (TNC->FLInfo->RAWMODE)
 		{
-			/* KISS RAW  */
+			/* KISS RAWMODE  */
 
 			/* Add CRC and Send */
 
@@ -1719,7 +1719,7 @@ VOID SendPacket(struct TNCINFO * TNC, UCHAR * Msg, int MsgLen)
 	}
 }
 
-VOID ProcessFLDigiData(struct TNCINFO * TNC, UCHAR * Input, int Len, char Channel, BOOL RAW);
+VOID ProcessFLDigiData(struct TNCINFO * TNC, UCHAR * Input, int Len, char Channel, BOOL RAWMODE);
 
 static int ProcessReceivedData(int port)
 {
@@ -1864,7 +1864,7 @@ static int ProcessReceivedData(int port)
 					if (strstr(&Message[2], "FLSTAT:INIT"))
 					{
 						/* FLDIGI Reloaded - set parmas */
-						SendKISSCommand(TNC, "RSIDBCAST:ON TRXSBCAST:ON TXBEBCAST:ON KISSRAW:ON");
+						SendKISSCommand(TNC, "RSIDBCAST:ON TRXSBCAST:ON TXBEBCAST:ON KISSRAWMODE:ON");
 					}
 					continue;
 				}
@@ -1969,7 +1969,7 @@ static int ProcessReceivedData(int port)
 
 			if (Message[1] == 7)				/* Not Normal Data */
 			{
-				/* "RAW" Mode. Just process as if received from TCP Socket Interface */
+				/* "RAWMODE" Mode. Just process as if received from TCP Socket Interface */
 
 /*				Debugprintf("7 %d %s", TNC->PortRecord->PORTCONTROL.PORTNUMBER, &Message[2]); */
 				ProcessFLDigiPacket(TNC, &Message[2] , bytes - 3);	/* Data may be for another port */
@@ -2000,7 +2000,7 @@ static int ProcessReceivedData(int port)
 				}
 				*(out++) = c;
 			}
-			ProcessFLDigiData(TNC, &Message[3], (int)(out - &Message[3]), Message[2], FALSE);	/* KISS not RAW */
+			ProcessFLDigiData(TNC, &Message[3], (int)(out - &Message[3]), Message[2], FALSE);	/* KISS not RAWMODE */
 		}
 
 		return 0;
@@ -2236,7 +2236,7 @@ VOID CheckFLDigiData(struct TNCINFO * TNC)
 
 	TNC->DataBuffer[TNC->DataLen] = 0;
 
-	/* RAW format message, either from ARQ Scoket or RAW KISS */
+	/* RAWMODE format message, either from ARQ Scoket or RAWMODE KISS */
 
 	/* Check Checksum */
 
@@ -2251,7 +2251,7 @@ VOID CheckFLDigiData(struct TNCINFO * TNC)
 /*		Debugprintf("%s %s", crcstring, Input); */
 		return;
 	}
-	ProcessFLDigiData(TNC, &Input[3], Len - 3, Input[2], TRUE);		/* From RAW  */
+	ProcessFLDigiData(TNC, &Input[3], Len - 3, Input[2], TRUE);		/* From RAWMODE  */
 }
 /*
 VOID ProcessARQPacket(struct PORTCONTROL * PORT, MESSAGE * Buffer)
@@ -2439,7 +2439,7 @@ F0F2<SOH>
 
 
 */
-VOID ProcessFLDigiData(struct TNCINFO * TNC, UCHAR * Input, int Len, char Channel, BOOL RAW)
+VOID ProcessFLDigiData(struct TNCINFO * TNC, UCHAR * Input, int Len, char Channel, BOOL RAWMODE)
 {
 	PMSGWITHLEN buffptr;
 	int Stream = 0;
@@ -2454,8 +2454,8 @@ VOID ProcessFLDigiData(struct TNCINFO * TNC, UCHAR * Input, int Len, char Channe
 
 	/* Process Message */
 
-	/* This processes eitrher message from the KISS or RAW interfaces. */
-	/*	Headers and RAW checksum have been removed, so packet starts with Control Byte */
+	/* This processes eitrher message from the KISS or RAWMODE interfaces. */
+	/*	Headers and RAWMODE checksum have been removed, so packet starts with Control Byte */
 
 	/* Only a connect request is allowed with no session, so check first */
 
@@ -2572,7 +2572,7 @@ VOID ProcessFLDigiData(struct TNCINFO * TNC, UCHAR * Input, int Len, char Channe
 		else
 			FL->FLARQ = FALSE;						/* From other app (eg BPQ) */
 
-		FL->RAW = RAW;
+		FL->RAWMODE = RAWMODE;
 
 		STREAM->NeedDisc = 0;
 

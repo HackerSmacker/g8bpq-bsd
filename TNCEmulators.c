@@ -239,7 +239,6 @@ extern int posix_openpt (int __oflag);
 extern int grantpt (int __fd);
 extern int unlockpt (int __fd);
 extern char *ptsname (int __fd);
-extern int ptsname_r (int __fd, char *__buf, size_t __buflen);
 extern int getpt (void);
 
 HANDLE LinuxOpenPTY(char * Name)
@@ -260,8 +259,11 @@ HANDLE LinuxOpenPTY(char * Name)
 	close(slave);
 
 #else
-	 
+
+/* OSF/1 UNIX (Tru64) doesn't have this */
+#ifndef __osf__ 	 
 	hDevice = posix_openpt(O_RDWR|O_NOCTTY);
+#endif
 
 	if (hDevice == -1)
 	{
@@ -1250,7 +1252,6 @@ CMDX TNCCOMMANDLIST[] =
 	"BTEXT   ",2,BTEXT,0,
 	"CONOK   ",4,ONOFF_CONOK,offsetof(struct TNCDATA, CONOK),
 	"C SWITCH",8,CSWITCH,0,
-	"CBELL   ",2,ONOFF,offsetof(struct TNCDATA, CBELL),
 	"CMDTIME ",2,VALUE, offsetof(struct TNCDATA, CMDTIME),
 	"CMSG    ",4,ONOFF,offsetof(struct TNCDATA, CMSG),
 	"COMMAND ",3,VALHEX, offsetof(struct TNCDATA, COMCHAR),
@@ -2910,10 +2911,12 @@ VOID SEND_CONNECTED(struct TNCDATA * TNC, int ToStream)
 
 	CheckForStreamChange(TNC, ToStream);	/* Send Stream Switched Message if changed */
 
+/*
 	if (TNC->CBELL)
-		len = sprintf(Response, "%s%s%c\r", CONMSG, Call, 7);		/* Add BELL char */
+		len = sprintf(Response, "%s%s%c\r", CONMSG, Call, 7);
 	else
 		len = sprintf(Response, "%s%s\r", CONMSG, Call);
+*/
 
 	SENDREPLY(TNC, Response, len);
 

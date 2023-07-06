@@ -362,7 +362,7 @@
 #define ZEXPORT __stdcall
 #include <crtdbg.h>
 #endif
-#include "zlib.h"
+#include <zlib.h>
 #endif
 
 /* include all user configurable info, including optional assembler routines */

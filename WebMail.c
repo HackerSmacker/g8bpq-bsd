@@ -715,31 +715,7 @@ VOID ProcessFormDir(char * FormSet, char * DirName, struct HtmlFormDir *** xxx, 
 		Debugprintf("%s %d %d", "cant open forms dir", errno, dir);
         return ;
 	}
-    while ((entry = readdir(dir)) != NULL)
-	{
-        if (entry->d_type == DT_DIR)
-		{
-            if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
-                continue;
 
-			Debugprintf("Recurse %s/%s/%s", FormSet, DirName, entry->d_name);
-			continue;
-
-		}
-		/* see if initial html */
-
-/*		if (stristr(entry->d_name, "initial.html")) */
-		{
-			/* Add to list */
-
-			Form = zalloc(sizeof (struct HtmlForm));
-
-			Form->FileName = _strdup(entry->d_name);
-
-			FormDir->Forms=realloc(FormDir->Forms, (FormDir->FormCount + 1) * sizeof(void *));
-			FormDir->Forms[FormDir->FormCount++] = Form;
-		}
-    }
     closedir(dir);
 #endif
 	return;
@@ -813,24 +789,23 @@ int GetHTMLFormSet(char * FormSet)
 
     while ((entry = readdir(dir)) != NULL)
 	{
+#ifndef __osf__
         if (entry->d_type == DT_DIR)
-		{
-            if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
-                continue;
+	{
+		if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+		continue;
 
-			/* Add to Directory List */
+		/* Add to Directory List */
 
-			ProcessFormDir(FormSet, entry->d_name, &HtmlFormDirs, &FormDirCount);
+		ProcessFormDir(FormSet, entry->d_name, &HtmlFormDirs, &FormDirCount);
         }
+#endif
     }
-    closedir(dir);
 #endif
 
 	/* List for testing */
 
-	return 0;
 
-	Debugprintf("%d form dirs", FormDirCount);
 
 	for (i = 0; i < FormDirCount; i++)
 	{
@@ -856,7 +831,6 @@ int GetHTMLFormSet(char * FormSet)
 	}
 
 
-	return 0;
 }
 
 
@@ -1255,7 +1229,7 @@ int ViewWebMailMessage(struct HTTPConnectionInfo * Session, char * Reply, int Nu
 				icu = iconv_open("UTF-8", "CP1252");
 
 			iconv(icu, NULL, NULL, NULL, NULL);		/* Reset State Machine */
-			iconv(icu, &MsgBytes, &len, (char ** __restrict__)&BufferBP, &left);
+			iconv(icu, &MsgBytes, &len, &BufferBP, &left);
 
 			free(Save);
 			Save = MsgBytes = BufferB;
@@ -3095,6 +3069,7 @@ char * xxReadTemplate(char * FormSet, char * DirName, char *FileName)
 
     while ((entry = readdir(dir)) != NULL)
 	{
+#ifndef __osf__
         if (entry->d_type == DT_DIR)
                 continue;
 	
@@ -3104,6 +3079,7 @@ char * xxReadTemplate(char * FormSet, char * DirName, char *FileName)
 		    closedir(dir);
 			break;
 		}
+#endif
 	}
     closedir(dir);
 
@@ -5303,9 +5279,10 @@ char * CheckFile(struct HtmlFormDir * Dir, char * FN)
 
     while ((entry = readdir(dir)) != NULL)
 	{
+#ifndef __osf__
         if (entry->d_type == DT_DIR)
                 continue;
-	
+#endif	
 		if (stricmp(entry->d_name, FN) == 0)
 		{
 			sprintf(MsgFile, "%s/%s/%s/%s", GetBPQDirectory(), Dir->FormSet, Dir->DirName, entry->d_name);

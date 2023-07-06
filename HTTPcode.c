@@ -38,7 +38,7 @@ along with LinBPQ/BPQ32.  If not, see http://www.gnu.org/licenses
 #define ZEXPORT __stdcall
 #endif
 
-#include "zlib.h"
+#include <zlib.h>
 
 #define CKernel
 #include "httpconnectioninfo.h"
@@ -1555,7 +1555,10 @@ unsigned char * Compressit(unsigned char * In, int Len, int * OutLen)
 	defstream.next_in = (Bytef *)In; /* input char array */
 
 	deflateInit(&defstream, Z_BEST_COMPRESSION);
+#ifndef __osf__
 	maxSize = deflateBound(&defstream, Len);
+#endif
+/* ^^^^^ FIX THIS -- OSF/1 SEEMS INCAPABLE OF LINKING ZLIB I GUESS */
 
 	Out = malloc(maxSize);
 

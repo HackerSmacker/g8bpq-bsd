@@ -422,7 +422,7 @@ void ConvertTitletoUTF8(char * Title, char * UTF8Title)
 			icu = iconv_open("UTF-8", "CP1252");
 
 		iconv(icu, NULL, NULL, NULL, NULL);		/* Reset State Machine */
-		iconv(icu, &Title, &len, (char ** __restrict__)&UTF8Title, &left);
+		iconv(icu, &Title, &len, &UTF8Title, &left);
 #endif
 	}
 	else

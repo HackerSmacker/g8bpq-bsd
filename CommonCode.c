@@ -3474,13 +3474,6 @@ DllExport char * APIENTRY GetVersionString()
 
 /*Fiddle till I find a better solution */
 
-#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 1060
-int __sync_lock_test_and_set(int * ptr, int val)
-{
-	*ptr = val;
-	return 0;
-}
-#endif /* __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ */
 #endif /* MACBPQ */
 
 
@@ -3515,11 +3508,6 @@ loop1:
 	}
 
 #else
-
-	if (__sync_lock_test_and_set(&Semaphore->Flag, 1) != 0)
-
-		/* Failed to get it */
-		goto loop1;		/* try again; */
 
 #endif
 

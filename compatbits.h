@@ -24,12 +24,6 @@ Stuff to make compiling on WINDOWS and LINUX easier
 
 #define strtoll _strtoi64
 
-#ifdef _WIN64
-#include "stdint.h"
-#else
-#include "winstdint.h"
-#endif
-
 #include "winsock2.h"
 #include "WS2tcpip.h"
 
@@ -79,7 +73,6 @@ int GetTickCount();
 #include <fcntl.h>
 #include <syslog.h>
 #include <pthread.h>
-#include <stdint.h>
 
 #define BOOL int
 #define VOID void
@@ -122,7 +115,7 @@ typedef DWORD   COLORREF;
 
 #define HMENU UINT
 #define WNDPROC UINT
-/* #define __cdecl */
+#define __cdecl
 
 #define strtok_s strtok_r
 
@@ -136,7 +129,7 @@ typedef DWORD   COLORREF;
 
 #define _gcvt gcvt
 #define _fcvt fcvt
-#define _atoi64 atoll 
+#define _atoi64 atol
 
 #define DeleteFile unlink
 #define MoveFile rename
@@ -230,6 +223,8 @@ typedef struct sockaddr *LPSOCKADDR;
 #define __int16 short
 #define __int32 long
 
+#define uintptr_t unsigned int *
+#define uint_t unsigned int
 
 #endif
 
