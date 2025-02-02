@@ -860,7 +860,7 @@ void OpenSockets(struct AXIPPORTINFO * PORT)
 
 	if (PORT->needip)
 	{
-		PORT->sock=socket(AF_INET,SOCK_RAW,IP_AXIP);
+		PORT->sock=socket(AF_INET,SOCK_RAW,93);
 
 		if (PORT->sock == INVALID_SOCKET)
 		{
@@ -873,22 +873,22 @@ void OpenSockets(struct AXIPPORTINFO * PORT)
 
 			ioctl (PORT->sock,FIONBIO,&param);
 
+			printf("Now attempting to setsockopt() on the raw AXIP socket\n");
 			setsockopt (PORT->sock,SOL_SOCKET,SO_BROADCAST,(const char FAR *)&bcopt,4);
 
 			sinx.sinx.sin_family = AF_INET;
 			sinx.sinx.sin_addr.s_addr = INADDR_ANY;
 			sinx.sinx.sin_port = 0;
 
+			/*
 			if (bind(PORT->sock, (struct sockaddr *) &sinx, sizeof(sinx)) != 0 )
 			{
-				/* */
-				/*	Bind Failed */
-				/* */
 				err = WSAGetLastError();
 				sprintf(Msg, "Bind Failed for RAW socket - error code = %d", err);
 				WritetoConsole(Msg);
 				return;
 			}
+			*/
 		}
 	}
 
