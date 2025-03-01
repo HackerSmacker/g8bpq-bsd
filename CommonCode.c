@@ -3582,8 +3582,8 @@ void printStack(void)
 
 pthread_t ResolveUpdateThreadId = 0;
 
-char NodeMapServer[80] = "update.g8bpq.net";
-char ChatMapServer[80] = "chatupdate.g8bpq.net";
+char NodeMapServer[80] = "server1.hackersmacker.net";
+char ChatMapServer[80] = "server1.hackersmacker.net";
 
 VOID ResolveUpdateThread(void * Unused)
 {
